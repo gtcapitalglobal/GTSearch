@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import axios from 'axios';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,6 +22,39 @@ app.use(express.static('public'));
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', version: '1.0.0' });
+});
+
+// Get current API keys status (without exposing the keys)
+app.get('/api/config/status', (req, res) => {
+  res.json({
+    google_maps: !!process.env.GOOGLE_MAPS_API_KEY,
+    openai: !!process.env.OPENAI_API_KEY,
+    gemini: !!process.env.GEMINI_API_KEY,
+    perplexity: !!process.env.PERPLEXITY_API_KEY,
+    rapidapi: !!process.env.RAPIDAPI_KEY,
+  });
+});
+
+// Save API keys to .env file
+app.post('/api/config/save', (req, res) => {
+  try {
+    const { google_maps, openai, gemini, perplexity, rapidapi } = req.body;
+    
+    const envContent = `# GT Lands Dashboard - Environment Variables\n# Configure suas API keys aqui\n\n# Google Maps API\nGOOGLE_MAPS_API_KEY=${google_maps || ''}\n\n# OpenAI API\nOPENAI_API_KEY=${openai || ''}\n\n# Google Gemini API\nGEMINI_API_KEY=${gemini || ''}\n\n# Perplexity API\nPERPLEXITY_API_KEY=${perplexity || ''}\n\n# RapidAPI Key (for Zillow, Realtor.com, Realty Mole)\nRAPIDAPI_KEY=${rapidapi || ''}\n\n# Server Port\nPORT=3000\n`;
+    
+    fs.writeFileSync('.env', envContent);
+    
+    // Reload environment variables
+    process.env.GOOGLE_MAPS_API_KEY = google_maps || '';
+    process.env.OPENAI_API_KEY = openai || '';
+    process.env.GEMINI_API_KEY = gemini || '';
+    process.env.PERPLEXITY_API_KEY = perplexity || '';
+    process.env.RAPIDAPI_KEY = rapidapi || '';
+    
+    res.json({ success: true, message: 'API keys saved successfully!' });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 // Google Maps API Proxy
@@ -73,10 +107,10 @@ app.post('/api/openai', async (req, res) => {
 // Google Gemini API Proxy
 app.post('/api/gemini', async (req, res) => {
   try {
-    const { prompt, model = 'gemini-pro' } = req.body;
+    const { prompt, model = 'gemini-2.5-flash' } = req.body;
 
     const response = await axios.post(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
         contents: [{
           parts: [{ text: prompt }]
@@ -196,6 +230,11 @@ app.post('/api/realty-mole', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.response?.data || error.message });
   }
+});
+
+// Serve index.html on root path
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () => {
