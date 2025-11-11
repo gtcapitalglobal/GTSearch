@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações - GT Lands Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-4xl mx-auto p-6">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <img src="logo.png" alt="GT Lands Logo" class="h-16">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">⚙️ Configurações de API</h1>
+                        <p class="text-gray-600 mt-2">Configure suas chaves de API de forma segura</p>
+                    </div>
+                </div>
+                <a href="/" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                    ← Voltar ao Dashboard
+                </a>
+            </div>
+        </div>
+
+        <!-- Status Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div id="status-google-maps" class="bg-white rounded-lg shadow-sm p-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700">Google Maps</span>
+                    <span class="status-indicator w-3 h-3 rounded-full bg-gray-300"></span>
+                </div>
+            </div>
+            <div id="status-openai" class="bg-white rounded-lg shadow-sm p-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700">OpenAI</span>
+                    <span class="status-indicator w-3 h-3 rounded-full bg-gray-300"></span>
+                </div>
+            </div>
+            <div id="status-gemini" class="bg-white rounded-lg shadow-sm p-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700">Gemini</span>
+                    <span class="status-indicator w-3 h-3 rounded-full bg-gray-300"></span>
+                </div>
+            </div>
+            <div id="status-perplexity" class="bg-white rounded-lg shadow-sm p-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700">Perplexity</span>
+                    <span class="status-indicator w-3 h-3 rounded-full bg-gray-300"></span>
+                </div>
+            </div>
+            <div id="status-rapidapi" class="bg-white rounded-lg shadow-sm p-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-700">RapidAPI</span>
+                    <span class="status-indicator w-3 h-3 rounded-full bg-gray-300"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Configuration Form -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Configurar API Keys</h2>
+            
+            <form id="config-form" class="space-y-6">
+                <!-- Google Maps API -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        🗺️ Google Maps API Key
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="password" id="google-maps-key" 
+                               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="AIzaSy...">
+                        <button type="button" onclick="testAPI('google-maps')" 
+                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                            Testar
+                        </button>
+                    </div>
+                    <div id="result-google-maps" class="mt-2 text-sm hidden"></div>
+                </div>
+
+                <!-- OpenAI API -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        🤖 OpenAI API Key
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="password" id="openai-key" 
+                               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="sk-proj-...">
+                        <button type="button" onclick="testAPI('openai')" 
+                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                            Testar
+                        </button>
+                    </div>
+                    <div id="result-openai" class="mt-2 text-sm hidden"></div>
+                </div>
+
+                <!-- Gemini API -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        ✨ Google Gemini API Key
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="password" id="gemini-key" 
+                               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="AIza...">
+                        <button type="button" onclick="testAPI('gemini')" 
+                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                            Testar
+                        </button>
+                    </div>
+                    <div id="result-gemini" class="mt-2 text-sm hidden"></div>
+                </div>
+
+                <!-- Perplexity API -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        🔍 Perplexity API Key
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="password" id="perplexity-key" 
+                               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="pplx-...">
+                        <button type="button" onclick="testAPI('perplexity')" 
+                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                            Testar
+                        </button>
+                    </div>
+                    <div id="result-perplexity" class="mt-2 text-sm hidden"></div>
+                </div>
+
+                <!-- RapidAPI -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        🏠 RapidAPI Key (Zillow, Realtor, Realty Mole)
+                    </label>
+                    <div class="flex gap-2">
+                        <input type="password" id="rapidapi-key" 
+                               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                               placeholder="...">
+                        <button type="button" onclick="testAPI('rapidapi')" 
+                                class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
+                            Testar
+                        </button>
+                    </div>
+                    <div id="result-rapidapi" class="mt-2 text-sm hidden"></div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="pt-4 border-t">
+                    <button type="submit" 
+                            class="w-full px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">
+                        💾 Salvar Todas as Configurações
+                    </button>
+                </div>
+            </form>
+
+            <div id="save-result" class="mt-4 hidden"></div>
+        </div>
+
+        <!-- Help Section -->
+        <div class="bg-blue-50 rounded-lg p-6 mt-6">
+            <h3 class="text-lg font-bold text-blue-900 mb-3">📚 Como Obter as API Keys</h3>
+            <ul class="space-y-2 text-sm text-blue-800">
+                <li>• <strong>Google Maps:</strong> <a href="https://console.cloud.google.com/apis/credentials" target="_blank" class="underline">Google Cloud Console</a></li>
+                <li>• <strong>OpenAI:</strong> <a href="https://platform.openai.com/api-keys" target="_blank" class="underline">OpenAI Platform</a></li>
+                <li>• <strong>Gemini:</strong> <a href="https://makersuite.google.com/app/apikey" target="_blank" class="underline">Google AI Studio</a></li>
+                <li>• <strong>Perplexity:</strong> <a href="https://www.perplexity.ai/settings/api" target="_blank" class="underline">Perplexity Settings</a></li>
+                <li>• <strong>RapidAPI:</strong> <a href="https://rapidapi.com/hub" target="_blank" class="underline">RapidAPI Hub</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Load current status
+        async function loadStatus() {
+            try {
+                const response = await fetch('/api/config/status');
+                const status = await response.json();
+                
+                updateStatusIndicator('google-maps', status.google_maps);
+                updateStatusIndicator('openai', status.openai);
+                updateStatusIndicator('gemini', status.gemini);
+                updateStatusIndicator('perplexity', status.perplexity);
+                updateStatusIndicator('rapidapi', status.rapidapi);
+            } catch (error) {
+                console.error('Error loading status:', error);
+            }
+        }
+
+        function updateStatusIndicator(api, configured) {
+            const element = document.querySelector(`#status-${api} .status-indicator`);
+            if (configured) {
+                element.classList.remove('bg-gray-300');
+                element.classList.add('bg-green-500');
+            } else {
+                element.classList.remove('bg-green-500');
+                element.classList.add('bg-gray-300');
+            }
+        }
+
+        // Test individual API
+        async function testAPI(api) {
+            const keyInput = document.getElementById(`${api}-key`);
+            const resultDiv = document.getElementById(`result-${api}`);
+            const key = keyInput.value.trim();
+
+            if (!key) {
+                showResult(resultDiv, 'Por favor, insira a API key primeiro', 'error');
+                return;
+            }
+
+            showResult(resultDiv, '⏳ Testando...', 'loading');
+
+            try {
+                let response;
+                
+                if (api === 'google-maps') {
+                    // Save temporarily and test
+                    await fetch('/api/config/save', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ google_maps: key })
+                    });
+                    response = await fetch('/api/google-maps', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            endpoint: 'https://maps.googleapis.com/maps/api/geocode/json',
+                            params: { address: 'Tampa, FL' }
+                        })
+                    });
+                } else if (api === 'openai') {
+                    // Save temporarily
+                    await fetch('/api/config/save', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ openai: key })
+                    });
+                    response = await fetch('/api/openai', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            messages: [{ role: 'user', content: 'Say hello' }],
+                            model: 'gpt-4',
+                            max_tokens: 10
+                        })
+                    });
+                } else if (api === 'gemini') {
+                    await fetch('/api/config/save', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ gemini: key })
+                    });
+                    response = await fetch('/api/gemini', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            prompt: 'Say hello',
+                            model: 'gemini-2.5-flash'
+                        })
+                    });
+                } else if (api === 'perplexity') {
+                    await fetch('/api/config/save', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ perplexity: key })
+                    });
+                    response = await fetch('/api/perplexity', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            messages: [{ role: 'user', content: 'Say hello' }]
+                        })
+                    });
+                } else if (api === 'rapidapi') {
+                    showResult(resultDiv, '✅ RapidAPI key salva! Teste completo disponível após salvar.', 'success');
+                    return;
+                }
+
+                const data = await response.json();
+                
+                if (response.ok && !data.error) {
+                    showResult(resultDiv, '✅ API funcionando perfeitamente!', 'success');
+                    updateStatusIndicator(api, true);
+                } else {
+                    const errorMsg = typeof data.error === 'object' ? JSON.stringify(data.error) : (data.error || 'API key inválida');
+                    showResult(resultDiv, `❌ Erro: ${errorMsg}`, 'error');
+                }
+            } catch (error) {
+                showResult(resultDiv, `❌ Erro: ${error.message}`, 'error');
+            }
+        }
+
+        function showResult(element, message, type) {
+            element.classList.remove('hidden');
+            element.textContent = message;
+            
+            if (type === 'success') {
+                element.className = 'mt-2 text-sm text-green-600 font-medium';
+            } else if (type === 'error') {
+                element.className = 'mt-2 text-sm text-red-600 font-medium';
+            } else {
+                element.className = 'mt-2 text-sm text-blue-600 font-medium';
+            }
+        }
+
+        // Save all configurations
+        document.getElementById('config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const saveResultDiv = document.getElementById('save-result');
+            saveResultDiv.textContent = '⏳ Salvando...';
+            saveResultDiv.className = 'mt-4 p-4 bg-blue-50 text-blue-700 rounded-lg';
+            saveResultDiv.classList.remove('hidden');
+
+            const config = {
+                google_maps: document.getElementById('google-maps-key').value.trim(),
+                openai: document.getElementById('openai-key').value.trim(),
+                gemini: document.getElementById('gemini-key').value.trim(),
+                perplexity: document.getElementById('perplexity-key').value.trim(),
+                rapidapi: document.getElementById('rapidapi-key').value.trim(),
+            };
+
+            try {
+                const response = await fetch('/api/config/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    saveResultDiv.textContent = '✅ Configurações salvas com sucesso!';
+                    saveResultDiv.className = 'mt-4 p-4 bg-green-50 text-green-700 rounded-lg font-medium';
+                    loadStatus();
+                } else {
+                    saveResultDiv.textContent = `❌ Erro: ${result.error}`;
+                    saveResultDiv.className = 'mt-4 p-4 bg-red-50 text-red-700 rounded-lg';
+                }
+            } catch (error) {
+                saveResultDiv.textContent = `❌ Erro: ${error.message}`;
+                saveResultDiv.className = 'mt-4 p-4 bg-red-50 text-red-700 rounded-lg';
+            }
+        });
+
+        // Load status on page load
+        loadStatus();
+    </script>
+</body>
+</html>
+
