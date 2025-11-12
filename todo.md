@@ -132,3 +132,17 @@
 - [x] Remover seções antigas duplicadas
 - [x] Testar layout final
 
+
+
+
+## Correção do Botão "Analisar Selecionadas"
+- [x] Investigar por que o botão "Analisar Selecionadas" não funciona
+- [x] Verificar console do browser para identificar erros JavaScript
+- [x] Verificar se o evento onclick está corretamente vinculado
+- [x] Verificar se há propriedades selecionadas no localStorage
+- [x] Testar redirecionamento para analysis.html
+- [x] Investigar código da função analyzeSelectedProperties() linha por linha
+- [x] Identificar por que a função não executa quando botão é clicado (COM propriedades e checkboxes marcados)
+- [x] Corrigir o bug específico (remover workflow.js e analysis.js que não existem)
+- [x] Validar funcionamento completo com dados reais
+
