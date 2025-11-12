@@ -248,11 +248,14 @@
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold text-gray-800">📋 Dados Completos (Novas Propriedades)</h2>
                 <div class="flex gap-3">
+                    <button id="analyzeSelectedBtn" class="hidden bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors" onclick="analyzeSelectedProperties()">
+                        📊 Analisar Selecionadas
+                    </button>
                     <button id="deleteSelectedBtn" class="hidden bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors">
                         🗑️ Deletar Selecionadas
                     </button>
                     <button id="exportSelectedBtn" class="hidden bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors">
-                        📥 Exportar Selecionadas
+                        📅 Exportar Selecionadas
                     </button>
                 </div>
             </div>
@@ -1078,6 +1081,7 @@
         function setupCheckboxListeners() {
             const selectAllCheckbox = document.getElementById('selectAllCheckbox');
             const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+            const analyzeSelectedBtn = document.getElementById('analyzeSelectedBtn');
             const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
             const exportSelectedBtn = document.getElementById('exportSelectedBtn');
             
@@ -1107,16 +1111,48 @@
         function updateSelectionButtons() {
             const rowCheckboxes = document.querySelectorAll('.row-checkbox');
             const checkedCount = Array.from(rowCheckboxes).filter(cb => cb.checked).length;
+            const analyzeSelectedBtn = document.getElementById('analyzeSelectedBtn');
             const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
             const exportSelectedBtn = document.getElementById('exportSelectedBtn');
             
             if (checkedCount > 0) {
+                analyzeSelectedBtn.classList.remove('hidden');
                 deleteSelectedBtn.classList.remove('hidden');
                 exportSelectedBtn.classList.remove('hidden');
             } else {
+                analyzeSelectedBtn.classList.add('hidden');
                 deleteSelectedBtn.classList.add('hidden');
                 exportSelectedBtn.classList.add('hidden');
             }
+        }
+        
+        function analyzeSelectedProperties() {
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+            
+            if (rowCheckboxes.length === 0) {
+                alert('Selecione pelo menos uma propriedade para analisar.');
+                return;
+            }
+            
+            // Get selected properties data - USE COMPLETE OBJECT FROM allNewProperties
+            const selectedProperties = [];
+            rowCheckboxes.forEach(cb => {
+                const index = parseInt(cb.getAttribute('data-index'));
+                const property = allNewProperties[index];
+                
+                if (property) {
+                    // Push the COMPLETE object with ALL 38 fields from CSV
+                    selectedProperties.push(property);
+                }
+            });
+            
+            console.log('Selected properties with all fields:', selectedProperties);
+            
+            // Save selected properties for analysis
+            localStorage.setItem('selectedProperties', JSON.stringify(selectedProperties));
+            
+            // Redirect to analysis page
+            window.location.href = 'analysis.html';
         }
         
         function deleteSelectedProperties() {

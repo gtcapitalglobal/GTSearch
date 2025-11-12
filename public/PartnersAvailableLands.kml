@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Partners Available Lands</name>
+    <Style id="icon-1899-757575-labelson">
+      <IconStyle>
+        <color>ff757575</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+    </Style>
+    <Style id="icon-1899-757575-labelson-nodesc">
+      <IconStyle>
+        <color>ff757575</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Placemark>
+      <name>Property PA1 - 0.23 acres</name>
+      <description><![CDATA[09-10-24-4067-0240-0200<br>0.23 acres <br>$12K]]></description>
+      <styleUrl>#icon-1899-757575-labelson</styleUrl>
+      <Point>
+        <coordinates>
+          -81.899379,29.631901,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PA4 - 0.22 acres</name>
+      <styleUrl>#icon-1899-757575-labelson-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.838136,29.643946,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PNA01 - 1 acre</name>
+      <description><![CDATA[12-12-26-2730-0000-36-40<br>1 acre<br>$21.617]]></description>
+      <styleUrl>#icon-1899-757575-labelson</styleUrl>
+      <Point>
+        <coordinates>
+          -81.636231,29.474298,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PN1- 0.22 acres</name>
+      <description><![CDATA[16-10-24-4065-0030-0200<br>0.22 acres <br>10K]]></description>
+      <styleUrl>#icon-1899-757575-labelson</styleUrl>
+      <Point>
+        <coordinates>
+          -81.909362,29.626207,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PN2 - 0.23 acres</name>
+      <description><![CDATA[24-10-23-4074-0590-0220<br>0.23 acres <br>$6.5k]]></description>
+      <styleUrl>#icon-1899-757575-labelson</styleUrl>
+      <Point>
+        <coordinates>
+          -81.946629,29.614653,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PW1 - 0.23 acres</name>
+      <description><![CDATA[C22373016016100130<br>345 Summertime Ave, Lake Placid, FL 33852<br>0.23 acres<br> 10K]]></description>
+      <styleUrl>#icon-1899-757575-labelson</styleUrl>
+      <Point>
+        <coordinates>
+          -81.316392,27.253923,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PW2 - 0.22 acres</name>
+      <description><![CDATA[C22373001000600190<br>260 Deerwalk Ave, Lake Placid, FL 33852<br>0.22 acres 10K]]></description>
+      <styleUrl>#icon-1899-757575-labelson</styleUrl>
+      <Point>
+        <coordinates>
+          -81.321356,27.248581,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PW3 - 0.21 acres</name>
+      <styleUrl>#icon-1899-757575-labelson-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -82.581855,29.432779,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PW4 - 1 acres</name>
+      <styleUrl>#icon-1899-757575-labelson-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -82.542562,29.161476,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PB2 - 0.21 acres</name>
+      <description><![CDATA[0013-012-032<br>0.21 acre  <br>19.5k]]></description>
+      <styleUrl>#icon-1899-757575-labelson</styleUrl>
+      <Point>
+        <coordinates>
+          -81.97385,29.485189,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PB3 - 0.22 acres</name>
+      <description><![CDATA[0013-012-031<br>0.22 acres <br>19.5K]]></description>
+      <styleUrl>#icon-1899-757575-labelson</styleUrl>
+      <Point>
+        <coordinates>
+          -81.97385,29.485189,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PB5 - 0.22 acres</name>
+      <description><![CDATA[0013-014-025<br>0.22  <br>19.5K]]></description>
+      <styleUrl>#icon-1899-757575-labelson</styleUrl>
+      <Point>
+        <coordinates>
+          -81.975761,29.486459,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PB6 - 0.21 acres</name>
+      <description><![CDATA[0013-020-005<br>0.21 acres  <br>19.5K]]></description>
+      <styleUrl>#icon-1899-757575-labelson</styleUrl>
+      <Point>
+        <coordinates>
+          -81.975308,29.491662,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PF 01 - 0.22 acres</name>
+      <styleUrl>#icon-1899-757575-labelson-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.86622,29.66716,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PBF01 - 0.23 acres</name>
+      <styleUrl>#icon-1899-757575-labelson-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.598167,29.385276,0
+        </coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>

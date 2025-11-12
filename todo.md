@@ -32,6 +32,12 @@
 - [ ] Testar cada endpoint de API
 - [ ] Atualizar frontend para usar backend local (http://localhost:3000/api/*)
 
+### Git
+- [x] Inicializar repositório Git
+- [x] Fazer commit inicial
+- [ ] Conectar com GitHub
+- [ ] Push para repositório remoto
+
 ### Testes
 - [ ] Testar importação de CSV
 - [ ] Testar visualização no mapa
@@ -53,4 +59,76 @@
 3. Google Gemini API Key
 4. Perplexity API Key
 5. RapidAPI Key (para Zillow, Realtor, Realty Mole)
+
+
+
+
+## Nova Funcionalidade - Página de Configuração Moderna
+
+- [ ] Criar endpoint POST /api/config/save para salvar API keys
+- [ ] Criar endpoint GET /api/config/test para testar APIs
+- [ ] Criar nova página config.html com interface moderna
+- [ ] Adicionar formulário para cada API key
+- [ ] Adicionar botões de teste para cada API
+- [ ] Mostrar status verde/vermelho para cada API
+- [ ] Salvar API keys no arquivo .env do servidor
+
+
+
+
+## Melhorias UI
+- [x] Adicionar timestamp (hora) abaixo da versão no dashboard
+
+
+
+
+## Correções Página de Configuração
+- [x] Corrigir erro "process is not defined" no teste do Google Maps
+- [x] Corrigir erro "[object Object]" no teste do Gemini
+- [x] Melhorar mensagens de erro para mostrar detalhes
+
+
+
+
+## Atualização Gemini API
+- [x] Atualizar modelo do Gemini para gemini-1.5-flash ou gemini-1.5-pro
+- [x] Atualizar endpoint da API do Gemini para v1 (não v1beta)
+
+
+
+
+## Debug Gemini API
+- [x] Investigar quais modelos estão disponíveis na API v1
+- [x] Testar com modelo correto (gemini-2.5-flash)
+
+
+
+
+## Carregamento Automático de KML
+- [x] Copiar arquivos KML para o projeto (AvailableLands, SoldLands, BlockedPaused, PartnersAvailableLands)
+- [x] Atualizar dashboard para carregar KML automaticamente ao iniciar
+- [ ] Testar carregamento automático
+
+
+
+
+## Ajustes UI
+- [x] Remover seção "ANÁLISE" do dashboard
+
+
+
+
+## Reorganização do Layout da Página de Análise
+- [x] Remover abas "Informações" e "Research Links"
+- [x] Manter apenas 3 abas: Google Maps, Terreno + Mapa, Fotos
+- [x] Criar Seção 1: Informações da Propriedade (12 campos em 2 colunas)
+- [x] Criar Seção 2: Detalhes Adicionais (Parcel Number como subtítulo, 3 colunas)
+- [x] Criar Seção 3: Contact Information (apenas Owner Address)
+- [x] Criar Seção 4: Análise Geográfica e Ambiental (todos dados juntos)
+- [x] Criar Seção 5: Mudanças Temporais (mantida como estava)
+- [x] Renomear "Amount Due" para "Amount Due (BID Inicial)"
+- [x] Adicionar botões de copiar (📋) nos campos principais
+- [x] Atualizar JavaScript para popular todos os novos campos
+- [x] Remover seções antigas duplicadas
+- [x] Testar layout final
 

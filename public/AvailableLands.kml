@@ -1,0 +1,903 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Available Lands</name>
+    <Style id="icon-1899-000000-labelson">
+      <IconStyle>
+        <color>ff000000</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+    </Style>
+    <Style id="icon-1899-673AB7-labelson">
+      <IconStyle>
+        <color>ffb73a67</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+    </Style>
+    <Style id="poly-F9A825-2000-112-normal">
+      <LineStyle>
+        <color>ff25a8f9</color>
+        <width>2</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>7025a8f9</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+    </Style>
+    <Style id="poly-F9A825-2000-112-highlight">
+      <LineStyle>
+        <color>ff25a8f9</color>
+        <width>3</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>7025a8f9</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+    </Style>
+    <StyleMap id="poly-F9A825-2000-112">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#poly-F9A825-2000-112-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#poly-F9A825-2000-112-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="poly-F9A825-2000-77-normal">
+      <LineStyle>
+        <color>ff25a8f9</color>
+        <width>2</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>4d25a8f9</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+    </Style>
+    <Style id="poly-F9A825-2000-77-highlight">
+      <LineStyle>
+        <color>ff25a8f9</color>
+        <width>3</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>4d25a8f9</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+    </Style>
+    <StyleMap id="poly-F9A825-2000-77">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#poly-F9A825-2000-77-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#poly-F9A825-2000-77-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Placemark>
+      <name>Property 01 - 0.23 Acre - With Power! In Lake Placid, Highlands County FL</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v4EvzsLsDu2J0U5_lOFnAiXwI1YKiepq-hQ391KEm0IeuULNesLjEsRLytP5ivdBbW-Phtdyu349BKsseDRnOqJOBrdvPE9NuBxaLMepHbI3GwWxXoV6wvrlQSWSMZ5jbws26VEZD6O1ZuGyzfyqCJwh1jY8Rw1pIBHratM6TeeXgWjkQ50yUQexRyHTRsFF_Jm1zcFsY0V4Gxy0GNcZJP6cbxfZImT-cxq-f8sBU8aZL2dOEVJrrHwZsgfFsaUuKeuuwwQMGqjpqL6zZSAcpta6pAErCTdMWsrE6DkjXndngylZXliTT-SBMTrpDJ3JHhpnoB-zKwJ74ogYhfncPRUWLLKIKzGn8SstN-WOtVaXLMDLLX7Ht169qHiti8LjErofxLMVdFKVn75ifiuGTr5RkdbRtbMbJmqJ6RitUATqVwF_wvW3xUYJEFfybNCQQk8gM0H2wkolQpXkASFOrQOZtQPRKijg1g2TgxYipLcHLy0xkGRf8cVAYAxGNBBG-O88cXc4MXFFOk3fnT-1StWnifuVKWpjebMzcoToM8T6advjkU4htQ_bBygYq3SMO4tQuPMB-qD5y4eh3ACCLkb8menlYFfJd_4bO-Eugfv_Y_TppD9MGfK-3opWibS7UxkqDcia9Pzxwf8PS9B45Ali_gN6P6Dnc91yG3-mXOJE5f1rRXXPVPrOwf7oYVXbMavhI90AVr-ZEEtA2VEzhPkBZ11" height="200" width="auto" /><br><br>descrição: <br><br>https://www.gtlands.com/portfolio/1<br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+https://www.gtlands.com/portfolio/1</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v4EvzsLsDu2J0U5_lOFnAiXwI1YKiepq-hQ391KEm0IeuULNesLjEsRLytP5ivdBbW-Phtdyu349BKsseDRnOqJOBrdvPE9NuBxaLMepHbI3GwWxXoV6wvrlQSWSMZ5jbws26VEZD6O1ZuGyzfyqCJwh1jY8Rw1pIBHratM6TeeXgWjkQ50yUQexRyHTRsFF_Jm1zcFsY0V4Gxy0GNcZJP6cbxfZImT-cxq-f8sBU8aZL2dOEVJrrHwZsgfFsaUuKeuuwwQMGqjpqL6zZSAcpta6pAErCTdMWsrE6DkjXndngylZXliTT-SBMTrpDJ3JHhpnoB-zKwJ74ogYhfncPRUWLLKIKzGn8SstN-WOtVaXLMDLLX7Ht169qHiti8LjErofxLMVdFKVn75ifiuGTr5RkdbRtbMbJmqJ6RitUATqVwF_wvW3xUYJEFfybNCQQk8gM0H2wkolQpXkASFOrQOZtQPRKijg1g2TgxYipLcHLy0xkGRf8cVAYAxGNBBG-O88cXc4MXFFOk3fnT-1StWnifuVKWpjebMzcoToM8T6advjkU4htQ_bBygYq3SMO4tQuPMB-qD5y4eh3ACCLkb8menlYFfJd_4bO-Eugfv_Y_TppD9MGfK-3opWibS7UxkqDcia9Pzxwf8PS9B45Ali_gN6P6Dnc91yG3-mXOJE5f1rRXXPVPrOwf7oYVXbMavhI90AVr-ZEEtA2VEzhPkBZ11</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.408733,27.242201,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 01</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v5Tu-lJAWyX6QxRtdxxn6Ftn_RpYhXtSsnq31G7zwRWGes_ETurB5MBSmEtIP_RD-Qjy9voGHSzTCbUPWGdWeugoIo0ciD5Od_EFjzIuAJmNtuHJbkmvkMruYs2HzBm01yyWc2npvJjpkBB9Lzic03q53ykSFMWlaocuU_bBS5ubElzxnwHXuhqkU8TkxR1Qc9Kibjq_JKXCAiu4flj26S-_FILUyMZ1Fhf2UE2pzim93h7ciGZXO6NxZTt_NGyCg76qpTiR5VU29gj_Fzg2nVtOYLrWIwPbf2m9v1UQiXMD7vg49o1Iu_e6p72CoKj9SQIPwzOFfASVhxPG5nZfW4uSdN6mZESE7529qMWr1DeeKK76RnwqW79MF62--iN2eUpWhVVz7QrOYK71SF4f2jGobpGfvS6DMgAWWokA2i6r9ZEYRTAfVS0AXg_ScAQbvUf12JRCzbcp5rNTAQMU_WA4JBgiQ333T3u-cujH4ul61pKiGG_FlUvedRkgqvN8qVzUlj_Zuo4-KSL5QkVt6SpM81jDU4O3VoOkSZGKshvhEwweZalL52iYSpyC5GPnuTRaQGfKPZnYq7f3lC8NIknoFH3qUtKKPp1Bs24755jbfAKSKrDH9wGOlcxtDfLNohC_gwN7J06-oUM_Sso6F5fTT6hxSoUwP48Bc95FUw_QVikv7ZHC8xs21vwm8ETHHw_VUBHhQ72SEWz5rAHK6kXTYidgQ" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#poly-F9A825-2000-112</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v5Tu-lJAWyX6QxRtdxxn6Ftn_RpYhXtSsnq31G7zwRWGes_ETurB5MBSmEtIP_RD-Qjy9voGHSzTCbUPWGdWeugoIo0ciD5Od_EFjzIuAJmNtuHJbkmvkMruYs2HzBm01yyWc2npvJjpkBB9Lzic03q53ykSFMWlaocuU_bBS5ubElzxnwHXuhqkU8TkxR1Qc9Kibjq_JKXCAiu4flj26S-_FILUyMZ1Fhf2UE2pzim93h7ciGZXO6NxZTt_NGyCg76qpTiR5VU29gj_Fzg2nVtOYLrWIwPbf2m9v1UQiXMD7vg49o1Iu_e6p72CoKj9SQIPwzOFfASVhxPG5nZfW4uSdN6mZESE7529qMWr1DeeKK76RnwqW79MF62--iN2eUpWhVVz7QrOYK71SF4f2jGobpGfvS6DMgAWWokA2i6r9ZEYRTAfVS0AXg_ScAQbvUf12JRCzbcp5rNTAQMU_WA4JBgiQ333T3u-cujH4ul61pKiGG_FlUvedRkgqvN8qVzUlj_Zuo4-KSL5QkVt6SpM81jDU4O3VoOkSZGKshvhEwweZalL52iYSpyC5GPnuTRaQGfKPZnYq7f3lC8NIknoFH3qUtKKPp1Bs24755jbfAKSKrDH9wGOlcxtDfLNohC_gwN7J06-oUM_Sso6F5fTT6hxSoUwP48Bc95FUw_QVikv7ZHC8xs21vwm8ETHHw_VUBHhQ72SEWz5rAHK6kXTYidgQ</value>
+        </Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              -81.40886,27.242375,0
+              -81.408861,27.24203,0
+              -81.408615,27.242028,0
+              -81.408615,27.242371,0
+              -81.40886,27.242375,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Property 10 - 0.23 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v4mOleYN3RTi1eoEmq7nMUeZM--6B_H7SwDWe0uslRkJhAMxMnkZ50fX5_e5Sy7iWqy0r8DafqejdJ9b0HetATiJVGTzy4dtjuUGK4Uaznzrci3t9n6kAJ3vXf2zJmDVF4RpZdEhLafOjL7zSG8hInmkEL_7pCnMQKwsmqz-gqXXv6PottkiSig30OQZaVRQAWU9RoEsuufQdvDWIs7Fc6Z_ge62YZ8IlFSok_E0Dtpm5vO5vUNQD-NVndZplhyZtyZZfX_-dTZhcFNOdkt5hzy8npxBkN6hSib4nVJzKayltqRga0hO-a6uMWE-SR17CevCDxI5-oWAoWAx4f-mA8V-0ZstdW6BtEUwrVqomKIJKZ-2VBF6s5rIsOxTHdCPM-3xqzhdNUadelume3K-dwoaYtq3ADE0Asn9a4QqpMQM-Ui67xKqhD6GcPfuO2JdeshKkMSt2r6wv9xzzeznhkxj6Mgmllj0VlFPEpsc3nkM2P6W9HvvtTa90dISAFhK2yv5gEu7WpEk7u8cbMtaaExho1QuMWcE7b1S2Lu7Y8QCa93NE0RC9UKCHqM7sRgSijIk6b9Pyh6z_RZWi95P4lIn3klMtaxYerLJG3OaKXnxZqTBN66DW5UrrmowpOHX-Lqw6dgZ5WJGeZ8OiyX1Hiexgt0BkKnrguTiPoccjD9kw71kZdPJ598PmDjOEtOwGFHYhmoTgfJ0w7K2kXVCPlpo_zcMA" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v4mOleYN3RTi1eoEmq7nMUeZM--6B_H7SwDWe0uslRkJhAMxMnkZ50fX5_e5Sy7iWqy0r8DafqejdJ9b0HetATiJVGTzy4dtjuUGK4Uaznzrci3t9n6kAJ3vXf2zJmDVF4RpZdEhLafOjL7zSG8hInmkEL_7pCnMQKwsmqz-gqXXv6PottkiSig30OQZaVRQAWU9RoEsuufQdvDWIs7Fc6Z_ge62YZ8IlFSok_E0Dtpm5vO5vUNQD-NVndZplhyZtyZZfX_-dTZhcFNOdkt5hzy8npxBkN6hSib4nVJzKayltqRga0hO-a6uMWE-SR17CevCDxI5-oWAoWAx4f-mA8V-0ZstdW6BtEUwrVqomKIJKZ-2VBF6s5rIsOxTHdCPM-3xqzhdNUadelume3K-dwoaYtq3ADE0Asn9a4QqpMQM-Ui67xKqhD6GcPfuO2JdeshKkMSt2r6wv9xzzeznhkxj6Mgmllj0VlFPEpsc3nkM2P6W9HvvtTa90dISAFhK2yv5gEu7WpEk7u8cbMtaaExho1QuMWcE7b1S2Lu7Y8QCa93NE0RC9UKCHqM7sRgSijIk6b9Pyh6z_RZWi95P4lIn3klMtaxYerLJG3OaKXnxZqTBN66DW5UrrmowpOHX-Lqw6dgZ5WJGeZ8OiyX1Hiexgt0BkKnrguTiPoccjD9kw71kZdPJ598PmDjOEtOwGFHYhmoTgfJ0w7K2kXVCPlpo_zcMA</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.317423,27.254749,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 10</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v5NVrxZBbukfdWNBwa0miKKyVkCU0L9unKjcyIneDNhWH-5jYR6CyepQ7nkgcBKscqAdVuIf74ES16ai-HdJ-73vHy7vlnZ4j3kMn5qosiVn6ImivwNvxFfl9CZJANfZLVIv16YoLIsbM77vhDz8QuF7kaYoe7_NnfhZQ8BG_2GrLQbpBbay7R_ophboX5WI4iawX-Ud0jTNW5SNDxHJOqNlEEqkC481WoPgjs62PAW1FsNFalvnEQhj8pzSWmzpIHPQ4jJiyDV77gCpWQ0VKxR6lIeu_uWvF6U4idwOBNYGeS-Lk-8AxtnKJNeIvwBgOVB1FpAO82YktAc5Nm_z8N-C34uuHgNiCNs-98kchkiarGU4zIPHwMcFLHam796sbbVv1NjZ3qf4H0ORODFYIpNFEKM98LBNGznLemgUk1egbMLkGA81-21hBPFUd8vC4P572WjbzfBLtxv0Xf0rVvYGXU5nGCdu0-M3XF6y5fctHpHhDLfruFBa_n1Wq7mWZ625sXXfR3MHgLea5fQ-Kt3XXByd21BZDEPTc6NKkk2vxi9_jqgYDaBMKvanAEBdEgSCkMfm-XRP57gckz0nvfb-zFwzTkxP05kY4E8_pJvogLEa3BqI17u3XZovUKsrpBJeWgy4PIUzN73xUSTEH6pvG898511DL4OacRMUC_M8swdehq5H_eTzysV5hpChWlvB4a3SHVqUQqSYnnaWMoZXWe1qQ" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#poly-F9A825-2000-77</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v5NVrxZBbukfdWNBwa0miKKyVkCU0L9unKjcyIneDNhWH-5jYR6CyepQ7nkgcBKscqAdVuIf74ES16ai-HdJ-73vHy7vlnZ4j3kMn5qosiVn6ImivwNvxFfl9CZJANfZLVIv16YoLIsbM77vhDz8QuF7kaYoe7_NnfhZQ8BG_2GrLQbpBbay7R_ophboX5WI4iawX-Ud0jTNW5SNDxHJOqNlEEqkC481WoPgjs62PAW1FsNFalvnEQhj8pzSWmzpIHPQ4jJiyDV77gCpWQ0VKxR6lIeu_uWvF6U4idwOBNYGeS-Lk-8AxtnKJNeIvwBgOVB1FpAO82YktAc5Nm_z8N-C34uuHgNiCNs-98kchkiarGU4zIPHwMcFLHam796sbbVv1NjZ3qf4H0ORODFYIpNFEKM98LBNGznLemgUk1egbMLkGA81-21hBPFUd8vC4P572WjbzfBLtxv0Xf0rVvYGXU5nGCdu0-M3XF6y5fctHpHhDLfruFBa_n1Wq7mWZ625sXXfR3MHgLea5fQ-Kt3XXByd21BZDEPTc6NKkk2vxi9_jqgYDaBMKvanAEBdEgSCkMfm-XRP57gckz0nvfb-zFwzTkxP05kY4E8_pJvogLEa3BqI17u3XZovUKsrpBJeWgy4PIUzN73xUSTEH6pvG898511DL4OacRMUC_M8swdehq5H_eTzysV5hpChWlvB4a3SHVqUQqSYnnaWMoZXWe1qQ</value>
+        </Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              -81.317551,27.25492,0
+              -81.317552,27.254577,0
+              -81.317302,27.254577,0
+              -81.317303,27.254922,0
+              -81.317551,27.25492,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Property 19 - 0.27 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v7srYMS7OBljA3nWLS1Ze3Thl60Kzl3CwcHc5ePAmng5VN8Yz6TxA9Xxrg_2APtSxUtzR8NssKaL9_d8pDSh7u_ZpcDIK89Uyzx0J-OqkmiEyTf1TkdW-ZbczXdE2qIkJkONqBhHVdYIuK7nD3P7wdHDw1Ugwi_DQnLbO95adXHMXGwT_C_d6zWsYCBDWNFjXKNzKmc5jDW2yFAnawKOglR-hIl0xRzZ45u98mV-rlH5URyezXmesEK4hyulbnOmSvsiRudVCByLUEvjYZ-smxIaUr34ceDuY88JQklKGVTfaP_el1Ry6LpDxtiFX5W7n1l-zPPQIxN74IvkMQ820v0fE-G13lHGnt5tpliNHYaYhxDJ_fNVlxc0CMe0b8cNMOedSC3eSpcnBg95d_LkkNm_eQXrk2JW6teCxXunMRxkvRC0Ksq6QidKYUlvdKAWCGIFY1ZkZOWmoxRo7lavZP4TR9xRAsysyjZj7pssg1hAlwfXkR8wKdhXNz2q1ncM3Yi6L3pqSYZGJCj3gEHwOkobCpm4ytuZxcETttbKzTnNcEh8ccbv9eTJOD5gXpg687WQZdtajMQq4UHw5zbEUUxSl7y0fpnGIWvc0fZ3bB0a6Nj7W7fqGc-nkbppOmACH8eE0Fl8N9CeSYkDiFNwsA2ppf1rlbHXIrLVBxmjXJ7lAD_FYnNWzqjH5IfQdmuVGSikuiZ8ViJGk5l5wf3zIb4HHSo" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v7srYMS7OBljA3nWLS1Ze3Thl60Kzl3CwcHc5ePAmng5VN8Yz6TxA9Xxrg_2APtSxUtzR8NssKaL9_d8pDSh7u_ZpcDIK89Uyzx0J-OqkmiEyTf1TkdW-ZbczXdE2qIkJkONqBhHVdYIuK7nD3P7wdHDw1Ugwi_DQnLbO95adXHMXGwT_C_d6zWsYCBDWNFjXKNzKmc5jDW2yFAnawKOglR-hIl0xRzZ45u98mV-rlH5URyezXmesEK4hyulbnOmSvsiRudVCByLUEvjYZ-smxIaUr34ceDuY88JQklKGVTfaP_el1Ry6LpDxtiFX5W7n1l-zPPQIxN74IvkMQ820v0fE-G13lHGnt5tpliNHYaYhxDJ_fNVlxc0CMe0b8cNMOedSC3eSpcnBg95d_LkkNm_eQXrk2JW6teCxXunMRxkvRC0Ksq6QidKYUlvdKAWCGIFY1ZkZOWmoxRo7lavZP4TR9xRAsysyjZj7pssg1hAlwfXkR8wKdhXNz2q1ncM3Yi6L3pqSYZGJCj3gEHwOkobCpm4ytuZxcETttbKzTnNcEh8ccbv9eTJOD5gXpg687WQZdtajMQq4UHw5zbEUUxSl7y0fpnGIWvc0fZ3bB0a6Nj7W7fqGc-nkbppOmACH8eE0Fl8N9CeSYkDiFNwsA2ppf1rlbHXIrLVBxmjXJ7lAD_FYnNWzqjH5IfQdmuVGSikuiZ8ViJGk5l5wf3zIb4HHSo</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.584394,29.735735,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 19</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v46mMxOBR-qDKNtUPhHU_JMNpVo9dw8ZKHRHq9bY7FZ4IIFyaXZlagfEZc8mJpSJKPsUTNGUpLdwc5kUh_Y13e3CyO7k0HlyjJsKEllAYzQNtIK-PPAD9wGWw8BRy2u2o1-g-huLMYs_FpakaZjJaeLW1nxd3anpOU4ZXLbjZJ4ixP5ta_t0X9SYjeLblPvOkP7yVNOMyYTiE95tRmD1tQb-WMWzNn2NFw86JPus2CcddT-yQfL3o9pgN57dgd1kejhDDT1KOeNRNuayek3jLizWfd90TbzUgz2Zq74m4PCao7-10gcL4ZWvoRUSVJFATjKxsHKisFvdqOCkSOCK0_A36tZQHvlTOHJKBuZFwN-V4G38j4VjBggQGgMRqZbKExPlyt4AsN2bj_YKQlTxEFGNFXK6T7ykR_Dqg8SZMJ_ZL5p_CABDJDx084CRaxIjbA0wnWtBWstKjstO2dj1mhzMaVXtNDcLypkRBnp0pmTmnqGJND5qT-NriXXS81tmCYfDg6TPco-e0EvDSUeC3Qm2RNUpsAYjTtbNYN3XKIHhcaQ6FYCahG1oWaX8cLW3CU4q-lYcLsl49xSjELlFRDibZXvFFGB9YDC8h26xKfptbLCvnyhyHB3WYpvRntBHmaKeMgGzpZ7cdFBl7F-4de1Qbbez0SVG8whqwcfO8mUX95QILw6FxMRe2fbVEWIkqhpqdEi6156Vp1V5SjzO0bfPL_-4g" height="200" width="auto" /><br><br>descrição: <br><br><br><br><br><br><br>Latitude: <br>Longitude: <br>Coordinates: <br><br><img src="https://lh3.googleusercontent.com/umsh/AN6v0v4gEq8AFdyebYOqQ7uRUEpsKjgEviphcFIEfNnuPLEYt9vzHGm5Vkj-AW5H8M4xIzrQtnGdmGWtHkAJXlEi1pOObSaVxUhZOHy8c_IxUlD1UPWjEXT-BRXyoyLtTF5B3fW5cRW9YT7PI8yHbqSclnkxrfe7aAMUCtB17hF3QsF9lDegPLL4zScPFpVybqwnt2dKo-YJNGybNSVtpyvBU_pVpRJaeK4aLG_8K6fWhlOHYascfnl73se-6d24tbDVyfhRkrZEA0TaNXXIAJAdoAFc23tmVZeG24sdrdiaqEKbphKa6njvdVJtS18T5Aa2yVMW0SsGSfaNjke4mHcHkDcmdLIhL9r2HwenE3PmjPWtnGesKLRH222red_0zt_5Ns_ggFFobzEow3Q2rv06yef349xHobwKJ1t5mNbE9kD2cmZTFTsEJm5tuQMWvCZ40oxx0QHW1CzNV_UcCmNhcltfkkui8Xo82Wa_pb_eNArjSQIeZFh4BYJ1RbfQ-E9AYLUp3tcNzg0Y0e890z2F-t0O1vbetTdTH8GrCYCIjinIEdauZ_zK_1Uba-harMoKuPjNDexYdun-hXbeaLOsqD2s402xX_rWoTK3069rRkfOl_a8HF-__VEyKB1MWF0eqmni6isqXnvzzV2LFzPQx6rbZm2rPwgZkRcaTJ1t9f2HU5HWW_tPTEX-kGwlfuPUuEOoAiUd65aoWUPlxkpS1PncM_LN" height="200" width="auto" /><br><br><img src="https://lh3.googleusercontent.com/umsh/AN6v0v6kqakWAR41ctz0VEmfcpF5Q7zF1SLjqLO-C20ZuwAve6z7HTcmAMHDsURLpq5IQaHObCVz3GX8nvlHCysOGC9-f0EPc7flpbPhCH5NPwNxN2ruFXnvbztGNu_DLeiLxGeR9r4YVaEeJSQbKCPf8WU5CWY_JQmqiQ9EBsC7J06aVSS5Rngc0VOFUTtCb5ZjP9afzsLMgmCCthTCSF_rExcGt9dvM5GK4zxw6sKYryiZEotC5MBtQLFqzRJP7ziV2Tr8pLaTI11bdyK5L3HOeDaCSS3dCkmcgzI6VneazrHSsF-4FSCTZtKK1DDd9s024cwlR_UrS0yEgK3wSnmTHAX_LNZJxvDt5f9WseY_XWQZMj2ZfCuXqu4P-5eltlxbCla4DrwY09BLZbLNxjMrrrGqO7H42y-nlgL7jAneVtuOhFKUu33lBDWKViYpp_MWf5-Jdua2YK8HaYgJwqmn-mNNG9_ZSA96iTweoWfSvIVawCUqODHucW5VounqRU1hXmnPFb771oHZqtYUWT1rA80i500oYhOA4017ICPTBf5fg-8iKYLgG9ftGcEQG-E9DnqmRR0NVkDogQiiFgWhZ3iRIXYbNbrfqKMfpqzZzI898SFU_BDOx62x-vzuq_6sK5VLp38XOYyn-aZCqX8OysPyQIyH5tCB92FPIq3stSndV0iNdNQIDnRF4bB7Rp2eyEJ5SL6ECF6jSumdAxbZNVkqJ6wYlw" height="200" width="auto" />]]></description>
+      <styleUrl>#poly-F9A825-2000-77</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+
+
+
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v46mMxOBR-qDKNtUPhHU_JMNpVo9dw8ZKHRHq9bY7FZ4IIFyaXZlagfEZc8mJpSJKPsUTNGUpLdwc5kUh_Y13e3CyO7k0HlyjJsKEllAYzQNtIK-PPAD9wGWw8BRy2u2o1-g-huLMYs_FpakaZjJaeLW1nxd3anpOU4ZXLbjZJ4ixP5ta_t0X9SYjeLblPvOkP7yVNOMyYTiE95tRmD1tQb-WMWzNn2NFw86JPus2CcddT-yQfL3o9pgN57dgd1kejhDDT1KOeNRNuayek3jLizWfd90TbzUgz2Zq74m4PCao7-10gcL4ZWvoRUSVJFATjKxsHKisFvdqOCkSOCK0_A36tZQHvlTOHJKBuZFwN-V4G38j4VjBggQGgMRqZbKExPlyt4AsN2bj_YKQlTxEFGNFXK6T7ykR_Dqg8SZMJ_ZL5p_CABDJDx084CRaxIjbA0wnWtBWstKjstO2dj1mhzMaVXtNDcLypkRBnp0pmTmnqGJND5qT-NriXXS81tmCYfDg6TPco-e0EvDSUeC3Qm2RNUpsAYjTtbNYN3XKIHhcaQ6FYCahG1oWaX8cLW3CU4q-lYcLsl49xSjELlFRDibZXvFFGB9YDC8h26xKfptbLCvnyhyHB3WYpvRntBHmaKeMgGzpZ7cdFBl7F-4de1Qbbez0SVG8whqwcfO8mUX95QILw6FxMRe2fbVEWIkqhpqdEi6156Vp1V5SjzO0bfPL_-4g https://lh3.googleusercontent.com/umsh/AN6v0v4gEq8AFdyebYOqQ7uRUEpsKjgEviphcFIEfNnuPLEYt9vzHGm5Vkj-AW5H8M4xIzrQtnGdmGWtHkAJXlEi1pOObSaVxUhZOHy8c_IxUlD1UPWjEXT-BRXyoyLtTF5B3fW5cRW9YT7PI8yHbqSclnkxrfe7aAMUCtB17hF3QsF9lDegPLL4zScPFpVybqwnt2dKo-YJNGybNSVtpyvBU_pVpRJaeK4aLG_8K6fWhlOHYascfnl73se-6d24tbDVyfhRkrZEA0TaNXXIAJAdoAFc23tmVZeG24sdrdiaqEKbphKa6njvdVJtS18T5Aa2yVMW0SsGSfaNjke4mHcHkDcmdLIhL9r2HwenE3PmjPWtnGesKLRH222red_0zt_5Ns_ggFFobzEow3Q2rv06yef349xHobwKJ1t5mNbE9kD2cmZTFTsEJm5tuQMWvCZ40oxx0QHW1CzNV_UcCmNhcltfkkui8Xo82Wa_pb_eNArjSQIeZFh4BYJ1RbfQ-E9AYLUp3tcNzg0Y0e890z2F-t0O1vbetTdTH8GrCYCIjinIEdauZ_zK_1Uba-harMoKuPjNDexYdun-hXbeaLOsqD2s402xX_rWoTK3069rRkfOl_a8HF-__VEyKB1MWF0eqmni6isqXnvzzV2LFzPQx6rbZm2rPwgZkRcaTJ1t9f2HU5HWW_tPTEX-kGwlfuPUuEOoAiUd65aoWUPlxkpS1PncM_LN https://lh3.googleusercontent.com/umsh/AN6v0v6kqakWAR41ctz0VEmfcpF5Q7zF1SLjqLO-C20ZuwAve6z7HTcmAMHDsURLpq5IQaHObCVz3GX8nvlHCysOGC9-f0EPc7flpbPhCH5NPwNxN2ruFXnvbztGNu_DLeiLxGeR9r4YVaEeJSQbKCPf8WU5CWY_JQmqiQ9EBsC7J06aVSS5Rngc0VOFUTtCb5ZjP9afzsLMgmCCthTCSF_rExcGt9dvM5GK4zxw6sKYryiZEotC5MBtQLFqzRJP7ziV2Tr8pLaTI11bdyK5L3HOeDaCSS3dCkmcgzI6VneazrHSsF-4FSCTZtKK1DDd9s024cwlR_UrS0yEgK3wSnmTHAX_LNZJxvDt5f9WseY_XWQZMj2ZfCuXqu4P-5eltlxbCla4DrwY09BLZbLNxjMrrrGqO7H42y-nlgL7jAneVtuOhFKUu33lBDWKViYpp_MWf5-Jdua2YK8HaYgJwqmn-mNNG9_ZSA96iTweoWfSvIVawCUqODHucW5VounqRU1hXmnPFb771oHZqtYUWT1rA80i500oYhOA4017ICPTBf5fg-8iKYLgG9ftGcEQG-E9DnqmRR0NVkDogQiiFgWhZ3iRIXYbNbrfqKMfpqzZzI898SFU_BDOx62x-vzuq_6sK5VLp38XOYyn-aZCqX8OysPyQIyH5tCB92FPIq3stSndV0iNdNQIDnRF4bB7Rp2eyEJ5SL6ECF6jSumdAxbZNVkqJ6wYlw</value>
+        </Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              -81.584585,29.735942,0
+              -81.584583,29.735504,0
+              -81.584341,29.735505,0
+              -81.584347,29.735941,0
+              -81.584585,29.735942,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Property 21- 0.27 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v6y6MFx3bJS_nPY2pVxit2YV1qOkJLjoZ4ALz-d48VHBwvdaL81oPzATYsqayyIJmW49HKFH2fLalPfUoI4ZJWKgpzkcNTecyNeX-w5_nQEMfLMwGCT1ktQgFh-X7TSnlefmikZxKMnYQ3vbdGtnvwZxbffNwTDUPnJQ6YDUSN4YthFi6Ltlh8PEpTpGzlqXEAhDkIZuwCfv0dLTWMjZ0Ep_mqcIQdL9CasKftFppRLG_K_Ly7CBet5MwzV4E7QAEcjAsEXykQApqpi6maNZxFvOAY_MBtP1oBlXcYEp0Hdaccm_6XU8VslwtHdXf0zlrowatCiOf5vuj7lDtw_59DCJ0E2ho9hlsZupE-Q67tlHffFSR-nhp-jZfy0Fdtu-95oRBhY1eMZbRvn9gIdXdsObjklLBOgia1qaGV_ucj1-QWxHgFtJwdfhhofTTjxGQu-U-pq9m1s5UmcxgVzlqpKy8eGmoqgnRj0X1kGdz2-PM6VSUZMn2sxx4O06SxEvhS0dBcX_HKAAla9neimk1GckL_9L2Ye2JU0z1usjgjVbuT7_GAAst_zS6ycNaZfFfxcnHyA13qQv4evAQk8B7aeKtl5qEx0o_UU4n86615PIMgxQ1VgE_6sOUYEbhlxZBL93QNaDKPrntzT-Y3SrFrDag8HR67KlQ54ZJdTZ2KZtPE079QuyzJhCue0ZhiMipNn1cZ7Pxjh_31H_m1qDFV3aBraMg" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v6y6MFx3bJS_nPY2pVxit2YV1qOkJLjoZ4ALz-d48VHBwvdaL81oPzATYsqayyIJmW49HKFH2fLalPfUoI4ZJWKgpzkcNTecyNeX-w5_nQEMfLMwGCT1ktQgFh-X7TSnlefmikZxKMnYQ3vbdGtnvwZxbffNwTDUPnJQ6YDUSN4YthFi6Ltlh8PEpTpGzlqXEAhDkIZuwCfv0dLTWMjZ0Ep_mqcIQdL9CasKftFppRLG_K_Ly7CBet5MwzV4E7QAEcjAsEXykQApqpi6maNZxFvOAY_MBtP1oBlXcYEp0Hdaccm_6XU8VslwtHdXf0zlrowatCiOf5vuj7lDtw_59DCJ0E2ho9hlsZupE-Q67tlHffFSR-nhp-jZfy0Fdtu-95oRBhY1eMZbRvn9gIdXdsObjklLBOgia1qaGV_ucj1-QWxHgFtJwdfhhofTTjxGQu-U-pq9m1s5UmcxgVzlqpKy8eGmoqgnRj0X1kGdz2-PM6VSUZMn2sxx4O06SxEvhS0dBcX_HKAAla9neimk1GckL_9L2Ye2JU0z1usjgjVbuT7_GAAst_zS6ycNaZfFfxcnHyA13qQv4evAQk8B7aeKtl5qEx0o_UU4n86615PIMgxQ1VgE_6sOUYEbhlxZBL93QNaDKPrntzT-Y3SrFrDag8HR67KlQ54ZJdTZ2KZtPE079QuyzJhCue0ZhiMipNn1cZ7Pxjh_31H_m1qDFV3aBraMg</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.584159,29.736169,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 21</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v72HFsLeK1m_ZET6o6mEM-W9Q2lL1AAeFQ9w419u7AK47BcTIwTN_aqlnq0Ci_EWLzHFiTIF_GH2Y-Eruy7bdv_Yntnigp7UA_N0yvdGs2oWI7a1Jakt3fbbORDnAAYMv-Rlt7gX1NsvU55GRFmNh0wmHxYVqVGxnCj9YqxDBtYcDLMSJyL1jgBh9k4RA-J-H6JxE99KsAv5ZW79Cvm6hJbL9yjwv8WsrpHejvq655bdTQrJdteqAKgZh7pwB_ZmrfYaF-k43aQY4IxtJJySwvFp0Dlc_-D3MCGQzjHJYFw7r6zZjJZ_PoAsIDieuMspQGO1ZRkjr-F-wVGW7oU7WD558fgmkhnuFLbkah6LOl1IOIPRSsLU4xUfFbr6F63gaUn3PSgilux8pOf2yW4f7f9FrGJ4gOtI2S7tQmB0a6gBWXQBrsA10hk0NsGI0tWo8sTvulNNrZqAwVIdKnZg8aR9kPs6CnG1joHni3KaHN5-ZTwKHsZg2b21EvDIZ5z7OTD4ylwoHvDH5uM3qblwoj78Lfb1_EQaNWjeWyXVdvhjdOqXrg6qD104RUSij5BiNtjc9848H0pFs2us-7tsi2g8e6VpS-8xQXqsNfdlaQ_-ZHdiq-XnfPHlA9CEpSi6peNUE4RtlUGqPm_y6NIci_-UAOjKAMBwnb0z6XSCleO_zjv1lpREUzUl1nFbHEKKwVBW7qFSBLUkyLWHPcAzTFg2zan2A" height="200" width="auto" /><br><br>descrição: <br><br><br><br><br><br><br>Latitude: <br>Longitude: <br>Coordinates: <br><br><img src="https://lh3.googleusercontent.com/umsh/AN6v0v44z2G9Fv9NrGxQ038oMbd6zZoDCtwSFKYrDOE7a6aNjtzjhBlFOIFc0yhbICS2GpFi_u1GOY5408gnP73nQaBdSKS0g9ba9O2pvmeQGzCSDjL_M959RxBpvLehIID5iO6aKdwu-tLYE8p38caaUDIFv12XetkYB-vMa4wcmP0bXA-pPZxrZlcHtC4yLilz_-dOoKMAv5iuOwi4KeM6NyP0nhHPilmy5iZt3eIGY5qXoSfk7MuS1-6TAmWU66Hr6Ja18XEmanO1w0aiYIr3yiuhNZWhytCpPq-j_w4AIXsBt71Sgz_YqoQ2dIlCAGpl2_n85gIT_D0QfvdPqLBaFRRP6umxAcOqIFv4vlGabWIK_L697-MWeEntxZ3VBN2mgV0aLmiJRQnf60PYspbYtI3LEK7vL8v7n-mXh-7uOwbmA4PkzsRiHCBmjSK89laaXFF1QJVdSnDDELYphwKrn1Q1iFFRwTv0s_U6xMCXKCzz4bFAnZA42AIbjCrNO2npCw3nRvA-qzB3Y5vfSW9GxnhP2gAmbj48f3WFDiAxPRRlcRyi4ilX9YJB7uLYV_Zq7rQVVVFfy_inrdx-4bAB9P2RW115ev8fQgJ8tSw1DWdJQtIRIQXEHUBJo6aBehoJyxGxPyqQ_5Gt9WDocpsWGsUDqiEdX7hc6JubDPl0etF_SbYQXyhK3KV1qzESEGQVqKfrACgpyVPQFtAS9RU-49zTXcIJcQ" height="200" width="auto" /><br><br><img src="https://lh3.googleusercontent.com/umsh/AN6v0v6CE_PSd-SsbiJ5XaZKXermA0evf-ZtPOle-CIwgzcD7LhrAYmCEsv2fWx0MPRqmXQeGBCZa6MXQyK-15mBIrqhj1TZ-rFkYFM9MGepnfNCMnvwg5tkKUEBInvN1_ppu7ScKi7M7dmXkZCqhDBXk8E5wASDO_49CVvuXBxO092PbwqK2hRc7RK8FUdKMWeAkvZ-f7cpD90Gu8Fjw1J4n8zcwEcqZI6u3uFXUJzBcnPHVJDCeQuyT1UQm_mJ_SwsTIr29QTFWRnMtV8obzJWXiy74W1mqifWQOKALrf_Pa2jkZZ7B_-n10ZkDc5Eet5Ztat6u0zLn6ItH7cEB77As_-B_sEMUDmLJU_MR49Ixv83VXIIy3QBQI2f5anzuDCiwVBDngb-MxC1wZ2K4aolxxiH85p7D5kb2IfEPkuQORaZkwIGR2_6dD1BiQopSZqib6MdAuf-YNDBGHTZW2Fr-5XmCkPutgfhgwu3AERhLLxo7w2arxibTeUYnT57MOayWUzHYsRdQCf94Aj0a1tB7-XtIP8Z6Yz36Hs_jMKUpfhthFUZ8-xubna-FRPnh8efKdLwV6UQYRcNhUXSTgnbpUas0dNhu-qyCqekWog7UTr3b4GOlh0qqr5ftFlWo_8Oy8ZmcM_3K0rve4FPrp00O3-sO1ZwNWfhDqZxhuD1Abq-jHEGe2gcNO6ds7Dk9_UnBhglVBkW6RqdeqPLRQu3zZtCgLOong" height="200" width="auto" />]]></description>
+      <styleUrl>#poly-F9A825-2000-77</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+
+
+
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v72HFsLeK1m_ZET6o6mEM-W9Q2lL1AAeFQ9w419u7AK47BcTIwTN_aqlnq0Ci_EWLzHFiTIF_GH2Y-Eruy7bdv_Yntnigp7UA_N0yvdGs2oWI7a1Jakt3fbbORDnAAYMv-Rlt7gX1NsvU55GRFmNh0wmHxYVqVGxnCj9YqxDBtYcDLMSJyL1jgBh9k4RA-J-H6JxE99KsAv5ZW79Cvm6hJbL9yjwv8WsrpHejvq655bdTQrJdteqAKgZh7pwB_ZmrfYaF-k43aQY4IxtJJySwvFp0Dlc_-D3MCGQzjHJYFw7r6zZjJZ_PoAsIDieuMspQGO1ZRkjr-F-wVGW7oU7WD558fgmkhnuFLbkah6LOl1IOIPRSsLU4xUfFbr6F63gaUn3PSgilux8pOf2yW4f7f9FrGJ4gOtI2S7tQmB0a6gBWXQBrsA10hk0NsGI0tWo8sTvulNNrZqAwVIdKnZg8aR9kPs6CnG1joHni3KaHN5-ZTwKHsZg2b21EvDIZ5z7OTD4ylwoHvDH5uM3qblwoj78Lfb1_EQaNWjeWyXVdvhjdOqXrg6qD104RUSij5BiNtjc9848H0pFs2us-7tsi2g8e6VpS-8xQXqsNfdlaQ_-ZHdiq-XnfPHlA9CEpSi6peNUE4RtlUGqPm_y6NIci_-UAOjKAMBwnb0z6XSCleO_zjv1lpREUzUl1nFbHEKKwVBW7qFSBLUkyLWHPcAzTFg2zan2A https://lh3.googleusercontent.com/umsh/AN6v0v44z2G9Fv9NrGxQ038oMbd6zZoDCtwSFKYrDOE7a6aNjtzjhBlFOIFc0yhbICS2GpFi_u1GOY5408gnP73nQaBdSKS0g9ba9O2pvmeQGzCSDjL_M959RxBpvLehIID5iO6aKdwu-tLYE8p38caaUDIFv12XetkYB-vMa4wcmP0bXA-pPZxrZlcHtC4yLilz_-dOoKMAv5iuOwi4KeM6NyP0nhHPilmy5iZt3eIGY5qXoSfk7MuS1-6TAmWU66Hr6Ja18XEmanO1w0aiYIr3yiuhNZWhytCpPq-j_w4AIXsBt71Sgz_YqoQ2dIlCAGpl2_n85gIT_D0QfvdPqLBaFRRP6umxAcOqIFv4vlGabWIK_L697-MWeEntxZ3VBN2mgV0aLmiJRQnf60PYspbYtI3LEK7vL8v7n-mXh-7uOwbmA4PkzsRiHCBmjSK89laaXFF1QJVdSnDDELYphwKrn1Q1iFFRwTv0s_U6xMCXKCzz4bFAnZA42AIbjCrNO2npCw3nRvA-qzB3Y5vfSW9GxnhP2gAmbj48f3WFDiAxPRRlcRyi4ilX9YJB7uLYV_Zq7rQVVVFfy_inrdx-4bAB9P2RW115ev8fQgJ8tSw1DWdJQtIRIQXEHUBJo6aBehoJyxGxPyqQ_5Gt9WDocpsWGsUDqiEdX7hc6JubDPl0etF_SbYQXyhK3KV1qzESEGQVqKfrACgpyVPQFtAS9RU-49zTXcIJcQ https://lh3.googleusercontent.com/umsh/AN6v0v6CE_PSd-SsbiJ5XaZKXermA0evf-ZtPOle-CIwgzcD7LhrAYmCEsv2fWx0MPRqmXQeGBCZa6MXQyK-15mBIrqhj1TZ-rFkYFM9MGepnfNCMnvwg5tkKUEBInvN1_ppu7ScKi7M7dmXkZCqhDBXk8E5wASDO_49CVvuXBxO092PbwqK2hRc7RK8FUdKMWeAkvZ-f7cpD90Gu8Fjw1J4n8zcwEcqZI6u3uFXUJzBcnPHVJDCeQuyT1UQm_mJ_SwsTIr29QTFWRnMtV8obzJWXiy74W1mqifWQOKALrf_Pa2jkZZ7B_-n10ZkDc5Eet5Ztat6u0zLn6ItH7cEB77As_-B_sEMUDmLJU_MR49Ixv83VXIIy3QBQI2f5anzuDCiwVBDngb-MxC1wZ2K4aolxxiH85p7D5kb2IfEPkuQORaZkwIGR2_6dD1BiQopSZqib6MdAuf-YNDBGHTZW2Fr-5XmCkPutgfhgwu3AERhLLxo7w2arxibTeUYnT57MOayWUzHYsRdQCf94Aj0a1tB7-XtIP8Z6Yz36Hs_jMKUpfhthFUZ8-xubna-FRPnh8efKdLwV6UQYRcNhUXSTgnbpUas0dNhu-qyCqekWog7UTr3b4GOlh0qqr5ftFlWo_8Oy8ZmcM_3K0rve4FPrp00O3-sO1ZwNWfhDqZxhuD1Abq-jHEGe2gcNO6ds7Dk9_UnBhglVBkW6RqdeqPLRQu3zZtCgLOong</value>
+        </Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              -81.584113,29.73637,0
+              -81.584351,29.736371,0
+              -81.584347,29.735941,0
+              -81.584111,29.735941,0
+              -81.584113,29.73637,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Property 23 - 1.17 acres</name>
+      <description><![CDATA[descrição: <br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -82.608558,29.457678,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 23</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v5efcKkXc7pszSGMz8XkKUFC3IiVAjqzne5JauthisKHLThYh9nDyQ5HFjZb28tX3h7VV64e82dmOgc1atdMRvk6pIwjXx7gW-7-T9hiMlP0vbj9gZW1nEgSJ9AD90Z0onG2IzGE3lp7p5BUrMs0Gd0TF9Rf_miV8e09MoEJYLLA50eA9FcfTxnVGfwAPbXM9w36lgX7lxFP67Ib20zvWCsdTLMiIg9R9ED91Ra2eMRQzotWXbOm6cB25-yRUqAu7RwPdb2J2ZuN5AVT73k9mDsUhvEFEY6Z0cQvUI7VdkRFt5w4NpCLkGGKmWUF8TUCkCqagIbm_drmMKhPxnybSG_e6PFKqp5-agi9xpFQM8ydLdvpEQAmrJpE0eJQWx60VDZIDRXmTnOxLx87yvdPZS-xkbTByVdGam5iVa5dM8QdnqwKPumbY1Nsn_lbqmEJjH_aYLcslF-SpE99ku55Q2kJeeg1Ep_6t9imOhLGv4-S3I3sxK59RW7HUIogSY1Gm10swpxLRbUw77Q301qzQJ-J3Ah7RQ-BvgrBdrzqO4auQdf7K7052xMVjJwsvR-YyEO8VaYDI32oqvae1Jr7eYWRao5tzRJLTZdsuQKxKjOxX30NOmjj58qOY4b0yEdhBCVTxSOt_8EDMYKgmr2mafNJzkdJx0Gniyh6DiQJH2hM2fcxDR7NXVsbcboYUkFoCeQ6ZXasysSd89YWQv55_YJrIoy" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#poly-F9A825-2000-77</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v5efcKkXc7pszSGMz8XkKUFC3IiVAjqzne5JauthisKHLThYh9nDyQ5HFjZb28tX3h7VV64e82dmOgc1atdMRvk6pIwjXx7gW-7-T9hiMlP0vbj9gZW1nEgSJ9AD90Z0onG2IzGE3lp7p5BUrMs0Gd0TF9Rf_miV8e09MoEJYLLA50eA9FcfTxnVGfwAPbXM9w36lgX7lxFP67Ib20zvWCsdTLMiIg9R9ED91Ra2eMRQzotWXbOm6cB25-yRUqAu7RwPdb2J2ZuN5AVT73k9mDsUhvEFEY6Z0cQvUI7VdkRFt5w4NpCLkGGKmWUF8TUCkCqagIbm_drmMKhPxnybSG_e6PFKqp5-agi9xpFQM8ydLdvpEQAmrJpE0eJQWx60VDZIDRXmTnOxLx87yvdPZS-xkbTByVdGam5iVa5dM8QdnqwKPumbY1Nsn_lbqmEJjH_aYLcslF-SpE99ku55Q2kJeeg1Ep_6t9imOhLGv4-S3I3sxK59RW7HUIogSY1Gm10swpxLRbUw77Q301qzQJ-J3Ah7RQ-BvgrBdrzqO4auQdf7K7052xMVjJwsvR-YyEO8VaYDI32oqvae1Jr7eYWRao5tzRJLTZdsuQKxKjOxX30NOmjj58qOY4b0yEdhBCVTxSOt_8EDMYKgmr2mafNJzkdJx0Gniyh6DiQJH2hM2fcxDR7NXVsbcboYUkFoCeQ6ZXasysSd89YWQv55_YJrIoy</value>
+        </Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              -82.608818,29.458096,0
+              -82.608832,29.457255,0
+              -82.60829,29.457269,0
+              -82.608292,29.45811,0
+              -82.608818,29.458096,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Property 26 - 0.26 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v5sGI4kCN6eBDo_EJyZShYmIXf2QcoRxlUGNxYTX4_1CTth-K4-ecIeKmmaprZRM86_pmzQWM__8vPs0w0Rsw981G_03UUx4_Vl4OTfUiIoGzHaO7JOlteC_CU0uXNMAAUJvXN8Vmp5CqVcMWuqNlt5n65jiL5iyNDXnLGfMEjcTeLUpI7YOLN_zm_pgid67LHrESyjqnIvYATi2cLNdMUYkM9kxWzTmX6S3S5Hg_Q48IroyJLpFZ3HUqhCatPat8W5rlQQB1qFiVcFjfopVS-VoI01G-286MWqAw_2F-PGQdJlivnRKFSR3CKNWmF2hEGzEvalDJPetaHhwqWOhTfMLzekkrvpS3blgp5Gvm-o89dHm_qSb0xECaZSeS50ET0gmwAwyvLQaFpirqvNYhftnzWhf8cHowmGTK3X_K5AAQ0MTX0sAs9wl9PyLN3nHcbcSVdolWM-hG3JquBb90NvAoNeriGu6SdRU1NsvPFM3PhQmJnwtBv7exIwLhSoG7Te5DtvhPYh-Tu2R9skAH6p3XfK8PcfcL-Fkgt-A807gIY7YWYSqr2pnvhF_jcQADWTJPgPZ0j1KpYfpGOU8nf67q2YNp8FfFtLngszBovvng4OMtn2JPs9QdzWatSs3z5E_h-PwTIHQ14Lcq24E8AzyAt3CDEjQP_cWPb4PkNYAaK0vUlRHOz0X4rj50b6Yh9FVnggjuoGQImC_SfH7dontPKiAg" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v5sGI4kCN6eBDo_EJyZShYmIXf2QcoRxlUGNxYTX4_1CTth-K4-ecIeKmmaprZRM86_pmzQWM__8vPs0w0Rsw981G_03UUx4_Vl4OTfUiIoGzHaO7JOlteC_CU0uXNMAAUJvXN8Vmp5CqVcMWuqNlt5n65jiL5iyNDXnLGfMEjcTeLUpI7YOLN_zm_pgid67LHrESyjqnIvYATi2cLNdMUYkM9kxWzTmX6S3S5Hg_Q48IroyJLpFZ3HUqhCatPat8W5rlQQB1qFiVcFjfopVS-VoI01G-286MWqAw_2F-PGQdJlivnRKFSR3CKNWmF2hEGzEvalDJPetaHhwqWOhTfMLzekkrvpS3blgp5Gvm-o89dHm_qSb0xECaZSeS50ET0gmwAwyvLQaFpirqvNYhftnzWhf8cHowmGTK3X_K5AAQ0MTX0sAs9wl9PyLN3nHcbcSVdolWM-hG3JquBb90NvAoNeriGu6SdRU1NsvPFM3PhQmJnwtBv7exIwLhSoG7Te5DtvhPYh-Tu2R9skAH6p3XfK8PcfcL-Fkgt-A807gIY7YWYSqr2pnvhF_jcQADWTJPgPZ0j1KpYfpGOU8nf67q2YNp8FfFtLngszBovvng4OMtn2JPs9QdzWatSs3z5E_h-PwTIHQ14Lcq24E8AzyAt3CDEjQP_cWPb4PkNYAaK0vUlRHOz0X4rj50b6Yh9FVnggjuoGQImC_SfH7dontPKiAg</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.859105,29.69016,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 26</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v5u6no0sSKZOLIhkJCkv4Ny2UgFNhmHIii-ei5CRaABA6VB2CePXCml1wW5cInak1xRzwaNFx6w1tlSDuK1nV81Lp2zqjYJm0qZqCfapGXKcPTTDDouf5VuRySRxoYbQdn-Kt9A5PEKMB0Fw1jJf2Q2AvmqDUTcJBHY4USNjN7T6ZZShhmpWEOjUKaWbSCvmTbwtxettS_YrlUGu7D474wRyXYRXUwRcwJMgQzwOpmOhXBm0qBo_3dcNwkX1ImvnzF6sJb7Lcpzgr-5kh8DBfSKW63gv5jkOt-sFQbVSg2Gc6aFTcBKvk5U-0-zV2p1Hta6LRppK5kgvV8P6W9xU9RxhfMqvAlqoWAfKixNICZEV2dn6uxYPCVPMGBdjyeZOoQUZFqHB_SAC89Fz752-b8Io7P6DBNArEewEC_aiwfLIvuWXS-reYDnBOuneBoVNxAH6cIh2rnTk8jh-OMpHuXkFMGGjW1IN277YuVeSgiphcQAp1UehHjRtMtPenjnxbZRk5fbUCXGTxGO7UyDpdW1Lhs2vvkAPRX7Etz9MS7TUwm9exXyT1BSb-22XSjQBkuiRL8a6luvui3UVY43AhNZ5UF_7oUl22_sL7YYKM67Fs1GU1gBWpEIa0vTyfrjfhrmk4iKl7DdWtk1mm9Oc_gPBnl8NO8lPppqvSXghMNiIMUX8ZhsMm9bDMeVuPOvOLbAkFA90dQ2EZRdYWoPJTrEWqli" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#poly-F9A825-2000-77</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v5u6no0sSKZOLIhkJCkv4Ny2UgFNhmHIii-ei5CRaABA6VB2CePXCml1wW5cInak1xRzwaNFx6w1tlSDuK1nV81Lp2zqjYJm0qZqCfapGXKcPTTDDouf5VuRySRxoYbQdn-Kt9A5PEKMB0Fw1jJf2Q2AvmqDUTcJBHY4USNjN7T6ZZShhmpWEOjUKaWbSCvmTbwtxettS_YrlUGu7D474wRyXYRXUwRcwJMgQzwOpmOhXBm0qBo_3dcNwkX1ImvnzF6sJb7Lcpzgr-5kh8DBfSKW63gv5jkOt-sFQbVSg2Gc6aFTcBKvk5U-0-zV2p1Hta6LRppK5kgvV8P6W9xU9RxhfMqvAlqoWAfKixNICZEV2dn6uxYPCVPMGBdjyeZOoQUZFqHB_SAC89Fz752-b8Io7P6DBNArEewEC_aiwfLIvuWXS-reYDnBOuneBoVNxAH6cIh2rnTk8jh-OMpHuXkFMGGjW1IN277YuVeSgiphcQAp1UehHjRtMtPenjnxbZRk5fbUCXGTxGO7UyDpdW1Lhs2vvkAPRX7Etz9MS7TUwm9exXyT1BSb-22XSjQBkuiRL8a6luvui3UVY43AhNZ5UF_7oUl22_sL7YYKM67Fs1GU1gBWpEIa0vTyfrjfhrmk4iKl7DdWtk1mm9Oc_gPBnl8NO8lPppqvSXghMNiIMUX8ZhsMm9bDMeVuPOvOLbAkFA90dQ2EZRdYWoPJTrEWqli</value>
+        </Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              -81.859346,29.690268,0
+              -81.859341,29.690063,0
+              -81.858871,29.690058,0
+              -81.858874,29.690263,0
+              -81.859346,29.690268,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Property 27 - 0.43 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v5mQPzkRElFglk7xQP1LgM_NTfTmLAkJ7t6Jn2radVl8tFH0Sp0AenD6MSCHFvXgKUXSeMZivMJI7n5e6VbOQsquACOlD3YyTXuI1mY3KSEylkMdfySHkKo2JwJh_5AOVb6e_d1R9utmAZajAgSakl6LZH3-9BZsdHnOf5UKhMIceVpgx-R9KJKg_olWOEYlB65cL0pka4Rfoo6ruoGFNfSBerWUe3glG028dd643fqQ504bJ8D0Cl05wAoaYUppU1x-A3B34Pc_gKreM4_GDxnnmMR3w6827GjghQF0I4jKkEa_DPOxEuvyDsYohBQh1EeQ73d2-2FitsrXhyH3FIxfuRbMf68VPp6wS2YHivpIYnOytUexp1EQA9g93PeZ0pPVPC3AFSOAS-BQSZhYUBoQP4luaKqYH6RGiqfm8hSHLOT4TAB6cLO7jLp1_nMOeKg73vpdbK1xoLstNATHydrA6ro0MW_NLe7KU29vp_K9NQnr00lGg42DZTdQsRiZ03ZwY2MlR5PyNnNaIuB9VYyBgRd0ns3bBA3q246a5_6Jv3ABj_PNEV8e1VvPPbAoQ2OCnLvGcAUpVB9a-z-nOtNXidZtvRuxpEFMqZfD_nH7EaSBSSHbvHOnN8PtnOAUKMpsGdPYujJpvtPdc7mLgQPEIqCNmtKe34n6mfVBiGhzMAbUFpQDWdCxHG2HzrD3yaw_OaRHILvDEPAkT3YmLkap5OwxA" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v5mQPzkRElFglk7xQP1LgM_NTfTmLAkJ7t6Jn2radVl8tFH0Sp0AenD6MSCHFvXgKUXSeMZivMJI7n5e6VbOQsquACOlD3YyTXuI1mY3KSEylkMdfySHkKo2JwJh_5AOVb6e_d1R9utmAZajAgSakl6LZH3-9BZsdHnOf5UKhMIceVpgx-R9KJKg_olWOEYlB65cL0pka4Rfoo6ruoGFNfSBerWUe3glG028dd643fqQ504bJ8D0Cl05wAoaYUppU1x-A3B34Pc_gKreM4_GDxnnmMR3w6827GjghQF0I4jKkEa_DPOxEuvyDsYohBQh1EeQ73d2-2FitsrXhyH3FIxfuRbMf68VPp6wS2YHivpIYnOytUexp1EQA9g93PeZ0pPVPC3AFSOAS-BQSZhYUBoQP4luaKqYH6RGiqfm8hSHLOT4TAB6cLO7jLp1_nMOeKg73vpdbK1xoLstNATHydrA6ro0MW_NLe7KU29vp_K9NQnr00lGg42DZTdQsRiZ03ZwY2MlR5PyNnNaIuB9VYyBgRd0ns3bBA3q246a5_6Jv3ABj_PNEV8e1VvPPbAoQ2OCnLvGcAUpVB9a-z-nOtNXidZtvRuxpEFMqZfD_nH7EaSBSSHbvHOnN8PtnOAUKMpsGdPYujJpvtPdc7mLgQPEIqCNmtKe34n6mfVBiGhzMAbUFpQDWdCxHG2HzrD3yaw_OaRHILvDEPAkT3YmLkap5OwxA</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.854401,29.680469,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 27</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v6ncssxwR9dZAqDwiEX9dnuyIWyhMs1bYUXrPP5g09aS8VJyvDOBsC6d_HfyOAbIiTBcA8KQ_XcWTIwwua2rvSX2l9VpxVJerkIu7K0Tey0hpTs7trXIYscStnX4iEFM5Cs6NCfnAtB1zov0ex-63vyTVKgoYaxJMc3b18IhvgYupYBEG63nHZV96AWmY8VbLkUu_sEdC_1VQ8qlnOtoJa3sAKX7j3oV9Ui6soozFql4EkmYejF9s7X2jjRfxYingVj-syEXNC1b-LcwMxhyLj_wlMAHEDvmfC8MmF1pZU7fSjIn4S8abv_HgFkBNaDtAI2bbbDNFUHZV_sC16ahBRe5mbII9QU1n3D-aHSDXfCILi0NG4-IcrNWF_tpplLurYJ6p2szmwH15_v-NYHsocu4j0-UIWJUvzkuKF433CoUrJAW8QEwW6Ea5EYNiqhYFt4nSjndiFfHF2yNTwvK7qE1_qdli-seL87d98L0OhVbgWfQsRHIY6GH_eHu92HDTL8z5_Etg_QCpmOL_pCLNtzRj8NWhVFROvufkNy6hARDYQKqQBV8Ag5YgmfNek1pzfnySA9oB8eaJ5nMJLHQN2YF6Jv1m7_EQFmhDa8Sr0zlh8fGK1p59_JPpasMOgDfi2A95D51RqY2L9SbphsL6ypw7W3frLHsFB3WnpRJkLMFOMgz4T764YoXlg53TazLZvw69iXDNEOMBRG2qBpXKN3YeifBg" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#poly-F9A825-2000-77</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v6ncssxwR9dZAqDwiEX9dnuyIWyhMs1bYUXrPP5g09aS8VJyvDOBsC6d_HfyOAbIiTBcA8KQ_XcWTIwwua2rvSX2l9VpxVJerkIu7K0Tey0hpTs7trXIYscStnX4iEFM5Cs6NCfnAtB1zov0ex-63vyTVKgoYaxJMc3b18IhvgYupYBEG63nHZV96AWmY8VbLkUu_sEdC_1VQ8qlnOtoJa3sAKX7j3oV9Ui6soozFql4EkmYejF9s7X2jjRfxYingVj-syEXNC1b-LcwMxhyLj_wlMAHEDvmfC8MmF1pZU7fSjIn4S8abv_HgFkBNaDtAI2bbbDNFUHZV_sC16ahBRe5mbII9QU1n3D-aHSDXfCILi0NG4-IcrNWF_tpplLurYJ6p2szmwH15_v-NYHsocu4j0-UIWJUvzkuKF433CoUrJAW8QEwW6Ea5EYNiqhYFt4nSjndiFfHF2yNTwvK7qE1_qdli-seL87d98L0OhVbgWfQsRHIY6GH_eHu92HDTL8z5_Etg_QCpmOL_pCLNtzRj8NWhVFROvufkNy6hARDYQKqQBV8Ag5YgmfNek1pzfnySA9oB8eaJ5nMJLHQN2YF6Jv1m7_EQFmhDa8Sr0zlh8fGK1p59_JPpasMOgDfi2A95D51RqY2L9SbphsL6ypw7W3frLHsFB3WnpRJkLMFOMgz4T764YoXlg53TazLZvw69iXDNEOMBRG2qBpXKN3YeifBg</value>
+        </Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              -81.854604,29.680678,0
+              -81.854598,29.680263,0
+              -81.854204,29.680268,0
+              -81.854207,29.68068,0
+              -81.854604,29.680678,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Property 28 - 0.18 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v73IZKdGUK8jbA8iGRO09S4T8b95V3zNSIFNl-dZCZwLu5DeB4erihbQDqenN2s675xc5qK_Dp4xZ3zWfjqNse3fvkBKEPcTcIEen6Ll1lifhnBQ9exG2ttMCQSyKe3TNH-4HOlSaEI8f0ERyrvRHSzA1Pzm3yglFKuVpqA04dB3TSdZLBdUGUvC0t7RxQimRbn_54VZIhAWDu2EaOuFtJHtkY7PWXBi2Z6GUQB63sUAB8HcXPE1TwuFTZR5LVLUJswdDPNzJqXSegUXhBagZHdRIXLq_YBvOQFbivxDXTUYB-wI_Ku8DSAfw-K_cBx55qSRUXlukivKYDipQEYr4i5UeZVTqgMapZrgvo3kxKnpAxsqkZCyYc3nVOmaS3SlyiGXer9LKC1FcJvTbkVNgR1fSHNQexrklggJ0hvhM4h4LhV685aXowIpbLxCxUaGhplIKupCK4Xk-KWOINMFQrNCyGgoe87z2wEPehRog8rLrVdRRLV8QM5d6fwj6FqgRYk9nGfgfjRTHxtiGMzLQ7IT1CZ0Q5vK0yvsbfUDFnQ6G6VShLBgM9ctzrcncyxgMaXAQ-jFOtucAWF-x61IvWWlLXVkKusRCH0TgIRWtd5OjDOdz50Z99X1iO9bG2Hy5244SPSug63vNWPpMibGj20MXEUpFONxlaRn8uRQyRUAOReRICMbAWeF1xx9DZwMjaaetyIQ_70RakUgrDijpVXWSxkzQ" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v73IZKdGUK8jbA8iGRO09S4T8b95V3zNSIFNl-dZCZwLu5DeB4erihbQDqenN2s675xc5qK_Dp4xZ3zWfjqNse3fvkBKEPcTcIEen6Ll1lifhnBQ9exG2ttMCQSyKe3TNH-4HOlSaEI8f0ERyrvRHSzA1Pzm3yglFKuVpqA04dB3TSdZLBdUGUvC0t7RxQimRbn_54VZIhAWDu2EaOuFtJHtkY7PWXBi2Z6GUQB63sUAB8HcXPE1TwuFTZR5LVLUJswdDPNzJqXSegUXhBagZHdRIXLq_YBvOQFbivxDXTUYB-wI_Ku8DSAfw-K_cBx55qSRUXlukivKYDipQEYr4i5UeZVTqgMapZrgvo3kxKnpAxsqkZCyYc3nVOmaS3SlyiGXer9LKC1FcJvTbkVNgR1fSHNQexrklggJ0hvhM4h4LhV685aXowIpbLxCxUaGhplIKupCK4Xk-KWOINMFQrNCyGgoe87z2wEPehRog8rLrVdRRLV8QM5d6fwj6FqgRYk9nGfgfjRTHxtiGMzLQ7IT1CZ0Q5vK0yvsbfUDFnQ6G6VShLBgM9ctzrcncyxgMaXAQ-jFOtucAWF-x61IvWWlLXVkKusRCH0TgIRWtd5OjDOdz50Z99X1iO9bG2Hy5244SPSug63vNWPpMibGj20MXEUpFONxlaRn8uRQyRUAOReRICMbAWeF1xx9DZwMjaaetyIQ_70RakUgrDijpVXWSxkzQ</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -88.527685,30.356658,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 28</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v738nns0qb4uhMbteZs76mhCrSYzUtg-xcqhK2XiVZV2myFq-ASWyeazI7V4TYUZbRHX6x7g5ZT12F0ziDSNp-xVak0exu0OIdr-R3YPtxbDQ_M2_jqHo3EqVzP_1pKfdrZxDLOa6Jr5NQSSicP_tKQFLjveLnYnqhDy0gIZ3Pq4mn-geG1v3is-I8HOzypJU5sMkIvtXX5O3q_eGUNvH9UWb6j57k4kScQZZBCsnBmPmx9RwPwBszlCb0U51lE8YKlC6goNd79JJd7aQrarmxl7iVr2R5KDYL9gDBJMljInrNv-8wlVrmUt5z6tsh16h2Uo9aVIdcC7GZNR-KIehkBdOtN89JbmBcFlZHRDEPEI9SVu9NuXueoHJ3Grwf9sUUqkCvNnOoe6ZdzIxJjcYWHYwUg26yE87Mfki40001q0TsSXYYR2MqWIFyEJcOjhTUegMcNnV0pJVvrZM-pVuiUJ1U9fL6_hADv2tLVAEjPifUVoXnsjib69JG_3i1y2PZ0IB8I5DqD_K90XQ9_Q6U6jKmWb-o9_cUuwYVQSqEp0xHhSPr5NvqzyedcvFsjCbnNiAPEcbRXf3VQukDIqHcPDnSBx6l5uyub5o8SL879mKOMSf1ndxoddST-x4m_DtzSdw0pIYIUJMgX_aPM2lQra-l8Lzcytays4dAfIxiwEfPFCxgOHHbP4EiWRiMq8ezR_bv7mGLJD44hOyiGtFkJfDNsgw" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#poly-F9A825-2000-77</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v738nns0qb4uhMbteZs76mhCrSYzUtg-xcqhK2XiVZV2myFq-ASWyeazI7V4TYUZbRHX6x7g5ZT12F0ziDSNp-xVak0exu0OIdr-R3YPtxbDQ_M2_jqHo3EqVzP_1pKfdrZxDLOa6Jr5NQSSicP_tKQFLjveLnYnqhDy0gIZ3Pq4mn-geG1v3is-I8HOzypJU5sMkIvtXX5O3q_eGUNvH9UWb6j57k4kScQZZBCsnBmPmx9RwPwBszlCb0U51lE8YKlC6goNd79JJd7aQrarmxl7iVr2R5KDYL9gDBJMljInrNv-8wlVrmUt5z6tsh16h2Uo9aVIdcC7GZNR-KIehkBdOtN89JbmBcFlZHRDEPEI9SVu9NuXueoHJ3Grwf9sUUqkCvNnOoe6ZdzIxJjcYWHYwUg26yE87Mfki40001q0TsSXYYR2MqWIFyEJcOjhTUegMcNnV0pJVvrZM-pVuiUJ1U9fL6_hADv2tLVAEjPifUVoXnsjib69JG_3i1y2PZ0IB8I5DqD_K90XQ9_Q6U6jKmWb-o9_cUuwYVQSqEp0xHhSPr5NvqzyedcvFsjCbnNiAPEcbRXf3VQukDIqHcPDnSBx6l5uyub5o8SL879mKOMSf1ndxoddST-x4m_DtzSdw0pIYIUJMgX_aPM2lQra-l8Lzcytays4dAfIxiwEfPFCxgOHHbP4EiWRiMq8ezR_bv7mGLJD44hOyiGtFkJfDNsgw</value>
+        </Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              -88.527663,30.356826,0
+              -88.527851,30.356762,0
+              -88.527735,30.356487,0
+              -88.527488,30.356611,0
+              -88.527663,30.356826,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Property 30 - 0.23 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v4yhtLySs55X3_j1800mFHPCquahdEGklRvXXGihq3cWwt6BOs5yzSVnXrsZAFkIcmtIM_KWYHu53nfW8LRBzcWi3QBSvFR_P-XfIYPCLVXte2o6g-Htnu3-ZVS3UoINhz7dYW72vLh3uTuZO7Dxd8JmEKt8U_TyvgwW9OB2fAZG9lM8nT6TpufYkrCn1B7wk5mv0MK-mBi5TR1XKNKS4n2VMoZ-ZAgEZH40Im3h8-L_G04Ox-6mj8THQUKCqiO_C-gVwjO0h17EGVPzAjHC62m2Dh6OUADKYygOse-uXIxY072c8QeneECTMSx2IW7Z31gs2MmqDD1AXYOAGbhlwAQgWEXFMVhW8Wl9tfn9dkTIeI8PXaQyXVToNcGEQmCN7JzCSzUYXrjvNp3yBQFEGxJu3As5Q5q5qf2uRMbAQF4Jqvu-tjsPmhpywsMRna5Se7RHPI-jHzzL59uKOvw1Gr6Nk7dYxduyfrI3XCzEQ_-iAU26c-MaTZclr2UFVeb1aDqt6Uv5m0UXuVMvO_zfhUSvzsMsNbswwTAHIMkdxxwBdooizIiIbooAc1hvCYQtRAw-Dp5njvpQK6wqrjCTkgElVe8ML-jVGgUMK5WOy_XNozaCaF6QXnT0Rz-m8CGyKKs1GXNAYrW6MhadDJnkjx4yzxchwvymsO6ANKw55SXJWecWNalEJCnBOC7dV9g9Gjn1j8fSTDHfaWwtRtHZVXy7_o4xw" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v4yhtLySs55X3_j1800mFHPCquahdEGklRvXXGihq3cWwt6BOs5yzSVnXrsZAFkIcmtIM_KWYHu53nfW8LRBzcWi3QBSvFR_P-XfIYPCLVXte2o6g-Htnu3-ZVS3UoINhz7dYW72vLh3uTuZO7Dxd8JmEKt8U_TyvgwW9OB2fAZG9lM8nT6TpufYkrCn1B7wk5mv0MK-mBi5TR1XKNKS4n2VMoZ-ZAgEZH40Im3h8-L_G04Ox-6mj8THQUKCqiO_C-gVwjO0h17EGVPzAjHC62m2Dh6OUADKYygOse-uXIxY072c8QeneECTMSx2IW7Z31gs2MmqDD1AXYOAGbhlwAQgWEXFMVhW8Wl9tfn9dkTIeI8PXaQyXVToNcGEQmCN7JzCSzUYXrjvNp3yBQFEGxJu3As5Q5q5qf2uRMbAQF4Jqvu-tjsPmhpywsMRna5Se7RHPI-jHzzL59uKOvw1Gr6Nk7dYxduyfrI3XCzEQ_-iAU26c-MaTZclr2UFVeb1aDqt6Uv5m0UXuVMvO_zfhUSvzsMsNbswwTAHIMkdxxwBdooizIiIbooAc1hvCYQtRAw-Dp5njvpQK6wqrjCTkgElVe8ML-jVGgUMK5WOy_XNozaCaF6QXnT0Rz-m8CGyKKs1GXNAYrW6MhadDJnkjx4yzxchwvymsO6ANKw55SXJWecWNalEJCnBOC7dV9g9Gjn1j8fSTDHfaWwtRtHZVXy7_o4xw</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.88529,29.664652,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 30</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v6mux3iWaz13IlsHgw2X1WRkzIhRqzgRoI25f-LP3QyatXloVTqxNRpieuvuE7RPJvDVXkLQmab3KtH-Jt7vRTPaeGryrlQ09dJalLIQQqH3-AE70mR6Zq4AxjQFGlyfKZBbWJGbUXzN5VXZdxJQljzKOssthnPymwxi3renguXLcjAYyBXZnv6LlwpW7WKbHwl4DXxpcNj9hdlFF9NGpM8xCa40Er8bkRnX9vRpjzLX-WdpTAnesriyNOc7e5556B8aiFMaR2Wo56q2PeR3hflhWU-IiimfEzQ1342sXarCUm0IV8SBDenm9guevag62JY0ezZ58dzBvc4zSaHUNucX4KbZ_0GinZjTbiHeTyr5bjWS776YqrUS0DadWyTQbkiDomESgPOdFuiP9jvB-mbv1Rb_lJSRzvU7McsVQz7IsSANG2osMk-ErYXSZlXeTi1Z3PVvdn-ssy9E92dz_XcqCfKMrZjU3RrV9c1ovXuMPOsj7c1roeDCyzG9FLKBUsyS6hh19I3778ZOaATr14dTMEX1g35dqxh-ZQ_gu_y9-0b9PgQfwXlcyivQlI8sLaYiARuhyRF6DzfnSbTyJv186D4v-eYsdvEMFpoo8ICveDjOTXi7wuiHJE46-dPuC6jkDO--L8wvzY1CCahaGEvlkt8mslhPD17DpdTFOVCwephDREphiWhO-Tf8ACeVo54-6H9b6GDfTmrq8dPTjMBDIXS" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#poly-F9A825-2000-77</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v6mux3iWaz13IlsHgw2X1WRkzIhRqzgRoI25f-LP3QyatXloVTqxNRpieuvuE7RPJvDVXkLQmab3KtH-Jt7vRTPaeGryrlQ09dJalLIQQqH3-AE70mR6Zq4AxjQFGlyfKZBbWJGbUXzN5VXZdxJQljzKOssthnPymwxi3renguXLcjAYyBXZnv6LlwpW7WKbHwl4DXxpcNj9hdlFF9NGpM8xCa40Er8bkRnX9vRpjzLX-WdpTAnesriyNOc7e5556B8aiFMaR2Wo56q2PeR3hflhWU-IiimfEzQ1342sXarCUm0IV8SBDenm9guevag62JY0ezZ58dzBvc4zSaHUNucX4KbZ_0GinZjTbiHeTyr5bjWS776YqrUS0DadWyTQbkiDomESgPOdFuiP9jvB-mbv1Rb_lJSRzvU7McsVQz7IsSANG2osMk-ErYXSZlXeTi1Z3PVvdn-ssy9E92dz_XcqCfKMrZjU3RrV9c1ovXuMPOsj7c1roeDCyzG9FLKBUsyS6hh19I3778ZOaATr14dTMEX1g35dqxh-ZQ_gu_y9-0b9PgQfwXlcyivQlI8sLaYiARuhyRF6DzfnSbTyJv186D4v-eYsdvEMFpoo8ICveDjOTXi7wuiHJE46-dPuC6jkDO--L8wvzY1CCahaGEvlkt8mslhPD17DpdTFOVCwephDREphiWhO-Tf8ACeVo54-6H9b6GDfTmrq8dPTjMBDIXS</value>
+        </Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              -81.885507,29.664755,0
+              -81.885505,29.66455,0
+              -81.885078,29.664553,0
+              -81.885082,29.664759,0
+              -81.885507,29.664755,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Property 31 - 0.33 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v6-k_rEuw20nsuVRCetSHoklwwQygoUs0PCwmAvYa9-leCn_J0Veftc28rr8rkRWjf6YMy_7ERxcmutrq5gkfsm4kJnrFguPflTIulzG1o-67VaVJer8JlJmXlm7vCegxUefEsUjCVcN5wxAPjH7k6dcEqqmi7NWAJNx-nOuQpQ272byo74lrNdHNDnrqifmV-txdoW4OWYT_FK2S8wACphCpwSiD87A1Y_IwV109NquUZQRk7CwR8oJteIcxmHJilYz4EDqrRssxNT3-W90laK68frHoBYP2UYCBdCmnRNyWOtgVhtUvVuzGYIXc_tHYgjDMof09A8gTbX-ED1NBLrZa2enEb1eQYIQrQ85BaAemYSHW5CqeBmMjX6K51SgZGY3aTVnpH-vvbr8P0Yv6lW5KzpUXweV8Sh9Jq-DxkfYbkYG7vJLyeVmqMkPWFL3NGE49F0ebN4WbddJciBS1dwIBXj9Sc4L_E-vSTWMOwewL9KjTOPKucw6o0EFY2f-O37gqyqlsi6oU3dm8KlGEbMcryWeJ4rRiNPLQVFXQWuSAEgQ085wEKDV_C6bqi8pd3WjMEndP2jumeBO8PN8KXL4714Wy6CnuwA4CUCGufno5fQcM1yzYSEyGEYrrJ198J8TGx2QduWlOaf-qKwoLweaKbIVCovk5hpxkWdkjm1Bl3xgLKlOmnGIt9MmwwvzXjpWnUL5EJ8rBRomLHv6RwtBP-zlQ" height="200" width="auto" /><br><br>descrição: <br><br>Parcel ID: 35-09-24-4076-0360-0160<br>Address: Annette Ave, Interlachen, FL 32148<br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+Parcel ID: 35-09-24-4076-0360-0160
+Address: Annette Ave, Interlachen, FL 32148</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v6-k_rEuw20nsuVRCetSHoklwwQygoUs0PCwmAvYa9-leCn_J0Veftc28rr8rkRWjf6YMy_7ERxcmutrq5gkfsm4kJnrFguPflTIulzG1o-67VaVJer8JlJmXlm7vCegxUefEsUjCVcN5wxAPjH7k6dcEqqmi7NWAJNx-nOuQpQ272byo74lrNdHNDnrqifmV-txdoW4OWYT_FK2S8wACphCpwSiD87A1Y_IwV109NquUZQRk7CwR8oJteIcxmHJilYz4EDqrRssxNT3-W90laK68frHoBYP2UYCBdCmnRNyWOtgVhtUvVuzGYIXc_tHYgjDMof09A8gTbX-ED1NBLrZa2enEb1eQYIQrQ85BaAemYSHW5CqeBmMjX6K51SgZGY3aTVnpH-vvbr8P0Yv6lW5KzpUXweV8Sh9Jq-DxkfYbkYG7vJLyeVmqMkPWFL3NGE49F0ebN4WbddJciBS1dwIBXj9Sc4L_E-vSTWMOwewL9KjTOPKucw6o0EFY2f-O37gqyqlsi6oU3dm8KlGEbMcryWeJ4rRiNPLQVFXQWuSAEgQ085wEKDV_C6bqi8pd3WjMEndP2jumeBO8PN8KXL4714Wy6CnuwA4CUCGufno5fQcM1yzYSEyGEYrrJ198J8TGx2QduWlOaf-qKwoLweaKbIVCovk5hpxkWdkjm1Bl3xgLKlOmnGIt9MmwwvzXjpWnUL5EJ8rBRomLHv6RwtBP-zlQ</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.871756,29.670684,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 31</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v696cWIWzSP1i93-jA658aQWug1M0XDoC2xTnX7nizMubsuO4gNpb0jvcppVd-T-BqgRVYgpNVgJREXcRFhWhCj98bFZv64NuQj1SS6IdT2dC9j_aF1b-lCRN17GIpTT55Z7Suq2_MRvL4myAj0mcMLEYWz4qRzwfNMC850PtXS9bNBonfSVi4KAQSRwjeQ6VuekNwDCnFEkUsVPBsGUnu5rNUlk75-uQw_YzaZSAEznseomUjmrsZgaJANs8IkNnLHYbQf9_6sMosfTNToZZ7RLqpVTery-wX66TQB5Bvvm63-xkInvjX21QzBUf0_RfuWqHprC7oHJXX1uzFI_2i2IsKkSYZnYr7oqRNrGy9L7lNc3_G4ZhNzXJxHN6SzoffkPJxly6baLyzhk6M-Lw2O5K0TSoPMzH0ZiYxuG0utHJZ3mPv0L2iiOHQ1ECs6-8mOAnryoMHuD27TC7mpKlmKkymdGrz9rb5CReVmfYqkXmVzCvqH-Lxr8FZRBUPOhO-3P_rxkP5G0yVJBmb5I-DVxZk0TtKzjtgVUS5GfvAMv5rYn7v4aXY6QqscWe1O5yAjgVjJsJ0FDdBYOQu5c-m-e4sy81Uk9Qpbiqgvvccwq_ugAlpvCHJu-hw3Q3bGuHxA-EDFZOi6yuZwuKQ6t-Cvk2-0xentKJX9eCMHaZxjGyGIQ8Efjy-rGadBLCqBdaXgGvHg0NHXq07pyKKw4VzFauWxSw" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#poly-F9A825-2000-77</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v696cWIWzSP1i93-jA658aQWug1M0XDoC2xTnX7nizMubsuO4gNpb0jvcppVd-T-BqgRVYgpNVgJREXcRFhWhCj98bFZv64NuQj1SS6IdT2dC9j_aF1b-lCRN17GIpTT55Z7Suq2_MRvL4myAj0mcMLEYWz4qRzwfNMC850PtXS9bNBonfSVi4KAQSRwjeQ6VuekNwDCnFEkUsVPBsGUnu5rNUlk75-uQw_YzaZSAEznseomUjmrsZgaJANs8IkNnLHYbQf9_6sMosfTNToZZ7RLqpVTery-wX66TQB5Bvvm63-xkInvjX21QzBUf0_RfuWqHprC7oHJXX1uzFI_2i2IsKkSYZnYr7oqRNrGy9L7lNc3_G4ZhNzXJxHN6SzoffkPJxly6baLyzhk6M-Lw2O5K0TSoPMzH0ZiYxuG0utHJZ3mPv0L2iiOHQ1ECs6-8mOAnryoMHuD27TC7mpKlmKkymdGrz9rb5CReVmfYqkXmVzCvqH-Lxr8FZRBUPOhO-3P_rxkP5G0yVJBmb5I-DVxZk0TtKzjtgVUS5GfvAMv5rYn7v4aXY6QqscWe1O5yAjgVjJsJ0FDdBYOQu5c-m-e4sy81Uk9Qpbiqgvvccwq_ugAlpvCHJu-hw3Q3bGuHxA-EDFZOi6yuZwuKQ6t-Cvk2-0xentKJX9eCMHaZxjGyGIQ8Efjy-rGadBLCqBdaXgGvHg0NHXq07pyKKw4VzFauWxSw</value>
+        </Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              -81.871878,29.670952,0
+              -81.871874,29.670421,0
+              -81.871639,29.670423,0
+              -81.871641,29.670951,0
+              -81.871878,29.670952,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Property 34 - 0.22 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v7FWI25guF7UxlV2IRA6HnAOIro9GLI5DRhCvmg5nvxDzTEerK3uPuN7TlGFXbKmWj-s6H4JCtxRX1ptmWEaY0RnrngoXpN5nUPii5fND16ZlA5l84ux_CYo_Z7ugedF-nDbVPbNoC_6K9E5mvev1DPYlIfepgQf-iNngEWQUzQ_uV7aMyN5-hpyj16xZufgoSbgvBppGXUAEUGw0CAGnTGwbEJ2HN4mdtEElWfLj0ynbf43Jb2RvMdQ6qF2vA-312JfJ-wurPT7hDfSktoP3vyS6OfZ0ajg-gAlxpihLly2_Utv_2qoOXv9CgYmZ5ICjKq61XfLSiRiZCppEj-9I15hGWi8mUUD73pD9WcQnBWErcQMk4QXHA9ofeCpeBEGz2siahqMCqOp1N2fh-IbNRuSWLTpF1q8GmKR1Bq91sn6NnbBxEWXoFYIpLcG40d0qStiHCxO2ajLD-9RD0om96i70-DeffF7UkJfR73SQtLGS4T7cc_peMve-tTNhXtoyMWVIedmDW2IgaLUAz2fRb8NcxbdzOp8Rq5I3PPMOrTMKnl2kbqD8RKq3jzpjz6PedQzVX81zB9ffW9yE1AOIUShzBukHpy-tIswdOj0x_NjqSCfm2GqgdG8YyYUxCYfSO-RBYmAX3GozS-L3tHkSV4jDpI7vGI2dKPhkAg5hBChr8rGJVFWX2RFs2UAEQkfdsyMJQVjVas7Lg5rvqyw01njGHT" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v7FWI25guF7UxlV2IRA6HnAOIro9GLI5DRhCvmg5nvxDzTEerK3uPuN7TlGFXbKmWj-s6H4JCtxRX1ptmWEaY0RnrngoXpN5nUPii5fND16ZlA5l84ux_CYo_Z7ugedF-nDbVPbNoC_6K9E5mvev1DPYlIfepgQf-iNngEWQUzQ_uV7aMyN5-hpyj16xZufgoSbgvBppGXUAEUGw0CAGnTGwbEJ2HN4mdtEElWfLj0ynbf43Jb2RvMdQ6qF2vA-312JfJ-wurPT7hDfSktoP3vyS6OfZ0ajg-gAlxpihLly2_Utv_2qoOXv9CgYmZ5ICjKq61XfLSiRiZCppEj-9I15hGWi8mUUD73pD9WcQnBWErcQMk4QXHA9ofeCpeBEGz2siahqMCqOp1N2fh-IbNRuSWLTpF1q8GmKR1Bq91sn6NnbBxEWXoFYIpLcG40d0qStiHCxO2ajLD-9RD0om96i70-DeffF7UkJfR73SQtLGS4T7cc_peMve-tTNhXtoyMWVIedmDW2IgaLUAz2fRb8NcxbdzOp8Rq5I3PPMOrTMKnl2kbqD8RKq3jzpjz6PedQzVX81zB9ffW9yE1AOIUShzBukHpy-tIswdOj0x_NjqSCfm2GqgdG8YyYUxCYfSO-RBYmAX3GozS-L3tHkSV4jDpI7vGI2dKPhkAg5hBChr8rGJVFWX2RFs2UAEQkfdsyMJQVjVas7Lg5rvqyw01njGHT</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.84846,29.694825,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 34</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v7OzhtFvPL_QnQbZ6ESoLzGVst4u-MfGfe3QhdTQYoWw_Rd_4mP4fer6SCwK9T_Pl7wOKo-jEfPmGleA8fTmuSurqKFwYwf87fLhATOHDZxSivaT28tkIy2NMfMU9cFH-Sr29cxntALVDmGgiT5NIUoRHrpzkF9HMB0HOg9XoKcWatPciqLmZQCYR5fgYJN2J-87IzZRnHB5qCDTLOmRO3LT2F5FI1aOckLW1PhkzaLvmSHV439gzC7A8G65oDTbsu9SdjQjzkkP0VvJ4UE7oth2GngctfBqnjgIwCFbV496JtTVTM3AUnCSGcgFr0DtCSPM1OExN_kdYEQ4rF8NC22BUU7kYTCDsXigG5x7UyxeaYK5vbCPR9WaX7_e5AsxBWeQPRU97Ru_ItKWMtUjVo1eTn6juEr9EmDQ5qUDs6Z1e436Mi2NJz7OXKtIp8vJuQ2v8XmLptSFl92dxXQCoWsCGVuTVzVE74X2pSBHPRHtvuxY2Nr3kZqXT9e87YUQuAS7afEciZwiMPzibEW6Vqrlgfmz3uOlnUeKv87wvXuk97DK7QTmaQfoHCXxqDtuZ_EbWyzMaKv2kDiiqrDXWIvIzbZaiz3v7t6d4j5c9bMYgBSIbafiK0cXjwel7_6sMPBBp0o3gjlR_G5NVc1sUECnk4yxZJzYuZBemp7RCYQ7gyEMRNMaHTzg7IbF9N6zDQHI9VjmJbM8agBGInEi1LVwP7v" height="200" width="auto" /><br><br>descrição: <br><br><br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#poly-F9A825-2000-77</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>
+
+</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v7OzhtFvPL_QnQbZ6ESoLzGVst4u-MfGfe3QhdTQYoWw_Rd_4mP4fer6SCwK9T_Pl7wOKo-jEfPmGleA8fTmuSurqKFwYwf87fLhATOHDZxSivaT28tkIy2NMfMU9cFH-Sr29cxntALVDmGgiT5NIUoRHrpzkF9HMB0HOg9XoKcWatPciqLmZQCYR5fgYJN2J-87IzZRnHB5qCDTLOmRO3LT2F5FI1aOckLW1PhkzaLvmSHV439gzC7A8G65oDTbsu9SdjQjzkkP0VvJ4UE7oth2GngctfBqnjgIwCFbV496JtTVTM3AUnCSGcgFr0DtCSPM1OExN_kdYEQ4rF8NC22BUU7kYTCDsXigG5x7UyxeaYK5vbCPR9WaX7_e5AsxBWeQPRU97Ru_ItKWMtUjVo1eTn6juEr9EmDQ5qUDs6Z1e436Mi2NJz7OXKtIp8vJuQ2v8XmLptSFl92dxXQCoWsCGVuTVzVE74X2pSBHPRHtvuxY2Nr3kZqXT9e87YUQuAS7afEciZwiMPzibEW6Vqrlgfmz3uOlnUeKv87wvXuk97DK7QTmaQfoHCXxqDtuZ_EbWyzMaKv2kDiiqrDXWIvIzbZaiz3v7t6d4j5c9bMYgBSIbafiK0cXjwel7_6sMPBBp0o3gjlR_G5NVc1sUECnk4yxZJzYuZBemp7RCYQ7gyEMRNMaHTzg7IbF9N6zDQHI9VjmJbM8agBGInEi1LVwP7v</value>
+        </Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              -81.848662,29.694932,0
+              -81.84866,29.694721,0
+              -81.848265,29.694726,0
+              -81.848266,29.694931,0
+              -81.848662,29.694932,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Property 56</name>
+      <description><![CDATA[descrição: <br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.317793,29.794517,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Rua a ser asfaltada</name>
+      <description><![CDATA[descrição: <br>Latitude: 29.645509<br>Longitude: -81.916662<br>Coordinates: Rua a ser Asfaltada]]></description>
+      <styleUrl>#icon-1899-673AB7-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value>29.645509</value>
+        </Data>
+        <Data name="Longitude">
+          <value>-81.916662</value>
+        </Data>
+        <Data name="Coordinates">
+          <value>Rua a ser Asfaltada</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.916662,29.645509,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 57</name>
+      <description><![CDATA[descrição: <br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000-labelson</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -97.647468,35.510109,0
+        </coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>

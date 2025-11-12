@@ -57,6 +57,11 @@ app.post('/api/config/save', (req, res) => {
   }
 });
 
+// Get Google Maps API Key (for client-side loading)
+app.get('/api/google-maps-key', (req, res) => {
+  res.json({ key: process.env.GOOGLE_MAPS_API_KEY || '' });
+});
+
 // Google Maps API Proxy
 app.post('/api/google-maps', async (req, res) => {
   try {
