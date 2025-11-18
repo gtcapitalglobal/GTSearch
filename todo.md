@@ -219,3 +219,43 @@
 - PROBLEMAS_E_SOLUCOES.md
 - CORRECAO_FINAL_SUCESSO.md
 
+
+
+
+## 🎨 Melhorias UI/UX - Página de Análise (analysis.html) - 18/11/2025
+
+### Left Side - Property Information:
+- [x] 1. Acres: Adicionar unidade "acres" → "0.16 acres"
+- [x] 2. Square Feet: Adicionar vírgula + "sq ft" → "1,286 sq ft"
+- [x] 3. Coordinates: Arredondar para 4 decimais + ícone copiar 📋 → "28.0506, -81.9102 📋"
+- [x] 4. Coordinates: Adicionar botão "[📍 View on Google Maps]" abaixo das coordenadas
+- [x] 5. Legal Description: Adicionar ícone copiar 📋
+- [x] 6. County: Adicionar link clicável formato "Polk (Appraisal)" usando planilha Google Sheets
+
+### Right Side - Owner Information:
+- [x] 7. Next Auction: NOVO CAMPO - Primeira posição, RED + BOLD → "🔴 Next Auction: 11/20/2025"
+- [x] 8. Amount Due: Adicionar símbolo $ → "$7,034.38"
+- [x] 9. Address: Adicionar FL + Zip → "2446 Magnolia St, Lakeland, FL 33801"
+- [ ] 10. Zip field: Considerar remover (duplicado com Address) - DECISÃO PENDENTE
+
+### Additional Details Section:
+- [x] 11. Total Value: Remover espaço extra + adicionar ícone 💰
+- [x] 12. Assessed Value: REMOVER completamente
+- [x] 13. Case (CS): Remover aspas → "00817-2025" (não "'00817-2025'")
+- [x] 14. Opportunity Zone: Adicionar checkmark → "✅ 12105011501"
+- [x] 15. Occupancy: Adicionar ícone → "🏠 Occupied" ou "⚪ Vacant"
+- [x] 16. Status: Adicionar ícone → "📄 Deed"
+- [x] 17. Tax Years: Agrupar em uma linha → "Tax Sale: 2025 | Delinquent Since: 2021"
+
+### Pending Decisions:
+- [ ] 18. Zoneamento (Zoning): Decidir depois (API/Scraping/Manual)
+- [ ] 19. Account #: Decidir depois (não está no CSV)
+
+### Tarefas Técnicas:
+- [x] Extrair dados da planilha Google Sheets (67 condados + links coluna B)
+- [x] Criar mapeamento de condados para links
+- [x] Implementar todas as formatações no analysis.html
+- [x] Testar com dados reais do Polk.csv
+- [ ] Commit e push para GitHub
+
+

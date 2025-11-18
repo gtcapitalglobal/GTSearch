@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Análise Detalhada - GT Lands</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="florida-counties.js"></script>
     <style>
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         .map-container { height: 450px; width: 100%; }
@@ -138,6 +139,11 @@
                         </button>
                     </div>
                     <div>
+                        <button onclick="openGoogleMaps()" class="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-semibold">
+                            📍 View on Google Maps
+                        </button>
+                    </div>
+                    <div>
                         <span class="text-gray-600 text-xs font-medium">Zoneamento:</span>
                         <span class="font-semibold ml-2" id="prop-zoning-1">-</span>
                     </div>
@@ -145,6 +151,10 @@
                 
                 <!-- Coluna Direita -->
                 <div class="space-y-2">
+                    <div>
+                        <span class="text-red-600 text-xs font-bold">🔴 Next Auction:</span>
+                        <span class="font-bold ml-2 text-red-600" id="prop-next-auction-1">-</span>
+                    </div>
                     <div>
                         <span class="text-gray-600 text-xs font-medium">Owner:</span>
                         <span class="font-semibold ml-2" id="prop-owner-1">-</span>
@@ -172,7 +182,12 @@
                 
                 <!-- Legal Description (largura completa) -->
                 <div class="col-span-2 mt-2">
-                    <span class="text-gray-600 text-xs font-medium">Legal Description:</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-600 text-xs font-medium">Legal Description:</span>
+                        <button onclick="copyLegalDescription()" class="text-blue-600 hover:text-blue-800 transition-colors text-xs" title="Copiar Legal Description">
+                            📋
+                        </button>
+                    </div>
                     <div class="font-semibold ml-2 text-xs mt-1 break-words whitespace-pre-wrap" id="prop-legal-1">-</div>
                 </div>
             </div>
@@ -225,10 +240,6 @@
                         <span class="text-gray-600 text-xs font-medium">Total Value:</span>
                         <span class="font-semibold ml-2 text-green-600" id="prop-total-value-2">-</span>
                     </div>
-                    <div>
-                        <span class="text-gray-600 text-xs font-medium">Assessed Value:</span>
-                        <span class="font-semibold ml-2 text-green-600" id="prop-assessed-value-2">-</span>
-                    </div>
                 </div>
                 
                 <!-- Coluna 3 -->
@@ -246,12 +257,8 @@
                         <span class="font-semibold ml-2" id="prop-status-2">-</span>
                     </div>
                     <div>
-                        <span class="text-gray-600 text-xs font-medium">Tax Sale Year:</span>
-                        <span class="font-semibold ml-2" id="prop-tax-sale-year-2">-</span>
-                    </div>
-                    <div>
-                        <span class="text-gray-600 text-xs font-medium">Delinquent Year:</span>
-                        <span class="font-semibold ml-2" id="prop-delinquent-year-2">-</span>
+                        <span class="text-gray-600 text-xs font-medium">Tax Years:</span>
+                        <span class="font-semibold ml-2" id="prop-tax-years-2">-</span>
                     </div>
                 </div>
             </div>
@@ -534,44 +541,94 @@
             document.getElementById('prev-property').disabled = index === 0;
             document.getElementById('next-property').disabled = index === properties.length - 1;
 
-            // Remove $ duplicado do Amount Due
-            const amountDue = prop['Amount Due'] || '-';
-
+            // Format fields
+            const acres = prop['Acres'] ? `${prop['Acres']} acres` : '-';
+            const sqft = prop['Square Feet'] ? `${parseInt(prop['Square Feet']).toLocaleString('en-US')} sq ft` : '-';
             
-
+            // Format coordinates (round to 4 decimals)
+            let coordinates = '-';
+            if (prop['Coordinates']) {
+                const coords = prop['Coordinates'].split(',').map(c => parseFloat(c.trim()).toFixed(4));
+                coordinates = coords.join(', ');
+            }
+            
+            // Format county with Appraisal link
+            const countyName = prop['County'] || '';
+            const countyLink = getCountyAppraisalLink(countyName);
+            let countyHTML = countyName;
+            if (countyLink) {
+                countyHTML = `${countyName} (<a href="${countyLink}" target="_blank" class="text-blue-600 hover:underline">Appraisal</a>)`;
+            }
+            
+            // Format Amount Due with $
+            const amountDue = prop['Amount Due'] ? `$${prop['Amount Due'].replace('$', '').trim()}` : '-';
+            
+            // Format Address with FL + Zip
+            const fullAddress = `${prop['Address']}, ${prop['City']}, FL ${prop['Zip'] || ''}`;
+            
+            // Format Next Auction
+            const nextAuction = prop['Next Auction'] || '-';
             
             // Legal Description
             const legalFull = prop['Legal Description'] || '-';
             
             // SEÇÃO 1: Informações da Propriedade (IP)
             document.getElementById('prop-parcel-1').textContent = prop['Parcel Number'];
-            document.getElementById('prop-acres-1').textContent = prop['Acres'];
-            document.getElementById('prop-county-1').textContent = prop['County'];
-            document.getElementById('prop-sqft-1').textContent = prop['Square Feet'] || '-';
-            document.getElementById('prop-coordinates-1').textContent = prop['Coordinates'] || '-';
+            document.getElementById('prop-acres-1').textContent = acres;
+            document.getElementById('prop-county-1').innerHTML = countyHTML;
+            document.getElementById('prop-sqft-1').textContent = sqft;
+            document.getElementById('prop-coordinates-1').textContent = coordinates;
+            window.currentCoordinates = coordinates; // Store for copy function
             document.getElementById('prop-zoning-1').textContent = prop['Zoning'] || '-';
+            document.getElementById('prop-next-auction-1').textContent = nextAuction;
             document.getElementById('prop-owner-1').textContent = prop['Name'];
-            document.getElementById('prop-amount-1').textContent = amountDue.replace('$', '').trim();
-            document.getElementById('prop-address-1').textContent = `${prop['Address']}, ${prop['City']}`;
+            document.getElementById('prop-amount-1').textContent = amountDue;
+            document.getElementById('prop-address-1').textContent = fullAddress;
+            window.currentAddress = fullAddress; // Store for copy function
             document.getElementById('prop-type-1').textContent = prop['Parcel Type'];
             document.getElementById('prop-zip-1').textContent = prop['Zip'] || '-';
             document.getElementById('prop-legal-1').textContent = legalFull;
+            window.currentLegalDescription = legalFull; // Store for copy function
             
             // SEÇÃO 2: Detalhes Adicionais
             document.getElementById('prop-parcel-2').textContent = prop['Parcel Number'];
-            document.getElementById('prop-cs-2').textContent = prop['CS'] || '-';
+            
+            // Remove quotes from Case (CS)
+            const caseCS = prop['CS'] ? prop['CS'].replace(/['“”]/g, '') : '-';
+            document.getElementById('prop-cs-2').textContent = caseCS;
+            
             document.getElementById('prop-pin-2').textContent = '-'; // Placeholder
             document.getElementById('prop-cert-2').textContent = '-'; // Placeholder
             document.getElementById('prop-account-2').textContent = '-'; // Placeholder
             document.getElementById('prop-land-value-2').textContent = prop['Land'] || '-';
             document.getElementById('prop-improvements-2').textContent = prop['Improvements'] || '-';
-            document.getElementById('prop-total-value-2').textContent = prop['Total Value'] || '-';
-            document.getElementById('prop-assessed-value-2').textContent = prop['Assessed Value'] || '-';
-            document.getElementById('prop-opportunity-zone-2').textContent = prop['Opportunity Zone'] || '-';
-            document.getElementById('prop-occupancy-2').textContent = prop['Occupancy'] || '-';
-            document.getElementById('prop-status-2').textContent = prop['Status'] || '-';
-            document.getElementById('prop-tax-sale-year-2').textContent = prop['Tax Sale Year'] || '-';
-            document.getElementById('prop-delinquent-year-2').textContent = prop['Delinquent Year'] || '-';
+            
+            // Total Value with icon
+            const totalValue = prop['Total Value'] ? `💰 ${prop['Total Value']}` : '-';
+            document.getElementById('prop-total-value-2').textContent = totalValue;
+            
+            // Opportunity Zone with checkmark
+            const oppZone = prop['Opportunity Zone'] ? `✅ ${prop['Opportunity Zone']}` : '-';
+            document.getElementById('prop-opportunity-zone-2').textContent = oppZone;
+            
+            // Occupancy with icon
+            let occupancy = prop['Occupancy'] || '-';
+            if (occupancy.toLowerCase().includes('occupied')) {
+                occupancy = `🏠 ${occupancy}`;
+            } else if (occupancy.toLowerCase().includes('vacant')) {
+                occupancy = `⚪ ${occupancy}`;
+            }
+            document.getElementById('prop-occupancy-2').textContent = occupancy;
+            
+            // Status with icon
+            const status = prop['Status'] ? `📄 ${prop['Status']}` : '-';
+            document.getElementById('prop-status-2').textContent = status;
+            
+            // Tax Years grouped
+            const taxSaleYear = prop['Tax Sale Year'] || '-';
+            const delinquentYear = prop['Delinquent Year'] || '-';
+            const taxYears = `Tax Sale: ${taxSaleYear} | Delinquent Since: ${delinquentYear}`;
+            document.getElementById('prop-tax-years-2').textContent = taxYears;
             
             // SEÇÃO 3: Contact Information
             document.getElementById('owner-name-section').textContent = prop['Owner Name'] || prop['Name'] || '-';
@@ -1445,7 +1502,7 @@
         }
         
         function copyCoordinates() {
-            const coordinates = document.getElementById('prop-coordinates-1').textContent;
+            const coordinates = window.currentCoordinates || document.getElementById('prop-coordinates-1').textContent;
             if (coordinates && coordinates !== '-') {
                 navigator.clipboard.writeText(coordinates)
                     .then(() => {
@@ -1455,6 +1512,31 @@
                         console.error('Failed to copy:', err);
                         alert('Erro ao copiar. Tente novamente.');
                     });
+            }
+        }
+        
+        function copyLegalDescription() {
+            const legalDesc = window.currentLegalDescription || document.getElementById('prop-legal-1').textContent;
+            if (legalDesc && legalDesc !== '-') {
+                navigator.clipboard.writeText(legalDesc)
+                    .then(() => {
+                        alert('✅ Legal Description copiada!');
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy:', err);
+                        alert('Erro ao copiar. Tente novamente.');
+                    });
+            }
+        }
+        
+        function openGoogleMaps() {
+            const coordinates = window.currentCoordinates || document.getElementById('prop-coordinates-1').textContent;
+            if (coordinates && coordinates !== '-') {
+                const [lat, lng] = coordinates.split(',').map(c => c.trim());
+                const url = `https://www.google.com/maps?q=${lat},${lng}`;
+                window.open(url, '_blank');
+            } else {
+                alert('⚠️ Coordenadas não disponíveis.');
             }
         }
         
