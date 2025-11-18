@@ -35,8 +35,8 @@
 ### Git
 - [x] Inicializar repositório Git
 - [x] Fazer commit inicial
-- [ ] Conectar com GitHub
-- [ ] Push para repositório remoto
+- [x] Conectar com GitHub
+- [x] Push para repositório remoto
 
 ### Testes
 - [ ] Testar importação de CSV
