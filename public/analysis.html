@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Análise Detalhada - GT Lands</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="florida-counties.js"></script>
+    <script src="florida-counties-api.js"></script>
     <style>
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         .map-container { height: 450px; width: 100%; }
@@ -552,13 +552,20 @@
                 coordinates = coords.join(', ');
             }
             
-            // Format county with Appraisal link
+            // Format county with Appraisal link (async)
             const countyName = prop['County'] || '';
-            const countyLink = getCountyAppraisalLink(countyName);
-            let countyHTML = countyName;
-            if (countyLink) {
-                countyHTML = `${countyName} (<a href="${countyLink}" target="_blank" class="text-blue-600 hover:underline">Appraisal</a>)`;
-            }
+            
+            // Set county name first (will be updated with link when API responds)
+            document.getElementById('prop-county-1').textContent = countyName;
+            
+            // Get county link asynchronously and update
+            getCountyAppraisalLink(countyName).then(countyLink => {
+                if (countyLink) {
+                    document.getElementById('prop-county-1').innerHTML = `${countyName} (<a href="${countyLink}" target="_blank" class="text-blue-600 hover:underline">Appraisal</a>)`;
+                }
+            }).catch(err => {
+                console.error('Error loading county link:', err);
+            });
             
             // Format Amount Due with $
             const amountDue = prop['Amount Due'] ? `$${prop['Amount Due'].replace('$', '').trim()}` : '-';
@@ -575,7 +582,7 @@
             // SEÇÃO 1: Informações da Propriedade (IP)
             document.getElementById('prop-parcel-1').textContent = prop['Parcel Number'];
             document.getElementById('prop-acres-1').textContent = acres;
-            document.getElementById('prop-county-1').innerHTML = countyHTML;
+            // County is set above (async)
             document.getElementById('prop-sqft-1').textContent = sqft;
             document.getElementById('prop-coordinates-1').textContent = coordinates;
             window.currentCoordinates = coordinates; // Store for copy function

@@ -237,6 +237,59 @@ app.post('/api/realty-mole', async (req, res) => {
   }
 });
 
+// Florida Counties from Google Sheets
+let countiesCache = null;
+let cacheTimestamp = null;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+app.get('/api/florida-counties', async (req, res) => {
+  try {
+    // Check cache
+    if (countiesCache && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
+      return res.json({ success: true, counties: countiesCache, cached: true });
+    }
+
+    // Google Sheets public URL (no API key needed for public sheets)
+    const spreadsheetId = '1lpoVCGzTQvbN5_o1ZPDESEZyi5BigOTm6g1ZYaT6pTY';
+    const sheetName = 'LINKS UTEIS';
+    const range = 'A3:B69'; // 67 counties starting from row 3
+    
+    const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&range=${range}`;
+    
+    const response = await axios.get(url);
+    
+    // Parse Google Sheets JSON response (it's wrapped in a function call)
+    const jsonString = response.data.substring(47).slice(0, -2);
+    const data = JSON.parse(jsonString);
+    
+    // Extract counties data
+    const counties = {};
+    data.table.rows.forEach(row => {
+      if (row.c && row.c[0] && row.c[1]) {
+        const countyName = row.c[0].v; // Column A
+        const countyLink = row.c[1].v; // Column B
+        if (countyName && countyLink) {
+          counties[countyName.toUpperCase()] = countyLink;
+        }
+      }
+    });
+    
+    // Update cache
+    countiesCache = counties;
+    cacheTimestamp = Date.now();
+    
+    res.json({ success: true, counties, cached: false, count: Object.keys(counties).length });
+  } catch (error) {
+    console.error('Error fetching Florida counties:', error.message);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message,
+      fallback: true,
+      message: 'Using fallback data from florida-counties.js'
+    });
+  }
+});
+
 // Serve index.html on root path
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

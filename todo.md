@@ -256,6 +256,31 @@
 - [x] Criar mapeamento de condados para links
 - [x] Implementar todas as formatações no analysis.html
 - [x] Testar com dados reais do Polk.csv
+- [x] Commit e push para GitHub
+
+
+
+
+
+## 🔄 Integração Google Sheets API - Condados da Flórida - 18/11/2025
+
+### Objetivo:
+Substituir arquivo estático `florida-counties.js` por integração dinâmica com Google Sheets API para atualização automática dos links dos condados.
+
+### Informações da Planilha:
+- **URL:** https://docs.google.com/spreadsheets/d/1lpoVCGzTQvbN5_o1ZPDESEZyi5BigOTm6g1ZYaT6pTY/
+- **Aba:** LINKS UTEIS
+- **Coluna A:** Nome do Condado
+- **Coluna B:** Link do Appraisal (APPRAISAL)
+- **Total:** 67 condados da Flórida
+
+### Tarefas:
+- [x] Criar endpoint GET /api/florida-counties no backend
+- [x] Implementar função para ler Google Sheets via API
+- [x] Adicionar cache para evitar muitas requisições
+- [x] Atualizar analysis.html para usar endpoint ao invés de arquivo estático
+- [x] Remover ou manter florida-counties.js como fallback
+- [x] Testar com planilha real
 - [ ] Commit e push para GitHub
 
 
