@@ -2229,7 +2229,7 @@
                             const distance = calculateDistance(lat, lng, siteLat, siteLng);
                             
                             waterBodies.push({
-                                name: site.siteName || 'Corpo d\''água',
+                                 name: site.siteName || 'Corpo d\'água',
                                 type: site.siteTypeCd === 'ST' ? 'Rio/Córrego' : site.siteTypeCd === 'LK' ? 'Lago' : 'Estuário',
                                 distance: distance,
                                 distanceMiles: (distance * 0.621371).toFixed(2)
