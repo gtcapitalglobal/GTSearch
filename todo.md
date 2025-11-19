@@ -281,6 +281,37 @@ Substituir arquivo estático `florida-counties.js` por integração dinâmica co
 - [x] Atualizar analysis.html para usar endpoint ao invés de arquivo estático
 - [x] Remover ou manter florida-counties.js como fallback
 - [x] Testar com planilha real
-- [ ] Commit e push para GitHub
+- [x] Commit e push para GitHub
 
+
+
+
+
+## 🔑 Configuração de API Keys - 18/11/2025
+
+### Objetivo:
+Configurar todas as API keys fornecidas pelo usuário no projeto para habilitar funcionalidades completas do dashboard.
+
+### API Keys Recebidas:
+- [x] Google Maps API Key
+- [x] OpenAI API Key
+- [x] Google Gemini API Key
+- [ ] Perplexity API Key (vazio - confirmar com usuário)
+- [x] RapidAPI Key (Zillow, Realtor, Realty Mole)
+- [x] FEMA API (grátis - não precisa key)
+- [ ] Google Earth Engine API (aguardando aprovação)
+
+### Tarefas:
+- [x] Criar arquivo .env no projeto
+- [x] Adicionar todas as API keys no .env
+- [x] Gerar JWT_SECRET
+- [x] Atualizar server.js para usar variáveis de ambiente
+- [x] Testar endpoint Google Maps
+- [x] Testar endpoint OpenAI (CONTA DESATIVADA - precisa reativar)
+- [x] Testar endpoint Gemini (FUNCIONANDO!)
+- [ ] Testar endpoint Perplexity (sem chave)
+- [ ] Testar endpoint RapidAPI (Zillow)
+- [x] Testar endpoint FEMA (grátis - funcionando)
+- [ ] Validar que todas as APIs funcionam
+- [ ] Commit e push para GitHub
 
