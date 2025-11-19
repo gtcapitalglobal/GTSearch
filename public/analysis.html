@@ -832,8 +832,25 @@
         }
 
         function loadProperty(index) {
-            const prop = properties[index];
-            console.log('Loading property:', prop);
+            try {
+                console.log('=== loadProperty CHAMADO ===');
+                console.log('Index:', index);
+                console.log('Total properties:', properties.length);
+                
+                if (!properties || properties.length === 0) {
+                    throw new Error('Nenhuma propriedade disponível!');
+                }
+                
+                if (index < 0 || index >= properties.length) {
+                    throw new Error(`Índice inválido: ${index}`);
+                }
+                
+                const prop = properties[index];
+                console.log('Loading property:', prop);
+                
+                if (!prop) {
+                    throw new Error('Propriedade é null ou undefined!');
+                }
 
             // Update navigation
             document.getElementById('property-nav').textContent = `Propriedade ${index + 1} de ${properties.length}`;
@@ -964,7 +981,19 @@
             
             // Load NAIP aerial image
             loadNAIPImage(prop);
+            
+            console.log('✅ Propriedade carregada com sucesso!');
+            
+        } catch (error) {
+            console.error('❌ ERRO em loadProperty:', error);
+            alert(`Erro ao carregar propriedade: ${error.message}\n\nVerifique o console para mais detalhes.`);
+            
+            // Tentar voltar ao dashboard
+            if (confirm('Deseja voltar ao dashboard?')) {
+                window.location.href = 'index.html';
+            }
         }
+    }
 
         function geocodeAndLoadMaps(prop) {
             const address = `${prop['Address']}, ${prop['City']}, FL`;
