@@ -312,6 +312,31 @@ Configurar todas as API keys fornecidas pelo usuário no projeto para habilitar 
 - [ ] Testar endpoint Perplexity (sem chave)
 - [ ] Testar endpoint RapidAPI (Zillow)
 - [x] Testar endpoint FEMA (grátis - funcionando)
-- [ ] Validar que todas as APIs funcionam
-- [ ] Commit e push para GitHub
+- [ ] Validar que todas as APIs funcionam (pendente: OpenAI, Perplexity, RapidAPI)
+- [x] Commit e push para GitHub
+
+
+
+
+## 🚨 SEGURANÇA URGENTE - .env Exposto no GitHub - 18/11/2025
+
+### Problema Identificado:
+- ❌ Arquivo .env foi commitado e está no GitHub
+- ❌ API keys expostas publicamente
+- ❌ Todas as chaves foram revogadas pelo usuário
+
+### Ações Tomadas:
+- [x] Usuário deletou todas as API keys expostas
+- [ ] Remover .env do rastreamento do Git
+- [ ] Limpar .env com placeholders
+- [ ] Commit e push para remover do GitHub
+- [ ] Orientar usuário a criar novas chaves
+- [ ] Configurar novas chaves com segurança
+
+### API Keys que precisam ser recriadas:
+- [ ] Google Maps API Key
+- [ ] Google Gemini API Key
+- [ ] OpenAI API Key
+- [ ] RapidAPI Key
+- [ ] Perplexity API Key (opcional)
 
