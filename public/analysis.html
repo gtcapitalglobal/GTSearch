@@ -885,7 +885,8 @@
             
             // Format Address with FL + Zip
             const fullAddress = `${prop['Address']}, ${prop['City']}, FL ${prop['Zip'] || ''}`;
-            window.currentAddress = fullAddress; // Store for copy functionon = prop['Next Auction'] || '-';
+            window.currentAddress = fullAddress; // Store for copy function
+            const nextAuction = prop['Next Auction'] || '-';
             
             // Legal Description
             const legalFull = prop['Legal Description'] || '-';
