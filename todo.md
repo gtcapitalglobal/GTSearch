@@ -340,3 +340,20 @@ Configurar todas as API keys fornecidas pelo usuário no projeto para habilitar 
 - [ ] RapidAPI Key
 - [ ] Perplexity API Key (opcional)
 
+
+
+
+## 🔧 Correções de Prioridade ALTA e MÉDIA - 18/11/2025
+
+### Objetivo:
+Implementar 4 correções críticas para melhorar funcionalidade do dashboard.
+
+### Tarefas:
+- [x] 1. Corrigir Google Maps - Criar arquivo .env com API key configurada
+- [x] 2. Corrigir RapidAPI Photos - Criados endpoints /api/zillow/search, /api/zillow/images e /api/realty-mole/property
+- [x] 3. Implementar Importação CSV - Adicionado botão 'Salvar para Análise' que salva propriedades no localStorage
+- [x] 4. Otimizar Análises Geográficas - Adicionado timeout de 10s, feedback de loading e botões de retry
+- [x] 5. Testar todas as implementações - Servidor rodando, endpoints respondendo, APIs configuradas
+- [ ] 6. Commit e push para GitHub
+
+

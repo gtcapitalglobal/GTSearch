@@ -211,6 +211,71 @@ app.post('/api/realtor', async (req, res) => {
   }
 });
 
+// Zillow Search by Coordinates
+app.post('/api/zillow/search', async (req, res) => {
+  try {
+    const { lat, lng } = req.body;
+    
+    const response = await axios.get(`https://zillow-com1.p.rapidapi.com/propertyExtendedSearch`, {
+      params: {
+        location: `${lat},${lng}`,
+        status_type: 'ForSale'
+      },
+      headers: {
+        'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+        'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com',
+      },
+    });
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Zillow search error:', error.response?.data || error.message);
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+// Zillow Get Property Images
+app.post('/api/zillow/images', async (req, res) => {
+  try {
+    const { zpid } = req.body;
+    
+    const response = await axios.get(`https://zillow-com1.p.rapidapi.com/images`, {
+      params: { zpid },
+      headers: {
+        'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+        'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com',
+      },
+    });
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Zillow images error:', error.response?.data || error.message);
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+// Realty Mole Get Property by Address
+app.post('/api/realty-mole/property', async (req, res) => {
+  try {
+    const { address, city, state, zip } = req.body;
+    
+    const fullAddress = `${address}, ${city}, ${state} ${zip}`;
+    
+    const response = await axios.get(`https://realty-mole-property-api.p.rapidapi.com/properties`, {
+      params: { address: fullAddress },
+      headers: {
+        'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+        'X-RapidAPI-Host': 'realty-mole-property-api.p.rapidapi.com',
+      },
+    });
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Realty Mole error:', error.response?.data || error.message);
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
 // Realty Mole API Proxy
 app.post('/api/realty-mole', async (req, res) => {
   try {

@@ -415,6 +415,8 @@
             .catch(err => console.error('Error fetching API key:', err));
     </script>
 
+    <script src="fetch-timeout.js"></script>
+    
     <script>
         // Global variables (window scope for cross-script access)
         window.properties = [];
@@ -877,15 +879,17 @@
         }
 
         async function loadLandUse(location) {
+            document.getElementById('land-use-content-section').innerHTML = '<p class="text-sm text-gray-600">⏳ Carregando análise de uso do solo...</p>';
+            
             try {
-                const response = await fetch('/api/land-use', {
+                const response = await fetchWithTimeout('/api/land-use', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         lat: location.lat(), 
                         lng: location.lng() 
                     })
-                });
+                }, 10000);
 
                 const data = await response.json();
                 
@@ -998,20 +1002,25 @@
                 }
             } catch (error) {
                 console.error('Land use error:', error);
-                document.getElementById('land-use-content-section').innerHTML = '<p class="text-sm text-red-600">Erro ao carregar análise de uso do solo</p>';
+                const errorMsg = error.message.includes('timeout') 
+                    ? '⏱️ Timeout - A requisição demorou muito. <button onclick="loadLandUse(new google.maps.LatLng(' + location.lat() + ',' + location.lng() + '))" class="text-blue-600 hover:underline ml-2">🔄 Tentar novamente</button>'
+                    : '❌ Erro ao carregar análise de uso do solo';
+                document.getElementById('land-use-content-section').innerHTML = '<p class="text-sm text-red-600">' + errorMsg + '</p>';
             }
         }
 
         async function loadFemaFlood(location) {
+            document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-gray-600">⏳ Carregando dados de inundação FEMA...</p>';
+            
             try {
-                const response = await fetch('/api/fema-flood', {
+                const response = await fetchWithTimeout('/api/fema-flood', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         lat: location.lat(), 
                         lng: location.lng() 
                     })
-                });
+                }, 10000);
 
                 const data = await response.json();
                 
@@ -1053,7 +1062,10 @@
                 }
             } catch (error) {
                 console.error('FEMA flood error:', error);
-                document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-red-600">Erro ao carregar dados de inundação</p>';
+                const errorMsg = error.message.includes('timeout') 
+                    ? '⏱️ Timeout - A requisição demorou muito. <button onclick="loadFemaFlood(new google.maps.LatLng(' + location.lat() + ',' + location.lng() + '))" class="text-blue-600 hover:underline ml-2">🔄 Tentar novamente</button>'
+                    : '❌ Erro ao carregar dados de inundação';
+                document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-red-600">' + errorMsg + '</p>';
             }
         }
 

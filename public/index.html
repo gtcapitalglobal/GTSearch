@@ -248,9 +248,12 @@
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold text-gray-800">📋 Dados Completos (Novas Propriedades)</h2>
                 <div class="flex gap-3">
-                    <button id="analyzeSelectedBtn" class="hidden bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                        📊 Analisar Selecionadas
-                    </button>
+                       <button id="analyzeSelectedBtn" class="hidden bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                    📊 Analisar Selecionadas
+                </button>
+                <button id="saveForAnalysisBtn" class="hidden bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                    💾 Salvar para Análise
+                </button>
                     <button id="deleteSelectedBtn" class="hidden bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors">
                         🗑️ Deletar Selecionadas
                     </button>
@@ -1110,6 +1113,10 @@
             
             // Export selected button
             exportSelectedBtn.addEventListener('click', showExportOptions);
+            
+            // Save for analysis button
+            const saveForAnalysisBtn = document.getElementById('saveForAnalysisBtn');
+            saveForAnalysisBtn.addEventListener('click', saveSelectedForAnalysis);
         }
         
         function updateSelectionButtons() {
@@ -1119,15 +1126,44 @@
             const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
             const exportSelectedBtn = document.getElementById('exportSelectedBtn');
             
+            const saveForAnalysisBtn = document.getElementById('saveForAnalysisBtn');
+            
             if (checkedCount > 0) {
                 analyzeSelectedBtn.classList.remove('hidden');
                 deleteSelectedBtn.classList.remove('hidden');
                 exportSelectedBtn.classList.remove('hidden');
+                saveForAnalysisBtn.classList.remove('hidden');
             } else {
                 analyzeSelectedBtn.classList.add('hidden');
                 deleteSelectedBtn.classList.add('hidden');
                 exportSelectedBtn.classList.add('hidden');
+                saveForAnalysisBtn.classList.add('hidden');
             }
+        }
+        
+        function saveSelectedForAnalysis() {
+            console.log('💜 Botão Salvar para Análise clicado!');
+            
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+            
+            if (rowCheckboxes.length === 0) {
+                alert('Nenhuma propriedade selecionada!');
+                return;
+            }
+            
+            const selectedProperties = Array.from(rowCheckboxes)
+                .map(cb => {
+                    const index = parseInt(cb.getAttribute('data-index'));
+                    return allNewProperties[index];
+                })
+                .filter(p => p);
+            
+            // Salvar no localStorage
+            localStorage.setItem('properties', JSON.stringify(selectedProperties));
+            
+            alert(`✅ ${selectedProperties.length} propriedades salvas para análise!\n\nVocê pode abrir a página de análise (analysis.html) para analisá-las.`);
+            
+            console.log(`💾 ${selectedProperties.length} propriedades salvas no localStorage`);
         }
         
         function analyzeSelectedProperties() {
