@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Histórico de Versões - GT Lands</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <img src="logo.png" alt="GT Lands Logo" class="h-16">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">
+                            📋 Histórico de Versões
+                        </h1>
+                        <p class="text-gray-600 mt-1">GT Lands - Property Manager</p>
+                    </div>
+                </div>
+                <button onclick="window.location.href='index.html'" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold">
+                    ← Voltar ao Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- Changelog -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            
+            <!-- v22.0 -->
+            <div class="mb-8 pb-8 border-b border-gray-200">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="px-3 py-1 bg-blue-600 text-white rounded-full font-semibold text-sm">v22.0</span>
+                    <span class="text-gray-600 text-sm">11/19/2025 às 14:45 (Miami)</span>
+                    <span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold">ATUAL</span>
+                </div>
+                
+                <h3 class="text-xl font-bold text-gray-800 mb-3">🚀 Implementação Completa de APIs Públicas</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">✨ Novas Funcionalidades:</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600 ml-4">
+                            <li><strong>🗺️ ArcGIS Hub:</strong> Limites oficiais de parcelas, zoneamento, restrições de construção</li>
+                            <li><strong>🏗️ Overpass OSM:</strong> Detecção de construções, análise de aproveitamento do terreno</li>
+                            <li><strong>📊 Census TIGER:</strong> Demografia, economia, crescimento populacional</li>
+                            <li><strong>🛰️ NAIP:</strong> Imagens aéreas de alta resolução (1 metro)</li>
+                            <li><strong>⛰️ USGS:</strong> Elevação, corpos d'água próximos</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">🎨 Melhorias de Interface:</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600 ml-4">
+                            <li>Reorganização da SEÇÃO 1 (Informações da Propriedade)</li>
+                            <li>Botões de copiar para Parcel #, Address e Coordinates</li>
+                            <li>Formato americano para valores monetários ($8,500.00)</li>
+                            <li>Símbolos 🏞️ e 🏠 em Land Value e Improvements</li>
+                            <li>FEMA Flood Risk em 2 lugares (resumo + detalhado)</li>
+                            <li>Sistema de versionamento com data/hora de Miami</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">🔧 Correções:</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600 ml-4">
+                            <li>Corrigida função voltarAoDashboard() (redirecionamento para index.html)</li>
+                            <li>Timeout de 10 segundos em análises geográficas</li>
+                            <li>Tratamento de erros melhorado em todas as APIs</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">📊 Estatísticas:</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600 ml-4">
+                            <li>5 APIs públicas integradas (100% gratuitas)</li>
+                            <li>3 novos arquivos JavaScript (arcgis, osm, census)</li>
+                            <li>2 novas seções (SEÇÃO 6 e 7)</li>
+                            <li>1,110+ linhas de código adicionadas</li>
+                            <li>20 condados da Flórida suportados</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- v21.5 -->
+            <div class="mb-8 pb-8 border-b border-gray-200">
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="px-3 py-1 bg-gray-400 text-white rounded-full font-semibold text-sm">v21.5</span>
+                    <span class="text-gray-600 text-sm">11/11/2025 às 17:30 (Miami)</span>
+                </div>
+                
+                <h3 class="text-xl font-bold text-gray-800 mb-3">📊 Versão Base</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">Funcionalidades:</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600 ml-4">
+                            <li>Dashboard principal com visualização de propriedades</li>
+                            <li>Análise detalhada de propriedades</li>
+                            <li>Google Maps integrado (satélite, street view, terreno)</li>
+                            <li>Análise de lugares próximos</li>
+                            <li>Análise de uso do solo</li>
+                            <li>Dados de inundação FEMA</li>
+                            <li>Fotos via RapidAPI (Zillow, Realtor)</li>
+                            <li>Sistema de categorização (Deletar, Aprovar, Pular)</li>
+                            <li>Importação CSV</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Próximas Versões -->
+            <div class="bg-blue-50 rounded-lg p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-3">🔮 Próximas Versões</h3>
+                
+                <div class="space-y-3">
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">v22.1 (Planejado):</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600 ml-4">
+                            <li>Exportação de análise completa em PDF</li>
+                            <li>Comparação de múltiplas propriedades</li>
+                            <li>Cálculo automático de ROI</li>
+                            <li>Histórico de preços (se disponível)</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-gray-700 mb-2">v23.0 (Futuro):</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600 ml-4">
+                            <li>Suporte para outros estados (TX, CA, etc.)</li>
+                            <li>Integração com MLS</li>
+                            <li>Sistema de alertas automáticos</li>
+                            <li>Dashboard de comparação de mercado</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-8 text-gray-600 text-sm">
+            <p>GT Lands - Property Manager</p>
+            <p class="mt-1">© 2025 GT Capital Global. Todos os direitos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>
+

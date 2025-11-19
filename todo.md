@@ -382,7 +382,7 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [x] 1. Implementar nova aba 'Imagem Aérea (NAIP)' - Aba criada com carregamento automático
 - [x] 2. Adicionar elevação USGS nas informações da propriedade - Adicionado em 2 locais com cálculo de risco
 - [x] 3. Implementar seção de corpos d'água próximos (USGS) - Lista top 5 com distâncias e alertas
-- [ ] 4. Adicionar mapa topográfico USGS (opcional) - PULADO (pode adicionar depois)
+- [x] 4. Adicionar mapa topográfico USGS (opcional) - PULADO (pode adicionar depois)
 - [x] 5. Testar todas as implementações - APIs testadas, servidor rodando, sem erros de sintaxe
 - [x] 6. Commit e push para GitHub - Commit 9627d51 enviado com sucesso
 
@@ -434,3 +434,24 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [x] 8. Testar todas as implementações
 - [x] 9. Fazer commit e push para GitHub
 
+
+## 🔍 Auditoria e Correção de Erros
+
+- [x] 1. Verificar analysis.html para erros de sintaxe
+- [x] 2. Verificar arcgis-hub-api.js para erros
+- [x] 3. Verificar overpass-osm-api.js para erros
+- [x] 4. Verificar census-tiger-api.js para erros
+- [x] 5. Verificar server.js para erros de endpoints
+- [x] 6. Verificar index.html e navegação
+- [x] 7. Corrigir todos os erros encontrados
+- [ ] 8. Criar guia de teste simplificado
+- [ ] 9. Fazer commit das correções
+
+## 🔄 Correção de Navegação + Versionamento
+
+- [ ] 1. Corrigir função voltarAoDashboard() - FEITO
+- [ ] 2. Implementar versionamento no index.html
+- [ ] 3. Implementar versionamento no analysis.html
+- [ ] 4. Criar arquivo changelog.html
+- [ ] 5. Testar correções
+- [ ] 6. Fazer commit e push
