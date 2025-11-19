@@ -354,6 +354,35 @@ Implementar 4 correções críticas para melhorar funcionalidade do dashboard.
 - [x] 3. Implementar Importação CSV - Adicionado botão 'Salvar para Análise' que salva propriedades no localStorage
 - [x] 4. Otimizar Análises Geográficas - Adicionado timeout de 10s, feedback de loading e botões de retry
 - [x] 5. Testar todas as implementações - Servidor rodando, endpoints respondendo, APIs configuradas
-- [ ] 6. Commit e push para GitHub
+- [x] 6. Commit e push para GitHub - Commit 83d6ef1 enviado com sucesso
 
+
+
+
+## 🐛 Debug: Imagens não aparecem - 18/11/2025
+
+### Problema:
+Usuário reportou que imagens não estão aparecendo (Zillow/Realtor)
+
+### Tarefas:
+- [ ] Investigar logs do servidor
+- [ ] Testar endpoints RapidAPI manualmente
+- [ ] Verificar API key do RapidAPI
+- [ ] Corrigir código se necessário
+- [ ] Testar correção
+
+
+
+## 🛰️ Implementação NAIP + USGS - 19/11/2025
+
+### Objetivo:
+Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
+
+### Tarefas:
+- [x] 1. Implementar nova aba 'Imagem Aérea (NAIP)' - Aba criada com carregamento automático
+- [x] 2. Adicionar elevação USGS nas informações da propriedade - Adicionado em 2 locais com cálculo de risco
+- [x] 3. Implementar seção de corpos d'água próximos (USGS) - Lista top 5 com distâncias e alertas
+- [ ] 4. Adicionar mapa topográfico USGS (opcional) - PULADO (pode adicionar depois)
+- [x] 5. Testar todas as implementações - APIs testadas, servidor rodando, sem erros de sintaxe
+- [ ] 6. Commit e push para GitHub
 
