@@ -37,6 +37,33 @@
             </div>
         </div>
 
+        <!-- Barra de Ações Rápidas -->
+        <div class="bg-white rounded-lg shadow-lg mb-3 p-4">
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-semibold text-gray-700">Ações Rápidas:</span>
+                    <button onclick="deletarPropriedade()" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+                        ❌ Deletar
+                    </button>
+                    <button onclick="aprovarPropriedade()" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+                        ✅ Aprovar
+                    </button>
+                    <button onclick="pularPropriedade()" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+                        ⏸️ Pular
+                    </button>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="text-sm">
+                        <span class="font-semibold text-gray-700">Progresso:</span>
+                        <span id="progress-text" class="text-gray-600">0 de 0</span>
+                    </div>
+                    <div class="w-48 bg-gray-200 rounded-full h-2.5">
+                        <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Tabs -->
         <div class="bg-white rounded-lg shadow-lg mb-3">
             <div class="flex border-b border-gray-200">
@@ -540,6 +567,9 @@
             document.getElementById('property-nav').textContent = `Propriedade ${index + 1} de ${properties.length}`;
             document.getElementById('prev-property').disabled = index === 0;
             document.getElementById('next-property').disabled = index === properties.length - 1;
+            
+            // Atualizar progresso
+            atualizarProgresso();
 
             // Format fields
             const acres = prop['Acres'] ? `${prop['Acres']} acres` : '-';
@@ -1573,6 +1603,123 @@
                 alert('✅ Propriedade removida!');
             }
         }
+        
+        // ===== FUNÇÕES DE CATEGORIZAÇÃO =====
+        
+        function deletarPropriedade() {
+            if (confirm('⚠️ Tem certeza que deseja DELETAR esta propriedade?\n\nEla será removida permanentemente da lista.')) {
+                properties.splice(currentIndex, 1);
+                localStorage.setItem('selectedProperties', JSON.stringify(properties));
+                
+                if (properties.length === 0) {
+                    mostrarNotificacao('✅ Todas as propriedades foram analisadas! Voltando ao dashboard...', 'success');
+                    setTimeout(() => { window.location.href = '/'; }, 1500);
+                    return;
+                }
+                
+                if (currentIndex >= properties.length) {
+                    currentIndex = properties.length - 1;
+                }
+                
+                loadProperty(currentIndex);
+                mostrarNotificacao('❌ Propriedade deletada!', 'error');
+            }
+        }
+        
+        function aprovarPropriedade() {
+            properties[currentIndex].status = 'Approved';
+            properties[currentIndex].approvedAt = new Date().toISOString();
+            localStorage.setItem('selectedProperties', JSON.stringify(properties));
+            mostrarNotificacao('✅ Propriedade aprovada!', 'success');
+            
+            setTimeout(() => {
+                if (currentIndex < properties.length - 1) {
+                    currentIndex++;
+                    loadProperty(currentIndex);
+                } else {
+                    if (confirm('✅ Você analisou todas as propriedades!\n\nDeseja voltar ao dashboard?')) {
+                        window.location.href = '/';
+                    }
+                }
+            }, 800);
+        }
+        
+        function pularPropriedade() {
+            properties[currentIndex].status = 'Pending';
+            properties[currentIndex].skippedAt = new Date().toISOString();
+            localStorage.setItem('selectedProperties', JSON.stringify(properties));
+            mostrarNotificacao('⏸️ Propriedade pulada!', 'info');
+            
+            setTimeout(() => {
+                if (currentIndex < properties.length - 1) {
+                    currentIndex++;
+                    loadProperty(currentIndex);
+                } else {
+                    if (confirm('🎯 Você chegou ao final da lista!\n\nDeseja voltar ao dashboard?')) {
+                        window.location.href = '/';
+                    }
+                }
+            }, 800);
+        }
+        
+        function mostrarNotificacao(mensagem, tipo) {
+            const notif = document.createElement('div');
+            notif.className = 'fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white font-semibold z-50 transition-all';
+            
+            if (tipo === 'success') notif.className += ' bg-green-600';
+            else if (tipo === 'error') notif.className += ' bg-red-600';
+            else if (tipo === 'info') notif.className += ' bg-gray-600';
+            
+            notif.textContent = mensagem;
+            document.body.appendChild(notif);
+            
+            setTimeout(() => {
+                notif.style.opacity = '0';
+                setTimeout(() => notif.remove(), 300);
+            }, 3000);
+        }
+        
+        function atualizarProgresso() {
+            const total = properties.length;
+            const atual = currentIndex + 1;
+            const porcentagem = (atual / total) * 100;
+            
+            document.getElementById('progress-text').textContent = `${atual} de ${total}`;
+            document.getElementById('progress-bar').style.width = `${porcentagem}%`;
+        }
+        
+        document.addEventListener('keydown', function(event) {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+            
+            if (event.key === 'Delete' || event.key.toLowerCase() === 'd') {
+                event.preventDefault();
+                deletarPropriedade();
+            }
+            if (event.key === 'Enter' || event.key.toLowerCase() === 'a') {
+                event.preventDefault();
+                aprovarPropriedade();
+            }
+            if (event.key === ' ' || event.key.toLowerCase() === 'p') {
+                event.preventDefault();
+                pularPropriedade();
+            }
+            if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    loadProperty(currentIndex);
+                }
+            }
+            if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                if (currentIndex < properties.length - 1) {
+                    currentIndex++;
+                    loadProperty(currentIndex);
+                }
+            }
+        });
+        
+        // ===== FIM FUNÇÕES DE CATEGORIZAÇÃO =====
         
         function updateResearchLinks(prop) {
             // Polk County Links
