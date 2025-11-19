@@ -454,4 +454,14 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [ ] 3. Implementar versionamento no analysis.html
 - [ ] 4. Criar arquivo changelog.html
 - [ ] 5. Testar correções
-- [ ] 6. Fazer commit e push
+- [x] 6. Fazer commit e push
+
+## 🐛 BUG URGENTE - Página de Análise Não Carrega Dados - 19/11/2025
+
+- [x] 1. Investigar por que analysis.html mostra "Carregando..." indefinidamente
+- [x] 2. Verificar console do navegador para erros JavaScript
+- [x] 3. Verificar se dados estão salvos no localStorage
+- [x] 4. Verificar função loadProperty() e carregamento inicial
+- [x] 5. Corrigir bug identificado (ordem de carregamento - não esperar Google Maps)
+- [x] 6. Testar correção
+- [ ] 7. Fazer commit e push

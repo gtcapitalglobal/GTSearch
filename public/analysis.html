@@ -746,14 +746,12 @@
             // Setup navigation
             setupNavigation();
             
-            // Wait for Google Maps to load, then load first property
-            if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
-                console.log('Google Maps already loaded, loading property...');
-                loadProperty(0);
-            } else {
-                console.log('Waiting for Google Maps to load...');
-                // initMaps will be called by Google Maps callback
-            }
+            // CORREÇÃO: Carregar propriedade IMEDIATAMENTE, não esperar Google Maps
+            console.log('Loading first property immediately...');
+            loadProperty(0);
+            
+            // Google Maps será inicializado quando o script carregar (callback=initMaps)
+            // Se já estiver carregado, initMaps será chamado automaticamente
         }
         
         // Call immediately if DOM is ready, otherwise wait
@@ -828,9 +826,9 @@
         }
 
         window.initMaps = function() {
-            console.log('Initializing maps...');
-            // Maps will be initialized when first property is loaded
-            loadProperty(0);
+            console.log('✅ Google Maps API carregado com sucesso!');
+            // Propriedade já foi carregada em initializeApp()
+            // Os mapas serão inicializados automaticamente quando necessário
         }
 
         function loadProperty(index) {
