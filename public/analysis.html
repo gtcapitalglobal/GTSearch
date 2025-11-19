@@ -2275,13 +2275,13 @@
                     
                 } else {
                     document.getElementById('water-bodies-section').innerHTML = 
-                        '<p class="text-xs text-gray-600">ℹ️ Nenhum corpo d\''água encontrado em um raio de 2km.</p>';
+                         '<p class="text-xs text-gray-600">ℹ️ Nenhum corpo d\'água encontrado em um raio de 2km.</p>';
                 }
             } catch (error) {
                 console.error('USGS Water error:', error);
                 const errorMsg = error.message.includes('timeout') 
                     ? '⏱️ Timeout - A requisição demorou muito.'
-                    : '❌ Erro ao carregar dados de corpos d\''água.';
+                     : '❌ Erro ao carregar dados de corpos d\'água.';
                 document.getElementById('water-bodies-section').innerHTML = 
                     `<p class="text-xs text-red-600">${errorMsg}</p>`;
             }
