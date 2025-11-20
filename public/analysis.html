@@ -475,11 +475,11 @@
                     </div>
                 </div>
                 
-                <!-- Corpos d'Água Próximos (USGS) -->
+                <!-- Corpos d'Agua Próximos (USGS) -->
                 <div>
-                    <h3 class="text-sm font-bold text-gray-700 mb-2">💧 Corpos d'Água Próximos (USGS):</h3>
+                    <h3 class="text-sm font-bold text-gray-700 mb-2">💧 Corpos d'Agua Próximos (USGS):</h3>
                     <div class="bg-gray-50 rounded-lg p-3" id="water-bodies-section">
-                        <p class="text-xs text-gray-600">⏳ Carregando dados de corpos d'água...</p>
+                        <p class="text-xs text-gray-600">⏳ Carregando dados de corpos d'agua...</p>
                     </div>
                 </div>
                 
@@ -507,9 +507,9 @@
                     </div>
                 </div>
                 
-                <!-- Proximidade de Água -->
+                <!-- Proximidade de Agua -->
                 <div>
-                    <h3 class="text-sm font-bold text-gray-700 mb-2">💧 Proximidade de Água:</h3>
+                    <h3 class="text-sm font-bold text-gray-700 mb-2">💧 Proximidade de Agua:</h3>
                     <div id="water-proximity-content-section">
                         <p class="text-gray-600">Carregando análise...</p>
                     </div>
@@ -1277,7 +1277,7 @@
                                 <span class="text-lg">💧</span>
                                 <div class="flex-1">
                                     <div class="flex justify-between mb-0.5">
-                                        <span>Água/Área Alagada</span>
+                                        <span>Agua/Área Alagada</span>
                                         <span class="font-semibold">${percentages.water}%</span>
                                     </div>
                                     <div class="w-full bg-gray-200 rounded-full h-1.5">
@@ -1401,7 +1401,7 @@
                 }
                 
                 const waterTypes = [
-                    { type: 'natural_feature', name: 'Corpo d\'Água', icon: '🌊' },
+                    { type: 'natural_feature', name: 'Corpo d\'Agua', icon: '🌊' },
                     { type: 'park', name: 'Parque/Lago', icon: '🌳' }
                 ];
                 
@@ -1447,7 +1447,7 @@
             } catch (error) {
                 console.error('Water proximity error:', error);
                 document.getElementById('water-proximity-content-section').innerHTML = 
-                    '<p class="text-sm text-red-600">Erro ao carregar dados de proximidade de água</p>';
+                    '<p class="text-sm text-red-600">Erro ao carregar dados de proximidade de agua</p>';
             }
         }
         
@@ -1470,9 +1470,9 @@
                 document.getElementById('water-proximity-content-section').innerHTML = `
                     <div class="flex items-center gap-2 text-sm">
                         <span class="text-2xl">✅</span>
-                        <span class="text-green-600 font-semibold">Nenhum corpo d'água próximo (raio 2km)</span>
+                        <span class="text-green-600 font-semibold">Nenhum corpo d'agua próximo (raio 2km)</span>
                     </div>
-                    <p class="text-xs text-gray-600 mt-1">Baixo risco de inundação por proximidade de água</p>
+                    <p class="text-xs text-gray-600 mt-1">Baixo risco de inundação por proximidade de agua</p>
                 `;
                 return;
             }
@@ -1520,14 +1520,14 @@
                 html += `
                     <div class="bg-red-50 border border-red-200 rounded p-2 text-xs mt-2">
                         <strong class="text-red-700">🚨 Alerta:</strong>
-                        <span class="text-red-600">Propriedade muito próxima de água - alto risco de inundação</span>
+                        <span class="text-red-600">Propriedade muito próxima de agua - alto risco de inundação</span>
                     </div>
                 `;
             } else if (closestDistance < 500) {
                 html += `
                     <div class="bg-orange-50 border border-orange-200 rounded p-2 text-xs mt-2">
                         <strong class="text-orange-700">⚠️ Atenção:</strong>
-                        <span class="text-orange-600">Proximidade moderada de água - verificar histórico de inundações</span>
+                        <span class="text-orange-600">Proximidade moderada de agua - verificar histórico de inundações</span>
                     </div>
                 `;
             }
@@ -2258,7 +2258,7 @@
                             const distance = calculateDistance(lat, lng, siteLat, siteLng);
                             
                             waterBodies.push({
-                                 name: site.siteName || 'Corpo d\'água',
+                                 name: site.siteName || 'Corpo d\'agua',
                                 type: site.siteTypeCd === 'ST' ? 'Rio/Córrego' : site.siteTypeCd === 'LK' ? 'Lago' : 'Estuário',
                                 distance: distance,
                                 distanceMiles: (distance * 0.621371).toFixed(2)
@@ -2275,13 +2275,13 @@
                     
                 } else {
                     document.getElementById('water-bodies-section').innerHTML = 
-                         '<p class="text-xs text-gray-600">ℹ️ Nenhum corpo d\'água encontrado em um raio de 2km.</p>';
+                         '<p class="text-xs text-gray-600">ℹ️ Nenhum corpo d\'agua encontrado em um raio de 2km.</p>';
                 }
             } catch (error) {
                 console.error('USGS Water error:', error);
                 const errorMsg = error.message.includes('timeout') 
                     ? '⏱️ Timeout - A requisição demorou muito.'
-                     : '❌ Erro ao carregar dados de corpos d\'água.';
+                     : '❌ Erro ao carregar dados de corpos d\'agua.';
                 document.getElementById('water-bodies-section').innerHTML = 
                     `<p class="text-xs text-red-600">${errorMsg}</p>`;
             }
@@ -2290,7 +2290,7 @@
         function displayWaterBodies(waterBodies) {
             if (waterBodies.length === 0) {
                 document.getElementById('water-bodies-section').innerHTML = 
-                    '<p class="text-xs text-gray-600">ℹ️ Nenhum corpo d\''água encontrado em um raio de 2km.</p>';
+                    '<p class="text-xs text-gray-600">ℹ️ Nenhum corpo d\''agua encontrado em um raio de 2km.</p>';
                 return;
             }
             
@@ -2317,7 +2317,7 @@
             if (closestDistance < 0.5) {
                 html += `
                     <div class="mt-3 bg-yellow-50 border border-yellow-200 rounded p-2 text-xs text-yellow-800">
-                        ⚠️ <strong>Atenção:</strong> Corpo d'água muito próximo (< 500m). 
+                        ⚠️ <strong>Atenção:</strong> Corpo d'agua muito próximo (< 500m). 
                         Pode aumentar risco de inundação em eventos extremos.
                     </div>
                 `;
