@@ -497,6 +497,18 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [x] 1. Detectar quando não há dados no localStorage
 - [x] 2. Redirecionar automaticamente para index.html
 - [x] 3. Remover alert() e confirm() que mostram erro
-- [ ] 4. Testar redirecionamento
+- [x] 4. Testar redirecionamento
+- [x] 5. Fazer commit e push (commit 3cf817a)
+
+
+
+## 🐛 BUG URGENTE: Redirecionamento Incorreto - 19/11/2025
+
+- [ ] 1. Investigar por que catch está sendo acionado com dados válidos
+- [ ] 2. Corrigir lógica para só redirecionar quando NÃO houver dados
+- [ ] 3. Manter alerta apenas para erros reais
+- [ ] 4. Testar com dados válidos
 - [ ] 5. Fazer commit e push
+
+**Problema:** Ao clicar em "Analisar Selecionadas", redireciona para dashboard em vez de mostrar análise
 

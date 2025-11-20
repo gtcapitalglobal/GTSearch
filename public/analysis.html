@@ -986,10 +986,17 @@
             
         } catch (error) {
             console.error('❌ ERRO em loadProperty:', error);
-            console.warn('➡️ Redirecionando para o dashboard...');
             
-            // Redirecionar automaticamente sem alertas
-            window.location.href = 'index.html';
+            // Só redirecionar se realmente não houver dados
+            const stored = localStorage.getItem('selectedProperties');
+            if (!stored || stored === '[]' || stored === 'null') {
+                console.warn('⚠️ Sem dados válidos no localStorage. Redirecionando...');
+                window.location.href = 'index.html';
+            } else {
+                // Dados existem, mas houve erro ao renderizar
+                // Log o erro mas deixa a página tentar continuar
+                console.warn('⚠️ Erro ao renderizar, mas dados existem. Continuando...');
+            }
         }
     }
 
