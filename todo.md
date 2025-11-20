@@ -526,3 +526,17 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 **Requisito:** Ao clicar em "Analisar", mostrar a aba Google Maps com os mapas já carregados, não apenas as informações
 **Solução:** Modificado setupTabs() para ativar Google Maps automaticamente ao carregar página
 
+
+
+
+## 🐛 BUG CRÍTICO: Dados não carregam na página de análise - 19/11/2025
+
+- [ ] 1. Investigar por que campos aparecem vazios ou "Carregando..."
+- [ ] 2. Verificar se loadProperty() está sendo executada
+- [ ] 3. Verificar se há erros no console do navegador
+- [ ] 4. Corrigir problema identificado
+- [ ] 5. Testar com dados reais
+- [ ] 6. Fazer commit e push
+
+**Problema:** Após clicar em "Analisar", a página abre mas os dados não aparecem (Detalhes Adicionais, Contact Information, etc. ficam vazios)
+

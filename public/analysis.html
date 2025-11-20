@@ -939,7 +939,7 @@
             document.getElementById('prop-address-full-1').textContent = fullAddress;
             window.currentAddress = fullAddress; // Store for copy function
             document.getElementById('prop-type-1').textContent = prop['Parcel Type'];
-            document.getElementById('prop-zip-1').textContent = prop['Zip'] || '-';
+            // prop-zip-1 removido - Zip já está incluído no fullAddress
             document.getElementById('prop-legal-1').textContent = legalFull;
             window.currentLegalDescription = legalFull; // Store for copy function
             
@@ -2210,8 +2210,9 @@
                     const elevationMeters = elevationFeet * 0.3048;
                     
                     // Update info da propriedade (resumo)
-                    document.getElementById('prop-elevation-1').textContent = 
-                        `${elevationFeet.toFixed(1)} ft (${elevationMeters.toFixed(1)} m)`;
+                    // prop-elevation-1 não existe no HTML - comentado para evitar erro
+                    // document.getElementById('prop-elevation-1').textContent = 
+                    //     `${elevationFeet.toFixed(1)} ft (${elevationMeters.toFixed(1)} m)`;
                     
                     // Update análise geográfica (detalhado)
                     document.getElementById('elevation-value-section').textContent = 
@@ -2240,7 +2241,8 @@
                 }
             } catch (error) {
                 console.error('USGS Elevation error:', error);
-                document.getElementById('prop-elevation-1').textContent = '❌ Erro';
+                // prop-elevation-1 não existe no HTML - comentado para evitar erro
+                // document.getElementById('prop-elevation-1').textContent = '❌ Erro';
                 document.getElementById('elevation-value-section').textContent = '❌ Erro ao carregar';
                 document.getElementById('elevation-description').textContent = 
                     error.message.includes('timeout') 
