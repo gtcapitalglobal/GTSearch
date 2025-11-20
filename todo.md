@@ -517,11 +517,12 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 
 ## 🗺️ UX: Mostrar Google Maps Automaticamente - 19/11/2025
 
-- [ ] 1. Investigar código de inicialização das tabs
-- [ ] 2. Modificar para ativar tab Google Maps automaticamente
-- [ ] 3. Garantir que mapas são carregados logo ao abrir
+- [x] 1. Investigar código de inicialização das tabs
+- [x] 2. Modificar para ativar tab Google Maps automaticamente
+- [x] 3. Garantir que mapas são carregados logo ao abrir
 - [ ] 4. Testar com propriedades reais
-- [ ] 5. Fazer commit e push
+- [x] 5. Fazer commit e push (commit 9076167)
 
 **Requisito:** Ao clicar em "Analisar", mostrar a aba Google Maps com os mapas já carregados, não apenas as informações
+**Solução:** Modificado setupTabs() para ativar Google Maps automaticamente ao carregar página
 
