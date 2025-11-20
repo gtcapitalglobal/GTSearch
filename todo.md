@@ -485,8 +485,18 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [x] 2. Verificar strings com acentos problemáticos
 - [x] 3. Corrigir todos os erros encontrados (linha 2293)
 - [x] 4. Validar código JavaScript
-- [ ] 5. Fazer commit e push para GitHub
+- [x] 5. Fazer commit e push para GitHub (commit 728a799)
 - [ ] 6. Testar funcionamento completo
 
 **Resultado:** 1 erro encontrado e corrigido (d''agua → d\'agua na linha 2293)
+
+
+
+## 🚫 Remover Alerta de Erro - 19/11/2025
+
+- [x] 1. Detectar quando não há dados no localStorage
+- [x] 2. Redirecionar automaticamente para index.html
+- [x] 3. Remover alert() e confirm() que mostram erro
+- [ ] 4. Testar redirecionamento
+- [ ] 5. Fazer commit e push
 

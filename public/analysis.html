@@ -986,12 +986,10 @@
             
         } catch (error) {
             console.error('❌ ERRO em loadProperty:', error);
-            alert(`Erro ao carregar propriedade: ${error.message}\n\nVerifique o console para mais detalhes.`);
+            console.warn('➡️ Redirecionando para o dashboard...');
             
-            // Tentar voltar ao dashboard
-            if (confirm('Deseja voltar ao dashboard?')) {
-                window.location.href = 'index.html';
-            }
+            // Redirecionar automaticamente sem alertas
+            window.location.href = 'index.html';
         }
     }
 
