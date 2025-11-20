@@ -778,6 +778,23 @@
                     document.getElementById(tabId).classList.add('active');
                 });
             });
+            
+            // ATIVAR ABA GOOGLE MAPS AUTOMATICAMENTE ao carregar página
+            // Isso faz com que os mapas apareçam logo ao abrir a análise
+            const googleMapsTab = document.querySelector('[data-tab="google-maps"]');
+            const googleMapsContent = document.getElementById('google-maps');
+            
+            if (googleMapsTab && googleMapsContent) {
+                // Remover active de todas as tabs primeiro
+                tabButtons.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Ativar Google Maps
+                googleMapsTab.classList.add('active');
+                googleMapsContent.classList.add('active');
+                
+                console.log('✅ Aba Google Maps ativada automaticamente!');
+            }
         }
 
         function setupNavigation() {
