@@ -531,12 +531,14 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 
 ## 🐛 BUG CRÍTICO: Dados não carregam na página de análise - 19/11/2025
 
-- [ ] 1. Investigar por que campos aparecem vazios ou "Carregando..."
-- [ ] 2. Verificar se loadProperty() está sendo executada
-- [ ] 3. Verificar se há erros no console do navegador
-- [ ] 4. Corrigir problema identificado
+- [x] 1. Investigar por que campos aparecem vazios ou "Carregando..."
+- [x] 2. Verificar se loadProperty() está sendo executada
+- [x] 3. Verificar se há erros no console do navegador
+- [x] 4. Corrigir problema identificado
 - [ ] 5. Testar com dados reais
-- [ ] 6. Fazer commit e push
+- [x] 6. Fazer commit e push (commit 615fff0)
 
 **Problema:** Após clicar em "Analisar", a página abre mas os dados não aparecem (Detalhes Adicionais, Contact Information, etc. ficam vazios)
+**Causa:** JavaScript tentava acessar elementos HTML que não existem (prop-zip-1, prop-elevation-1), causando erro 'Cannot set properties of null'
+**Solução:** Removido/comentado acesso a elementos inexistentes
 
