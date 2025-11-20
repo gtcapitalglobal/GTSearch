@@ -994,7 +994,20 @@
             // updateResearchLinks(prop); // COMENTADO - elementos não existem mais (aba Research removida)
 
             // Geocode address and load maps
-            geocodeAndLoadMaps(prop);
+            // Verificar se Google Maps já está carregado antes de usar
+            if (typeof google !== 'undefined' && google.maps) {
+                geocodeAndLoadMaps(prop);
+            } else {
+                console.warn('⚠️ Google Maps ainda não carregou. Aguardando...');
+                // Tentar novamente após 2 segundos
+                setTimeout(() => {
+                    if (typeof google !== 'undefined' && google.maps) {
+                        geocodeAndLoadMaps(prop);
+                    } else {
+                        console.error('❌ Google Maps não carregou após timeout');
+                    }
+                }, 2000);
+            }
             
             // Load NAIP aerial image
             loadNAIPImage(prop);

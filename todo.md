@@ -542,3 +542,32 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 **Causa:** JavaScript tentava acessar elementos HTML que não existem (prop-zip-1, prop-elevation-1), causando erro 'Cannot set properties of null'
 **Solução:** Removido/comentado acesso a elementos inexistentes
 
+
+
+
+## 🐛 ERRO: updateResearchLinks tentando acessar elementos inexistentes - 19/11/2025
+
+- [ ] 1. Investigar função updateResearchLinks linha 2377
+- [ ] 2. Identificar quais elementos não existem no HTML
+- [ ] 3. Comentar ou remover acesso a elementos inexistentes
+- [ ] 4. Testar correção
+- [ ] 5. Fazer commit e push
+
+**Problema:** Erro "Cannot set properties of null (setting 'href')" em updateResearchLinks
+**Impacto:** Impede que dados sejam carregados completamente na página de análise
+
+
+
+
+## 🐛 ERRO: Google Maps não está definido quando geocodeAndLoadMaps é chamado - 19/11/2025
+
+- [ ] 1. Modificar código para verificar se Google Maps está carregado
+- [ ] 2. Adicionar verificação antes de chamar geocodeAndLoadMaps()
+- [ ] 3. Esperar Google Maps carregar ou mostrar mensagem de loading
+- [ ] 4. Testar correção
+- [ ] 5. Fazer commit e push
+
+**Problema:** ReferenceError: google is not defined em geocodeAndLoadMaps
+**Causa:** loadProperty() chama geocodeAndLoadMaps() antes do Google Maps API terminar de carregar
+**Solução:** Verificar se typeof google !== 'undefined' antes de usar
+
