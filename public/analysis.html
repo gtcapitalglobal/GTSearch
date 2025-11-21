@@ -2380,46 +2380,7 @@
         
         // ===== FIM FUNÇÕES USGS WATER SERVICES =====
         
-        function updateResearchLinks(prop) {
-            // Polk County Links
-            const parcel = prop['Parcel Number'] || '';
-            const address = `${prop['Address'] || ''}, ${prop['City'] || ''}, FL`;
-            const owner = prop['Name'] || '';
-            
-            // URLs base (podem ser customizados)
-            document.getElementById('link-polk-appraiser').href = `https://www.polkpa.org/`;
-            document.getElementById('link-polk-tax').href = `https://www.polktaxes.com/`;
-            document.getElementById('link-polk-comptroller').href = `https://www.polk.gov/`;
-            document.getElementById('link-property-card').href = `https://www.polkpa.org/`;
-            document.getElementById('link-gis-map').href = `https://www.polkpa.org/`;
-            
-            // Owner Research
-            document.getElementById('link-google-news-owner').href = `https://news.google.com/search?q=${encodeURIComponent(owner)}`;
-            document.getElementById('link-google-search-owner').href = `https://www.google.com/search?q=${encodeURIComponent(owner)}`;
-            document.getElementById('link-obituary').href = `https://www.google.com/search?q=${encodeURIComponent(owner + ' obituary')}`;
-            
-            // Owner Skip Trace
-            document.getElementById('link-cyber-background').href = `https://www.cyberbackgroundchecks.com/`;
-            document.getElementById('link-fast-people').href = `https://www.fastpeoplesearch.com/name/${encodeURIComponent(owner)}`;
-            document.getElementById('link-true-people').href = `https://www.truepeoplesearch.com/results?name=${encodeURIComponent(owner)}`;
-            
-            // Property Research
-            document.getElementById('link-zillow-report').href = `https://www.zillow.com/homes/${encodeURIComponent(address)}`;
-            document.getElementById('link-google-news-property').href = `https://news.google.com/search?q=${encodeURIComponent(address)}`;
-            document.getElementById('link-epa-report').href = `https://www.epa.gov/`;
-            document.getElementById('link-fema-flood').href = `https://msc.fema.gov/portal/home`;
-            
-            // Research Comparables
-            document.getElementById('link-realtor-comps').href = `https://www.realtor.com/realestateandhomes-search/${encodeURIComponent(prop['City'] || 'FL')}`;
-            document.getElementById('link-redfin-comps').href = `https://www.redfin.com/city/${encodeURIComponent(prop['City'] || 'FL')}`;
-            document.getElementById('link-trulia-comps').href = `https://www.trulia.com/${encodeURIComponent(prop['City'] || 'FL')}`;
-            document.getElementById('link-zillow-comps').href = `https://www.zillow.com/${encodeURIComponent(prop['City'] || 'FL')}`;
-            
-            // Research Local Housing Market
-            document.getElementById('link-realtor-market').href = `https://www.realtor.com/local/${encodeURIComponent(prop['City'] || 'FL')}`;
-            document.getElementById('link-redfin-market').href = `https://www.redfin.com/city/${encodeURIComponent(prop['City'] || 'FL')}`;
-            document.getElementById('link-zillow-value').href = `https://www.zillow.com/home-values/${encodeURIComponent(prop['City'] || 'FL')}`;
-        }
+        // updateResearchLinks() REMOVIDA - Aba Research Links não existe mais
     </script>
 </body>
 </html>
