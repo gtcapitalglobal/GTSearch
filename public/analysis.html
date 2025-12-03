@@ -878,7 +878,7 @@
             atualizarProgresso();
 
             // Format fields
-            const acres = prop['Acres'] ? `${prop['Acres']} acres` : '-';
+            const acres = prop['Acres'] ? `${parseFloat(prop['Acres']).toFixed(2)} acres` : '-';
             const sqft = prop['Square Feet'] ? `${parseInt(prop['Square Feet']).toLocaleString('en-US')} sq ft` : '-';
             
             // Format coordinates (round to 4 decimals)
@@ -2144,7 +2144,7 @@
             
             // Update info
             document.getElementById('naip-location').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-            document.getElementById('naip-area').textContent = `${acres} acres`;
+            document.getElementById('naip-area').textContent = `${acres.toFixed(2)} acres`;
             
             // Load image
             const img = document.getElementById('naip-image');
