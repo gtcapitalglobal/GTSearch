@@ -704,7 +704,7 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 
 
 ### 🐛 Bugs Reportados
-- [ ] **Bug: Sistema trava ao voltar das configurações** - Quando usuário clica em "Configurações" e depois tenta voltar, o sistema trava
+- [x] **Bug: Botão voltar redireciona para dashboard-v21.html inexistente** - Quando usuário clica em "voltar" de config/settings, tenta acessar dashboard-v21.html que não existe (deveria ser index.html) - CORRIGIDO
 
 
 ### 🎨 Melhorias de UI/UX
