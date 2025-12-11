@@ -711,3 +711,10 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [x] Adicionar botões "Ações Rápidas" (Deletar, Aprovar, Pular) na lateral direita da seção "Informações da Propriedade"
 - [x] Manter botões também no topo (duplicados)
 - [x] Garantir responsividade em mobile
+
+
+### 🏷️ Rebranding
+- [x] Renomear projeto de "GT Lands" para "GTSearch" em todos os arquivos HTML
+- [x] Atualizar títulos das páginas
+- [x] Atualizar meta tags
+- [x] Verificar se logo precisa ser atualizado (logo.png já é genérico)
