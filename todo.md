@@ -658,3 +658,56 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [x] Validar dados com propriedades reais (28.6890, -82.5534 = Zona X)
 - [x] Parsing correto de dados (flood zone, SFHA, BFE, DFIRM ID)
 - [x] Tratamento de valores -9999 (não aplicável)
+
+
+### Zoning Data Integration
+- [ ] Testar Zoning_ai API do RapidAPI
+- [ ] Pesquisar APIs alternativas de zoning (se Zoning_ai não funcionar)
+- [ ] Implementar endpoint /api/zoning no server.js
+- [ ] Testar com endereços reais da Flórida
+- [ ] Exibir dados de zoning no analysis.html
+
+### Cache System (Future)
+- [ ] Implementar cache em arquivo JSON para flood zone
+- [ ] Implementar cache para zoning data
+- [ ] Adicionar TTL (time-to-live) de 30 dias
+- [ ] Criar função de limpeza de cache antigo
+
+
+### 🔮 Future Enhancements (Para implementar depois)
+
+#### Sistema de Cache
+- [ ] Implementar sistema de cache para API de Flood Zone (economizar requisições RapidAPI)
+- [ ] Cache baseado em coordenadas (lat, lng)
+- [ ] Expiração de cache após 30 dias
+- [ ] Armazenamento em arquivo JSON local
+
+#### Dados de Zoning
+- [ ] Pesquisar e analisar site do Property Appraiser de Hernando County
+- [ ] Identificar URL e parâmetros para buscar por parcel number
+- [ ] Implementar scraping do Property Appraiser de Hernando County para dados de zoning (gratuito)
+- [ ] Criar endpoint /api/zoning no servidor
+- [ ] Testar com propriedades reais (coordenadas 28.6890, -82.5534)
+- [ ] Adicionar campo "Zoning" na SEÇÃO 4 do analysis.html
+- [ ] Mostrar Zoning Code + Description
+
+#### Regrid API (Opcional - Requer Plano Pago)
+- [ ] Avaliar custo-benefício de assinar plano pago da Regrid ($375/mês Standard ou $500/mês Premium)
+- [ ] Considerar usar Regrid Batch API para processar múltiplas propriedades de uma vez (até 100.000 pontos por lote)
+- [ ] Implementar fallback híbrido: usar Regrid para condados do trial (Marion IN, Dallas TX, Wilson TN, Durham NC, Filmore NE, Clark WI, Gurabo PR) e scraping para outros condados
+- [ ] Documentação da Batch API salva em: /home/ubuntu/upload/pasted_content.txt
+
+#### Notas Importantes
+- **Regrid Trial:** Limitado a 7 condados específicos (Hernando County FL NÃO está incluído)
+- **Regrid Zoning:** Requer add-on "Standardized Zoning" (não incluído no plano básico)
+- **Alternativa Gratuita:** Scraping do Property Appraiser de cada condado da Flórida
+
+
+### 🐛 Bugs Reportados
+- [ ] **Bug: Sistema trava ao voltar das configurações** - Quando usuário clica em "Configurações" e depois tenta voltar, o sistema trava
+
+
+### 🎨 Melhorias de UI/UX
+- [x] Adicionar botões "Ações Rápidas" (Deletar, Aprovar, Pular) na lateral direita da seção "Informações da Propriedade"
+- [x] Manter botões também no topo (duplicados)
+- [x] Garantir responsividade em mobile
