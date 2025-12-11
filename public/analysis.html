@@ -22,6 +22,62 @@
             transition: transform 0.3s ease;
         }
         
+        /* Botões laterais - estilo compacto */
+        .property-section-grid {
+            display: grid;
+            grid-template-columns: 1fr 140px;
+            gap: 20px;
+            align-items: start;
+        }
+        
+        .actions-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .actions-sidebar h3 {
+            font-size: 11px;
+            font-weight: 600;
+            color: #718096;
+            text-align: center;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .actions-sidebar button {
+            padding: 10px 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .actions-sidebar button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .actions-sidebar button .icon {
+            font-size: 18px;
+            line-height: 1;
+        }
+        
+        .actions-sidebar button .label {
+            font-size: 11px;
+            line-height: 1;
+        }
+        
         @media (max-width: 768px) {
             .property-section-grid {
                 grid-template-columns: 1fr !important;
@@ -212,7 +268,7 @@
         <!-- Seção 1: Informações da Propriedade (IP) -->
         <div class="bg-white rounded-lg shadow-lg p-4 mb-3">
             <h2 class="text-lg font-bold text-gray-800 mb-3">📋 Informações da Propriedade</h2>
-            <div class="grid grid-cols-[1fr_200px] gap-6 property-section-grid">
+            <div class="property-section-grid">
                 <!-- Conteúdo Principal -->
                 <div class="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
                 <!-- Coluna Esquerda -->
@@ -299,23 +355,23 @@
                 </div>
                 
                 <!-- Ações Rápidas na Lateral -->
-                <div class="flex flex-col gap-3 self-start sticky top-4 actions-sidebar">
-                    <h3 class="text-xs font-semibold text-gray-600 text-center mb-1">Ações Rápidas</h3>
-                    <button onclick="deletarPropriedade()" class="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all hover:shadow-lg font-semibold text-sm flex flex-col items-center gap-1">
-                        <span class="text-xl">✕</span>
-                        <span>Deletar</span>
+                <div class="actions-sidebar">
+                    <h3>Ações Rápidas</h3>
+                    <button onclick="deletarPropriedade()" class="bg-red-600 text-white hover:bg-red-700">
+                        <span class="icon">✕</span>
+                        <span class="label">Deletar</span>
                     </button>
-                    <button onclick="aprovarPropriedade()" class="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all hover:shadow-lg font-semibold text-sm flex flex-col items-center gap-1">
-                        <span class="text-xl">✓</span>
-                        <span>Aprovar</span>
+                    <button onclick="aprovarPropriedade()" class="bg-green-600 text-white hover:bg-green-700">
+                        <span class="icon">✓</span>
+                        <span class="label">Aprovar</span>
                     </button>
-                    <button onclick="anteriorPropriedade()" class="px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all hover:shadow-lg font-semibold text-sm flex flex-col items-center gap-1">
-                        <span class="text-xl">⬅</span>
-                        <span>Anterior</span>
+                    <button onclick="anteriorPropriedade()" class="bg-blue-500 text-white hover:bg-blue-600">
+                        <span class="icon">⬅</span>
+                        <span class="label">Anterior</span>
                     </button>
-                    <button onclick="proximaPropriedade()" class="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all hover:shadow-lg font-semibold text-sm flex flex-col items-center gap-1">
-                        <span class="text-xl">➡</span>
-                        <span>Próxima</span>
+                    <button onclick="proximaPropriedade()" class="bg-blue-600 text-white hover:bg-blue-700">
+                        <span class="icon">➡</span>
+                        <span class="label">Próxima</span>
                     </button>
                 </div>
             </div>

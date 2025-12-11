@@ -732,3 +732,13 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [x] Atualizar contador em tempo real quando usuário clica em "Aprovar"
 - [x] Mostrar formato: "✅ Aprovadas: X propriedades"
 - [x] Contador persiste automaticamente via localStorage (já existente)
+
+
+### 🎨 Ajustes Visuais
+- [x] Reduzir tamanho dos botões laterais (estão muito grandes)
+- [x] Melhorar alinhamento e espaçamento
+- [x] Tornar botões mais compactos e proporcionais
+- [x] Sidebar reduzida de 200px para 140px
+- [x] Gap entre botões reduzido de 12px para 8px
+- [x] Padding dos botões otimizado (10px 12px)
+- [x] Fonte menor e mais proporcional
