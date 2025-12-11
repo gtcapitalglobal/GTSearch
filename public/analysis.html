@@ -17,6 +17,11 @@
         .photo-nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; }
         
         /* Responsivo: botões laterais em mobile */
+        .scale-125 {
+            transform: scale(1.25);
+            transition: transform 0.3s ease;
+        }
+        
         @media (max-width: 768px) {
             .property-section-grid {
                 grid-template-columns: 1fr !important;
@@ -64,11 +69,18 @@
                     <button onclick="aprovarPropriedade()" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
                         ✅ Aprovar
                     </button>
-                    <button onclick="pularPropriedade()" class="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
-                        ⏸️ Pular
+                    <button onclick="anteriorPropriedade()" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+                        ⬅️ Anterior
+                    </button>
+                    <button onclick="proximaPropriedade()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+                        ➡️ Próxima
                     </button>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex items-center gap-4">
+                    <div class="text-sm px-3 py-1 bg-green-100 rounded-lg">
+                        <span class="font-semibold text-green-700">✅ Aprovadas:</span>
+                        <span id="approved-count" class="text-green-800 font-bold">0</span>
+                    </div>
                     <div class="text-sm">
                         <span class="font-semibold text-gray-700">Progresso:</span>
                         <span id="progress-text" class="text-gray-600">0 de 0</span>
@@ -297,9 +309,13 @@
                         <span class="text-xl">✓</span>
                         <span>Aprovar</span>
                     </button>
-                    <button onclick="pularPropriedade()" class="px-4 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-all hover:shadow-lg font-semibold text-sm flex flex-col items-center gap-1">
-                        <span class="text-xl">⏸</span>
-                        <span>Pular</span>
+                    <button onclick="anteriorPropriedade()" class="px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all hover:shadow-lg font-semibold text-sm flex flex-col items-center gap-1">
+                        <span class="text-xl">⬅</span>
+                        <span>Anterior</span>
+                    </button>
+                    <button onclick="proximaPropriedade()" class="px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all hover:shadow-lg font-semibold text-sm flex flex-col items-center gap-1">
+                        <span class="text-xl">➡</span>
+                        <span>Próxima</span>
                     </button>
                 </div>
             </div>
@@ -1055,6 +1071,9 @@
             
             // Load NAIP aerial image
             loadNAIPImage(prop);
+            
+            // Atualizar contador de aprovadas
+            atualizarContadorAprovadas();
             
             console.log('✅ Propriedade carregada com sucesso!');
             
@@ -2098,6 +2117,10 @@
             properties[currentIndex].status = 'Approved';
             properties[currentIndex].approvedAt = new Date().toISOString();
             localStorage.setItem('selectedProperties', JSON.stringify(properties));
+            
+            // Atualizar contador de aprovadas
+            atualizarContadorAprovadas();
+            
             mostrarNotificacao('✅ Propriedade aprovada!', 'success');
             
             setTimeout(() => {
@@ -2112,22 +2135,38 @@
             }, 800);
         }
         
-        function pularPropriedade() {
-            properties[currentIndex].status = 'Pending';
-            properties[currentIndex].skippedAt = new Date().toISOString();
-            localStorage.setItem('selectedProperties', JSON.stringify(properties));
-            mostrarNotificacao('⏸️ Propriedade pulada!', 'info');
-            
-            setTimeout(() => {
-                if (currentIndex < properties.length - 1) {
-                    currentIndex++;
-                    loadProperty(currentIndex);
-                } else {
-                    if (confirm('🎯 Você chegou ao final da lista!\n\nDeseja voltar ao dashboard?')) {
-                        window.location.href = '/';
-                    }
+        function atualizarContadorAprovadas() {
+            const aprovadas = properties.filter(p => p.status === 'Approved').length;
+            const counterElement = document.getElementById('approved-count');
+            if (counterElement) {
+                counterElement.textContent = aprovadas;
+                // Animar contador
+                counterElement.classList.add('scale-125');
+                setTimeout(() => counterElement.classList.remove('scale-125'), 300);
+            }
+        }
+        
+        function proximaPropriedade() {
+            if (currentIndex < properties.length - 1) {
+                currentIndex++;
+                loadProperty(currentIndex);
+                mostrarNotificacao('➡️ Próxima propriedade!', 'info');
+            } else {
+                mostrarNotificacao('🎯 Você chegou ao final da lista!', 'info');
+                if (confirm('🎯 Você chegou ao final da lista!\n\nDeseja voltar ao dashboard?')) {
+                    window.location.href = '/';
                 }
-            }, 800);
+            }
+        }
+        
+        function anteriorPropriedade() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadProperty(currentIndex);
+                mostrarNotificacao('⬅️ Propriedade anterior!', 'info');
+            } else {
+                mostrarNotificacao('⚠️ Você já está na primeira propriedade!', 'info');
+            }
         }
         
         function mostrarNotificacao(mensagem, tipo) {

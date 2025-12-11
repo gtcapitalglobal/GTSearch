@@ -718,3 +718,17 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [x] Atualizar títulos das páginas
 - [x] Atualizar meta tags
 - [x] Verificar se logo precisa ser atualizado (logo.png já é genérico)
+
+
+### 🔄 Navegação entre Propriedades
+- [x] Renomear botão "Pular" para "Próxima"
+- [x] Adicionar botão "Anterior" para voltar à propriedade anterior
+- [x] Implementar lógica de navegação (manter histórico de propriedades visitadas)
+- [x] Atualizar ambos os conjuntos de botões (topo e lateral)
+
+
+### 📊 Contador de Propriedades Aprovadas
+- [x] Adicionar contador visual no topo da página de análise mostrando quantas propriedades foram aprovadas
+- [x] Atualizar contador em tempo real quando usuário clica em "Aprovar"
+- [x] Mostrar formato: "✅ Aprovadas: X propriedades"
+- [x] Contador persiste automaticamente via localStorage (já existente)
