@@ -1516,18 +1516,15 @@
         document.getElementById('filterTerrenoBtn').addEventListener('click', function() {
             console.log('🏞️ Filtro Terreno 0.20 ativado!');
             
-            // Filtrar propriedades com >= 0.20 acres
+            // Filtrar propriedades: >= 0.20 acres E apenas Land Only
             allNewProperties = allNewProperties.filter(prop => {
                 const acres = parseFloat(prop.Acres) || 0;
-                return acres >= 0.20;
+                const parcelType = prop['Parcel Type'] || '';
+                return acres >= 0.20 && parcelType !== 'Land & Structures';
             });
             
-            // Atualizar mapa removendo marcadores de propriedades < 0.20
-            allNewProperties.forEach(prop => {
-                if (prop.marker && parseFloat(prop.Acres) < 0.20) {
-                    map.removeLayer(prop.marker);
-                }
-            });
+            // Atualizar mapa removendo marcadores filtrados
+            // (os marcadores já foram
             
             // Atualizar tabela
             populateTable();
@@ -1535,7 +1532,7 @@
             // Esconder botão após uso
             this.classList.add('hidden');
             
-            alert(`✅ Filtro aplicado! Propriedades com < 0.20 acres foram removidas.\nTotal restante: ${allNewProperties.length}`);
+            alert(`✅ Filtro aplicado!\n- Removidas: < 0.20 acres\n- Removidas: Land & Structures\nTotal restante: ${allNewProperties.length}`);
         });
         
         // Event Listener para o botão Analisar Selecionadas

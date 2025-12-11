@@ -610,3 +610,11 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 
 **Requisito:** Permitir usuário alternar entre diferentes estilos de mapa
 **Solução:** Seletor no canto superior direito com 4 estilos (linhas 362-381)
+
+
+## 🔧 Melhoria: Botão Terreno 0.20 eliminar Land & Structures - 06/12/2025
+
+- [ ] 1. Modificar filtro para também remover Land & Structures
+- [ ] 2. Testar funcionalidade
+
+**Requisito:** Botão deve manter apenas Land Only com >= 0.20 acres
