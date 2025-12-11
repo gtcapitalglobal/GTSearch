@@ -883,9 +883,18 @@
             
             // Format coordinates (round to 4 decimals)
             let coordinates = '-';
+            let lat = null, lng = null;
             if (prop['Coordinates']) {
-                const coords = prop['Coordinates'].split(',').map(c => parseFloat(c.trim()).toFixed(4));
-                coordinates = coords.join(', ');
+                const coords = prop['Coordinates'].split(',').map(c => parseFloat(c.trim()));
+                if (coords.length === 2) {
+                    lat = coords[0];
+                    lng = coords[1];
+                    coordinates = coords.map(c => c.toFixed(4)).join(', ');
+                    
+                    // Chamar FEMA imediatamente com coordenadas diretas
+                    console.log('🌊 Chamando FEMA com coordenadas diretas:', lat, lng);
+                    loadFemaFloodDirect(lat, lng);
+                }
             }
             
             // Format county with Appraisal link (async)
@@ -1369,12 +1378,11 @@
             }
         }
 
-        async function loadFemaFlood(location) {
+        // Função auxiliar que aceita lat/lng diretos
+        async function loadFemaFloodDirect(lat, lng) {
             document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-gray-600">⏳ Carregando dados FEMA...</p>';
             
             try {
-                const lat = location.lat();
-                const lng = location.lng();
                 
                 // Chamar FEMA API diretamente
                 const url = `https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/28/query?geometry=${lng},${lat}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=FLD_ZONE,ZONE_SUBTY,SFHA_TF&returnGeometry=false&f=json`;
@@ -1433,6 +1441,11 @@
                 console.error('🌊 FEMA error:', error);
                 document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-red-600">❌ Erro FEMA</p>';
             }
+        }
+        
+        // Função original para compatibilidade com Google Maps
+        async function loadFemaFlood(location) {
+            await loadFemaFloodDirect(location.lat(), location.lng());
         }
 
         async function loadWaterProximity(location) {

@@ -630,3 +630,12 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 **Requisito:** Mostrar zona de inundação oficial da FEMA na análise
 **API:** https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/28/query
 **Solução:** Chamada direta FEMA API com classificaçã
+
+
+## 🐛 Bug: FEMA não carrega se Google Maps falhar - 06/12/2025
+
+- [ ] 1. Verificar onde loadFemaFlood é chamado
+- [ ] 2. Modificar para usar coordenadas diretas da propriedade
+- [ ] 3. Testar sem Google Maps
+
+**Problema:** FEMA depende de Google Maps carregar, mas deveria funcionar independente
