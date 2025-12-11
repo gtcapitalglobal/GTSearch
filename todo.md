@@ -575,17 +575,19 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 
 ## 🎯 Feature: Botão filtro "Terreno 0.20" - 19/11/2025
 
-- [ ] 1. Adicionar botão na tela principal
-- [ ] 2. Implementar função de filtro >= 0.20 acres
-- [ ] 3. Atualizar lista e mapa automaticamente
+- [x] 1. Adicionar botão na tela principal
+- [x] 2. Implementar função de filtro >= 0.20 acres
+- [x] 3. Atualizar lista e mapa automaticamente
 - [ ] 4. Testar funcionalidade
 
 **Requisito:** Botão que filtra automaticamente terrenos com 0.20 acres ou mais
+**Solução:** Botão 🏞️ Terreno 0.20 implementado (commit 27f3f29)
 
 ## 🐛 Bug: Destacar propriedade na lista ao clicar no mapa - 19/11/2025
 
-- [ ] 1. Adicionar evento click nos marcadores
-- [ ] 2. Implementar scroll e destaque na lista
+- [x] 1. Adicionar evento click nos marcadores (já existia)
+- [x] 2. Implementar scroll e destaque na lista (melhorado)
 - [ ] 3. Testar sincronização mapa-lista
 
 **Problema:** Ao clicar no marcador do mapa, não identifica qual propriedade é na lista
+**Solução:** Busca por Parcel Number + scroll centralizado + destaque 5s (commit 27f3f29)
