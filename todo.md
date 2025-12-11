@@ -618,3 +618,15 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [ ] 2. Testar funcionalidade
 
 **Requisito:** Botão deve manter apenas Land Only com >= 0.20 acres
+
+
+## 🌊 Feature: Implementar FEMA Flood Zone API - 06/12/2025
+
+- [x] 1. Localizar seção FEMA Flood Risk no analysis.html
+- [x] 2. Implementar função de consulta à FEMA API
+- [x] 3. Adicionar exibição com cores por nível de risco
+- [ ] 4. Testar com propriedades reais
+
+**Requisito:** Mostrar zona de inundação oficial da FEMA na análise
+**API:** https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/28/query
+**Solução:** Chamada direta FEMA API com classificaçã

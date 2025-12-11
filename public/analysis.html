@@ -1370,62 +1370,68 @@
         }
 
         async function loadFemaFlood(location) {
-            document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-gray-600">⏳ Carregando dados de inundação FEMA...</p>';
+            document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-gray-600">⏳ Carregando dados FEMA...</p>';
             
             try {
-                const response = await fetchWithTimeout('/api/fema-flood', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        lat: location.lat(), 
-                        lng: location.lng() 
-                    })
-                }, 10000);
-
+                const lat = location.lat();
+                const lng = location.lng();
+                
+                // Chamar FEMA API diretamente
+                const url = `https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/28/query?geometry=${lng},${lat}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=FLD_ZONE,ZONE_SUBTY,SFHA_TF&returnGeometry=false&f=json`;
+                
+                const response = await fetchWithTimeout(url, {}, 15000);
                 const data = await response.json();
                 
-                if (data.success && data.flood) {
-                    const { flood } = data;
+                console.log('🌊 FEMA Response:', data);
+                
+                if (data.features && data.features.length > 0) {
+                    const zone = data.features[0].attributes.FLD_ZONE || 'N/A';
+                    const subtype = data.features[0].attributes.ZONE_SUBTY || '';
+                    
+                    // Determinar risco
+                    let riskLevel, riskColor, riskIcon, description, insuranceRequired;
+                    
+                    if (zone.match(/^(A|AE|AO|AH|A99|AR|V|VE)$/)) {
+                        riskLevel = 'ALTO';
+                        riskColor = 'red';
+                        riskIcon = '🚨';
+                        description = 'Alto risco de inundação (SFHA)';
+                        insuranceRequired = true;
+                    } else if (zone.match(/^(X|0\.2)$/)) {
+                        riskLevel = 'BAIXO';
+                        riskColor = 'green';
+                        riskIcon = '✅';
+                        description = 'Baixo risco de inundação';
+                        insuranceRequired = false;
+                    } else {
+                        riskLevel = 'MÉDIO';
+                        riskColor = 'yellow';
+                        riskIcon = '⚠️';
+                        description = 'Risco moderado';
+                        insuranceRequired = false;
+                    }
                     
                     let html = `
                         <div class="flex items-center gap-3 mb-2">
-                            <span class="text-3xl">${flood.riskIcon}</span>
+                            <span class="text-3xl">${riskIcon}</span>
                             <div>
-                                <div class="font-semibold text-sm text-${flood.riskColor}-600">
-                                    Risco: ${flood.riskLevel}
-                                </div>
-                                <div class="text-xs text-gray-600">Zona FEMA: ${flood.zone}</div>
+                                <div class="font-semibold text-sm text-${riskColor}-600">Risco: ${riskLevel}</div>
+                                <div class="text-xs text-gray-600">Zona: ${zone}${subtype ? ' (' + subtype + ')' : ''}</div>
                             </div>
                         </div>
-                        <p class="text-xs text-gray-700 mb-2">${flood.description}</p>
+                        <p class="text-xs text-gray-700 mb-2">${description}</p>
+                        <div class="bg-${insuranceRequired ? 'red' : 'green'}-50 border border-${insuranceRequired ? 'red' : 'green'}-200 rounded p-2 text-xs">
+                            <strong class="text-${insuranceRequired ? 'red' : 'green'}-700">${insuranceRequired ? '⚠️ Seguro Obrigatório' : '✅ Seguro Opcional'}</strong>
+                        </div>
                     `;
-                    
-                    if (flood.insuranceRequired) {
-                        html += `
-                            <div class="bg-red-50 border border-red-200 rounded p-2 text-xs">
-                                <strong class="text-red-700">⚠️ Seguro Obrigatório:</strong>
-                                <span class="text-red-600">Esta propriedade requer seguro contra inundação</span>
-                            </div>
-                        `;
-                    } else {
-                        html += `
-                            <div class="bg-green-50 border border-green-200 rounded p-2 text-xs">
-                                <strong class="text-green-700">✅ Seguro Opcional:</strong>
-                                <span class="text-green-600">Seguro contra inundação não é obrigatório</span>
-                            </div>
-                        `;
-                    }
                     
                     document.getElementById('fema-flood-content-section').innerHTML = html;
                 } else {
-                    document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-gray-600">Não foi possível obter dados de risco de inundação</p>';
+                    document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-green-600">✅ Baixo risco (sem zona)</p>';
                 }
             } catch (error) {
-                console.error('FEMA flood error:', error);
-                const errorMsg = error.message.includes('timeout') 
-                    ? '⏱️ Timeout - A requisição demorou muito. <button onclick="loadFemaFlood(new google.maps.LatLng(' + location.lat() + ',' + location.lng() + '))" class="text-blue-600 hover:underline ml-2">🔄 Tentar novamente</button>'
-                    : '❌ Erro ao carregar dados de inundação';
-                document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-red-600">' + errorMsg + '</p>';
+                console.error('🌊 FEMA error:', error);
+                document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-red-600">❌ Erro FEMA</p>';
             }
         }
 
