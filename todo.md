@@ -647,3 +647,14 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [x] Exibir flood zone com cores (vermelho=alto risco, amarelo=médio, verde=baixo)
 - [x] Implementar fallback gracioso quando API FEMA não responder
 - [x] Adicionar link para FEMA Map Service Center para consulta manual
+
+
+### RapidAPI Integration for Flood Zone & Zoning
+- [x] Pesquisar APIs disponíveis no RapidAPI para flood zone
+- [x] Pesquisar APIs disponíveis no RapidAPI para zoning
+- [x] Testar API FEMA Flood Hazard Florida com RAPIDAPI_KEY
+- [x] Implementar endpoint /api/fema-flood com RapidAPI no server.js
+- [x] Substituir servidor FEMA oficial por RapidAPI (muito mais rápido!)
+- [x] Validar dados com propriedades reais (28.6890, -82.5534 = Zona X)
+- [x] Parsing correto de dados (flood zone, SFHA, BFE, DFIRM ID)
+- [x] Tratamento de valores -9999 (não aplicável)

@@ -302,7 +302,7 @@ app.post('/api/realty-mole', async (req, res) => {
   }
 });
 
-// FEMA Flood Zone API Proxy
+// FEMA Flood Zone API via RapidAPI (Florida-specific)
 app.post('/api/fema-flood', async (req, res) => {
   const { lat, lng } = req.body; // Declare outside try block for catch access
   
@@ -312,33 +312,30 @@ app.post('/api/fema-flood', async (req, res) => {
       return res.status(400).json({ error: 'Latitude and longitude are required' });
     }
 
-    // FEMA NFHL ArcGIS REST API endpoint via ESRI ArcGIS Server (mais rápido e confiável)
-    // Usando o imagery service que tem TODOS os dados (incluindo zonas X e D)
-    const url = 'https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/28/query';
+    // RapidAPI FEMA Flood Hazard (Florida) - Muito mais rápido e confiável!
+    const url = `https://fema-flood-hazard-florida.p.rapidapi.com/query`;
     
     const params = {
-      geometry: `${lng},${lat}`,
-      geometryType: 'esriGeometryPoint',
-      spatialRel: 'esriSpatialRelIntersects',
-      outFields: 'FLD_ZONE,ZONE_SUBTY,SFHA_TF,STATIC_BFE,DEPTH,LEN_UNIT,VELOCITY,V_DATUM,SOURCE_CIT',
-      returnGeometry: false,
-      f: 'json'
+      point: `${lng},${lat}`
     };
 
     const response = await axios.get(url, { 
       params,
-      timeout: 30000 // 30 second timeout (FEMA server is very slow)
+      headers: {
+        'x-rapidapi-host': 'fema-flood-hazard-florida.p.rapidapi.com',
+        'x-rapidapi-key': process.env.RAPIDAPI_KEY || '3eff6f4111msh25829339707ed3fp167b43jsn832e9dd3f20d'
+      },
+      timeout: 10000 // RapidAPI is much faster!
     });
 
-    // Check if we got valid data
-    if (response.data && response.data.features && response.data.features.length > 0) {
-      const feature = response.data.features[0];
-      const attributes = feature.attributes;
+    // Check if we got valid data from RapidAPI
+    if (response.data && response.data.FLD_ZONE) {
+      const data = response.data;
       
       // Determine risk level based on flood zone
       let riskLevel = 'unknown';
       let riskColor = '#999999';
-      const zone = attributes.FLD_ZONE || 'Unknown';
+      const zone = data.FLD_ZONE || 'Unknown';
       
       // High risk zones (Special Flood Hazard Areas)
       if (['A', 'AE', 'AO', 'AH', 'A99', 'V', 'VE', 'AR'].includes(zone)) {
@@ -359,13 +356,14 @@ app.post('/api/fema-flood', async (req, res) => {
       res.json({
         success: true,
         floodZone: zone,
-        zoneSubtype: attributes.ZONE_SUBTY || '',
-        sfha: attributes.SFHA_TF === 'T', // Special Flood Hazard Area
-        baseFloodElevation: attributes.STATIC_BFE || null,
-        depth: attributes.DEPTH || null,
-        velocity: attributes.VELOCITY || null,
-        datum: attributes.V_DATUM || '',
-        source: attributes.SOURCE_CIT || '',
+        zoneSubtype: data.ZONE_SUBTY || '',
+        sfha: data.SFHA_TF === true, // Special Flood Hazard Area
+        baseFloodElevation: data.STATIC_BFE && data.STATIC_BFE !== -9999 ? data.STATIC_BFE : null,
+        depth: data.DEPTH && data.DEPTH !== -9999 ? data.DEPTH : null,
+        velocity: data.VELOCITY && data.VELOCITY !== -9999 ? data.VELOCITY : null,
+        datum: data.V_DATUM || '',
+        source: data.SOURCE_CIT || '',
+        dfirmId: data.DFIRM_ID || '',
         riskLevel,
         riskColor,
         coordinates: { lat, lng }
