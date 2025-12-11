@@ -591,3 +591,22 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 
 **Problema:** Ao clicar no marcador do mapa, não identifica qual propriedade é na lista
 **Solução:** Busca por Parcel Number + scroll centralizado + destaque 5s (commit 27f3f29)
+
+
+## 🎨 UX: Melhorias no popup do mapa - 06/12/2025
+
+- [x] 1. Adicionar Parcel Type no popup
+- [ ] 2. Testar exibição
+
+**Requisito:** Mostrar tipo de propriedade no popup do marcador
+**Solução:** Adicionado campo "Tipo" no popup (linha 612)
+
+## 🗺️ Feature: Seletor de estilos de mapa - 06/12/2025
+
+- [x] 1. Adicionar múltiplos tile layers
+- [x] 2. Implementar L.control.layers
+- [x] 3. Adicionar estilos: OpenStreetMap, Satellite, Dark Mode, Terrain
+- [ ] 4. Testar alternância
+
+**Requisito:** Permitir usuário alternar entre diferentes estilos de mapa
+**Solução:** Seletor no canto superior direito com 4 estilos (linhas 362-381)

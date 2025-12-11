@@ -357,9 +357,28 @@
     <script>
         // Initialize map
         const map = L.map('map').setView([27.32, -81.37], 10);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+        
+        // Define multiple base map styles
+        const baseMaps = {
+            '🗺️ OpenStreetMap': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }),
+            '🛰️ Satellite': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© Esri, Maxar, Earthstar Geographics'
+            }),
+            '🌙 Dark Mode': L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap, © CartoDB'
+            }),
+            '🏔️ Terrain': L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap, © OpenTopoMap'
+            })
+        };
+        
+        // Add default layer
+        baseMaps['🗺️ OpenStreetMap'].addTo(map);
+        
+        // Add layer control (top-right corner)
+        L.control.layers(baseMaps, null, { position: 'topright' }).addTo(map);
 
         // Layer groups
         const existingPropertiesLayer = L.layerGroup().addTo(map);
@@ -609,6 +628,7 @@
                                     ${row.Address}<br>
                                     ${row.City}, ${row.State} ${row.Zip}<br>
                                     <strong>Parcel ID:</strong> ${row['Parcel Number']}<br>
+                                    <strong>Tipo:</strong> ${row['Parcel Type'] || 'N/A'}<br>
                                     <strong>Acres:</strong> ${row.Acres}<br>
                                     <strong>Amount Due:</strong> $${row['Amount Due']}<br><br>
                                     <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" class="inline-block bg-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-700" style="color: white !important;">
