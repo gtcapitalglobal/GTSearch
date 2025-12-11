@@ -639,3 +639,11 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [ ] 3. Testar sem Google Maps
 
 **Problema:** FEMA depende de Google Maps carregar, mas deveria funcionar independente
+
+### FEMA Flood Zone Integration
+- [x] Adicionar endpoint proxy /api/fema-flood no server.js
+- [x] Atualizar analysis.html para usar o proxy
+- [x] Testar com coordenadas 28.6890, -82.5534
+- [x] Exibir flood zone com cores (vermelho=alto risco, amarelo=médio, verde=baixo)
+- [x] Implementar fallback gracioso quando API FEMA não responder
+- [x] Adicionar link para FEMA Map Service Center para consulta manual

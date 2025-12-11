@@ -302,6 +302,112 @@ app.post('/api/realty-mole', async (req, res) => {
   }
 });
 
+// FEMA Flood Zone API Proxy
+app.post('/api/fema-flood', async (req, res) => {
+  const { lat, lng } = req.body; // Declare outside try block for catch access
+  
+  try {
+    
+    if (!lat || !lng) {
+      return res.status(400).json({ error: 'Latitude and longitude are required' });
+    }
+
+    // FEMA NFHL ArcGIS REST API endpoint via ESRI ArcGIS Server (mais rápido e confiável)
+    // Usando o imagery service que tem TODOS os dados (incluindo zonas X e D)
+    const url = 'https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/28/query';
+    
+    const params = {
+      geometry: `${lng},${lat}`,
+      geometryType: 'esriGeometryPoint',
+      spatialRel: 'esriSpatialRelIntersects',
+      outFields: 'FLD_ZONE,ZONE_SUBTY,SFHA_TF,STATIC_BFE,DEPTH,LEN_UNIT,VELOCITY,V_DATUM,SOURCE_CIT',
+      returnGeometry: false,
+      f: 'json'
+    };
+
+    const response = await axios.get(url, { 
+      params,
+      timeout: 30000 // 30 second timeout (FEMA server is very slow)
+    });
+
+    // Check if we got valid data
+    if (response.data && response.data.features && response.data.features.length > 0) {
+      const feature = response.data.features[0];
+      const attributes = feature.attributes;
+      
+      // Determine risk level based on flood zone
+      let riskLevel = 'unknown';
+      let riskColor = '#999999';
+      const zone = attributes.FLD_ZONE || 'Unknown';
+      
+      // High risk zones (Special Flood Hazard Areas)
+      if (['A', 'AE', 'AO', 'AH', 'A99', 'V', 'VE', 'AR'].includes(zone)) {
+        riskLevel = 'high';
+        riskColor = '#dc3545'; // Red
+      }
+      // Moderate risk zones
+      else if (['B', 'X500'].includes(zone) || zone.startsWith('B') || zone.startsWith('C')) {
+        riskLevel = 'moderate';
+        riskColor = '#ffc107'; // Yellow
+      }
+      // Low risk zones
+      else if (zone === 'X' || zone === 'D') {
+        riskLevel = 'low';
+        riskColor = '#28a745'; // Green
+      }
+      
+      res.json({
+        success: true,
+        floodZone: zone,
+        zoneSubtype: attributes.ZONE_SUBTY || '',
+        sfha: attributes.SFHA_TF === 'T', // Special Flood Hazard Area
+        baseFloodElevation: attributes.STATIC_BFE || null,
+        depth: attributes.DEPTH || null,
+        velocity: attributes.VELOCITY || null,
+        datum: attributes.V_DATUM || '',
+        source: attributes.SOURCE_CIT || '',
+        riskLevel,
+        riskColor,
+        coordinates: { lat, lng }
+      });
+    } else {
+      // No flood zone data found for this location
+      res.json({
+        success: true,
+        floodZone: 'X (presumed)',
+        riskLevel: 'low',
+        riskColor: '#28a745',
+        message: 'Sem dados de flood zone disponíveis. Provavelmente zona X (baixo risco).',
+        note: 'A ausência de dados geralmente indica área fora de zona de risco especial.',
+        coordinates: { lat, lng }
+      });
+    }
+  } catch (error) {
+    console.error('FEMA flood zone error:', error.message);
+    
+    // Handle timeout specifically
+    if (error.code === 'ECONNABORTED') {
+      return res.status(504).json({ 
+        error: 'FEMA API timeout - server took too long to respond',
+        message: 'The FEMA server is currently slow or unavailable. Please try again later.',
+        timeout: true
+      });
+    }
+    
+    // Return informative message instead of error
+    res.json({
+      success: false,
+      floodZone: 'Dados não disponíveis',
+      riskLevel: 'unknown',
+      riskColor: '#6c757d',
+      message: 'Não foi possível acessar os dados da FEMA no momento.',
+      suggestion: 'Consulte manualmente em: https://msc.fema.gov/portal/search',
+      error: error.message,
+      coordinates: { lat, lng }
+    });
+  }
+});
+
 // Florida Counties from Google Sheets
 let countiesCache = null;
 let cacheTimestamp = null;

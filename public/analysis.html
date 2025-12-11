@@ -1383,63 +1383,105 @@
             document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-gray-600">⏳ Carregando dados FEMA...</p>';
             
             try {
+                // Chamar FEMA API via proxy do servidor (evita CORS e timeout)
+                const response = await fetch('http://localhost:3000/api/fema-flood', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ lat, lng })
+                });
                 
-                // Chamar FEMA API diretamente
-                const url = `https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/28/query?geometry=${lng},${lat}&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=FLD_ZONE,ZONE_SUBTY,SFHA_TF&returnGeometry=false&f=json`;
-                
-                const response = await fetchWithTimeout(url, {}, 15000);
                 const data = await response.json();
                 
                 console.log('🌊 FEMA Response:', data);
                 
-                if (data.features && data.features.length > 0) {
-                    const zone = data.features[0].attributes.FLD_ZONE || 'N/A';
-                    const subtype = data.features[0].attributes.ZONE_SUBTY || '';
+                if (data.success && data.floodZone) {
+                    const zone = data.floodZone;
+                    const subtype = data.zoneSubtype || '';
+                    const riskLevel = data.riskLevel;
+                    const riskColor = data.riskColor;
                     
-                    // Determinar risco
-                    let riskLevel, riskColor, riskIcon, description, insuranceRequired;
+                    // Determinar ícone e descrição baseado no riskLevel
+                    let riskIcon, riskText, description, insuranceRequired;
                     
-                    if (zone.match(/^(A|AE|AO|AH|A99|AR|V|VE)$/)) {
-                        riskLevel = 'ALTO';
-                        riskColor = 'red';
+                    if (riskLevel === 'high') {
                         riskIcon = '🚨';
-                        description = 'Alto risco de inundação (SFHA)';
+                        riskText = 'ALTO';
+                        description = 'Alto risco de inundação (SFHA - Special Flood Hazard Area)';
                         insuranceRequired = true;
-                    } else if (zone.match(/^(X|0\.2)$/)) {
-                        riskLevel = 'BAIXO';
-                        riskColor = 'green';
+                    } else if (riskLevel === 'low') {
                         riskIcon = '✅';
+                        riskText = 'BAIXO';
                         description = 'Baixo risco de inundação';
                         insuranceRequired = false;
-                    } else {
-                        riskLevel = 'MÉDIO';
-                        riskColor = 'yellow';
+                    } else if (riskLevel === 'moderate') {
                         riskIcon = '⚠️';
-                        description = 'Risco moderado';
+                        riskText = 'MÉDIO';
+                        description = 'Risco moderado de inundação';
                         insuranceRequired = false;
+                    } else {
+                        riskIcon = 'ℹ️';
+                        riskText = 'DESCONHECIDO';
+                        description = data.message || 'Dados não disponíveis para esta localização';
+                        insuranceRequired = false;
+                    }
+                    
+                    // Adicionar informações extras se disponíveis
+                    let extraInfo = '';
+                    if (data.baseFloodElevation) {
+                        extraInfo += `<div class="text-xs text-gray-600 mt-1">BFE (Base Flood Elevation): ${data.baseFloodElevation} ${data.datum || 'ft'}</div>`;
+                    }
+                    if (data.depth) {
+                        extraInfo += `<div class="text-xs text-gray-600">Profundidade: ${data.depth} ft</div>`;
                     }
                     
                     let html = `
                         <div class="flex items-center gap-3 mb-2">
                             <span class="text-3xl">${riskIcon}</span>
                             <div>
-                                <div class="font-semibold text-sm text-${riskColor}-600">Risco: ${riskLevel}</div>
+                                <div class="font-semibold text-sm" style="color: ${riskColor}">Risco: ${riskText}</div>
                                 <div class="text-xs text-gray-600">Zona: ${zone}${subtype ? ' (' + subtype + ')' : ''}</div>
                             </div>
                         </div>
                         <p class="text-xs text-gray-700 mb-2">${description}</p>
-                        <div class="bg-${insuranceRequired ? 'red' : 'green'}-50 border border-${insuranceRequired ? 'red' : 'green'}-200 rounded p-2 text-xs">
-                            <strong class="text-${insuranceRequired ? 'red' : 'green'}-700">${insuranceRequired ? '⚠️ Seguro Obrigatório' : '✅ Seguro Opcional'}</strong>
+                        ${extraInfo}
+                        <div class="${insuranceRequired ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'} border rounded p-2 text-xs mt-2">
+                            <strong style="color: ${insuranceRequired ? '#dc3545' : '#28a745'}">${insuranceRequired ? '⚠️ Seguro contra inundação obrigatório' : '✅ Seguro contra inundação opcional'}</strong>
                         </div>
                     `;
                     
                     document.getElementById('fema-flood-content-section').innerHTML = html;
+                } else if (data.timeout) {
+                    document.getElementById('fema-flood-content-section').innerHTML = `
+                        <div class="text-sm text-orange-600">
+                            <p class="font-semibold">⏱️ Servidor FEMA não respondeu</p>
+                            <p class="text-xs mt-1">O servidor oficial da FEMA está muito lento ou indisponível no momento.</p>
+                            <p class="text-xs mt-1">Tente novamente mais tarde ou consulte diretamente: <a href="https://msc.fema.gov/portal/search" target="_blank" class="text-blue-600 underline">FEMA Map Service Center</a></p>
+                        </div>
+                    `;
+                } else if (data.success === false) {
+                    // API returned error but with informative message
+                    document.getElementById('fema-flood-content-section').innerHTML = `
+                        <div class="text-sm">
+                            <p class="font-semibold text-gray-700">ℹ️ ${data.message}</p>
+                            ${data.suggestion ? `<p class="text-xs mt-2 text-gray-600">Consulte manualmente:</p>
+                            <a href="${data.suggestion}" target="_blank" class="text-xs text-blue-600 underline">FEMA Map Service Center</a>` : ''}
+                            <p class="text-xs mt-2 text-gray-500">Coordenadas: ${data.coordinates.lat}, ${data.coordinates.lng}</p>
+                        </div>
+                    `;
                 } else {
-                    document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-green-600">✅ Baixo risco (sem zona)</p>';
+                    document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-gray-600">ℹ️ Sem dados de flood zone disponíveis</p>';
                 }
             } catch (error) {
                 console.error('🌊 FEMA error:', error);
-                document.getElementById('fema-flood-content-section').innerHTML = '<p class="text-sm text-red-600">❌ Erro FEMA</p>';
+                document.getElementById('fema-flood-content-section').innerHTML = `
+                    <div class="text-sm text-gray-600">
+                        <p class="font-semibold">ℹ️ Dados FEMA não disponíveis</p>
+                        <p class="text-xs mt-2">Consulte manualmente em:</p>
+                        <a href="https://msc.fema.gov/portal/search" target="_blank" class="text-xs text-blue-600 underline">FEMA Map Service Center</a>
+                    </div>
+                `;
             }
         }
         
