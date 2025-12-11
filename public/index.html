@@ -247,13 +247,16 @@
         <div id="tableSection" class="hidden bg-white rounded-lg shadow-lg p-6">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold text-gray-800">📋 Dados Completos (Novas Propriedades)</h2>
-                <div class="flex gap-3">
-                       <button id="analyzeSelectedBtn" class="hidden bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
-                    📊 Analisar Selecionadas
-                </button>
-                <button id="saveForAnalysisBtn" class="hidden bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
-                    💾 Salvar para Análise
-                </button>
+                <div class="flex gap-3 flex-wrap">
+                    <button id="filterTerrenoBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        🏞️ Terreno 0.20
+                    </button>
+                    <button id="analyzeSelectedBtn" class="hidden bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                        📊 Analisar Selecionadas
+                    </button>
+                    <button id="saveForAnalysisBtn" class="hidden bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                        💾 Salvar para Análise
+                    </button>
                     <button id="deleteSelectedBtn" class="hidden bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors">
                         🗑️ Deletar Selecionadas
                     </button>
@@ -625,18 +628,24 @@
                                     r.classList.remove('row-highlight');
                                 }
                                 
-                                // Find and highlight corresponding row
-                                const rowIndex = allNewProperties.findIndex(p => p === row);
-                                if (rowIndex >= 0 && rows[rowIndex]) {
-                                    rows[rowIndex].classList.add('row-highlight');
-                                    
-                                    // Scroll to table
-                                    tableSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                                    
-                                    // Remove highlight after 3 seconds
-                                    setTimeout(() => {
-                                        rows[rowIndex].classList.remove('row-highlight');
-                                    }, 3000);
+                                // Find row by Parcel Number (more reliable than index)
+                                const parcelNumber = row['Parcel Number'];
+                                for (let i = 0; i < rows.length; i++) {
+                                    const rowText = rows[i].textContent;
+                                    if (rowText.includes(parcelNumber)) {
+                                        rows[i].classList.add('row-highlight');
+                                        
+                                        // Scroll to row
+                                        rows[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        
+                                        // Remove highlight after 5 seconds
+                                        setTimeout(() => {
+                                            rows[i].classList.remove('row-highlight');
+                                        }, 5000);
+                                        
+                                        console.log(`✅ Propriedade destacada: ${parcelNumber}`);
+                                        break;
+                                    }
                                 }
                             });
                             
@@ -1482,6 +1491,32 @@
         
         // Carregar KML automaticamente após 1 segundo
         setTimeout(loadDefaultKMLFiles, 1000);
+        
+        // Event Listener para o botão Terreno 0.20
+        document.getElementById('filterTerrenoBtn').addEventListener('click', function() {
+            console.log('🏞️ Filtro Terreno 0.20 ativado!');
+            
+            // Filtrar propriedades com >= 0.20 acres
+            allNewProperties = allNewProperties.filter(prop => {
+                const acres = parseFloat(prop.Acres) || 0;
+                return acres >= 0.20;
+            });
+            
+            // Atualizar mapa removendo marcadores de propriedades < 0.20
+            allNewProperties.forEach(prop => {
+                if (prop.marker && parseFloat(prop.Acres) < 0.20) {
+                    map.removeLayer(prop.marker);
+                }
+            });
+            
+            // Atualizar tabela
+            populateTable();
+            
+            // Esconder botão após uso
+            this.classList.add('hidden');
+            
+            alert(`✅ Filtro aplicado! Propriedades com < 0.20 acres foram removidas.\nTotal restante: ${allNewProperties.length}`);
+        });
         
         // Event Listener para o botão Analisar Selecionadas
         document.addEventListener('DOMContentLoaded', function() {

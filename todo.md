@@ -571,3 +571,21 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 **Causa:** loadProperty() chama geocodeAndLoadMaps() antes do Google Maps API terminar de carregar
 **Solução:** Verificar se typeof google !== 'undefined' antes de usar
 
+
+
+## 🎯 Feature: Botão filtro "Terreno 0.20" - 19/11/2025
+
+- [ ] 1. Adicionar botão na tela principal
+- [ ] 2. Implementar função de filtro >= 0.20 acres
+- [ ] 3. Atualizar lista e mapa automaticamente
+- [ ] 4. Testar funcionalidade
+
+**Requisito:** Botão que filtra automaticamente terrenos com 0.20 acres ou mais
+
+## 🐛 Bug: Destacar propriedade na lista ao clicar no mapa - 19/11/2025
+
+- [ ] 1. Adicionar evento click nos marcadores
+- [ ] 2. Implementar scroll e destaque na lista
+- [ ] 3. Testar sincronização mapa-lista
+
+**Problema:** Ao clicar no marcador do mapa, não identifica qual propriedade é na lista
