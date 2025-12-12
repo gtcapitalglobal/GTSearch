@@ -975,3 +975,61 @@ https://api.census.gov/data/2022/acs/acs5?get=NAME,B19013_001E,B01003_001E&for=t
 - Dados são atualizados anualmente (ACS 5-year estimates)
 - Cache é importante para evitar chamadas repetidas
 - Pode combinar com dados de flood zone para análise completa
+
+
+## 🐛 BUG: Imagens do Google Maps não carregam em analysis.html
+
+### Problema:
+Na página de análise (analysis.html), as imagens do Google Maps aparecem vazias (cinza):
+- Vista Satélite (vazia)
+- Street View (vazia)
+- Terreno + Mapa (vazia)
+- Fotos (vazia)
+- Imagem Aérea (vazia)
+
+### Causa Provável:
+- API Key do Google Maps não está sendo carregada em analysis.html
+- OU script do Google Maps não está inicializando corretamente
+- OU coordenadas não estão sendo passadas corretamente
+
+### Tarefas:
+- [ ] Investigar código de carregamento do Google Maps em analysis.html
+- [ ] Verificar se API Key está sendo lida do localStorage
+- [ ] Verificar se coordenadas estão sendo passadas corretamente
+- [ ] Testar carregamento das imagens
+- [ ] Corrigir problema
+- [ ] Commit e push
+
+### Prioridade:
+🔴 **ALTA** (funcionalidade crítica para análise de propriedades)
+
+
+## 🔄 Modificar carregamento de imagens Google Maps para sob demanda
+
+### Objetivo:
+Economizar uso da API do Google Maps carregando imagens apenas quando o usuário clicar no botão, em vez de carregar automaticamente.
+
+### Implementação:
+- [x] Adicionar botão "🔍 Carregar Imagem" dentro de cada card vazio
+- [ ] Modificar JavaScript para NÃO carregar automaticamente
+- [ ] Carregar apenas quando clicar no botão
+- [ ] Adicionar loading indicator ("⏳ Carregando...")
+- [ ] Após carregar, esconder o botão e mostrar a imagem
+- [ ] Testar funcionalidade
+- [ ] Commit e push
+
+### Cards afetados:
+- Vista Satélite
+- Street View
+- Terreno + Mapa
+- Fotos (Zillow/Realtor)
+- Imagem Aérea
+
+### Benefícios:
+- ✅ Economiza uso da API (só carrega o que usuário quer ver)
+- ✅ Carregamento mais rápido da página
+- ✅ Controle total do usuário
+- ✅ Reduz custos
+
+### Prioridade:
+🟢 **IMPLEMENTANDO AGORA**

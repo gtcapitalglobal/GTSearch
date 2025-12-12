@@ -171,11 +171,19 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <h3 class="text-sm font-bold text-gray-800 mb-2">🛰️ Vista Satélite</h3>
-                        <div id="satellite-map" class="map-container bg-gray-200 rounded-lg"></div>
+                        <div id="satellite-map" class="map-container bg-gray-200 rounded-lg flex items-center justify-center">
+                            <button id="load-satellite-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                                🔍 Carregar Imagem
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <h3 class="text-sm font-bold text-gray-800 mb-2">🚶 Street View</h3>
-                        <div id="street-view" class="map-container bg-gray-200 rounded-lg"></div>
+                        <div id="street-view" class="map-container bg-gray-200 rounded-lg flex items-center justify-center">
+                            <button id="load-streetview-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                                🔍 Carregar Imagem
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -184,12 +192,20 @@
             <div class="tab-content p-3" id="terrain-map">
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <h3 class="text-sm font-bold text-gray-800 mb-2">🏔️ Vista Terreno (Relevo)</h3>
-                        <div id="terrain-map-view" class="map-container bg-gray-200 rounded-lg"></div>
+                        <h3 class="text-sm font-bold text-gray-800 mb-2">🏞️ Vista Terreno (Relevo)</h3>
+                        <div id="terrain-map-view" class="map-container bg-gray-200 rounded-lg flex items-center justify-center">
+                            <button id="load-terrain-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                                🔍 Carregar Imagem
+                            </button>
+                        </div>
                     </div>
                     <div>
                         <h3 class="text-sm font-bold text-gray-800 mb-2">🗺️ Mapa Normal</h3>
-                        <div id="normal-map" class="map-container bg-gray-200 rounded-lg"></div>
+                        <div id="normal-map" class="map-container bg-gray-200 rounded-lg flex items-center justify-center">
+                            <button id="load-normalmap-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                                🔍 Carregar Imagem
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -200,20 +216,26 @@
                     <div>
                         <h3 class="text-sm font-bold text-gray-800 mb-2">🏡 Zillow Photos</h3>
                         <div id="zillow-photos" class="map-container bg-gray-200 rounded-lg flex items-center justify-center photo-gallery">
-                            <button class="photo-nav left-4 bg-white p-2 rounded-full shadow-lg" id="zillow-prev">◄</button>
+                            <button id="load-zillow-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                                🔍 Carregar Fotos
+                            </button>
+                            <button class="photo-nav left-4 bg-white p-2 rounded-full shadow-lg hidden" id="zillow-prev">◄</button>
                             <img id="zillow-photo" src="" alt="Zillow Photo" class="w-full h-full object-cover rounded-lg hidden">
-                            <div id="zillow-loading" class="text-gray-500">Carregando fotos...</div>
-                            <button class="photo-nav right-4 bg-white p-2 rounded-full shadow-lg" id="zillow-next">►</button>
+                            <div id="zillow-loading" class="text-gray-500 hidden">Carregando fotos...</div>
+                            <button class="photo-nav right-4 bg-white p-2 rounded-full shadow-lg hidden" id="zillow-next">►</button>
                         </div>
                         <p class="text-center text-sm text-gray-600 mt-2" id="zillow-counter">0 / 0</p>
                     </div>
                     <div>
                         <h3 class="text-sm font-bold text-gray-800 mb-2">🏠 Realtor Photos</h3>
                         <div id="realtor-photos" class="map-container bg-gray-200 rounded-lg flex items-center justify-center photo-gallery">
-                            <button class="photo-nav left-4 bg-white p-2 rounded-full shadow-lg" id="realtor-prev">◄</button>
+                            <button id="load-realtor-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">
+                                🔍 Carregar Fotos
+                            </button>
+                            <button class="photo-nav left-4 bg-white p-2 rounded-full shadow-lg hidden" id="realtor-prev">◄</button>
                             <img id="realtor-photo" src="" alt="Realtor Photo" class="w-full h-full object-cover rounded-lg hidden">
-                            <div id="realtor-loading" class="text-gray-500">Carregando fotos...</div>
-                            <button class="photo-nav right-4 bg-white p-2 rounded-full shadow-lg" id="realtor-next">►</button>
+                            <div id="realtor-loading" class="text-gray-500 hidden">Carregando fotos...</div>
+                            <button class="photo-nav right-4 bg-white p-2 rounded-full shadow-lg hidden" id="realtor-next">►</button>
                         </div>
                         <p class="text-center text-sm text-gray-600 mt-2" id="realtor-counter">0 / 0</p>
                     </div>
@@ -244,9 +266,12 @@
                                 📌 Resolução: 1 metro | Fonte: USDA National Agriculture Imagery Program
                             </div>
                         </div>
-                        <div class="relative bg-gray-200 rounded-lg" style="height: 500px;">
+                        <div class="relative bg-gray-200 rounded-lg flex items-center justify-center" style="height: 500px;">
+                            <button id="load-naip-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors z-10">
+                                🔍 Carregar Imagem Aérea
+                            </button>
                             <img id="naip-image" src="" alt="NAIP Aerial Image" class="w-full h-full object-contain rounded-lg hidden">
-                            <div id="naip-loading" class="absolute inset-0 flex items-center justify-center text-gray-500">
+                            <div id="naip-loading" class="absolute inset-0 flex items-center justify-center text-gray-500 hidden">
                                 ⏳ Carregando imagem aérea...
                             </div>
                             <div id="naip-error" class="absolute inset-0 flex items-center justify-center text-red-600 hidden">
@@ -1165,11 +1190,15 @@
                     const location = results[0].geometry.location;
                     console.log('Geocoded location:', location.toString());
                     
-                    // Initialize/update all maps
-                    initSatelliteMap(location);
-                    initStreetView(location);
-                    initTerrainMap(location);
-                    initNormalMap(location);
+                    // 💾 Salvar localização para uso posterior (carregamento sob demanda)
+                    window.currentLocation = location;
+                    window.currentProp = prop;
+                    
+                    // ✅ Carregar apenas dados que NÃO usam Google Maps API (gratuitos)
+                    // initSatelliteMap(location); // ❌ Desabilitado - carregar sob demanda
+                    // initStreetView(location); // ❌ Desabilitado - carregar sob demanda
+                    // initTerrainMap(location); // ❌ Desabilitado - carregar sob demanda
+                    // initNormalMap(location); // ❌ Desabilitado - carregar sob demanda
                     loadNearbyPlaces(location);
                     loadElevation(location);
                     loadLandUse(location);
@@ -1190,9 +1219,9 @@
                     // Load Census demographic data
                     loadCensusData(location.lat(), location.lng());
                     
-                    // Load photos from APIs
-                    loadZillowPhotos(prop);
-                    loadRealtorPhotos(prop);
+                    // ❌ Fotos desabilitadas - carregar sob demanda
+                    // loadZillowPhotos(prop);
+                    // loadRealtorPhotos(prop);
                 } else {
                     console.error('Geocoding failed:', status);
                     alert('Não foi possível localizar o endereço no mapa.');
@@ -2731,6 +2760,119 @@
         }
         
         // ===== FIM EXPLICAÇÃO INTELIGENTE DE FLOOD ZONE =====
+        
+        // ===== 🔍 CARREGAMENTO SOB DEMANDA DE IMAGENS =====
+        
+        // Event Listeners para botões de carregar imagens
+        document.addEventListener('DOMContentLoaded', function() {
+            // Botão Vista Satélite
+            const loadSatelliteBtn = document.getElementById('load-satellite-btn');
+            if (loadSatelliteBtn) {
+                loadSatelliteBtn.addEventListener('click', function() {
+                    if (window.currentLocation) {
+                        this.innerHTML = '⏳ Carregando...';
+                        this.disabled = true;
+                        initSatelliteMap(window.currentLocation);
+                        setTimeout(() => {
+                            this.style.display = 'none';
+                        }, 1000);
+                    }
+                });
+            }
+            
+            // Botão Street View
+            const loadStreetViewBtn = document.getElementById('load-streetview-btn');
+            if (loadStreetViewBtn) {
+                loadStreetViewBtn.addEventListener('click', function() {
+                    if (window.currentLocation) {
+                        this.innerHTML = '⏳ Carregando...';
+                        this.disabled = true;
+                        initStreetView(window.currentLocation);
+                        setTimeout(() => {
+                            this.style.display = 'none';
+                        }, 1000);
+                    }
+                });
+            }
+            
+            // Botão Terrain Map
+            const loadTerrainBtn = document.getElementById('load-terrain-btn');
+            if (loadTerrainBtn) {
+                loadTerrainBtn.addEventListener('click', function() {
+                    if (window.currentLocation) {
+                        this.innerHTML = '⏳ Carregando...';
+                        this.disabled = true;
+                        initTerrainMap(window.currentLocation);
+                        setTimeout(() => {
+                            this.style.display = 'none';
+                        }, 1000);
+                    }
+                });
+            }
+            
+            // Botão Normal Map
+            const loadNormalMapBtn = document.getElementById('load-normalmap-btn');
+            if (loadNormalMapBtn) {
+                loadNormalMapBtn.addEventListener('click', function() {
+                    if (window.currentLocation) {
+                        this.innerHTML = '⏳ Carregando...';
+                        this.disabled = true;
+                        initNormalMap(window.currentLocation);
+                        setTimeout(() => {
+                            this.style.display = 'none';
+                        }, 1000);
+                    }
+                });
+            }
+            
+            // Botão Zillow Photos
+            const loadZillowBtn = document.getElementById('load-zillow-btn');
+            if (loadZillowBtn) {
+                loadZillowBtn.addEventListener('click', function() {
+                    if (window.currentProp) {
+                        this.innerHTML = '⏳ Carregando...';
+                        this.disabled = true;
+                        loadZillowPhotos(window.currentProp);
+                        setTimeout(() => {
+                            this.style.display = 'none';
+                        }, 1000);
+                    }
+                });
+            }
+            
+            // Botão Realtor Photos
+            const loadRealtorBtn = document.getElementById('load-realtor-btn');
+            if (loadRealtorBtn) {
+                loadRealtorBtn.addEventListener('click', function() {
+                    if (window.currentProp) {
+                        this.innerHTML = '⏳ Carregando...';
+                        this.disabled = true;
+                        loadRealtorPhotos(window.currentProp);
+                        setTimeout(() => {
+                            this.style.display = 'none';
+                        }, 1000);
+                    }
+                });
+            }
+            
+            // Botão NAIP Aerial Image
+            const loadNAIPBtn = document.getElementById('load-naip-btn');
+            if (loadNAIPBtn) {
+                loadNAIPBtn.addEventListener('click', function() {
+                    if (window.currentLocation) {
+                        this.innerHTML = '⏳ Carregando...';
+                        this.disabled = true;
+                        this.style.display = 'none';
+                        document.getElementById('naip-loading').classList.remove('hidden');
+                        loadNAIPImage(window.currentLocation.lat(), window.currentLocation.lng());
+                    }
+                });
+            }
+            
+            console.log('✅ Event listeners dos botões de carregar imagens adicionados');
+        });
+        
+        // ===== FIM CARREGAMENTO SOB DEMANDA DE IMAGENS =====
     </script>
 </body>
 </html>
