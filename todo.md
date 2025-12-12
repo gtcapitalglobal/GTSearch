@@ -1033,3 +1033,23 @@ Economizar uso da API do Google Maps carregando imagens apenas quando o usuário
 
 ### Prioridade:
 🟢 **IMPLEMENTANDO AGORA**
+
+
+## 🐛 BUG: API Key do Google Maps não é salva no servidor
+
+### Problema:
+A função `saveGoogleMapsApiKey()` em `settings.html` salva a API Key apenas no localStorage do navegador, mas NÃO envia para o servidor.
+
+O `analysis.html` tenta carregar a API Key do endpoint `/api/google-maps-key`, mas o servidor retorna vazio porque a key não foi salva no `.env`.
+
+### Solução:
+Modificar `saveGoogleMapsApiKey()` para enviar a API Key para o endpoint `/api/config/save` do servidor.
+
+### Tarefas:
+- [ ] Modificar função `saveGoogleMapsApiKey()` para enviar para servidor
+- [ ] Testar salvamento
+- [ ] Testar carregamento em analysis.html
+- [ ] Commit e push
+
+### Prioridade:
+🔴 **CRÍTICA** (sem isso, os mapas não funcionam)

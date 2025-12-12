@@ -657,7 +657,7 @@
             if (realtyMoleKey) document.getElementById('realtyMoleApiKey').value = realtyMoleKey;
         });
 
-        function saveGoogleMapsApiKey() {
+        async function saveGoogleMapsApiKey() {
             const apiKey = document.getElementById('googleMapsApiKey').value.trim();
             
             if (!apiKey) {
@@ -665,7 +665,27 @@
                 return;
             }
 
+            // 💾 Salvar no localStorage (para uso local)
             saveEncryptedKey('googleMapsApiKey', apiKey);
+            
+            // 🚀 Enviar para o servidor (para uso em analysis.html)
+            try {
+                const response = await fetch('/api/config/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ google_maps: apiKey })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('✅ API Key salva no servidor com sucesso!');
+                } else {
+                    console.error('❌ Erro ao salvar no servidor:', result.error);
+                }
+            } catch (error) {
+                console.error('❌ Erro ao enviar para servidor:', error);
+            }
             
             const indicator = document.getElementById('savedIndicator');
             indicator.classList.add('show');
