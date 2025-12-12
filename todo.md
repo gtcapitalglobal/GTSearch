@@ -887,3 +887,91 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [x] Adicionar recomendação (Comprar/Avaliar/Evitar)
 - [x] Testar com diferentes flood zones (X, AE, V, VE, etc.)
 - [x] Commit e push para GitHub
+
+
+## 📊 Integração Census Bureau API - Análise Demográfica (PARA FAZER DEPOIS)
+
+### Objetivo:
+Adicionar dados demográficos e econômicos das propriedades usando a API gratuita do U.S. Census Bureau.
+
+### Fonte de Dados:
+**American Community Survey (ACS)** - Principal conjunto de dados do Census Bureau
+- ✅ **Gratuito** (API RESTful sem custo)
+- ✅ **Oficial** (Agência governamental dos EUA)
+- ✅ **Granular** (Até nível de block-group)
+- ✅ **Completo** (Dados sociais, econômicos, demográficos e habitacionais)
+
+### Dados Disponíveis:
+- População total da área
+- Renda média (Median Household Income)
+- Taxa de pobreza
+- Nível educacional
+- Composição racial/étnica
+- Idade média
+- Taxa de propriedade vs aluguel
+- Valor médio das casas
+- Taxa de desemprego
+
+### Tarefas:
+
+#### 1. Configuração Inicial
+- [ ] Solicitar API Key no Census Bureau Developer Portal
+- [ ] Estudar documentação da ACS API
+- [ ] Identificar variáveis necessárias (ex: B19013_001E para Median Income)
+- [ ] Entender códigos FIPS para Flórida (state: 12, counties, tracts, block-groups)
+
+#### 2. Backend (Node.js)
+- [ ] Criar endpoint `/api/census-demographics`
+- [ ] Implementar função para converter lat/lng em FIPS codes (Census Geocoding API)
+- [ ] Implementar função para buscar dados ACS por FIPS code
+- [ ] Adicionar cache (localStorage ou banco de dados)
+- [ ] Tratar erros e rate limits
+
+#### 3. Frontend (analysis.html)
+- [ ] Criar seção "📊 Análise Demográfica" em analysis.html
+- [ ] Exibir dados em cards visuais (população, renda, educação, etc.)
+- [ ] Adicionar gráficos (Chart.js) para visualização
+- [ ] Comparar área da propriedade com médias do condado/estado
+- [ ] Adicionar indicadores de qualidade da área (score A/B/C)
+
+#### 4. Análise Inteligente
+- [ ] Criar função de scoring baseado em dados demográficos
+- [ ] Identificar "áreas em crescimento" (população aumentando)
+- [ ] Identificar "áreas de alto valor" (renda média alta)
+- [ ] Alertas: "Área de baixa renda" ou "Área em desenvolvimento"
+
+### Exemplos de Uso:
+
+**Endpoint de exemplo:**
+```
+https://api.census.gov/data/2022/acs/acs5?get=NAME,B19013_001E,B01003_001E&for=tract:*&in=state:12&in=county:105&key=YOUR_API_KEY
+```
+
+**Variáveis úteis:**
+- `B01003_001E` - População total
+- `B19013_001E` - Renda média familiar (Median Household Income)
+- `B17001_002E` - População abaixo da linha de pobreza
+- `B25077_001E` - Valor médio das casas
+- `B23025_005E` - Taxa de desemprego
+
+### Benefícios:
+- ✅ Entender o perfil socioeconômico da área
+- ✅ Identificar áreas de alto potencial de valorização
+- ✅ Evitar áreas de baixa qualidade
+- ✅ Tomar decisões mais informadas
+- ✅ **100% gratuito!**
+
+### Recursos:
+- 📚 Census Bureau Developer Portal: https://www.census.gov/data/developers.html
+- 📚 ACS API Documentation: https://www.census.gov/data/developers/data-sets/acs-5year.html
+- 📚 Geocoding API: https://geocoding.geo.census.gov/geocoder/
+- 📚 Variáveis ACS: https://api.census.gov/data/2022/acs/acs5/variables.html
+
+### Prioridade:
+⏰ **IMPLEMENTAR DEPOIS** (após Sistema de Classificação A/B/C)
+
+### Notas:
+- API Key é gratuita mas obrigatória
+- Dados são atualizados anualmente (ACS 5-year estimates)
+- Cache é importante para evitar chamadas repetidas
+- Pode combinar com dados de flood zone para análise completa
