@@ -1004,19 +1004,19 @@ Na página de análise (analysis.html), as imagens do Google Maps aparecem vazia
 🔴 **ALTA** (funcionalidade crítica para análise de propriedades)
 
 
-## 🔄 Modificar carregamento de imagens Google Maps para sob demanda
+## 🔄 Modificar carregamento de imagens Google Maps para sob demanda (✅ CONCLUÍDO)
 
 ### Objetivo:
 Economizar uso da API do Google Maps carregando imagens apenas quando o usuário clicar no botão, em vez de carregar automaticamente.
 
 ### Implementação:
 - [x] Adicionar botão "🔍 Carregar Imagem" dentro de cada card vazio
-- [ ] Modificar JavaScript para NÃO carregar automaticamente
-- [ ] Carregar apenas quando clicar no botão
-- [ ] Adicionar loading indicator ("⏳ Carregando...")
-- [ ] Após carregar, esconder o botão e mostrar a imagem
-- [ ] Testar funcionalidade
-- [ ] Commit e push
+- [x] Modificar JavaScript para NÃO carregar automaticamente
+- [x] Carregar apenas quando clicar no botão
+- [x] Adicionar loading indicator ("⏳ Carregando...")
+- [x] Após carregar, esconder o botão e mostrar a imagem
+- [x] Testar funcionalidade
+- [x] Commit e push
 
 ### Cards afetados:
 - Vista Satélite
