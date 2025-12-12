@@ -742,3 +742,148 @@ Adicionar imagens aéreas (NAIP) e dados geográficos (USGS) ao dashboard
 - [x] Gap entre botões reduzido de 12px para 8px
 - [x] Padding dos botões otimizado (10px 12px)
 - [x] Fonte menor e mais proporcional
+
+
+### 🔄 Plano de Contingência - OpenFEMA API
+**Usar apenas se RapidAPI FEMA parar de funcionar**
+
+- [ ] Implementar integração com OpenFEMA API (https://www.fema.gov/api/open)
+- [ ] Endpoint: `https://www.fema.gov/api/open/v2/[entity]`
+- [ ] Não requer API key (100% gratuito)
+- [ ] Identificar entidade correta (provavelmente `NfhlFloodHazardZones` ou similar)
+- [ ] Implementar lógica de point-in-polygon para consulta por coordenadas
+- [ ] Processar geometrias GeoJSON retornadas pela API
+- [ ] Testar com coordenadas da Flórida
+
+**Notas:**
+- OpenFEMA é mais complexa mas 100% gratuita
+- RapidAPI é mais simples mas tem limite de requisições
+- Manter RapidAPI como solução principal enquanto funcionar
+
+
+## 🚀 Melhorias Priorizadas - Implementar em Breve
+
+### Validações e Robustez (SEM IA - Grátis)
+- [ ] Implementar validações básicas de CSV (coordenadas válidas, acres > 0, campos obrigatórios)
+- [ ] Adicionar sistema de cache para FEMA API (evitar rate limits)
+- [ ] Corrigir bug: sistema congela ao voltar da página de settings
+- [ ] Implementar tratamento de erros e notificações amigáveis
+
+### Sistema de Classificação A/B/C (PARA FAZER DEPOIS)
+- [ ] Criar função de classificação com regras simples (sem IA)
+- [ ] Definir critérios: acres, amount_due, flood_zone, zoning
+- [ ] Adicionar badge visual (A/B/C) em cada propriedade
+- [ ] Adicionar filtro por classificação no dashboard
+- [ ] Mostrar score e motivos da classificação
+
+### Zoning Data (Solução Alternativa)
+- [ ] Regrid API não funcionou (token inválido, não vamos pagar)
+- [ ] Pesquisar alternativas gratuitas para zoning data
+- [ ] Considerar scraping de sites públicos dos condados
+- [ ] Ou deixar campo manual para preenchimento
+
+### Notas:
+- ❌ Integração OpenAI descartada por enquanto (custo vs benefício = 3/10)
+- ✅ Focar em melhorias gratuitas que agregam valor imediato
+- ✅ Priorizar estabilidade e experiência do usuário
+
+
+## 🤖 Integração OpenAI - Análise de Legal Description (IMPLEMENTAR DEPOIS)
+
+### Estratégia Híbrida (Custo-Benefício Otimizado):
+
+**SEM IA (Grátis - Implementar primeiro):**
+- [ ] Explicação inteligente de Flood Zones (dicionário estático FEMA)
+- [ ] Análise básica de Legal Description (identificar tipo, extrair info, detectar red flags)
+
+**COM IA (Pago - Apenas para propriedades selecionadas):**
+- [ ] Análise avançada de Legal Description com OpenAI
+- [ ] Interpretação contextual complexa
+- [ ] Identificação de riscos específicos
+- [ ] Recomendações personalizadas
+- [ ] Detecção Automática de Red Flags (análise inteligente de todos os dados da propriedade)
+
+### Detalhes da Implementação:
+
+**Quando usar OpenAI:**
+- ✅ Apenas quando usuário clicar em "Analisar Selecionadas"
+- ✅ Apenas para propriedades que o usuário marcou (não todas)
+- ✅ Exibir análise na página analysis.html
+
+**Custo Estimado:**
+- ~$0.02-0.03 por propriedade analisada (Legal Description + Red Flags)
+- Se analisar 10 propriedades = $0.20-0.30
+- Se analisar 100 propriedades/mês = $2-3/mês
+
+**Endpoints a criar:**
+```
+1. POST /api/analyze-legal-description
+   Body: { legalDescription: "LOT 15 BLOCK B..." }
+   Response: {
+     interpretation: "...",
+     risks: [...],
+     recommendations: "...",
+     complexity: "low|medium|high"
+   }
+
+2. POST /api/detect-red-flags
+   Body: { property: { acres, amountDue, floodZone, occupancy, ... } }
+   Response: {
+     redFlags: [
+       { severity: "high|medium|low", flag: "...", detail: "..." }
+     ],
+     overallRisk: "low|medium|high",
+     recommendation: "buy|caution|avoid",
+     reasoning: "..."
+   }
+```
+
+**Exibição no Frontend:**
+
+**Seção 1: 📜 Análise da Legal Description**
+- Mostrar interpretação em linguagem simples
+- Listar riscos identificados
+- Mostrar recomendações (contratar surveyor? safe to buy?)
+- Badge de complexidade (Simples/Moderado/Complexo)
+
+**Seção 2: 🚨 Red Flags Detectados**
+- Card destacado no topo da página (se houver red flags)
+- Lista de alertas por severidade (Alto/Médio/Baixo)
+- Cada red flag com ícone, título e explicação detalhada
+- Badge de risco geral (Baixo/Médio/Alto)
+- Recomendação final (Comprar/Avaliar com Cuidado/Evitar)
+
+**Exemplos de Red Flags a detectar:**
+- 🚨 Flood Zone de alto risco (A, AE, V, VE)
+- 🚨 Acres muito pequeno (< 0.10) ou muito grande (> 10)
+- 🚨 Amount Due muito alto (> $15,000)
+- 🚨 Propriedade ocupada (risco de despejo)
+- 🚨 Legal Description complexa (Metes & Bounds)
+- 🚨 Legal Description com "UNDIVIDED INTEREST" (propriedade compartilhada)
+- 🚨 Legal Description com "EASEMENT" (servidão)
+- ⚠️ Sem zoning data disponível
+- ⚠️ Opportunity Zone (pode ter restrições)
+- ⚠️ Tax years > 3 anos (muito tempo inadimplente)
+
+### Prioridade:
+- ⏰ IMPLEMENTAR DEPOIS (não é urgente)
+- ✅ Primeiro: Flood Zone (grátis)
+- ✅ Primeiro: Legal Description básica (grátis)
+- 🤖 Depois: Legal Description avançada (OpenAI)
+
+### Notas:
+- ✅ Estratégia inteligente: usar IA apenas onde realmente agrega valor
+- ✅ Custo controlado: apenas propriedades selecionadas (não todas)
+- ✅ ROI positivo: análise profunda antes de investir milhares de dólares
+
+
+## 🌊 Implementação: Explicação Inteligente de Flood Zone (AGORA)
+
+### Tarefas:
+- [ ] Criar arquivo flood-zones-data.js com dicionário completo FEMA
+- [ ] Adicionar função getFloodZoneExplanation() no analysis.html
+- [ ] Criar seção visual "Análise de Flood Zone" na página analysis.html
+- [ ] Exibir ícone, nível de risco, necessidade de seguro, impacto no valor
+- [ ] Adicionar recomendação (Comprar/Avaliar/Evitar)
+- [ ] Testar com diferentes flood zones (X, AE, V, VE, etc.)
+- [ ] Commit e push para GitHub

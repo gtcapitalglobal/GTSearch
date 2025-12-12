@@ -612,7 +612,72 @@
                 header: true,
                 skipEmptyLines: true,
                 complete: (results) => {
-                    const data = results.data.filter(row => row.Coordinates && row.Coordinates.trim());
+                    // ✅ VALIDAÇÕES BÁSICAS
+                    const validationErrors = [];
+                    let validCount = 0;
+                    let invalidCount = 0;
+                    
+                    const data = results.data.filter(row => {
+                        // Validar se tem coordenadas
+                        if (!row.Coordinates || !row.Coordinates.trim()) {
+                            invalidCount++;
+                            return false;
+                        }
+                        
+                        // Validar coordenadas
+                        const coordsStr = row.Coordinates.replace(/"/g, '').trim();
+                        const coords = coordsStr.split(',');
+                        const lat = parseFloat(coords[0]);
+                        const lng = parseFloat(coords[1]);
+                        
+                        // Validar se coordenadas são números válidos
+                        if (isNaN(lat) || isNaN(lng)) {
+                            invalidCount++;
+                            validationErrors.push(`Coordenadas inválidas: ${row['Parcel Number'] || 'Desconhecido'}`);
+                            return false;
+                        }
+                        
+                        // Validar se coordenadas estão na Flórida (lat: 24-31, lng: -87 a -80)
+                        if (lat < 24 || lat > 31 || lng < -87 || lng > -80) {
+                            invalidCount++;
+                            validationErrors.push(`Coordenadas fora da Flórida: ${row['Parcel Number'] || 'Desconhecido'} (${lat}, ${lng})`);
+                            return false;
+                        }
+                        
+                        // Validar Parcel Number
+                        if (!row['Parcel Number'] || row['Parcel Number'].trim() === '') {
+                            invalidCount++;
+                            validationErrors.push(`Parcel Number vazio`);
+                            return false;
+                        }
+                        
+                        // Validar Acres (deve ser > 0)
+                        const acres = parseFloat(row.Acres);
+                        if (isNaN(acres) || acres <= 0) {
+                            invalidCount++;
+                            validationErrors.push(`Acres inválido: ${row['Parcel Number']} (${row.Acres})`);
+                            return false;
+                        }
+                        
+                        validCount++;
+                        return true;
+                    });
+                    
+                    // Mostrar resultado das validações
+                    if (invalidCount > 0) {
+                        console.warn(`⚠️ ${invalidCount} propriedades inválidas foram removidas`);
+                        console.warn('Erros:', validationErrors.slice(0, 10)); // Mostrar apenas primeiros 10
+                        
+                        showNotification(
+                            `⚠️ ${validCount} propriedades válidas importadas. ${invalidCount} inválidas foram removidas.`,
+                            'warning'
+                        );
+                    } else {
+                        showNotification(
+                            `✅ ${validCount} propriedades importadas com sucesso!`,
+                            'success'
+                        );
+                    }
                     
                     data.forEach(row => {
                         // Remove quotes and split coordinates
@@ -1534,6 +1599,97 @@
             
             alert(`✅ Filtro aplicado!\n- Removidas: < 0.20 acres\n- Removidas: Land & Structures\nTotal restante: ${allNewProperties.length}`);
         });
+        
+        // ===== 🔔 SISTEMA DE NOTIFICAÇÕES =====
+        
+        function showNotification(message, type = 'info') {
+            // Criar elemento de notificação
+            const notification = document.createElement('div');
+            notification.className = 'notification-toast';
+            
+            // Definir cores baseado no tipo
+            let bgColor, borderColor, icon;
+            switch(type) {
+                case 'success':
+                    bgColor = 'bg-green-50';
+                    borderColor = 'border-green-500';
+                    icon = '✅';
+                    break;
+                case 'error':
+                    bgColor = 'bg-red-50';
+                    borderColor = 'border-red-500';
+                    icon = '❌';
+                    break;
+                case 'warning':
+                    bgColor = 'bg-yellow-50';
+                    borderColor = 'border-yellow-500';
+                    icon = '⚠️';
+                    break;
+                default:
+                    bgColor = 'bg-blue-50';
+                    borderColor = 'border-blue-500';
+                    icon = 'ℹ️';
+            }
+            
+            notification.innerHTML = `
+                <div class="${bgColor} ${borderColor} border-l-4 p-4 rounded shadow-lg max-w-md">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">${icon}</span>
+                        <p class="text-sm font-medium text-gray-800">${message}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Adicionar estilos inline
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remover após 5 segundos
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 5000);
+        }
+        
+        // Adicionar estilos de animação
+        if (!document.getElementById('notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'notification-styles';
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes slideOut {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // ===== FIM SISTEMA DE NOTIFICAÇÕES =====
         
         // Event Listener para o botão Analisar Selecionadas
         document.addEventListener('DOMContentLoaded', function() {
