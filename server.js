@@ -40,16 +40,38 @@ app.post('/api/config/save', (req, res) => {
   try {
     const { google_maps, openai, gemini, perplexity, rapidapi } = req.body;
     
-    const envContent = `# GT Lands Dashboard - Environment Variables\n# Configure suas API keys aqui\n\n# Google Maps API\nGOOGLE_MAPS_API_KEY=${google_maps || ''}\n\n# OpenAI API\nOPENAI_API_KEY=${openai || ''}\n\n# Google Gemini API\nGEMINI_API_KEY=${gemini || ''}\n\n# Perplexity API\nPERPLEXITY_API_KEY=${perplexity || ''}\n\n# RapidAPI Key (for Zillow, Realtor.com, Realty Mole)\nRAPIDAPI_KEY=${rapidapi || ''}\n\n# Server Port\nPORT=3000\n`;
+    // 💾 Read existing .env to preserve other variables
+    let existingEnv = {};
+    if (fs.existsSync('.env')) {
+      const envFile = fs.readFileSync('.env', 'utf8');
+      envFile.split('\n').forEach(line => {
+        const match = line.match(/^([A-Z_]+)=(.*)$/);
+        if (match) {
+          existingEnv[match[1]] = match[2];
+        }
+      });
+    }
+    
+    // ✨ Update only provided keys, keep existing ones
+    const updatedEnv = {
+      GOOGLE_MAPS_API_KEY: google_maps !== undefined ? google_maps : (existingEnv.GOOGLE_MAPS_API_KEY || ''),
+      OPENAI_API_KEY: openai !== undefined ? openai : (existingEnv.OPENAI_API_KEY || ''),
+      GEMINI_API_KEY: gemini !== undefined ? gemini : (existingEnv.GEMINI_API_KEY || ''),
+      PERPLEXITY_API_KEY: perplexity !== undefined ? perplexity : (existingEnv.PERPLEXITY_API_KEY || ''),
+      RAPIDAPI_KEY: rapidapi !== undefined ? rapidapi : (existingEnv.RAPIDAPI_KEY || ''),
+      PORT: existingEnv.PORT || '3000'
+    };
+    
+    const envContent = `# GT Lands Dashboard - Environment Variables\n# Configure suas API keys aqui\n\n# Google Maps API\nGOOGLE_MAPS_API_KEY=${updatedEnv.GOOGLE_MAPS_API_KEY}\n\n# OpenAI API\nOPENAI_API_KEY=${updatedEnv.OPENAI_API_KEY}\n\n# Google Gemini API\nGEMINI_API_KEY=${updatedEnv.GEMINI_API_KEY}\n\n# Perplexity API\nPERPLEXITY_API_KEY=${updatedEnv.PERPLEXITY_API_KEY}\n\n# RapidAPI Key (for Zillow, Realtor.com, Realty Mole)\nRAPIDAPI_KEY=${updatedEnv.RAPIDAPI_KEY}\n\n# Server Port\nPORT=${updatedEnv.PORT}\n`;
     
     fs.writeFileSync('.env', envContent);
     
-    // Reload environment variables
-    process.env.GOOGLE_MAPS_API_KEY = google_maps || '';
-    process.env.OPENAI_API_KEY = openai || '';
-    process.env.GEMINI_API_KEY = gemini || '';
-    process.env.PERPLEXITY_API_KEY = perplexity || '';
-    process.env.RAPIDAPI_KEY = rapidapi || '';
+    // 🔄 Reload environment variables
+    process.env.GOOGLE_MAPS_API_KEY = updatedEnv.GOOGLE_MAPS_API_KEY;
+    process.env.OPENAI_API_KEY = updatedEnv.OPENAI_API_KEY;
+    process.env.GEMINI_API_KEY = updatedEnv.GEMINI_API_KEY;
+    process.env.PERPLEXITY_API_KEY = updatedEnv.PERPLEXITY_API_KEY;
+    process.env.RAPIDAPI_KEY = updatedEnv.RAPIDAPI_KEY;
     
     res.json({ success: true, message: 'API keys saved successfully!' });
   } catch (error) {

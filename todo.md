@@ -1053,3 +1053,21 @@ Modificar `saveGoogleMapsApiKey()` para enviar a API Key para o endpoint `/api/c
 
 ### Prioridade:
 🔴 **CRÍTICA** (sem isso, os mapas não funcionam)
+
+
+## 🔍 AUDITORIA: Google Maps API não funciona no GTSearch
+
+### Problema:
+- API Key funciona quando testada diretamente no navegador (Geocoding API retorna OK)
+- API Key NÃO funciona quando usada no sistema GTSearch
+- Erro: "Não foi possível localizar o endereço no mapa"
+
+### Investigar:
+- [ ] Como analysis.html carrega a API Key do servidor
+- [ ] Se o endpoint `/api/google-maps-key` retorna a key correta
+- [ ] Se a key está sendo usada corretamente nas chamadas
+- [ ] Console do navegador para erros JavaScript
+- [ ] Network tab para ver requisições HTTP
+
+### Prioridade:
+🔴 **CRÍTICA** (sistema não funciona sem isso)
