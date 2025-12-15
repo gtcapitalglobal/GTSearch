@@ -1181,52 +1181,69 @@
     }
 
         function geocodeAndLoadMaps(prop) {
+            // 🎯 VERIFICAÇÃO: Usar coordenadas do CSV se disponíveis (evita geocoding)
+            const lat = parseFloat(prop['Latitude'] || prop['Lat'] || prop['lat'] || prop['latitude']);
+            const lng = parseFloat(prop['Longitude'] || prop['Lng'] || prop['lng'] || prop['longitude'] || prop['Lon'] || prop['lon']);
+            
+            // Se tem coordenadas válidas, usar direto (sem geocoding)
+            if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
+                console.log('✅ Usando coordenadas do CSV:', lat, lng);
+                const location = new google.maps.LatLng(lat, lng);
+                processLocation(location, prop);
+                return;
+            }
+            
+            // Se não tem coordenadas, tentar geocoding do endereço
             const address = `${prop['Address']}, ${prop['City']}, FL`;
-            console.log('Geocoding address:', address);
+            console.log('📍 Tentando geocoding do endereço:', address);
 
             const geocoder = new google.maps.Geocoder();
             geocoder.geocode({ address: address }, (results, status) => {
                 if (status === 'OK') {
                     const location = results[0].geometry.location;
-                    console.log('Geocoded location:', location.toString());
-                    
-                    // 💾 Salvar localização para uso posterior (carregamento sob demanda)
-                    window.currentLocation = location;
-                    window.currentProp = prop;
-                    
-                    // ✅ Carregar apenas dados que NÃO usam Google Maps API (gratuitos)
-                    // initSatelliteMap(location); // ❌ Desabilitado - carregar sob demanda
-                    // initStreetView(location); // ❌ Desabilitado - carregar sob demanda
-                    // initTerrainMap(location); // ❌ Desabilitado - carregar sob demanda
-                    // initNormalMap(location); // ❌ Desabilitado - carregar sob demanda
-                    loadNearbyPlaces(location);
-                    loadElevation(location);
-                    loadLandUse(location);
-                    loadFemaFlood(location);
-                    loadWaterProximity(location);
-                    loadUSGSElevation(location.lat(), location.lng());
-                    loadUSGSWaterBodies(location.lat(), location.lng());
-                    createGoogleEarthLink(location);
-                    
-                    // Load ArcGIS Hub data
-                    const county = prop['County'] || 'Orange';
-                    loadArcGISData(location.lat(), location.lng(), county);
-                    
-                    // Load OSM building data
-                    const parcelSqft = parseFloat(prop['Square Feet']?.replace(/,/g, '')) || 0;
-                    loadOSMData(location.lat(), location.lng(), parcelSqft);
-                    
-                    // Load Census demographic data
-                    loadCensusData(location.lat(), location.lng());
-                    
-                    // ❌ Fotos desabilitadas - carregar sob demanda
-                    // loadZillowPhotos(prop);
-                    // loadRealtorPhotos(prop);
+                    console.log('✅ Geocoded location:', location.toString());
+                    processLocation(location, prop);
                 } else {
-                    console.error('Geocoding failed:', status);
-                    alert('Não foi possível localizar o endereço no mapa.');
+                    console.error('❌ Geocoding failed:', status);
+                    alert('Não foi possível localizar o endereço no mapa. Verifique se o CSV tem coordenadas (Latitude/Longitude).');
                 }
             });
+        }
+        
+        // 📍 Função auxiliar para processar localização (usada por coordenadas diretas ou geocoding)
+        function processLocation(location, prop) {
+            // 💾 Salvar localização para uso posterior (carregamento sob demanda)
+            window.currentLocation = location;
+            window.currentProp = prop;
+            
+            // ✅ Carregar apenas dados que NÃO usam Google Maps API (gratuitos)
+            // initSatelliteMap(location); // ❌ Desabilitado - carregar sob demanda
+            // initStreetView(location); // ❌ Desabilitado - carregar sob demanda
+            // initTerrainMap(location); // ❌ Desabilitado - carregar sob demanda
+            // initNormalMap(location); // ❌ Desabilitado - carregar sob demanda
+            loadNearbyPlaces(location);
+            loadElevation(location);
+            loadLandUse(location);
+            loadFemaFlood(location);
+            loadWaterProximity(location);
+            loadUSGSElevation(location.lat(), location.lng());
+            loadUSGSWaterBodies(location.lat(), location.lng());
+            createGoogleEarthLink(location);
+            
+            // Load ArcGIS Hub data
+            const county = prop['County'] || 'Orange';
+            loadArcGISData(location.lat(), location.lng(), county);
+            
+            // Load OSM building data
+            const parcelSqft = parseFloat(prop['Square Feet']?.replace(/,/g, '')) || 0;
+            loadOSMData(location.lat(), location.lng(), parcelSqft);
+            
+            // Load Census demographic data
+            loadCensusData(location.lat(), location.lng());
+            
+            // ❌ Fotos desabilitadas - carregar sob demanda
+            // loadZillowPhotos(prop);
+            // loadRealtorPhotos(prop);
         }
 
         function initSatelliteMap(location) {

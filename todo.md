@@ -1071,3 +1071,28 @@ Modificar `saveGoogleMapsApiKey()` para enviar a API Key para o endpoint `/api/c
 
 ### Prioridade:
 🔴 **CRÍTICA** (sistema não funciona sem isso)
+
+
+## 🐛 BUG: Sistema tenta geocoding mesmo com coordenadas disponíveis
+
+### Problema:
+- Propriedades importadas do CSV JÁ TEM coordenadas (Latitude/Longitude)
+- Sistema ignora coordenadas e tenta fazer geocoding do endereço
+- Geocoding falha e mostra erro "Não foi possível localizar o endereço no mapa"
+- Mapas não carregam mesmo com coordenadas válidas
+
+### Solução:
+Modificar analysis.html para:
+1. Verificar se propriedade tem coordenadas
+2. SE TEM: usar coordenadas diretas (sem geocoding)
+3. SE NÃO TEM: tentar geocoding do endereço
+
+### Tarefas:
+- [ ] Modificar função loadProperty() para verificar coordenadas
+- [ ] Usar coordenadas diretas quando disponíveis
+- [ ] Fallback para geocoding apenas se não tiver coordenadas
+- [ ] Testar com propriedades do CSV
+- [ ] Commit e push
+
+### Prioridade:
+🔴 **CRÍTICA** (mapas não funcionam)
