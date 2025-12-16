@@ -345,7 +345,7 @@ app.post('/api/fema-flood', async (req, res) => {
       params,
       headers: {
         'x-rapidapi-host': 'fema-flood-hazard-florida.p.rapidapi.com',
-        'x-rapidapi-key': process.env.RAPIDAPI_KEY || '3eff6f4111msh25829339707ed3fp167b43jsn832e9dd3f20d'
+        'x-rapidapi-key': process.env.RAPIDAPI_KEY
       },
       timeout: 10000 // RapidAPI is much faster!
     });
