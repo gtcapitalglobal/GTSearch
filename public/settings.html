@@ -530,6 +530,21 @@
                 </div>
                 <div id="realtyMoleTestResult"></div>
 
+                <h3>🛰️ USGS M2M Token (Landsat/Satellite Imagery)</h3>
+                <div class="input-group">
+                    <label for="usgsM2mToken">M2M Token</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="usgsM2mToken" placeholder="seu-usgs-m2m-token...">
+                        <button type="button" class="toggle-password" onclick="togglePassword('usgsM2mToken')">👁️</button>
+                    </div>
+                    <small>Para acessar imagens de satélite Landsat (1984-2024) e análise temporal | <a href="https://ers.cr.usgs.gov/register" target="_blank">🔗 Criar Conta USGS</a> | <a href="https://m2m.cr.usgs.gov/api/docs/json/" target="_blank">📚 Documentação</a></small>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="saveUsgsToken()">💾 Salvar</button>
+                    <button class="btn btn-info" onclick="showUsgsInfo()">ℹ️ Como Obter Token</button>
+                </div>
+                <div id="usgsTestResult"></div>
+
                 <hr style="margin: 30px 0; border: 1px solid #e0e0e0;">
                 <button class="btn btn-success" onclick="saveRealEstateApiKeys()">💾 Salvar Todas as APIs Imobiliárias</button>
                 
@@ -1140,14 +1155,55 @@
             showSaveSuccess('realtyMoleTestResult');
         }
 
+        function saveUsgsToken() {
+            const token = document.getElementById('usgsM2mToken').value.trim();
+            if (!token) {
+                alert('❌ Por favor, insira o USGS M2M Token!');
+                return;
+            }
+            saveEncryptedKey('usgsM2mToken', token);
+            showSaveSuccess('usgsTestResult');
+        }
+
+        function showUsgsInfo() {
+            const resultDiv = document.getElementById('usgsTestResult');
+            resultDiv.innerHTML = `
+                <div class="info-message" style="margin-top: 10px; padding: 15px; background: #e3f2fd; border-left: 4px solid #2196f3; border-radius: 5px;">
+                    <strong>📚 Como Obter o USGS M2M Token:</strong><br><br>
+                    <strong>1. Criar Conta USGS:</strong><br>
+                    • Acesse: <a href="https://ers.cr.usgs.gov/register" target="_blank">https://ers.cr.usgs.gov/register</a><br>
+                    • Preencha o formulário de registro<br>
+                    • Confirme seu email<br><br>
+                    <strong>2. Fazer Login:</strong><br>
+                    • Acesse: <a href="https://ers.cr.usgs.gov/login" target="_blank">https://ers.cr.usgs.gov/login</a><br>
+                    • Entre com suas credenciais<br><br>
+                    <strong>3. Obter Token:</strong><br>
+                    • Acesse: <a href="https://m2m.cr.usgs.gov/api/docs/json/" target="_blank">https://m2m.cr.usgs.gov/api/docs/json/</a><br>
+                    • Faça login quando solicitado<br>
+                    • O token será gerado automaticamente<br><br>
+                    <strong>🌟 O que você pode fazer:</strong><br>
+                    • Baixar imagens de satélite Landsat (1984-2024)<br>
+                    • Análise temporal de propriedades<br>
+                    • Detectar mudanças ao longo dos anos<br>
+                    • 100% GRATUITO!<br><br>
+                    <strong>📚 Documentação:</strong><br>
+                    • <a href="https://m2m.cr.usgs.gov/api/docs/json/" target="_blank">M2M API Docs</a><br>
+                    • <a href="https://espa.cr.usgs.gov/static/docs/api-readme.html" target="_blank">ESPA API Docs</a><br>
+                    • Análise completa: <code>/docs/usgs-m2m-espa-api-analise.md</code>
+                </div>
+            `;
+        }
+
         function saveRealEstateApiKeys() {
             const zillowKey = document.getElementById('zillowApiKey').value.trim();
             const realtorKey = document.getElementById('realtorApiKey').value.trim();
             const realtyMoleKey = document.getElementById('realtyMoleApiKey').value.trim();
+            const usgsToken = document.getElementById('usgsM2mToken').value.trim();
 
             if (zillowKey) saveEncryptedKey('zillowApiKey', zillowKey);
             if (realtorKey) saveEncryptedKey('realtorApiKey', realtorKey);
             if (realtyMoleKey) saveEncryptedKey('realtyMoleApiKey', realtyMoleKey);
+            if (usgsToken) saveEncryptedKey('usgsM2mToken', usgsToken);
 
             const indicator = document.getElementById('savedIndicatorRealEstate');
             indicator.classList.add('show');
