@@ -498,17 +498,36 @@
                     const lat = parseFloat(firstCoord[1]);
                     
                     if (!isNaN(lat) && !isNaN(lng)) {
-                        // ===== DEDUPLICAÇÃO =====
-                        // Criar chave única baseada em coordenadas (arredondadas para 5 casas decimais = ~1 metro)
-                        const coordKey = `${lat.toFixed(5)},${lng.toFixed(5)}`;
+                        // ===== DEDUPLICAÇÃO (Tolerância: 50 metros) =====
+                        let isDuplicate = false;
+                        let duplicateOf = null;
                         
-                        // Verificar se já existe propriedade nesta localização
-                        if (seenProperties.has(coordKey)) {
-                            console.log(`⚠️ Duplicata detectada e removida: ${nameEl.textContent} em ${coordKey}`);
+                        // Verificar se existe propriedade próxima (dentro de 50 metros)
+                        for (const [key, prop] of seenProperties) {
+                            // Calcular distância usando fórmula de Haversine simplificada
+                            const latDiff = Math.abs(lat - prop.lat);
+                            const lngDiff = Math.abs(lng - prop.lng);
+                            
+                            // 1 grau de latitude ≈ 111km
+                            // 1 grau de longitude ≈ 111km * cos(latitude)
+                            const distLat = latDiff * 111000; // metros
+                            const distLng = lngDiff * 111000 * Math.cos(lat * Math.PI / 180); // metros
+                            const distance = Math.sqrt(distLat * distLat + distLng * distLng);
+                            
+                            if (distance < 50) { // 50 metros de tolerância
+                                isDuplicate = true;
+                                duplicateOf = prop.name;
+                                break;
+                            }
+                        }
+                        
+                        if (isDuplicate) {
+                            console.log(`⚠️ Duplicata detectada e removida: "${nameEl.textContent}" (duplicata de "${duplicateOf}")`);
                             continue; // Pular esta propriedade duplicada
                         }
                         
                         // Registrar propriedade como vista
+                        const coordKey = `${lat.toFixed(6)},${lng.toFixed(6)}`;
                         seenProperties.set(coordKey, {
                             name: nameEl.textContent,
                             type: type,
