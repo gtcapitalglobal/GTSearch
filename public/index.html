@@ -473,6 +473,9 @@
 
         let kmlLoadedCount = 0;
 
+        // ===== SISTEMA DE DEDUPLICAÇÃO =====
+        const seenProperties = new Map(); // Armazena propriedades já processadas
+        
         function parseKML(kmlText, type, name) {
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(kmlText, 'text/xml');
@@ -495,6 +498,25 @@
                     const lat = parseFloat(firstCoord[1]);
                     
                     if (!isNaN(lat) && !isNaN(lng)) {
+                        // ===== DEDUPLICAÇÃO =====
+                        // Criar chave única baseada em coordenadas (arredondadas para 5 casas decimais = ~1 metro)
+                        const coordKey = `${lat.toFixed(5)},${lng.toFixed(5)}`;
+                        
+                        // Verificar se já existe propriedade nesta localização
+                        if (seenProperties.has(coordKey)) {
+                            console.log(`⚠️ Duplicata detectada e removida: ${nameEl.textContent} em ${coordKey}`);
+                            continue; // Pular esta propriedade duplicada
+                        }
+                        
+                        // Registrar propriedade como vista
+                        seenProperties.set(coordKey, {
+                            name: nameEl.textContent,
+                            type: type,
+                            lat: lat,
+                            lng: lng
+                        });
+                        
+                        // Criar marcador (apenas se não for duplicata)
                         const marker = L.marker([lat, lng], { icon: icons[type] })
                             .bindPopup(`
                                 <strong>${nameEl.textContent}</strong><br>

@@ -2,9 +2,9 @@
 <kml xmlns="http://www.opengis.net/kml/2.2">
   <Document>
     <name>Blocked/ Paused</name>
-    <Style id="icon-1899-F9A825-normal">
+    <Style id="icon-1899-000000-normal">
       <IconStyle>
-        <color>ff25a8f9</color>
+        <color>ff000000</color>
         <scale>1</scale>
         <Icon>
           <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
@@ -15,9 +15,9 @@
         <scale>0</scale>
       </LabelStyle>
     </Style>
-    <Style id="icon-1899-F9A825-highlight">
+    <Style id="icon-1899-000000-highlight">
       <IconStyle>
-        <color>ff25a8f9</color>
+        <color>ff000000</color>
         <scale>1</scale>
         <Icon>
           <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
@@ -28,19 +28,19 @@
         <scale>1</scale>
       </LabelStyle>
     </Style>
-    <StyleMap id="icon-1899-F9A825">
+    <StyleMap id="icon-1899-000000">
       <Pair>
         <key>normal</key>
-        <styleUrl>#icon-1899-F9A825-normal</styleUrl>
+        <styleUrl>#icon-1899-000000-normal</styleUrl>
       </Pair>
       <Pair>
         <key>highlight</key>
-        <styleUrl>#icon-1899-F9A825-highlight</styleUrl>
+        <styleUrl>#icon-1899-000000-highlight</styleUrl>
       </Pair>
     </StyleMap>
-    <Style id="icon-1899-F9A825-nodesc-normal">
+    <Style id="icon-1899-673AB7-normal">
       <IconStyle>
-        <color>ff25a8f9</color>
+        <color>ffb73a67</color>
         <scale>1</scale>
         <Icon>
           <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
@@ -50,13 +50,10 @@
       <LabelStyle>
         <scale>0</scale>
       </LabelStyle>
-      <BalloonStyle>
-        <text><![CDATA[<h3>$[name]</h3>]]></text>
-      </BalloonStyle>
     </Style>
-    <Style id="icon-1899-F9A825-nodesc-highlight">
+    <Style id="icon-1899-673AB7-highlight">
       <IconStyle>
-        <color>ff25a8f9</color>
+        <color>ffb73a67</color>
         <scale>1</scale>
         <Icon>
           <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
@@ -66,93 +63,67 @@
       <LabelStyle>
         <scale>1</scale>
       </LabelStyle>
-      <BalloonStyle>
-        <text><![CDATA[<h3>$[name]</h3>]]></text>
-      </BalloonStyle>
     </Style>
-    <StyleMap id="icon-1899-F9A825-nodesc">
+    <StyleMap id="icon-1899-673AB7">
       <Pair>
         <key>normal</key>
-        <styleUrl>#icon-1899-F9A825-nodesc-normal</styleUrl>
+        <styleUrl>#icon-1899-673AB7-normal</styleUrl>
       </Pair>
       <Pair>
         <key>highlight</key>
-        <styleUrl>#icon-1899-F9A825-nodesc-highlight</styleUrl>
+        <styleUrl>#icon-1899-673AB7-highlight</styleUrl>
       </Pair>
     </StyleMap>
-    <Style id="poly-F9A825-1200-76-normal">
+    <Style id="poly-F9A825-2000-77-normal">
       <LineStyle>
         <color>ff25a8f9</color>
-        <width>1.2</width>
+        <width>2</width>
       </LineStyle>
       <PolyStyle>
-        <color>4c25a8f9</color>
+        <color>4d25a8f9</color>
         <fill>1</fill>
         <outline>1</outline>
       </PolyStyle>
     </Style>
-    <Style id="poly-F9A825-1200-76-highlight">
+    <Style id="poly-F9A825-2000-77-highlight">
       <LineStyle>
         <color>ff25a8f9</color>
-        <width>1.8</width>
+        <width>3</width>
       </LineStyle>
       <PolyStyle>
-        <color>4c25a8f9</color>
+        <color>4d25a8f9</color>
         <fill>1</fill>
         <outline>1</outline>
       </PolyStyle>
     </Style>
-    <StyleMap id="poly-F9A825-1200-76">
+    <StyleMap id="poly-F9A825-2000-77">
       <Pair>
         <key>normal</key>
-        <styleUrl>#poly-F9A825-1200-76-normal</styleUrl>
+        <styleUrl>#poly-F9A825-2000-77-normal</styleUrl>
       </Pair>
       <Pair>
         <key>highlight</key>
-        <styleUrl>#poly-F9A825-1200-76-highlight</styleUrl>
-      </Pair>
-    </StyleMap>
-    <Style id="poly-F9A825-1200-76-nodesc-normal">
-      <LineStyle>
-        <color>ff25a8f9</color>
-        <width>1.2</width>
-      </LineStyle>
-      <PolyStyle>
-        <color>4c25a8f9</color>
-        <fill>1</fill>
-        <outline>1</outline>
-      </PolyStyle>
-      <BalloonStyle>
-        <text><![CDATA[<h3>$[name]</h3>]]></text>
-      </BalloonStyle>
-    </Style>
-    <Style id="poly-F9A825-1200-76-nodesc-highlight">
-      <LineStyle>
-        <color>ff25a8f9</color>
-        <width>1.8</width>
-      </LineStyle>
-      <PolyStyle>
-        <color>4c25a8f9</color>
-        <fill>1</fill>
-        <outline>1</outline>
-      </PolyStyle>
-      <BalloonStyle>
-        <text><![CDATA[<h3>$[name]</h3>]]></text>
-      </BalloonStyle>
-    </Style>
-    <StyleMap id="poly-F9A825-1200-76-nodesc">
-      <Pair>
-        <key>normal</key>
-        <styleUrl>#poly-F9A825-1200-76-nodesc-normal</styleUrl>
-      </Pair>
-      <Pair>
-        <key>highlight</key>
-        <styleUrl>#poly-F9A825-1200-76-nodesc-highlight</styleUrl>
+        <styleUrl>#poly-F9A825-2000-77-highlight</styleUrl>
       </Pair>
     </StyleMap>
     <Placemark>
       <name>Property 18 - 0.2 acres</name>
-      <styleUrl>#icon-1899-F9A825-nodesc</styleUrl>
+      <description><![CDATA[descrição: <br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
       <Point>
         <coordinates>
           -89.448271,30.925915,0
@@ -161,11 +132,23 @@
     </Placemark>
     <Placemark>
       <name>Property 18</name>
-      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v5L7nDWeXc1leWyiroutcg3m3yrAxHBjhHQ-tkBCGg-HPSLbPvaDGjWNoIlJ9OX55VzVie7Hq2IR2ZHMxHe3ccXcjmNdPeoxh3ZzNqyKJcFSwqkQBcGRjQVx9IQ-o2_9pKon1iSsgmVxOZyBqYdRfqmucY7U2iVIt0fl5VPkGn0QQH0-_skc51fN68jzUrdVOIwbYUsTOBGCUCAzQV-3ZKFKNpgjC_t3bwuhNhT1jP_krZAxq8VCe3uN6GouAtMyh-kpuD09H-8KLWNA4EI74bxMpYG7gOXsN1jpYMRa5mihqm5fkKTFLLF_ktjtHyEd_m-JNxT8rDbqC4Xs2zVk3AI-5C7URJURKtxMxMAVv6mDO41cyX2nP38hcep1ewSnUMFna-XNW12mMkhGXJxgslHcOa7MzNTFVllu8duiAk3JfgFe7SA2ZoYbTasTAUOF5Gno8AxUVSuJP9ZdkJC2Jmofwi2HSqKTGBTZ31SzT6QFFPw_S__cEsD6wzseHN2toL1fqHy1zO-fsTzL-CtN6ffX-pPteTyGuvVn_Xcp6YDKpXRnkMC0pfLjCYAa6VUDyxiqAxSZOnEblY51YXnB__13jVWuNGXToSVcT3WEo-CQVVGQKGI3y4ysGI-YH6mC7kkEaaZSXZvv3agJzN_up2cjjLKv5kT6kzfsK7jFEFIEaBu6XFhAln22IidsjKPU69CGJqegjMhGkXhDWVBwxe1OxUWfA" height="200" width="auto" /><br><br>]]></description>
-      <styleUrl>#poly-F9A825-1200-76</styleUrl>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v7YL0SBPKreH-hsX2gvghbYMXi-nSAJMYH84pAvBw16cPyIrnYlepiQDM7gIpYVVof_oL54npiboHEVMCabgieJ-aI8TonyhxvJpW0LHtd8TOQRAJKdJQ6FOnLC-L6tr4lu19h7QIDFGywmXrOCvQ9RUsDlsPoHMgS7noqUUbr6F_bgZSJOJi706lTcw9HswJ1fOn-u1c2z2bmtcAqgFXekUG7oY2X8e7xjcL0iIchFB6t-yZ4ctg61asUzqPAyT4DVKRdcoYV2pvJqoVzxOz3ZSfujEJVo4D2rHOuSgnIQE1HubiI1eWGTvY21IJtfubcgDpaMwlyypkJ-xhkN6EOAi9F3X_nouPGEuvSwbr69WKrO2CBTjpjJQDAGG-XnL8B4IwrejwYjpbg60aAVaN1VpkjlI0BGTlkmyhjpyEAbcndN5CoD3EhGbv78QZa5231oBXQ-qrIreMiEvDzjvSTJLv7tA_3By5dZ9uK4N5SyccCsqte5mKlY-b3oIqVY0UwbDI7gVYmxI4DXl47TuL2RkGBXRRy_PGYqIwNzb60LK7BFMWvFWXIYRm7ocWoUDhFfDbvXGrcav1XXzh-ALT72IcgJKi_g-55oUwxwPbu2umWLheg7Vw-KxIRVHvBdFRBEvuE_ercWqYT-yWGP576m4Ug3pqaVxnQwSD0oBVqjOuSfyhIaOzYgaOof1D5z0c1iGmZrczQqNivEpy71jrpwqdfaiL6s2ZMpyk_PcSt7ekGRjHMAw5cvIzylFx21x0Siy99GEOIHMJflPGbIcWkDhqVmG8Li5PnWK9Ch7jOZ2X_fiBSiXN2TcNHU44YPmmkMeQAmMy_uOQ9PV8dK6TVk4MO97JqfVrTbQFMOGrw4Uj8vaf9YAPOS2j9ih2Ls_fzdDadIiamG3D9-K77tiz6kfrnoXYc0wHo3jdeGe7ZsUOki3A8ja_RjOIexMpfJZcZdgV8Y0ssI_J4PWNBhTCMKl_sx0xGi32Vgs2BMO17JiwbmWN4uFxT5gWKHcDpbaB3gw3AQIZzYfox_6xL0I_LdJVgz5iiPzkUgSwgMxYuRj4UhiXTJ21ZvaAsp_1K3W5cCWhwNT8mfU7gx-OvWUfWxm8NUheLqK5Tbw_eqoXsxl_2GR6Fj-x14C_sO6KYdPxLCbos3b2FVj9iWwxxVsyHgUqy0ja_QIUV5LrDQoKM6FJRPpRVmIh0yJHqAB35jtayd1LPOEGXdcbj9x4mGwPmxNxGK9DBQ51IQzoNb4rVfdAO93GUqXTRs6ZuM9OKVBdlUn2jHO9hguDOng5oWvFPPNKC11GY_yJL2jVapo0h0v4mCYzE7IIz19BVJE0h6xEPgeuczPx7GlJoL3NDj7AQJZ8zHK-sv1REc8BXE9_colspq94TGghd73NgMNJaAKSPx1xd702XnuktmPLZ8kMH7_3rIQhip4zQoyyNdjLvex_z4SGA2f6UYe-MXhsRNdGcOoRyGvjw6SskUltgxxyrNBA-h4wS8iIRuIJgmt9DP5EP3XqM" height="200" width="auto" /><br><br>descrição: <br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#poly-F9A825-2000-77</styleUrl>
       <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
         <Data name="gx_media_links">
-          <value>https://lh3.googleusercontent.com/umsh/AN6v0v5L7nDWeXc1leWyiroutcg3m3yrAxHBjhHQ-tkBCGg-HPSLbPvaDGjWNoIlJ9OX55VzVie7Hq2IR2ZHMxHe3ccXcjmNdPeoxh3ZzNqyKJcFSwqkQBcGRjQVx9IQ-o2_9pKon1iSsgmVxOZyBqYdRfqmucY7U2iVIt0fl5VPkGn0QQH0-_skc51fN68jzUrdVOIwbYUsTOBGCUCAzQV-3ZKFKNpgjC_t3bwuhNhT1jP_krZAxq8VCe3uN6GouAtMyh-kpuD09H-8KLWNA4EI74bxMpYG7gOXsN1jpYMRa5mihqm5fkKTFLLF_ktjtHyEd_m-JNxT8rDbqC4Xs2zVk3AI-5C7URJURKtxMxMAVv6mDO41cyX2nP38hcep1ewSnUMFna-XNW12mMkhGXJxgslHcOa7MzNTFVllu8duiAk3JfgFe7SA2ZoYbTasTAUOF5Gno8AxUVSuJP9ZdkJC2Jmofwi2HSqKTGBTZ31SzT6QFFPw_S__cEsD6wzseHN2toL1fqHy1zO-fsTzL-CtN6ffX-pPteTyGuvVn_Xcp6YDKpXRnkMC0pfLjCYAa6VUDyxiqAxSZOnEblY51YXnB__13jVWuNGXToSVcT3WEo-CQVVGQKGI3y4ysGI-YH6mC7kkEaaZSXZvv3agJzN_up2cjjLKv5kT6kzfsK7jFEFIEaBu6XFhAln22IidsjKPU69CGJqegjMhGkXhDWVBwxe1OxUWfA</value>
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v7YL0SBPKreH-hsX2gvghbYMXi-nSAJMYH84pAvBw16cPyIrnYlepiQDM7gIpYVVof_oL54npiboHEVMCabgieJ-aI8TonyhxvJpW0LHtd8TOQRAJKdJQ6FOnLC-L6tr4lu19h7QIDFGywmXrOCvQ9RUsDlsPoHMgS7noqUUbr6F_bgZSJOJi706lTcw9HswJ1fOn-u1c2z2bmtcAqgFXekUG7oY2X8e7xjcL0iIchFB6t-yZ4ctg61asUzqPAyT4DVKRdcoYV2pvJqoVzxOz3ZSfujEJVo4D2rHOuSgnIQE1HubiI1eWGTvY21IJtfubcgDpaMwlyypkJ-xhkN6EOAi9F3X_nouPGEuvSwbr69WKrO2CBTjpjJQDAGG-XnL8B4IwrejwYjpbg60aAVaN1VpkjlI0BGTlkmyhjpyEAbcndN5CoD3EhGbv78QZa5231oBXQ-qrIreMiEvDzjvSTJLv7tA_3By5dZ9uK4N5SyccCsqte5mKlY-b3oIqVY0UwbDI7gVYmxI4DXl47TuL2RkGBXRRy_PGYqIwNzb60LK7BFMWvFWXIYRm7ocWoUDhFfDbvXGrcav1XXzh-ALT72IcgJKi_g-55oUwxwPbu2umWLheg7Vw-KxIRVHvBdFRBEvuE_ercWqYT-yWGP576m4Ug3pqaVxnQwSD0oBVqjOuSfyhIaOzYgaOof1D5z0c1iGmZrczQqNivEpy71jrpwqdfaiL6s2ZMpyk_PcSt7ekGRjHMAw5cvIzylFx21x0Siy99GEOIHMJflPGbIcWkDhqVmG8Li5PnWK9Ch7jOZ2X_fiBSiXN2TcNHU44YPmmkMeQAmMy_uOQ9PV8dK6TVk4MO97JqfVrTbQFMOGrw4Uj8vaf9YAPOS2j9ih2Ls_fzdDadIiamG3D9-K77tiz6kfrnoXYc0wHo3jdeGe7ZsUOki3A8ja_RjOIexMpfJZcZdgV8Y0ssI_J4PWNBhTCMKl_sx0xGi32Vgs2BMO17JiwbmWN4uFxT5gWKHcDpbaB3gw3AQIZzYfox_6xL0I_LdJVgz5iiPzkUgSwgMxYuRj4UhiXTJ21ZvaAsp_1K3W5cCWhwNT8mfU7gx-OvWUfWxm8NUheLqK5Tbw_eqoXsxl_2GR6Fj-x14C_sO6KYdPxLCbos3b2FVj9iWwxxVsyHgUqy0ja_QIUV5LrDQoKM6FJRPpRVmIh0yJHqAB35jtayd1LPOEGXdcbj9x4mGwPmxNxGK9DBQ51IQzoNb4rVfdAO93GUqXTRs6ZuM9OKVBdlUn2jHO9hguDOng5oWvFPPNKC11GY_yJL2jVapo0h0v4mCYzE7IIz19BVJE0h6xEPgeuczPx7GlJoL3NDj7AQJZ8zHK-sv1REc8BXE9_colspq94TGghd73NgMNJaAKSPx1xd702XnuktmPLZ8kMH7_3rIQhip4zQoyyNdjLvex_z4SGA2f6UYe-MXhsRNdGcOoRyGvjw6SskUltgxxyrNBA-h4wS8iIRuIJgmt9DP5EP3XqM</value>
         </Data>
       </ExtendedData>
       <Polygon>
@@ -185,11 +168,23 @@
     </Placemark>
     <Placemark>
       <name>Property 38 - 0.23 acres</name>
-      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v6r4HAc1jVB1jqcczUCAoJkvRSmiQG-QH082lBcRDtWieTUyQ9mLzRDVG5ojihxdu8ajIbfOza4BIMqgwEg3wpFndavU3rjHbOPLJt4v_FXbJSxF6mjj6qqK6vYQEDJMefOiUHsKj5vs0jD9zFmiCBviYUllrpdyH0a_g6At9Lu8aKULEb4ln8daAL-XnJwi8fMhvtjnSnewPCaDQ3A-Z9bD3_ZHMoB2xOKbAZzlqonUHlh3BglhpXhmbO3i-tgifrCt2Q0VLC8Is2re2WgxWE4ay5INh8nRhRfXFyJfDGu4gwAk5-j_yglud90bTsHFiWmz5OjB3zyUIz_BXapBjGGFnfE5cszLNnF1iP7zT_sur4u2lGt6KSAdBM1J2Px4HJwvbINQKi-xfiDM2YdMY9i5CJVLFQtsCbjbAvcIaNqMLh9gk7QEgwVkpjeupc14c2JaSbZ0sUCx0RP6qXFnmoWk3Fwa2z9pGHEqFjG-p0tuIYE4Y0AC11d05z8SsnKfMPMutykLfok3pb3RllSSDRgihpMSNmwCrpAdgKosDXl4UHr1BCTa6QiSpz4R79oYioCjf-EOTQqeItD4toR_Qy5nMbQbNyfoLxM7GLrUgj9i2A0eo8palmmzMEgoQ3VeKmeSrYPqK9_WbBGIDhyhB_vcKd3QUDKj5usUbxg3QMlHx-ftccbBMRqhcZobT8sTt5PJI4vjU5-1JDQIohYC3gMsQ1CRQ" height="200" width="auto" /><br><br>]]></description>
-      <styleUrl>#icon-1899-F9A825</styleUrl>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v7yyql29IvEcdR1g3siA3r15GUTOH8GUdvaBRGmnH4s3LmSwUlsbnw5hm8Zi7tawiGFHpf5vdNobEtmsWyzsEUenAp5XCRCLLQ2oRlS-HMN5FYx5gCRqVy2tvkqMJ9GdWRNfUmBnBU6BItGakaU4g9Rp4anuRp64oksMSlZo2i1FpnrMRHfTH_LMa2zC-s_B67rnkL8c1Rgm1ctjTT6VoE8wIr7gtvGmpPa34W3OhQP189DevoWIM5VGKka1YjAWvt7BrAMi58lGQhs9CClf-Aazx_auqqDaS1v4k0V92Kd4M5Luw2oqd5sl92VWTsr3TTrbWv0YcVHLZe-2i4NVan5olQK-SpgHiI7KXQJ49eImgrcOOTG85HSTZTxDdm--F1WwIQgyqwArmf8jP8ahPP4KNx8gI8qADTB3YAAtkKpOMdpJVJRfsn7lJbFabpiL27_Ld0ak22WQgdsOXLiqTV1FDbUw-jaUeHR2K8FmAcgVYMOZ6KKCAwNbatcHnngZKrd_bumiBLZH2ofor5AfOSxRVi0hJRaeIDiJAm7x_wdHlR7XL97Qnq6F7iFZCI_dDkZItZGFzttQYTP4q5nJe0vaKWhC-H3ejqyniNiCvd3SA-eniuMnUqcK6Gh2A6A5A796IRFHLE0mMPJn5swRv4ShXkLpDEQ1oDV3asacneAVu0WeHXmoKib4VqDinwoedD3LjR3YNMcupXEOxRaubW01LB9jJriMXQ_9TmFQGCOQaZTlP---ULXIQyOsH78XOdvPGuUqSXXewH2gnePBSyPbIuopdXxBOvpQPh8d-toVityu67GgjDKEvW3Gm8ayqajX-tcUQ4dGMvqIOErN_UepnHFhckppTQMSR3VR4qt2K3hvSfHlXSQrInsuBFS5YNZT7D7ei552vEaFja2SDdYvkYeFPvo5SfzC5RxoZUgZhjGM3cXQfCjs0d7TbMw_HwyHXDCewo8ZVOciux7jiVATUZFdoj4slD6snnEmYNaS2oLSoL4ia5QoDS3vz-DLBkheYsajZHJpYx-wz3FuClyfS5R-3iddn_2_pri12NO0ifcnVJjqEAv4bSSJDKukzzoE9L4y-A8VyFOwwmcDvJnI7osH6QUlwh4r24ld-tcAfrxExe7D5qYwnu1f8rkp5JHreQ9ZtLX5r0cfsXYk51eupb-xIGWlGInLOPfUgLK6Mdv8unGNKY6hFNgBT_ox0j1wH-CK8D6m7LZ-uLFC1_-00zQuBFXA8fRd-ev0MwlG1mRUGFJN_NImi77QjJLftk3r4l5PryXHA_tP8Br0onOp-F3-WiUGnQmvcAn8HXfg6lVLi16cBAzNVKnT6dl7nHPQfT1-VKrrfDsg2RA-p9BFNFj7FWOBfwiEb9NeRZeCoaq2Ua0QL44wzIrqtgPrujZ5oEWZIMJd3AQ3JfrFIwq3V7_m-4xE-JvZ0c8ypsb_vZyJfUyA76Tkd5xkT7Rqr4w5fQjF5a9pg0X4u-ycINJm4mBO3FpmXhrBpdJTgUF_T5-yzs" height="200" width="auto" /><br><br>descrição: <br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000</styleUrl>
       <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
         <Data name="gx_media_links">
-          <value>https://lh3.googleusercontent.com/umsh/AN6v0v6r4HAc1jVB1jqcczUCAoJkvRSmiQG-QH082lBcRDtWieTUyQ9mLzRDVG5ojihxdu8ajIbfOza4BIMqgwEg3wpFndavU3rjHbOPLJt4v_FXbJSxF6mjj6qqK6vYQEDJMefOiUHsKj5vs0jD9zFmiCBviYUllrpdyH0a_g6At9Lu8aKULEb4ln8daAL-XnJwi8fMhvtjnSnewPCaDQ3A-Z9bD3_ZHMoB2xOKbAZzlqonUHlh3BglhpXhmbO3i-tgifrCt2Q0VLC8Is2re2WgxWE4ay5INh8nRhRfXFyJfDGu4gwAk5-j_yglud90bTsHFiWmz5OjB3zyUIz_BXapBjGGFnfE5cszLNnF1iP7zT_sur4u2lGt6KSAdBM1J2Px4HJwvbINQKi-xfiDM2YdMY9i5CJVLFQtsCbjbAvcIaNqMLh9gk7QEgwVkpjeupc14c2JaSbZ0sUCx0RP6qXFnmoWk3Fwa2z9pGHEqFjG-p0tuIYE4Y0AC11d05z8SsnKfMPMutykLfok3pb3RllSSDRgihpMSNmwCrpAdgKosDXl4UHr1BCTa6QiSpz4R79oYioCjf-EOTQqeItD4toR_Qy5nMbQbNyfoLxM7GLrUgj9i2A0eo8palmmzMEgoQ3VeKmeSrYPqK9_WbBGIDhyhB_vcKd3QUDKj5usUbxg3QMlHx-ftccbBMRqhcZobT8sTt5PJI4vjU5-1JDQIohYC3gMsQ1CRQ</value>
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v7yyql29IvEcdR1g3siA3r15GUTOH8GUdvaBRGmnH4s3LmSwUlsbnw5hm8Zi7tawiGFHpf5vdNobEtmsWyzsEUenAp5XCRCLLQ2oRlS-HMN5FYx5gCRqVy2tvkqMJ9GdWRNfUmBnBU6BItGakaU4g9Rp4anuRp64oksMSlZo2i1FpnrMRHfTH_LMa2zC-s_B67rnkL8c1Rgm1ctjTT6VoE8wIr7gtvGmpPa34W3OhQP189DevoWIM5VGKka1YjAWvt7BrAMi58lGQhs9CClf-Aazx_auqqDaS1v4k0V92Kd4M5Luw2oqd5sl92VWTsr3TTrbWv0YcVHLZe-2i4NVan5olQK-SpgHiI7KXQJ49eImgrcOOTG85HSTZTxDdm--F1WwIQgyqwArmf8jP8ahPP4KNx8gI8qADTB3YAAtkKpOMdpJVJRfsn7lJbFabpiL27_Ld0ak22WQgdsOXLiqTV1FDbUw-jaUeHR2K8FmAcgVYMOZ6KKCAwNbatcHnngZKrd_bumiBLZH2ofor5AfOSxRVi0hJRaeIDiJAm7x_wdHlR7XL97Qnq6F7iFZCI_dDkZItZGFzttQYTP4q5nJe0vaKWhC-H3ejqyniNiCvd3SA-eniuMnUqcK6Gh2A6A5A796IRFHLE0mMPJn5swRv4ShXkLpDEQ1oDV3asacneAVu0WeHXmoKib4VqDinwoedD3LjR3YNMcupXEOxRaubW01LB9jJriMXQ_9TmFQGCOQaZTlP---ULXIQyOsH78XOdvPGuUqSXXewH2gnePBSyPbIuopdXxBOvpQPh8d-toVityu67GgjDKEvW3Gm8ayqajX-tcUQ4dGMvqIOErN_UepnHFhckppTQMSR3VR4qt2K3hvSfHlXSQrInsuBFS5YNZT7D7ei552vEaFja2SDdYvkYeFPvo5SfzC5RxoZUgZhjGM3cXQfCjs0d7TbMw_HwyHXDCewo8ZVOciux7jiVATUZFdoj4slD6snnEmYNaS2oLSoL4ia5QoDS3vz-DLBkheYsajZHJpYx-wz3FuClyfS5R-3iddn_2_pri12NO0ifcnVJjqEAv4bSSJDKukzzoE9L4y-A8VyFOwwmcDvJnI7osH6QUlwh4r24ld-tcAfrxExe7D5qYwnu1f8rkp5JHreQ9ZtLX5r0cfsXYk51eupb-xIGWlGInLOPfUgLK6Mdv8unGNKY6hFNgBT_ox0j1wH-CK8D6m7LZ-uLFC1_-00zQuBFXA8fRd-ev0MwlG1mRUGFJN_NImi77QjJLftk3r4l5PryXHA_tP8Br0onOp-F3-WiUGnQmvcAn8HXfg6lVLi16cBAzNVKnT6dl7nHPQfT1-VKrrfDsg2RA-p9BFNFj7FWOBfwiEb9NeRZeCoaq2Ua0QL44wzIrqtgPrujZ5oEWZIMJd3AQ3JfrFIwq3V7_m-4xE-JvZ0c8ypsb_vZyJfUyA76Tkd5xkT7Rqr4w5fQjF5a9pg0X4u-ycINJm4mBO3FpmXhrBpdJTgUF_T5-yzs</value>
         </Data>
       </ExtendedData>
       <Point>
@@ -200,7 +195,22 @@
     </Placemark>
     <Placemark>
       <name>Property 38</name>
-      <styleUrl>#poly-F9A825-1200-76-nodesc</styleUrl>
+      <description><![CDATA[descrição: <br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#poly-F9A825-2000-77</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
       <Polygon>
         <outerBoundaryIs>
           <LinearRing>
@@ -215,6 +225,78 @@
           </LinearRing>
         </outerBoundaryIs>
       </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Rua a ser asfaltada</name>
+      <description><![CDATA[descrição: <br>Latitude: 29.645509<br>Longitude: -81.916662<br>Coordinates: Rua a ser Asfaltada]]></description>
+      <styleUrl>#icon-1899-673AB7</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value>29.645509</value>
+        </Data>
+        <Data name="Longitude">
+          <value>-81.916662</value>
+        </Data>
+        <Data name="Coordinates">
+          <value>Rua a ser Asfaltada</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.916662,29.645509,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 54</name>
+      <description><![CDATA[descrição: <br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.586062,29.378305,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 57</name>
+      <description><![CDATA[descrição: <br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-000000</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -97.647468,35.510109,0
+        </coordinates>
+      </Point>
     </Placemark>
   </Document>
 </kml>
