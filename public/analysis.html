@@ -1014,6 +1014,9 @@
             
             // Atualizar progresso
             atualizarProgresso();
+            
+            // Resetar todos os mapas para o estado inicial (botão "Carregar Imagem")
+            resetAllMaps();
 
             // Format fields
             const acres = prop['Acres'] ? `${parseFloat(prop['Acres']).toFixed(2)} acres` : '-';
@@ -2349,6 +2352,81 @@
                 counterElement.classList.add('scale-125');
                 setTimeout(() => counterElement.classList.remove('scale-125'), 300);
             }
+        }
+        
+        function resetAllMaps() {
+            console.log('🔄 Resetando todos os mapas...');
+            
+            // Reset Satellite Map
+            const satelliteMap = document.getElementById('satellite-map');
+            if (satelliteMap) {
+                satelliteMap.innerHTML = '<button id="load-satellite-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">🔍 Carregar Imagem</button>';
+                // Re-attach event listener
+                const btn = document.getElementById('load-satellite-btn');
+                if (btn) {
+                    btn.addEventListener('click', function() {
+                        if (window.currentLocation) {
+                            this.innerHTML = '⏳ Carregando...';
+                            this.disabled = true;
+                            initSatelliteMap(window.currentLocation);
+                            setTimeout(() => this.remove(), 500);
+                        }
+                    });
+                }
+            }
+            
+            // Reset Street View
+            const streetView = document.getElementById('street-view');
+            if (streetView) {
+                streetView.innerHTML = '<button id="load-streetview-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">🔍 Carregar Imagem</button>';
+                const btn = document.getElementById('load-streetview-btn');
+                if (btn) {
+                    btn.addEventListener('click', function() {
+                        if (window.currentLocation) {
+                            this.innerHTML = '⏳ Carregando...';
+                            this.disabled = true;
+                            initStreetView(window.currentLocation);
+                            setTimeout(() => this.remove(), 500);
+                        }
+                    });
+                }
+            }
+            
+            // Reset Terrain Map
+            const terrainMap = document.getElementById('terrain-map-view');
+            if (terrainMap) {
+                terrainMap.innerHTML = '<button id="load-terrain-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">🔍 Carregar Imagem</button>';
+                const btn = document.getElementById('load-terrain-btn');
+                if (btn) {
+                    btn.addEventListener('click', function() {
+                        if (window.currentLocation) {
+                            this.innerHTML = '⏳ Carregando...';
+                            this.disabled = true;
+                            initTerrainMap(window.currentLocation);
+                            setTimeout(() => this.remove(), 500);
+                        }
+                    });
+                }
+            }
+            
+            // Reset Normal Map
+            const normalMap = document.getElementById('normal-map');
+            if (normalMap) {
+                normalMap.innerHTML = '<button id="load-normalmap-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors">🔍 Carregar Imagem</button>';
+                const btn = document.getElementById('load-normalmap-btn');
+                if (btn) {
+                    btn.addEventListener('click', function() {
+                        if (window.currentLocation) {
+                            this.innerHTML = '⏳ Carregando...';
+                            this.disabled = true;
+                            initNormalMap(window.currentLocation);
+                            setTimeout(() => this.remove(), 500);
+                        }
+                    });
+                }
+            }
+            
+            console.log('✅ Mapas resetados com sucesso!');
         }
         
         function proximaPropriedade() {

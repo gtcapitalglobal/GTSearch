@@ -154,3 +154,19 @@
 - [x] Lógica: "P19" e "Property 19" = duplicata | "P19" e "P21" = diferentes
 - [x] Priorizar Points (marcadores) sobre Polygons (polígonos)
 - [x] Prioridade: CRÍTICA
+
+
+## 🔄 Feature: Ordenação clicável nas colunas da tabela
+- [ ] Adicionar ordenação ao clicar nos cabeçalhos da tabela de propriedades
+- [ ] Colunas ordenáveis: PARCEL #, ACRES, TYPE, NAME, ADDRESS, CITY, COUNTY, AMOUNT, LEGAL DESC
+- [ ] Indicador visual (seta ↑↓) mostrando coluna e direção da ordenação
+- [ ] Alternar entre crescente/decrescente ao clicar novamente
+- [ ] Prioridade: MÉDIA
+
+
+## 🐛 Bug: Imagens dos mapas não atualizam ao navegar entre propriedades
+- [x] Ao clicar em "Próximo" ou "Anterior", as imagens dos mapas continuam mostrando a propriedade anterior
+- [x] Apenas os dados textuais são atualizados
+- [x] Imagens (Satélite, Street View, Terrain, Normal) precisam ser recarregadas
+- [x] Solução: Resetar todos os mapas para o estado inicial (botão "Carregar Imagem") ao mudar de propriedade
+- [x] Prioridade: ALTA
