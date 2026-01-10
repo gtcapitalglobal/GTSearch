@@ -487,90 +487,6 @@
             </div>
         </div>
 
-        <!-- Seção 4: Informações do Terreno (ArcGIS Hub) -->
-        <div class="bg-white rounded-lg shadow-lg p-4 mb-3">
-            <h2 class="text-lg font-bold text-gray-800 mb-3">🗺️ Informações do Terreno (ArcGIS Hub)</h2>
-            <div class="space-y-4 text-sm">
-                <!-- Dados Oficiais do Condado -->
-                <div class="bg-blue-50 p-3 rounded-lg">
-                    <h3 class="text-sm font-bold text-gray-700 mb-2">📐 Dados Oficiais do Condado:</h3>
-                    <div class="grid grid-cols-2 gap-x-6 gap-y-2">
-                        <div>
-                            <span class="text-gray-600 text-xs">📐 Forma:</span>
-                            <span class="font-semibold ml-2" id="arcgis-shape">⏳ Carregando...</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-600 text-xs">📏 Área (oficial):</span>
-                            <span class="font-semibold ml-2" id="arcgis-area">⏳ Carregando...</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-600 text-xs">📏 Perímetro:</span>
-                            <span class="font-semibold ml-2" id="arcgis-perimeter">⏳ Carregando...</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-600 text-xs">📐 Dimensões:</span>
-                            <span class="font-semibold ml-2" id="arcgis-dimensions">⏳ Carregando...</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-600 text-xs">🏛️ Zoneamento:</span>
-                            <span class="font-semibold ml-2" id="arcgis-zoning">⏳ Carregando...</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-600 text-xs">🌊 FEMA Flood Zone:</span>
-                            <span class="font-semibold ml-2" id="arcgis-flood-zone">⏳ Carregando...</span>
-                        </div>
-                    </div>
-                    <div class="text-xs text-gray-500 mt-2">
-                        📌 Fonte: <span id="arcgis-source">ArcGIS Hub - County GIS</span>
-                    </div>
-                </div>
-
-                <!-- Usos Permitidos -->
-                <div>
-                    <h3 class="text-sm font-bold text-gray-700 mb-2">✅ Usos Permitidos (Zoneamento):</h3>
-                    <ul class="list-disc list-inside text-gray-700 space-y-1 text-xs" id="arcgis-allowed-uses">
-                        <li>⏳ Carregando...</li>
-                    </ul>
-                </div>
-
-                <!-- Usos Não Permitidos -->
-                <div>
-                    <h3 class="text-sm font-bold text-gray-700 mb-2">❌ Usos Não Permitidos:</h3>
-                    <ul class="list-disc list-inside text-gray-700 space-y-1 text-xs" id="arcgis-not-allowed-uses">
-                        <li>⏳ Carregando...</li>
-                    </ul>
-                </div>
-
-                <!-- Restrições de Construção -->
-                <div class="bg-yellow-50 p-3 rounded-lg">
-                    <h3 class="text-sm font-bold text-gray-700 mb-2">📐 Restrições de Construção:</h3>
-                    <div class="space-y-2 text-xs">
-                        <div>
-                            <span class="text-gray-600">Taxa de Ocupação Máxima:</span>
-                            <span class="font-semibold ml-2" id="arcgis-max-coverage">⏳ Carregando...</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-600">Atual:</span>
-                            <span class="font-semibold ml-2" id="arcgis-current-coverage">⏳ Carregando...</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-600">Disponível para expansão:</span>
-                            <span class="font-semibold ml-2" id="arcgis-available-expansion">⏳ Carregando...</span>
-                        </div>
-                        <div class="mt-2">
-                            <div class="font-semibold text-gray-700">Recuos Obrigatórios:</div>
-                            <ul class="list-disc list-inside ml-4 text-gray-600" id="arcgis-setbacks">
-                                <li>⏳ Carregando...</li>
-                            </ul>
-                        </div>
-                        <div>
-                            <span class="text-gray-600">Altura Máxima:</span>
-                            <span class="font-semibold ml-2" id="arcgis-max-height">⏳ Carregando...</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Seção 5: Análise Geográfica e Ambiental -->
         <div class="bg-white rounded-lg shadow-lg p-4 mb-3">
@@ -608,22 +524,6 @@
                     </div>
                 </div>
                 
-                <!-- Corpos d'Agua Próximos (USGS) -->
-                <div>
-                    <h3 class="text-sm font-bold text-gray-700 mb-2">💧 Corpos d'Agua Próximos (USGS):</h3>
-                    <div class="bg-gray-50 rounded-lg p-3" id="water-bodies-section">
-                        <p class="text-xs text-gray-600">⏳ Carregando dados de corpos d'agua...</p>
-                    </div>
-                </div>
-                
-                <!-- Uso do Solo -->
-                <div>
-                    <h3 class="text-sm font-bold text-gray-700 mb-2">🌍 Uso do Solo (Raio 500m):</h3>
-                    <div id="land-use-content-section">
-                        <p class="text-gray-600">Carregando análise...</p>
-                    </div>
-                </div>
-                
                 <!-- FEMA Flood Risk -->
                 <div>
                     <h3 class="text-sm font-bold text-gray-700 mb-2">🌊 FEMA Flood Risk:</h3>
@@ -637,31 +537,10 @@
                     <!-- Será preenchido dinamicamente via JavaScript -->
                 </div>
                 
-                <!-- NDVI Estimado -->
-                <div>
-                    <h3 class="text-sm font-bold text-gray-700 mb-2">🌿 NDVI Estimado (Vegetação):</h3>
-                    <div id="ndvi-content-section">
-                        <p class="text-gray-600">Aguardando análise de uso do solo...</p>
-                    </div>
-                </div>
-                
-                <!-- Proximidade de Agua -->
-                <div>
-                    <h3 class="text-sm font-bold text-gray-700 mb-2">💧 Proximidade de Agua:</h3>
-                    <div id="water-proximity-content-section">
-                        <p class="text-gray-600">Carregando análise...</p>
-                    </div>
-                </div>
+
             </div>
         </div>
 
-        <!-- Seção 5: Mudanças Temporais -->
-        <div class="bg-white rounded-lg shadow-lg p-4 mb-3">
-            <h2 class="text-lg font-bold text-gray-800 mb-3">🕰️ Mudanças Temporais</h2>
-            <div id="google-earth-content-section">
-                <p class="text-sm text-gray-600">Aguardando coordenadas...</p>
-            </div>
-        </div>
 
         <!-- Seção 6: Análise de Construções (OpenStreetMap) -->
         <div class="bg-white rounded-lg shadow-lg p-4 mb-3">

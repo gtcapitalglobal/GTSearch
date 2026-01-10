@@ -335,15 +335,33 @@
                             <th class="px-3 py-3 text-left">
                                 <input type="checkbox" id="selectAllCheckbox" class="w-4 h-4 cursor-pointer">
                             </th>
-                            <th class="px-2 py-2 text-left">Parcel #</th>
-                            <th class="px-2 py-2 text-left">Acres</th>
-                            <th class="px-2 py-2 text-left">Type</th>
-                            <th class="px-2 py-2 text-left">Name</th>
-                            <th class="px-2 py-2 text-left">Address</th>
-                            <th class="px-2 py-2 text-left">City</th>
-                            <th class="px-2 py-2 text-left">County</th>
-                            <th class="px-2 py-2 text-left">Amount</th>
-                            <th class="px-2 py-2 text-left">Legal Desc</th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(0)">
+                                Parcel # <span id="sort-icon-0">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(1)">
+                                Acres <span id="sort-icon-1">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(2)">
+                                Type <span id="sort-icon-2">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(3)">
+                                Name <span id="sort-icon-3">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(4)">
+                                Address <span id="sort-icon-4">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(5)">
+                                City <span id="sort-icon-5">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(6)">
+                                County <span id="sort-icon-6">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(7)">
+                                Amount <span id="sort-icon-7">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(8)">
+                                Legal Desc <span id="sort-icon-8">⇅</span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="tableBody" class="bg-white divide-y divide-gray-200"></tbody>
@@ -1784,6 +1802,69 @@
                 console.error('❌ Botão analyzeSelectedBtn não encontrado!');
             }
         });
+        
+        // ============================================
+        // FUNÇÃO DE ORDENAÇÃO DA TABELA
+        // ============================================
+        let sortDirections = {}; // Armazena direção de ordenação para cada coluna
+        
+        function sortTable(columnIndex) {
+            const table = document.getElementById('dataTable');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            // Determinar direção da ordenação (alternar entre asc/desc)
+            if (!sortDirections[columnIndex]) {
+                sortDirections[columnIndex] = 'asc';
+            } else if (sortDirections[columnIndex] === 'asc') {
+                sortDirections[columnIndex] = 'desc';
+            } else {
+                sortDirections[columnIndex] = 'asc';
+            }
+            
+            const direction = sortDirections[columnIndex];
+            
+            // Resetar ícones de todas as colunas
+            for (let i = 0; i < 9; i++) {
+                const icon = document.getElementById(`sort-icon-${i}`);
+                if (icon) icon.textContent = '⇅';
+            }
+            
+            // Atualizar ícone da coluna atual
+            const currentIcon = document.getElementById(`sort-icon-${columnIndex}`);
+            if (currentIcon) {
+                currentIcon.textContent = direction === 'asc' ? '↑' : '↓';
+            }
+            
+            // Ordenar linhas
+            rows.sort((a, b) => {
+                // +1 porque a primeira coluna é o checkbox
+                const cellA = a.cells[columnIndex + 1]?.textContent.trim() || '';
+                const cellB = b.cells[columnIndex + 1]?.textContent.trim() || '';
+                
+                // Tentar converter para número se possível
+                const numA = parseFloat(cellA.replace(/[^0-9.-]/g, ''));
+                const numB = parseFloat(cellB.replace(/[^0-9.-]/g, ''));
+                
+                let comparison = 0;
+                
+                // Se ambos são números válidos, comparar como números
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    comparison = numA - numB;
+                } else {
+                    // Caso contrário, comparar como strings
+                    comparison = cellA.localeCompare(cellB, 'pt-BR', { numeric: true, sensitivity: 'base' });
+                }
+                
+                return direction === 'asc' ? comparison : -comparison;
+            });
+            
+            // Limpar tbody e adicionar linhas ordenadas
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+            
+            console.log(`🔄 Tabela ordenada por coluna ${columnIndex} (${direction})`);
+        }
     </script>
     
     <!-- Workflow System e Analysis Functions removidos - arquivos não existem -->

@@ -28,15 +28,15 @@
 
 ### Seções a REMOVER do analysis.html:
 
-- [ ] **Seção 4 - Informações do Terreno (ArcGIS Hub)** - REMOVER COMPLETA
+- [x] **Seção 4 - Informações do Terreno (ArcGIS Hub)** - REMOVER COMPLETA
   - Motivo: Inconsistente, nem todos condados têm servidor público
   - Inclui: Zoneamento, Usos Permitidos, Restrições de Construção
 
-- [ ] **Seção 6 - Mudanças Temporais (Google Earth Engine)** - REMOVER COMPLETA
+- [x] **Seção 6 - Mudanças Temporais (Google Earth Engine)** - REMOVER COMPLETA
   - Motivo: Muito complexo, requer conta especial
   - **SUBSTITUIR POR:** USGS M2M/ESPA API (implementação futura)
 
-- [ ] **Seção 5 - Análise Geográfica (REMOVER PARCIALMENTE):**
+- [x] **Seção 5 - Análise Geográfica (REMOVER PARCIALMENTE):**
   - ❌ Remover: Corpos d'Agua Próximos (USGS - erro 400)
   - ❌ Remover: Uso do Solo (não implementado)
   - ❌ Remover: NDVI Vegetação (não implementado)
@@ -157,11 +157,12 @@
 
 
 ## 🔄 Feature: Ordenação clicável nas colunas da tabela
-- [ ] Adicionar ordenação ao clicar nos cabeçalhos da tabela de propriedades
-- [ ] Colunas ordenáveis: PARCEL #, ACRES, TYPE, NAME, ADDRESS, CITY, COUNTY, AMOUNT, LEGAL DESC
-- [ ] Indicador visual (seta ↑↓) mostrando coluna e direção da ordenação
-- [ ] Alternar entre crescente/decrescente ao clicar novamente
-- [ ] Prioridade: MÉDIA
+- [x] Adicionar ordenação ao clicar nos cabeçalhos da tabela de propriedades
+- [x] Colunas ordenáveis: PARCEL #, ACRES, TYPE, NAME, ADDRESS, CITY, COUNTY, AMOUNT, LEGAL DESC
+- [x] Indicador visual (seta ↑↓) mostrando coluna e direção da ordenação
+- [x] Alternar entre crescente/decrescente ao clicar novamente
+- [x] Comparação inteligente: números como números, textos como textos
+- [x] Prioridade: MÉDIA
 
 
 ## 🐛 Bug: Imagens dos mapas não atualizam ao navegar entre propriedades
