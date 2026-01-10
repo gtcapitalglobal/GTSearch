@@ -125,3 +125,32 @@
 - [ ] Comparador de propriedades (lado a lado)
 - [ ] Calculadora de ROI
 - [ ] Exportar relatório PDF
+
+
+## 🐛 Bug: Deduplicação não remove propriedades com ícones diferentes
+- [ ] Sistema de deduplicação atual só funciona dentro do mesmo arquivo KML
+- [ ] Propriedades duplicadas em arquivos diferentes não são removidas
+- [ ] Exemplo: P19 (ícone preto) e Property 19 (ícone laranja) aparecem ambos
+- [ ] Solução: Fazer deduplicação global entre TODOS os arquivos KML
+- [ ] Prioridade: ALTA
+
+
+## 🐛 Bug: Contador de propriedades incorreto
+- [x] Contador mostra 16 propriedades quando deveria mostrar 13
+- [x] Problema: contador incrementa ANTES da verificação de duplicatas
+- [x] Solução: incrementar contador APENAS após adicionar propriedade ao mapa
+- [x] Prioridade: ALTA
+
+## 🐛 Bug: P01 aparece como Available quando deveria ser Sold
+- [x] P01 está APENAS em SoldLands.kml mas aparece verde (Available)
+- [x] Problema: ordem de processamento dos KML (Available é processado primeiro)
+- [x] Solução: processar SoldLands.kml ANTES de AvailableLands.kml
+- [x] Prioridade: CRÍTICA
+
+
+## 🐛 Bug: Sistema remove propriedades vizinhas como duplicatas
+- [x] Problema: tolerância de 50m remove P19 e P21 (propriedades diferentes mas vizinhas)
+- [x] Solução: comparar NÚMEROS das propriedades em vez de distância
+- [x] Lógica: "P19" e "Property 19" = duplicata | "P19" e "P21" = diferentes
+- [x] Priorizar Points (marcadores) sobre Polygons (polígonos)
+- [x] Prioridade: CRÍTICA

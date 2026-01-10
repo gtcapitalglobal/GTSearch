@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTSearch - Property Manager v22.0</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>GTSearch - Property Manager v23.0 - FIXED</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -464,17 +467,31 @@
         };
 
         // Load KML files automatically
+        // ORDEM IMPORTANTE: Sold/Blocked primeiro para evitar que duplicatas sejam marcadas como Available
         const kmlFiles = [
-            { file: 'AvailableLands.kml', type: 'available', name: 'Available Lands' },
-            { file: 'PartnersAvailableLands.kml', type: 'partners', name: 'Partners Available' },
             { file: 'SoldLands.kml', type: 'sold', name: 'Sold Lands' },
-            { file: 'BlockedPaused.kml', type: 'blocked', name: 'Blocked/Paused' }
+            { file: 'BlockedPaused.kml', type: 'blocked', name: 'Blocked/Paused' },
+            { file: 'AvailableLands.kml', type: 'available', name: 'Available Lands' },
+            { file: 'PartnersAvailableLands.kml', type: 'partners', name: 'Partners Available' }
         ];
 
         let kmlLoadedCount = 0;
 
         // ===== SISTEMA DE DEDUPLICAÇÃO =====
-        const seenProperties = new Map(); // Armazena propriedades já processadas
+        const seenProperties = new Map(); // Armazena propriedades já processadas por número
+        
+        // Função para extrair número da propriedade do nome
+        function extractPropertyNumber(name) {
+            // Padrões: "P19", "P-19", "Property 19", "Property 19 - ...", etc.
+            const match = name.match(/P-?(\d+)|Property\s+(\d+)/i);
+            return match ? (match[1] || match[2]) : null;
+        }
+        
+        // Função para detectar se é Point ou Polygon
+        function isPoint(placemark) {
+            const point = placemark.getElementsByTagName('Point')[0];
+            return point !== undefined && point !== null;
+        }
         
         function parseKML(kmlText, type, name) {
             const parser = new DOMParser();
@@ -498,26 +515,33 @@
                     const lat = parseFloat(firstCoord[1]);
                     
                     if (!isNaN(lat) && !isNaN(lng)) {
-                        // ===== DEDUPLICAÇÃO (Tolerância: 50 metros) =====
+                        // ===== DEDUPLICAÇÃO BASEADA EM NÚMERO DA PROPRIEDADE =====
+                        const propertyNumber = extractPropertyNumber(nameEl.textContent);
+                        const isPointGeometry = isPoint(placemark);
+                        
                         let isDuplicate = false;
                         let duplicateOf = null;
                         
-                        // Verificar se existe propriedade próxima (dentro de 50 metros)
-                        for (const [key, prop] of seenProperties) {
-                            // Calcular distância usando fórmula de Haversine simplificada
-                            const latDiff = Math.abs(lat - prop.lat);
-                            const lngDiff = Math.abs(lng - prop.lng);
-                            
-                            // 1 grau de latitude ≈ 111km
-                            // 1 grau de longitude ≈ 111km * cos(latitude)
-                            const distLat = latDiff * 111000; // metros
-                            const distLng = lngDiff * 111000 * Math.cos(lat * Math.PI / 180); // metros
-                            const distance = Math.sqrt(distLat * distLat + distLng * distLng);
-                            
-                            if (distance < 50) { // 50 metros de tolerância
-                                isDuplicate = true;
-                                duplicateOf = prop.name;
-                                break;
+                        if (propertyNumber) {
+                            // Verificar se já existe propriedade com o mesmo número
+                            if (seenProperties.has(propertyNumber)) {
+                                const existingProp = seenProperties.get(propertyNumber);
+                                
+                                // Se a existente é Point e a atual é Polygon, remover a atual
+                                if (existingProp.isPoint && !isPointGeometry) {
+                                    isDuplicate = true;
+                                    duplicateOf = existingProp.name;
+                                }
+                                // Se a existente é Polygon e a atual é Point, substituir
+                                else if (!existingProp.isPoint && isPointGeometry) {
+                                    console.log(`🔄 Substituindo "${existingProp.name}" (Polygon) por "${nameEl.textContent}" (Point)`);
+                                    // Não marcar como duplicata, vai substituir
+                                }
+                                // Se ambos são do mesmo tipo, manter o primeiro
+                                else {
+                                    isDuplicate = true;
+                                    duplicateOf = existingProp.name;
+                                }
                             }
                         }
                         
@@ -526,14 +550,16 @@
                             continue; // Pular esta propriedade duplicada
                         }
                         
-                        // Registrar propriedade como vista
-                        const coordKey = `${lat.toFixed(6)},${lng.toFixed(6)}`;
-                        seenProperties.set(coordKey, {
-                            name: nameEl.textContent,
-                            type: type,
-                            lat: lat,
-                            lng: lng
-                        });
+                        // Registrar propriedade como vista (por número)
+                        if (propertyNumber) {
+                            seenProperties.set(propertyNumber, {
+                                name: nameEl.textContent,
+                                type: type,
+                                lat: lat,
+                                lng: lng,
+                                isPoint: isPointGeometry
+                            });
+                        }
                         
                         // Criar marcador (apenas se não for duplicata)
                         const marker = L.marker([lat, lng], { icon: icons[type] })
@@ -548,11 +574,13 @@
                             .addTo(categoryLayers[type]);
                         
                         propertyCounts[type]++;
+                        // Atualizar contador em tempo real
+                        const currentCount = propertyCounts[type];
+                        document.getElementById(`${type}Count`).textContent = currentCount;
+                        console.log(`📍 Adicionada: "${nameEl.textContent}" → ${type} count: ${currentCount}`);
                     }
                 }
             }
-            
-            document.getElementById(`${type}Count`).textContent = propertyCounts[type];
         }
 
         // Load all KML files
@@ -563,8 +591,19 @@
                     .then(kmlText => {
                         parseKML(kmlText, type, name);
                         kmlLoadedCount++;
+                        console.log(`✅ ${name} carregado com sucesso!`);
                         
                         if (kmlLoadedCount === kmlFiles.length) {
+                            // Mostrar contadores finais
+                            console.log('\n' + '='.repeat(80));
+                            console.log('📊 CONTADORES FINAIS:');
+                            console.log('='.repeat(80));
+                            console.log(`Available Lands: ${propertyCounts.available}`);
+                            console.log(`Sold Lands: ${propertyCounts.sold}`);
+                            console.log(`Blocked/Paused: ${propertyCounts.blocked}`);
+                            console.log(`Partners Available: ${propertyCounts.partners}`);
+                            console.log(`TOTAL: ${Object.values(propertyCounts).reduce((a,b) => a+b, 0)}`);
+                            console.log('='.repeat(80) + '\n');
                             const layers = existingPropertiesLayer.getLayers();
                             if (layers.length > 0) {
                                 const bounds = L.latLngBounds([]);

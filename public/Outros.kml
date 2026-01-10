@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Outros</name>
+    <Style id="icon-1899-0288D1-normal">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1899-0288D1-highlight">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1899-0288D1">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-0288D1-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-0288D1-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1899-0288D1-nodesc-normal">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1899-0288D1-nodesc-highlight">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="icon-1899-0288D1-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-0288D1-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-0288D1-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Placemark>
+      <name>Lote do Bruno (1) 22K</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -82.514409,29.345809,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Lote do Bruno (2) 22K</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -82.521002,29.34356,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PA1 - 0.23 acres</name>
+      <description><![CDATA[09-10-24-4067-0240-0200<br>0.23 acres <br>$12K]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <Point>
+        <coordinates>
+          -81.899379,29.631901,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PA2 - 0.28 acres</name>
+      <description><![CDATA[18-10-24-5112-0070-0320<br>150 1st Way, Interlachen, FL 32148<br>0.28 acres <br>$12K]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <Point>
+        <coordinates>
+          -81.931876,29.625661,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PA4 - 0.22 acres</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.838136,29.643946,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PB1 - 1.11 acres</name>
+      <description><![CDATA[1815-002-002<br>1.11 acres   <br>37.5K]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <Point>
+        <coordinates>
+          -82.53165,29.171349,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PB2 - 0.21 acres</name>
+      <description><![CDATA[0013-012-032<br>0.21 acre  <br>19.5k]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <Point>
+        <coordinates>
+          -81.97385,29.485189,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PB3 - 0.22 acres</name>
+      <description><![CDATA[0013-012-031<br>0.22 acres <br>19.5K]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <Point>
+        <coordinates>
+          -81.97385,29.485189,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PB4 - 0.23 acres</name>
+      <description><![CDATA[4020-002-002<br>0.23 acre <br>28k]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <Point>
+        <coordinates>
+          -81.849125,29.091022,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PB5 - 0.22 acres</name>
+      <description><![CDATA[0013-014-025<br>0.22  <br>19.5K]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <Point>
+        <coordinates>
+          -81.975761,29.486459,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PB6 - 0.21 acres</name>
+      <description><![CDATA[0013-020-005<br>0.21 acres  <br>19.5K]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <Point>
+        <coordinates>
+          -81.975308,29.491662,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PB7 - 1.02 acre</name>
+      <description><![CDATA[1814-029-005<br>1.02 acres <br>$37.5k]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <Point>
+        <coordinates>
+          -82.517713,29.184337,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PF 01 - 0.22 acres</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.86622,29.66716,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PBF01 - 0.23 acres</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.598167,29.385276,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PAT1 - 0.23 acres</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.852342,29.612456,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PAT2 - 1.25 acres</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.59485,29.744197,0
+        </coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>
