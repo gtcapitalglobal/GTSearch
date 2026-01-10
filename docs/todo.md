@@ -171,3 +171,65 @@
 - [x] Imagens (Satélite, Street View, Terrain, Normal) precisam ser recarregadas
 - [x] Solução: Resetar todos os mapas para o estado inicial (botão "Carregar Imagem") ao mudar de propriedade
 - [x] Prioridade: ALTA
+
+
+## ✅ Implementar OpenStreetMap (Overpass API)
+- [x] **Implementar função loadOSMData()** no analysis.html
+- [x] **API:** OpenStreetMap Overpass API (GRATUITA, sem API Key)
+- [x] **Servidores com fallback:**
+  - Primário: https://overpass.kumi.systems/api/interpreter
+  - Secundário: https://overpass-api.de/api/interpreter
+  - Terciário: https://overpass.openstreetmap.ru/api/interpreter
+- [x] **Dados a buscar:**
+  - Construções no terreno (building=yes)
+  - Área construída (way_area)
+  - Tipo de construção (building=residential/commercial/industrial)
+  - Número de andares (building:levels)
+  - Construções vizinhas (raio 50m)
+- [x] **Elementos HTML a preencher:**
+  - osm-status (Construído / Terreno vazio)
+  - osm-type (Tipo de construção)
+  - osm-area (Área construída em m²)
+  - osm-floors (Número de andares)
+  - osm-coverage (Taxa de ocupação %)
+  - osm-free-area (Área livre %)
+  - osm-value (Valor estimado)
+  - osm-updated (Data de atualização OSM)
+  - osm-expansion-potential (Potencial de expansão)
+  - osm-neighbor-comparison (Comparação com vizinhos)
+- [x] **Sistema de fallback:** 3 servidores com fallback automático
+- [x] **Timeout:** 10 segundos por requisição
+- [x] **Cache:** Salvar dados por 24h no localStorage
+- [x] **Tratamento de erros:** Mensagens amigáveis quando falhar
+- [x] **Prioridade: ALTA** (usuário quer essa funcionalidade!)
+
+
+## 📊 Implementar US Census Bureau API
+- [ ] **Adicionar campo no settings.html** para US Census API Key
+  - Label: "US Census Bureau API Key"
+  - Tooltip: "Para dados demográficos, população, renda, habitação"
+  - Link: https://api.census.gov/data/key_signup.html
+  - Botões: Salvar + Testar API
+- [ ] **Implementar função loadCensusData()** no analysis.html
+  - Buscar dados do Census Tract baseado em lat/lng
+  - APIs a usar:
+    * American Community Survey (ACS) - dados anuais
+    * Decennial Census - censo decenal
+    * Population Estimates - estimativas populacionais
+- [ ] **Dados a exibir:**
+  - 👥 População (raio 500m ou Census Tract)
+  - 💵 Renda média familiar
+  - 🏠 Valor médio das casas
+  - 📈 Crescimento populacional
+  - 🏘️ Taxa de ocupação
+  - 🎓 Nível educacional
+  - 💼 Taxa de emprego
+- [ ] **Elementos HTML a preencher:**
+  - census-block (Bloco Censitário)
+  - census-tract (Tract)
+  - census-county (Condado)
+  - census-population (População)
+  - census-income (Economia)
+  - census-growth (Crescimento)
+  - census-housing (Habitação)
+- [ ] **Prioridade: ALTA** (usuário já tem API Key!)

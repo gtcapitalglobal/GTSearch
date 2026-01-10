@@ -1291,6 +1291,236 @@
             });
         }
 
+        // ============================================
+        // OPENSTREETMAP OVERPASS API
+        // ============================================
+        
+        const OSM_SERVERS = [
+            'https://overpass.kumi.systems/api/interpreter',
+            'https://overpass-api.de/api/interpreter',
+            'https://overpass.openstreetmap.ru/api/interpreter'
+        ];
+        
+        async function loadOSMData(lat, lng, parcelSqft) {
+            console.log(`📍 Carregando dados do OpenStreetMap para: ${lat}, ${lng}`);
+            
+            // Verificar cache (24h)
+            const cacheKey = `osm_${lat}_${lng}`;
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+                const data = JSON.parse(cached);
+                if (Date.now() - data.timestamp < 24 * 60 * 60 * 1000) {
+                    console.log('✅ Dados do OSM carregados do cache');
+                    displayOSMData(data.result, parcelSqft);
+                    return;
+                }
+            }
+            
+            // Buscar dados com fallback
+            for (let i = 0; i < OSM_SERVERS.length; i++) {
+                const server = OSM_SERVERS[i];
+                console.log(`🔄 Tentando servidor ${i + 1}/${OSM_SERVERS.length}: ${server}`);
+                
+                try {
+                    const data = await fetchOSMDataFromServer(server, lat, lng);
+                    
+                    // Salvar no cache
+                    localStorage.setItem(cacheKey, JSON.stringify({
+                        timestamp: Date.now(),
+                        result: data
+                    }));
+                    
+                    console.log('✅ Dados do OSM carregados com sucesso!');
+                    displayOSMData(data, parcelSqft);
+                    return;
+                } catch (error) {
+                    console.error(`❌ Erro no servidor ${i + 1}:`, error.message);
+                    if (i === OSM_SERVERS.length - 1) {
+                        // Último servidor falhou
+                        displayOSMError();
+                    }
+                }
+            }
+        }
+        
+        async function fetchOSMDataFromServer(server, lat, lng) {
+            // Raio de busca: 50m para construções no terreno, 100m para vizinhos
+            const query = `
+                [out:json][timeout:10];
+                (
+                  way["building"](around:50,${lat},${lng});
+                  relation["building"](around:50,${lat},${lng});
+                );
+                out body;
+                >;
+                out skel qt;
+            `;
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+            
+            try {
+                const response = await fetch(server, {
+                    method: 'POST',
+                    body: query,
+                    signal: controller.signal,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                clearTimeout(timeoutId);
+                if (error.name === 'AbortError') {
+                    throw new Error('Timeout (10s)');
+                }
+                throw error;
+            }
+        }
+        
+        function displayOSMData(data, parcelSqft) {
+            const buildings = data.elements.filter(el => el.type === 'way' && el.tags && el.tags.building);
+            
+            if (buildings.length === 0) {
+                // Terreno vazio
+                document.getElementById('osm-status').textContent = '🌳 Terreno Vazio';
+                document.getElementById('osm-type').textContent = 'N/A';
+                document.getElementById('osm-area').textContent = '0 m²';
+                document.getElementById('osm-floors').textContent = 'N/A';
+                document.getElementById('osm-coverage').textContent = '0%';
+                document.getElementById('osm-free-area').textContent = '100%';
+                document.getElementById('osm-value').textContent = 'N/A';
+                document.getElementById('osm-updated').textContent = 'N/A';
+                
+                // Potencial de expansão
+                const parcelAcres = (parcelSqft / 43560).toFixed(2);
+                document.getElementById('osm-expansion-potential').innerHTML = `
+                    <li>✅ Terreno vazio de ${parcelAcres} acres (${parcelSqft.toLocaleString()} sqft)</li>
+                    <li>✅ 100% disponível para construção</li>
+                    <li>✅ Sem restrições de construções existentes</li>
+                `;
+                
+                document.getElementById('osm-neighbor-comparison').textContent = '🌳 Terreno vazio - sem construções para comparar';
+                return;
+            }
+            
+            // Analisar construção principal (maior área)
+            const mainBuilding = buildings.reduce((max, b) => {
+                const area = calculateArea(b);
+                const maxArea = calculateArea(max);
+                return area > maxArea ? b : max;
+            });
+            
+            const buildingArea = calculateArea(mainBuilding);
+            const buildingType = mainBuilding.tags.building || 'unknown';
+            const buildingLevels = mainBuilding.tags['building:levels'] || mainBuilding.tags.levels || '1';
+            
+            // Status
+            document.getElementById('osm-status').textContent = '✅ Construído';
+            
+            // Tipo
+            const typeMap = {
+                'residential': '🏠 Residencial',
+                'house': '🏠 Casa',
+                'apartments': '🏬 Apartamentos',
+                'commercial': '🏬 Comercial',
+                'retail': '🏬 Varejo',
+                'industrial': '🏭 Industrial',
+                'warehouse': '🏭 Armazém',
+                'yes': '🏗️ Construção'
+            };
+            document.getElementById('osm-type').textContent = typeMap[buildingType] || `🏗️ ${buildingType}`;
+            
+            // Área
+            const areaSqft = (buildingArea * 10.764).toFixed(0);
+            document.getElementById('osm-area').textContent = `${buildingArea.toFixed(0)} m² (${areaSqft} sqft)`;
+            
+            // Andares
+            document.getElementById('osm-floors').textContent = buildingLevels;
+            
+            // Taxa de ocupação
+            const coverage = parcelSqft > 0 ? ((parseFloat(areaSqft) / parcelSqft) * 100).toFixed(1) : 0;
+            document.getElementById('osm-coverage').textContent = `${coverage}%`;
+            
+            // Área livre
+            const freeArea = (100 - parseFloat(coverage)).toFixed(1);
+            document.getElementById('osm-free-area').textContent = `${freeArea}%`;
+            
+            // Valor estimado (simplificado)
+            document.getElementById('osm-value').textContent = 'N/A (requer avaliação)';
+            
+            // Data de atualização
+            const timestamp = mainBuilding.timestamp || 'N/A';
+            document.getElementById('osm-updated').textContent = timestamp.split('T')[0] || 'N/A';
+            
+            // Potencial de expansão
+            const expansionHtml = [];
+            if (parseFloat(coverage) < 50) {
+                expansionHtml.push(`<li>✅ Taxa de ocupação baixa (${coverage}%) - grande potencial de expansão</li>`);
+            } else if (parseFloat(coverage) < 80) {
+                expansionHtml.push(`<li>⚠️ Taxa de ocupação média (${coverage}%) - potencial moderado</li>`);
+            } else {
+                expansionHtml.push(`<li>❌ Taxa de ocupação alta (${coverage}%) - pouco espaço disponível</li>`);
+            }
+            
+            if (parseInt(buildingLevels) < 2) {
+                expansionHtml.push(`<li>✅ Construção térrea - possível adicionar andares</li>`);
+            }
+            
+            const freeAreaSqft = (parcelSqft * (parseFloat(freeArea) / 100)).toFixed(0);
+            expansionHtml.push(`<li>🌳 Área livre: ${freeAreaSqft} sqft (${(freeAreaSqft / 43560).toFixed(2)} acres)</li>`);
+            
+            document.getElementById('osm-expansion-potential').innerHTML = expansionHtml.join('');
+            
+            // Comparação com vizinhos
+            if (buildings.length > 1) {
+                const avgArea = buildings.reduce((sum, b) => sum + calculateArea(b), 0) / buildings.length;
+                const avgAreaSqft = (avgArea * 10.764).toFixed(0);
+                const comparison = buildingArea > avgArea ? 'maior' : 'menor';
+                const diff = Math.abs(((buildingArea - avgArea) / avgArea) * 100).toFixed(0);
+                
+                document.getElementById('osm-neighbor-comparison').innerHTML = `
+                    <p class="text-sm text-gray-700">
+                        🏛️ <strong>${buildings.length} construções</strong> encontradas na área<br>
+                        📊 Área média: ${avgArea.toFixed(0)} m² (${avgAreaSqft} sqft)<br>
+                        📈 Sua propriedade é <strong>${diff}% ${comparison}</strong> que a média
+                    </p>
+                `;
+            } else {
+                document.getElementById('osm-neighbor-comparison').textContent = '🌳 Nenhuma construção vizinha encontrada (raio 50m)';
+            }
+        }
+        
+        function displayOSMError() {
+            const errorMsg = '❌ Dados temporáriamente indisponíveis';
+            document.getElementById('osm-status').textContent = errorMsg;
+            document.getElementById('osm-type').textContent = 'N/A';
+            document.getElementById('osm-area').textContent = 'N/A';
+            document.getElementById('osm-floors').textContent = 'N/A';
+            document.getElementById('osm-coverage').textContent = 'N/A';
+            document.getElementById('osm-free-area').textContent = 'N/A';
+            document.getElementById('osm-value').textContent = 'N/A';
+            document.getElementById('osm-updated').textContent = 'N/A';
+            document.getElementById('osm-expansion-potential').innerHTML = '<li>❌ Erro ao carregar dados do OpenStreetMap</li>';
+            document.getElementById('osm-neighbor-comparison').textContent = '❌ Erro ao carregar dados';
+        }
+        
+        function calculateArea(building) {
+            if (!building.tags || !building.tags['way_area']) {
+                // Estimar área se não fornecida
+                return 100; // Default 100m²
+            }
+            return parseFloat(building.tags['way_area']);
+        }
+
         async function loadLandUse(location) {
             document.getElementById('land-use-content-section').innerHTML = '<p class="text-sm text-gray-600">⏳ Carregando análise de uso do solo...</p>';
             
