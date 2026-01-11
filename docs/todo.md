@@ -422,3 +422,22 @@
 - [x] NUNCA usar innerHTML para mapas do Google
 - [x] Sempre destruir (innerHTML = '') e recriar objetos
 - [x] **IMPLEMENTADO:** Sistema unificado para TODOS os 4 mapas
+
+
+## ✅ Novos problemas RESOLVIDOS (Jan 10, 2026 - Correção Final)
+
+### Problema 1: Botão FEMA errado removido
+- [x] Removi os botões das mensagens de erro (ERRADO!)
+- [x] Deveria ter removido o botão fixo da direita
+- [x] Solução: REVERTER + remover botão fixo
+- [x] Prioridade: MÉDIA
+- [x] **RESOLVIDO:** Botões das mensagens restaurados + botão fixo removido + função manualLoadFEMA removida
+
+### Problema 2: Cache não funciona ao clicar "Anterior"
+- [x] P1 → Carrega Satellite + Street View → Mostra P1 ✅
+- [x] P2 → Navega → Mostra P2 ✅
+- [x] Volta P1 (Anterior) → Continua mostrando P2 ❌
+- [x] Causa: currentIndex (local) não sincronizado com window.currentIndex (global)
+- [x] Solução: Usar window.currentIndex ao salvar cache
+- [x] Prioridade: CRÍTICA
+- [x] **RESOLVIDO:** Linha 1043 agora usa window.currentIndex em vez de currentIndex local

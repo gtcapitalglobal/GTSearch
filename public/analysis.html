@@ -526,14 +526,9 @@
                 
                 <!-- FEMA Flood Risk -->
                 <div>
-                    <div class="flex items-center justify-between mb-2">
-                        <h3 class="text-sm font-bold text-gray-700">🌊 FEMA Flood Risk:</h3>
-                        <button id="btn-load-fema" onclick="manualLoadFEMA()" class="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-xs">
-                            🔍 Carregar Flood Risk
-                        </button>
-                    </div>
+                    <h3 class="text-sm font-bold text-gray-700 mb-2">🌊 FEMA Flood Risk:</h3>
                     <div id="fema-flood-content-section">
-                        <p class="text-gray-600 text-sm">💡 Clique no botão acima para carregar os dados FEMA (economiza créditos RapidAPI)</p>
+                        <p class="text-gray-600 text-sm">💡 Os dados FEMA serão carregados automaticamente quando disponíveis</p>
                     </div>
                 </div>
                 
@@ -1044,9 +1039,10 @@
             atualizarProgresso();
             
             // 📦 SALVAR CACHE DA PROPRIEDADE ANTERIOR
-            if (currentIndex !== index && currentIndex >= 0) {
-                console.log('💾 Salvando cache da propriedade anterior:', currentIndex);
-                savePropertyCache(currentIndex);
+            // Usar window.currentIndex (global) em vez de currentIndex (local)
+            if (window.currentIndex !== index && window.currentIndex >= 0) {
+                console.log('💾 Salvando cache da propriedade anterior:', window.currentIndex);
+                savePropertyCache(window.currentIndex);
             }
             
             // Atualizar currentIndex
@@ -2029,7 +2025,7 @@
                         <div class="text-sm text-orange-600">
                             <p class="font-semibold">⏱️ Servidor FEMA não respondeu</p>
                             <p class="text-xs mt-1">O servidor oficial da FEMA está muito lento ou indisponível no momento.</p>
-                            <p class="text-xs mt-1">Use o botão "🔍 Carregar Flood Risk" acima para tentar novamente.</p>
+                            <button onclick="window.open('https://msc.fema.gov/portal/search', '_blank')" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm">🌊 Carregar Flood Risk</button>
                         </div>
                     `;
                 } else if (data.success === false) {
@@ -2037,7 +2033,7 @@
                     document.getElementById('fema-flood-content-section').innerHTML = `
                         <div class="text-sm">
                             <p class="font-semibold text-gray-700">ℹ️ ${data.message}</p>
-                            ${data.suggestion ? `<p class="text-xs mt-1">Use o botão "🔍 Carregar Flood Risk" acima para acessar o site da FEMA.</p>` : ''}
+                            ${data.suggestion ? `<button onclick="window.open('${data.suggestion}', '_blank')" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm">🌊 Carregar Flood Risk</button>` : ''}
                             <p class="text-xs mt-2 text-gray-500">Coordenadas: ${data.coordinates.lat}, ${data.coordinates.lng}</p>
                         </div>
                     `;
@@ -2049,35 +2045,13 @@
                 document.getElementById('fema-flood-content-section').innerHTML = `
                     <div class="text-sm text-gray-600">
                         <p class="font-semibold">ℹ️ Dados FEMA não disponíveis</p>
-                        <p class="text-xs mt-1">Use o botão "🔍 Carregar Flood Risk" acima para consultar manualmente.</p>
+                        <button onclick="window.open('https://msc.fema.gov/portal/search', '_blank')" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm">🌊 Carregar Flood Risk</button>
                     </div>
                 `;
             }
         }
         
-        // Função para carregar FEMA manualmente (botão)
-        async function manualLoadFEMA() {
-            const prop = properties[currentIndex];
-            if (prop && prop['Coordinates']) {
-                const coords = prop['Coordinates'].split(',').map(c => parseFloat(c.trim()));
-                if (coords.length === 2) {
-                    const lat = coords[0];
-                    const lng = coords[1];
-                    console.log('🔍 Carregando FEMA manualmente:', lat, lng);
-                    
-                    // Desabilitar botão durante carregamento
-                    const btn = document.getElementById('btn-load-fema');
-                    btn.disabled = true;
-                    btn.textContent = '⏳ Carregando...';
-                    
-                    await loadFemaFloodDirect(lat, lng);
-                    
-                    // Reabilitar botão
-                    btn.disabled = false;
-                    btn.textContent = '🔄 Recarregar';
-                } else {
-                    alert('Coordenadas inválidas para esta propriedade');
-                }
+
             } else {
                 alert('Nenhuma coordenada disponível para esta propriedade');
             }
