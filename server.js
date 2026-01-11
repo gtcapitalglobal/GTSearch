@@ -421,7 +421,7 @@ app.post('/api/fema-flood', async (req, res) => {
       riskLevel: 'unknown',
       riskColor: '#6c757d',
       message: 'Não foi possível acessar os dados da FEMA no momento.',
-      suggestion: 'Consulte manualmente em: https://msc.fema.gov/portal/search',
+      suggestion: 'https://msc.fema.gov/portal/search',
       error: error.message,
       coordinates: { lat, lng }
     });

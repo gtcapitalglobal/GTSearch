@@ -485,50 +485,32 @@
             <div class="settings-card">
                 <h2>🏡 APIs Imobiliárias</h2>
                 
-                <h3>Zillow API (RapidAPI)</h3>
+                <h3>🔑 RapidAPI Key (Unificada)</h3>
                 <div class="input-group">
-                    <label for="zillowApiKey">X-RapidAPI-Key</label>
+                    <label for="rapidApiKey">X-RapidAPI-Key</label>
                     <div class="input-wrapper">
-                        <input type="password" id="zillowApiKey" placeholder="sua-rapidapi-key...">
-                        <button type="button" class="toggle-password" onclick="togglePassword('zillowApiKey')">👁️</button>
+                        <input type="password" id="rapidApiKey" placeholder="sua-rapidapi-key...">
+                        <button type="button" class="toggle-password" onclick="togglePassword('rapidApiKey')">👁️</button>
                     </div>
-                    <small>Para dados de propriedades do Zillow | <a href="https://rapidapi.com/apimaker/api/zillow-com1" target="_blank">🔗 Obter API Key</a></small>
+                    <small>💡 Uma única chave para: Zillow, Realtor.com, Realty Mole, FEMA | <a href="https://rapidapi.com/hub" target="_blank">🔗 Obter API Key</a></small>
                 </div>
                 <div class="button-group">
-                    <button class="btn btn-success" onclick="saveZillowKey()">💾 Salvar</button>
-                    <button class="btn btn-primary" onclick="testZillow()">🧪 Testar API</button>
+                    <button class="btn btn-success" onclick="saveRapidApiKey()">💾 Salvar</button>
+                    <button class="btn btn-primary" onclick="testAllRapidApis()">🧪 Testar Todas as APIs</button>
                 </div>
-                <div id="zillowTestResult"></div>
-
-                <h3>Realtor.com API (RapidAPI)</h3>
-                <div class="input-group">
-                    <label for="realtorApiKey">X-RapidAPI-Key</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="realtorApiKey" placeholder="sua-rapidapi-key...">
-                        <button type="button" class="toggle-password" onclick="togglePassword('realtorApiKey')">👁️</button>
-                    </div>
-                    <small>Para dados de propriedades do Realtor.com | <a href="https://rapidapi.com/apidojo/api/realtor" target="_blank">🔗 Obter API Key</a></small>
+                <div id="rapidApiTestResult"></div>
+                
+                <div style="background: #f0f9ff; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #3b82f6;">
+                    <p style="margin: 0; color: #1e40af; font-size: 0.9rem;">
+                        <strong>ℹ️ Info:</strong> A mesma RapidAPI Key funciona para todas as APIs abaixo (desde que você tenha subscrito cada uma no RapidAPI Hub):
+                    </p>
+                    <ul style="margin: 10px 0 0 20px; color: #1e40af; font-size: 0.85rem;">
+                        <li><a href="https://rapidapi.com/apimaker/api/zillow-com1" target="_blank">Zillow API</a></li>
+                        <li><a href="https://rapidapi.com/apidojo/api/realtor" target="_blank">Realtor.com API</a></li>
+                        <li><a href="https://rapidapi.com/realtymole/api/realty-mole-property-api" target="_blank">Realty Mole API</a></li>
+                        <li><a href="https://rapidapi.com/fyhao/api/fema-flood-hazard-florida" target="_blank">FEMA Flood Risk API</a></li>
+                    </ul>
                 </div>
-                <div class="button-group">
-                    <button class="btn btn-success" onclick="saveRealtorKey()">💾 Salvar</button>
-                    <button class="btn btn-primary" onclick="testRealtor()">🧪 Testar API</button>
-                </div>
-                <div id="realtorTestResult"></div>
-
-                <h3>Realty Mole API</h3>
-                <div class="input-group">
-                    <label for="realtyMoleApiKey">API Key</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="realtyMoleApiKey" placeholder="sua-realtymole-key...">
-                        <button type="button" class="toggle-password" onclick="togglePassword('realtyMoleApiKey')">👁️</button>
-                    </div>
-                    <small>Para avaliações e dados de propriedades | <a href="https://www.realtymole.com/api" target="_blank">🔗 Obter API Key</a></small>
-                </div>
-                <div class="button-group">
-                    <button class="btn btn-success" onclick="saveRealtyMoleKey()">💾 Salvar</button>
-                    <button class="btn btn-primary" onclick="testRealtyMole()">🧪 Testar API</button>
-                </div>
-                <div id="realtyMoleTestResult"></div>
 
                 <h3>🛰️ USGS M2M Token (Landsat/Satellite Imagery)</h3>
                 <div class="input-group">
@@ -544,6 +526,21 @@
                     <button class="btn btn-info" onclick="showUsgsInfo()">ℹ️ Como Obter Token</button>
                 </div>
                 <div id="usgsTestResult"></div>
+
+                <h3>🏙️ US Census Bureau API Key</h3>
+                <div class="input-group">
+                    <label for="censusApiKey">API Key</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="censusApiKey" placeholder="sua-census-api-key...">
+                        <button type="button" class="toggle-password" onclick="togglePassword('censusApiKey')">👁️</button>
+                    </div>
+                    <small>📊 Para dados demográficos, população, renda e habitação | <a href="https://api.census.gov/data/key_signup.html" target="_blank">🔗 Obter API Key (GRATUITA)</a></small>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="saveCensusApiKey()">💾 Salvar</button>
+                    <button class="btn btn-primary" onclick="testCensusApi()">🧪 Testar API</button>
+                </div>
+                <div id="censusTestResult"></div>
 
                 <hr style="margin: 30px 0; border: 1px solid #e0e0e0;">
                 <button class="btn btn-success" onclick="saveRealEstateApiKeys()">💾 Salvar Todas as APIs Imobiliárias</button>
@@ -659,17 +656,15 @@
             const openaiKey = loadEncryptedKey('openaiApiKey');
             const geminiKey = loadEncryptedKey('geminiApiKey');
             const perplexityKey = loadEncryptedKey('perplexityApiKey');
-            const zillowKey = loadEncryptedKey('zillowApiKey');
-            const realtorKey = loadEncryptedKey('realtorApiKey');
-            const realtyMoleKey = loadEncryptedKey('realtyMoleApiKey');
+            const rapidApiKey = loadEncryptedKey('rapidApiKey') || loadEncryptedKey('zillowApiKey') || loadEncryptedKey('realtorApiKey');
+            const censusApiKey = loadEncryptedKey('censusApiKey');
 
             if (googleMapsKey) document.getElementById('googleMapsApiKey').value = googleMapsKey;
             if (openaiKey) document.getElementById('openaiApiKey').value = openaiKey;
             if (geminiKey) document.getElementById('geminiApiKey').value = geminiKey;
             if (perplexityKey) document.getElementById('perplexityApiKey').value = perplexityKey;
-            if (zillowKey) document.getElementById('zillowApiKey').value = zillowKey;
-            if (realtorKey) document.getElementById('realtorApiKey').value = realtorKey;
-            if (realtyMoleKey) document.getElementById('realtyMoleApiKey').value = realtyMoleKey;
+            if (rapidApiKey) document.getElementById('rapidApiKey').value = rapidApiKey;
+            if (censusApiKey) document.getElementById('censusApiKey').value = censusApiKey;
         });
 
         async function saveGoogleMapsApiKey() {
@@ -1125,34 +1120,25 @@
         // REAL ESTATE APIs - SAVE & TEST
         // ========================================
 
-        function saveZillowKey() {
-            const apiKey = document.getElementById('zillowApiKey').value.trim();
+        // 🔑 Função unificada para salvar RapidAPI Key
+        function saveRapidApiKey() {
+            const apiKey = document.getElementById('rapidApiKey').value.trim();
             if (!apiKey) {
                 alert('❌ Por favor, insira uma API Key!');
                 return;
             }
+            // Salvar em todas as chaves antigas para compatibilidade
+            saveEncryptedKey('rapidApiKey', apiKey);
             saveEncryptedKey('zillowApiKey', apiKey);
-            showSaveSuccess('zillowTestResult');
-        }
-
-        function saveRealtorKey() {
-            const apiKey = document.getElementById('realtorApiKey').value.trim();
-            if (!apiKey) {
-                alert('❌ Por favor, insira uma API Key!');
-                return;
-            }
             saveEncryptedKey('realtorApiKey', apiKey);
-            showSaveSuccess('realtorTestResult');
-        }
-
-        function saveRealtyMoleKey() {
-            const apiKey = document.getElementById('realtyMoleApiKey').value.trim();
-            if (!apiKey) {
-                alert('❌ Por favor, insira uma API Key!');
-                return;
-            }
             saveEncryptedKey('realtyMoleApiKey', apiKey);
-            showSaveSuccess('realtyMoleTestResult');
+            saveEncryptedKey('femaApiKey', apiKey);
+            
+            const resultDiv = document.getElementById('rapidApiTestResult');
+            resultDiv.innerHTML = '<div class="success-message" style="margin-top: 10px;"><strong>✅ Salvo!</strong> RapidAPI Key salva com sucesso.</div>';
+            setTimeout(() => {
+                resultDiv.innerHTML = '';
+            }, 3000);
         }
 
         function saveUsgsToken() {
@@ -1194,6 +1180,67 @@
             `;
         }
 
+        function saveCensusApiKey() {
+            const apiKey = document.getElementById('censusApiKey').value.trim();
+            if (!apiKey) {
+                alert('❌ Por favor, insira uma API Key!');
+                return;
+            }
+            saveEncryptedKey('censusApiKey', apiKey);
+            const resultDiv = document.getElementById('censusTestResult');
+            resultDiv.innerHTML = '<div class="success-message" style="margin-top: 10px;"><strong>✅ Salvo!</strong> US Census API Key salva com sucesso.</div>';
+            setTimeout(() => {
+                resultDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        async function testCensusApi() {
+            const apiKey = document.getElementById('censusApiKey').value.trim();
+            
+            if (!apiKey) {
+                alert('❌ Por favor, insira uma API Key primeiro!');
+                return;
+            }
+
+            const resultDiv = document.getElementById('censusTestResult');
+            resultDiv.innerHTML = '<div class="status loading" style="margin-top: 10px;"><span class="loading-spinner"></span> Testando US Census API...</div>';
+
+            try {
+                // Teste com Orlando, FL (exemplo)
+                const response = await fetch(`https://api.census.gov/data/2021/acs/acs5?get=NAME,B01003_001E,B19013_001E&for=place:53000&in=state:12&key=${apiKey}`);
+                const data = await response.json();
+
+                if (response.ok && data && data.length > 1) {
+                    const [headers, values] = data;
+                    const name = values[0];
+                    const population = parseInt(values[1]).toLocaleString();
+                    const income = parseInt(values[2]).toLocaleString();
+                    
+                    resultDiv.innerHTML = `
+                        <div class="success-message" style="margin-top: 10px;">
+                            <strong>✅ Sucesso!</strong> US Census API está funcionando!<br><br>
+                            <strong>Teste:</strong> ${name}<br>
+                            <strong>População:</strong> ${population}<br>
+                            <strong>Renda Média:</strong> $${income}
+                        </div>
+                    `;
+                } else {
+                    throw new Error('Resposta inválida da API');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error-message" style="margin-top: 10px;">
+                        <strong>❌ Erro:</strong> ${error.message}<br><br>
+                        <strong>Possíveis causas:</strong><br>
+                        • API key inválida<br>
+                        • API key não ativada (verifique seu email)<br>
+                        • Limite de requisições excedido<br><br>
+                        <a href="https://api.census.gov/data/key_signup.html" target="_blank">Obter Nova API Key →</a>
+                    </div>
+                `;
+            }
+        }
+
         function saveRealEstateApiKeys() {
             const zillowKey = document.getElementById('zillowApiKey').value.trim();
             const realtorKey = document.getElementById('realtorApiKey').value.trim();
@@ -1212,17 +1259,21 @@
             }, 3000);
         }
 
-        async function testZillow() {
-            const apiKey = document.getElementById('zillowApiKey').value.trim();
+        // 🧪 Função unificada para testar todas as RapidAPIs
+        async function testAllRapidApis() {
+            const apiKey = document.getElementById('rapidApiKey').value.trim();
             
             if (!apiKey) {
                 alert('❌ Por favor, insira uma API Key primeiro!');
                 return;
             }
 
-            const resultDiv = document.getElementById('zillowTestResult');
-            resultDiv.innerHTML = '<div class="status loading" style="margin-top: 10px;"><span class="loading-spinner"></span> Testando Zillow API...</div>';
+            const resultDiv = document.getElementById('rapidApiTestResult');
+            resultDiv.innerHTML = '<div class="status loading" style="margin-top: 10px;"><span class="loading-spinner"></span> Testando todas as APIs RapidAPI...</div>';
 
+            const results = [];
+            
+            // Teste 1: Zillow
             try {
                 const response = await fetch('https://zillow-com1.p.rapidapi.com/property?zpid=61975204', {
                     method: 'GET',
@@ -1231,46 +1282,17 @@
                         'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
                     }
                 });
-
                 const data = await response.json();
-
                 if (response.ok && data) {
-                    resultDiv.innerHTML = `
-                        <div class="success-message" style="margin-top: 10px;">
-                            <strong>✅ Sucesso!</strong> Zillow API está funcionando!<br><br>
-                            <strong>Propriedade de Teste:</strong> ${data.address?.streetAddress || 'N/A'}<br>
-                            <strong>Cidade:</strong> ${data.address?.city || 'N/A'}, ${data.address?.state || 'N/A'}<br>
-                            <strong>Preço:</strong> $${data.price?.toLocaleString() || 'N/A'}
-                        </div>
-                    `;
+                    results.push({ name: 'Zillow', status: 'success', message: `${data.address?.streetAddress || 'Teste OK'}` });
                 } else {
-                    throw new Error(data.message || 'Erro desconhecido');
+                    results.push({ name: 'Zillow', status: 'error', message: data.message || 'Erro desconhecido' });
                 }
             } catch (error) {
-                resultDiv.innerHTML = `
-                    <div class="error-message" style="margin-top: 10px;">
-                        <strong>❌ Erro:</strong> ${error.message}<br><br>
-                        <strong>Possíveis causas:</strong><br>
-                        • API key inválida<br>
-                        • Sem créditos disponíveis no RapidAPI<br>
-                        • API não subscrita no RapidAPI<br><br>
-                        <a href="https://rapidapi.com/apimaker/api/zillow-com1" target="_blank">Verificar Subscription →</a>
-                    </div>
-                `;
+                results.push({ name: 'Zillow', status: 'error', message: error.message });
             }
-        }
-
-        async function testRealtor() {
-            const apiKey = document.getElementById('realtorApiKey').value.trim();
             
-            if (!apiKey) {
-                alert('❌ Por favor, insira uma API Key primeiro!');
-                return;
-            }
-
-            const resultDiv = document.getElementById('realtorTestResult');
-            resultDiv.innerHTML = '<div class="status loading" style="margin-top: 10px;"><span class="loading-spinner"></span> Testando Realtor.com API...</div>';
-
+            // Teste 2: Realtor.com
             try {
                 const response = await fetch('https://realtor.p.rapidapi.com/properties/v3/list?limit=1&offset=0&postal_code=90004&status=for_sale&sort=relevance', {
                     method: 'GET',
@@ -1279,49 +1301,18 @@
                         'X-RapidAPI-Host': 'realtor.p.rapidapi.com'
                     }
                 });
-
                 const data = await response.json();
-
-                if (response.ok && data.data && data.data.home_search && data.data.home_search.results) {
-                    const property = data.data.home_search.results[0];
-                    resultDiv.innerHTML = `
-                        <div class="success-message" style="margin-top: 10px;">
-                            <strong>✅ Sucesso!</strong> Realtor.com API está funcionando!<br><br>
-                            <strong>Propriedade de Teste:</strong> ${property.location?.address?.line || 'N/A'}<br>
-                            <strong>Cidade:</strong> ${property.location?.address?.city || 'N/A'}, ${property.location?.address?.state_code || 'N/A'}<br>
-                            <strong>Preço:</strong> $${property.list_price?.toLocaleString() || 'N/A'}
-                        </div>
-                    `;
+                if (response.ok && data.data) {
+                    results.push({ name: 'Realtor.com', status: 'success', message: 'API funcionando' });
                 } else {
-                    throw new Error(data.message || 'Erro desconhecido');
+                    results.push({ name: 'Realtor.com', status: 'error', message: data.message || 'Erro desconhecido' });
                 }
             } catch (error) {
-                resultDiv.innerHTML = `
-                    <div class="error-message" style="margin-top: 10px;">
-                        <strong>❌ Erro:</strong> ${error.message}<br><br>
-                        <strong>Possíveis causas:</strong><br>
-                        • API key inválida<br>
-                        • Sem créditos disponíveis no RapidAPI<br>
-                        • API não subscrita no RapidAPI<br><br>
-                        <a href="https://rapidapi.com/apidojo/api/realtor" target="_blank">Verificar Subscription →</a>
-                    </div>
-                `;
+                results.push({ name: 'Realtor.com', status: 'error', message: error.message });
             }
-        }
-
-        async function testRealtyMole() {
-            const apiKey = document.getElementById('realtyMoleApiKey').value.trim();
             
-            if (!apiKey) {
-                alert('❌ Por favor, insira uma API Key primeiro!');
-                return;
-            }
-
-            const resultDiv = document.getElementById('realtyMoleTestResult');
-            resultDiv.innerHTML = '<div class="status loading" style="margin-top: 10px;"><span class="loading-spinner"></span> Testando Realty Mole API...</div>';
-
+            // Teste 3: Realty Mole
             try {
-                // Teste com endereço de exemplo
                 const response = await fetch('https://realty-mole-property-api.p.rapidapi.com/properties?address=5500%20Grand%20Lake%20Drive%2C%20San%20Antonio%2C%20TX', {
                     method: 'GET',
                     headers: {
@@ -1329,34 +1320,56 @@
                         'X-RapidAPI-Host': 'realty-mole-property-api.p.rapidapi.com'
                     }
                 });
-
                 const data = await response.json();
-
                 if (response.ok && data && data.length > 0) {
-                    const property = data[0];
-                    resultDiv.innerHTML = `
-                        <div class="success-message" style="margin-top: 10px;">
-                            <strong>✅ Sucesso!</strong> Realty Mole API está funcionando!<br><br>
-                            <strong>Propriedade de Teste:</strong> ${property.addressLine1 || 'N/A'}<br>
-                            <strong>Cidade:</strong> ${property.city || 'N/A'}, ${property.state || 'N/A'}<br>
-                            <strong>Avaliação:</strong> $${property.assessedValue?.toLocaleString() || 'N/A'}
-                        </div>
-                    `;
+                    results.push({ name: 'Realty Mole', status: 'success', message: 'API funcionando' });
                 } else {
-                    throw new Error(data.message || 'Erro desconhecido');
+                    results.push({ name: 'Realty Mole', status: 'error', message: 'Sem dados' });
                 }
             } catch (error) {
-                resultDiv.innerHTML = `
-                    <div class="error-message" style="margin-top: 10px;">
-                        <strong>❌ Erro:</strong> ${error.message}<br><br>
-                        <strong>Possíveis causas:</strong><br>
-                        • API key inválida<br>
-                        • Sem créditos disponíveis<br>
-                        • Plano gratuito expirado<br><br>
-                        <a href="https://www.realtymole.com/api" target="_blank">Verificar API Key →</a>
+                results.push({ name: 'Realty Mole', status: 'error', message: error.message });
+            }
+            
+            // Teste 4: FEMA
+            try {
+                const response = await fetch('https://fema-flood-hazard-florida.p.rapidapi.com/query?point=-81.3792,28.5383', {
+                    method: 'GET',
+                    headers: {
+                        'X-RapidAPI-Key': apiKey,
+                        'X-RapidAPI-Host': 'fema-flood-hazard-florida.p.rapidapi.com'
+                    }
+                });
+                const data = await response.json();
+                if (response.ok && data) {
+                    results.push({ name: 'FEMA Flood Risk', status: 'success', message: 'API funcionando' });
+                } else {
+                    results.push({ name: 'FEMA Flood Risk', status: 'error', message: 'Erro na resposta' });
+                }
+            } catch (error) {
+                results.push({ name: 'FEMA Flood Risk', status: 'error', message: error.message });
+            }
+            
+            // Exibir resultados
+            let html = '<div style="margin-top: 15px;">';
+            html += '<h4 style="margin-bottom: 10px;">📋 Resultados dos Testes:</h4>';
+            html += '<div class="test-results">';
+            
+            results.forEach(result => {
+                const statusClass = result.status === 'success' ? 'success' : 'error';
+                const icon = result.status === 'success' ? '✅' : '❌';
+                html += `
+                    <div class="test-card">
+                        <h4>${icon} ${result.name}</h4>
+                        <div class="status ${statusClass}">${result.status === 'success' ? 'Funcionando' : 'Erro'}</div>
+                        <p style="font-size: 0.9rem; color: #666;">${result.message}</p>
                     </div>
                 `;
-            }
+            });
+            
+            html += '</div>';
+            html += '</div>';
+            
+            resultDiv.innerHTML = html;
         }
 
         // ========================================
@@ -1438,23 +1451,14 @@
                     loadedCount++;
                 }
                 
-                if (apiKeys.zillowApiKey || apiKeys.rapidApiKey) {
-                    const key = apiKeys.zillowApiKey || apiKeys.rapidApiKey;
-                    document.getElementById('zillowApiKey').value = key;
+                if (apiKeys.rapidApiKey || apiKeys.zillowApiKey || apiKeys.realtorApiKey) {
+                    const key = apiKeys.rapidApiKey || apiKeys.zillowApiKey || apiKeys.realtorApiKey;
+                    document.getElementById('rapidApiKey').value = key;
+                    saveEncryptedKey('rapidApiKey', key);
                     saveEncryptedKey('zillowApiKey', key);
-                    loadedCount++;
-                }
-                
-                if (apiKeys.realtorApiKey || apiKeys.rapidApiKey) {
-                    const key = apiKeys.realtorApiKey || apiKeys.rapidApiKey;
-                    document.getElementById('realtorApiKey').value = key;
                     saveEncryptedKey('realtorApiKey', key);
-                    loadedCount++;
-                }
-                
-                if (apiKeys.realtyMoleApiKey) {
-                    document.getElementById('realtyMoleApiKey').value = apiKeys.realtyMoleApiKey;
-                    saveEncryptedKey('realtyMoleApiKey', apiKeys.realtyMoleApiKey);
+                    saveEncryptedKey('realtyMoleApiKey', key);
+                    saveEncryptedKey('femaApiKey', key);
                     loadedCount++;
                 }
                 

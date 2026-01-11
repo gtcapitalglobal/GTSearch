@@ -249,3 +249,42 @@
   - SFHA: false = Não é área de risco especial
   - Dados completos: zona, subtipo, elevação, fonte, DFIRM ID
 - [x] **Prioridade: MÉDIA** (funcionalidade importante mas não crítica)
+
+
+## 🔧 Refatorar Configurações RapidAPI
+- [ ] Substituir campos separados por 1 campo único "RapidAPI Key"
+- [ ] APIs afetadas: Zillow, Realtor.com, FEMA, Realty Mole
+- [ ] Criar botão "🧪 Testar Todas as APIs" que testa:
+  - Zillow API
+  - Realtor.com API
+  - FEMA Flood Risk API
+  - Realty Mole API
+- [ ] Mostrar resultado de cada API (funcionando ou erro)
+- [ ] Corrigir link quebrado do FEMA no analysis.html
+- [ ] Prioridade: ALTA (simplifica muito a configuração)
+
+## ✅ Implementação CONCLUÍDA (Jan 10, 2026)
+
+### 1. Atualizar RapidAPI Key
+- [x] Atualizar para b4ebe399b6msha68c487f21cf5b8p101c24jsn9c0af1a4581a
+- [x] Reiniciar servidor
+
+### 2. FEMA com botão manual
+- [x] Remover carregamento automático
+- [x] Adicionar botão "🔍 Carregar Flood Risk"
+- [x] Economizar créditos RapidAPI
+
+### 3. Correções rápidas
+- [x] Corrigir link quebrado do FEMA
+- [x] Remover chamada loadArcGISData() (linha 1117)
+
+### 4. Refatorar Configurações RapidAPI
+- [x] Campo único "RapidAPI Key"
+- [x] Botão "🧪 Testar Todas as APIs"
+- [x] Testar: Zillow, Realtor, FEMA, Realty Mole
+
+### 5. US Census Bureau API
+- [x] Adicionar campo nas configurações
+- [x] Implementar loadCensusData()
+- [x] Dados: População, Renda, Crescimento, Habitação
+- [x] Score de investimento automático
