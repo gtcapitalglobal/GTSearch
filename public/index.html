@@ -167,12 +167,16 @@
                                 <span class="text-gray-700">Deletar Partners Available</span>
                             </button>
                             <button class="delete-category-btn w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 flex items-center gap-2" data-category="sold">
-                                <span class="w-4 h-4 bg-black rounded-full"></span>
+                                <span class="w-4 h-4 rounded-full" style="background-color: #99E9F2;"></span>
                                 <span class="text-gray-700">Deletar Sold Lands</span>
                             </button>
                             <button class="delete-category-btn w-full text-left px-4 py-3 hover:bg-red-50 transition-colors border-b border-gray-100 flex items-center gap-2" data-category="blocked">
-                                <span class="w-4 h-4 bg-red-600 rounded-full"></span>
+                                <span class="w-4 h-4 rounded-full" style="background-color: #FCA5A5;"></span>
                                 <span class="text-gray-700">Deletar Blocked/Paused</span>
+                            </button>
+                            <button class="delete-category-btn w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 flex items-center gap-2" data-category="outros">
+                                <span class="w-4 h-4 rounded-full" style="background-color: #92400E;"></span>
+                                <span class="text-gray-700">Deletar Outros</span>
                             </button>
                             <button id="deleteAllOldBtn" class="w-full text-left px-4 py-3 hover:bg-orange-50 transition-colors font-semibold text-orange-600">
                                 🗑️ Deletar TODAS as Antigas
@@ -195,16 +199,20 @@
                     <span class="text-gray-700">Partners Available (<span id="partnersCount">0</span>)</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div class="w-4 h-4 bg-black rounded-full"></div>
+                    <div class="w-4 h-4 rounded-full" style="background-color: #99E9F2;"></div>
                     <span class="text-gray-700">Sold Lands (<span id="soldCount">0</span>)</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <div class="w-4 h-4 bg-red-600 rounded-full border-2 border-white"></div>
+                    <div class="w-4 h-4 rounded-full border-2 border-white" style="background-color: #FCA5A5;"></div>
                     <span class="text-gray-700">Blocked/Paused (<span id="blockedCount">0</span>)</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <div class="w-4 h-4 bg-yellow-400 rounded-full"></div>
                     <span class="text-gray-700">Novas Propriedades (<span id="newCount">0</span>)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded-full" style="background-color: #92400E;"></div>
+                    <span class="text-gray-700">Outros (<span id="outrosCount">0</span>)</span>
                 </div>
             </div>
         </div>
@@ -410,7 +418,8 @@
             available: L.layerGroup().addTo(map),
             partners: L.layerGroup().addTo(map),
             sold: L.layerGroup().addTo(map),
-            blocked: L.layerGroup().addTo(map)
+            blocked: L.layerGroup().addTo(map),
+            outros: L.layerGroup().addTo(map)
         };
 
         // Data storage
@@ -424,7 +433,8 @@
             partners: 0,
             sold: 0,
             blocked: 0,
-            new: 0
+            new: 0,
+            outros: 0
         };
 
         // Custom marker icons with house SVG
@@ -447,11 +457,11 @@
 
         const createSoldIcon = () => L.divIcon({
             html: `<svg width="30" height="45" viewBox="0 0 30 45">
-                <path d="M15 2C9 2 4 7 4 13c0 9 11 20 11 20s11-11 11-20c0-6-5-11-11-11z" fill="#1a1a1a" stroke="#000" stroke-width="1.5"/>
+                <path d="M15 2C9 2 4 7 4 13c0 9 11 20 11 20s11-11 11-20c0-6-5-11-11-11z" fill="#99E9F2" stroke="#67C3D4" stroke-width="1.5"/>
                 <g transform="translate(15, 13)">
                     <path d="M-4,-4 L0,-7 L4,-4 Z" fill="#FFF"/>
                     <rect x="-4" y="-4" width="8" height="6" fill="#FFF"/>
-                    <rect x="-1.5" y="-1" width="3" height="4" fill="#1a1a1a"/>
+                    <rect x="-1.5" y="-1" width="3" height="4" fill="#99E9F2"/>
                     <rect x="-3.5" y="-3" width="2" height="2" fill="#87CEEB"/>
                     <rect x="1.5" y="-3" width="2" height="2" fill="#87CEEB"/>
                 </g>
@@ -466,7 +476,7 @@
 
         const createBlockedIcon = () => L.divIcon({
             html: `<svg width="30" height="45" viewBox="0 0 30 45">
-                <path d="M15 2C9 2 4 7 4 13c0 9 11 20 11 20s11-11 11-20c0-6-5-11-11-11z" fill="#dc2626" stroke="#b91c1c" stroke-width="1.5"/>
+                <path d="M15 2C9 2 4 7 4 13c0 9 11 20 11 20s11-11 11-20c0-6-5-11-11-11z" fill="#FCA5A5" stroke="#F87171" stroke-width="1.5"/>
                 <circle cx="15" cy="13" r="5" fill="none" stroke="#FFF" stroke-width="1.5"/>
                 <line x1="11.5" y1="9.5" x2="18.5" y2="16.5" stroke="#FFF" stroke-width="1.5"/>
             </svg>`,
@@ -481,7 +491,8 @@
             partners: createHouseIcon('#6b7280'),
             sold: createSoldIcon(),
             blocked: createBlockedIcon(),
-            new: createHouseIcon('#facc15')
+            new: createHouseIcon('#facc15'),
+            outros: createHouseIcon('#92400E')
         };
 
         // Load KML files automatically
@@ -490,7 +501,8 @@
             { file: 'SoldLands.kml', type: 'sold', name: 'Sold Lands' },
             { file: 'BlockedPaused.kml', type: 'blocked', name: 'Blocked/Paused' },
             { file: 'AvailableLands.kml', type: 'available', name: 'Available Lands' },
-            { file: 'PartnersAvailableLands.kml', type: 'partners', name: 'Partners Available' }
+            { file: 'PartnersAvailableLands.kml', type: 'partners', name: 'Partners Available' },
+            { file: 'Outros.kml', type: 'outros', name: 'Outros' }
         ];
 
         let kmlLoadedCount = 0;
@@ -620,6 +632,7 @@
                             console.log(`Sold Lands: ${propertyCounts.sold}`);
                             console.log(`Blocked/Paused: ${propertyCounts.blocked}`);
                             console.log(`Partners Available: ${propertyCounts.partners}`);
+                            console.log(`Outros: ${propertyCounts.outros}`);
                             console.log(`TOTAL: ${Object.values(propertyCounts).reduce((a,b) => a+b, 0)}`);
                             console.log('='.repeat(80) + '\n');
                             const layers = existingPropertiesLayer.getLayers();
@@ -1054,7 +1067,8 @@
                     available: 'Available Lands',
                     partners: 'Partners Available',
                     sold: 'Sold Lands',
-                    blocked: 'Blocked/Paused'
+                    blocked: 'Blocked/Paused',
+                    outros: 'Outros'
                 };
                 
                 if (confirm(`Tem certeza que deseja deletar ${categoryNames[category]}?`)) {

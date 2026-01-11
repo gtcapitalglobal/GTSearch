@@ -449,3 +449,11 @@
 - [x] Resultado: Página não carrega nada
 - [x] Prioridade: CRÍTICA
 - [x] **RESOLVIDO:** Removido código órfão (linhas 2055-2058)
+
+
+## 🎨 Atualização de cores da legenda (Jan 10, 2026)
+- [ ] Sold Lands → Ciano Pastel (#99E9F2)
+- [ ] Blocked/Paused → Vermelho Claro (#FCA5A5)
+- [ ] Adicionar categoria "Outros" → Marrom (#92400E)
+- [ ] Atualizar legenda do mapa
+- [ ] Atualizar cores dos marcadores
