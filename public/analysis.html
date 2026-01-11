@@ -1045,14 +1045,7 @@
             currentIndex = index;
             window.currentIndex = index;
             
-            // 📦 TENTAR CARREGAR DO CACHE
-            const cacheLoaded = loadPropertyCache(index);
-            
-            // Se não tem cache, resetar para botões "Carregar Imagem"
-            if (!cacheLoaded) {
-                console.log('🆕 Sem cache, resetando mapas...');
-                resetAllMaps();
-            }
+            // ⚠️ Cache será carregado DEPOIS de window.currentLocation ser definida
 
             // Format fields
             const acres = prop['Acres'] ? `${parseFloat(prop['Acres']).toFixed(2)} acres` : '-';
@@ -1253,6 +1246,15 @@
             // 💾 Salvar localização para uso posterior (carregamento sob demanda)
             window.currentLocation = location;
             window.currentProp = prop;
+            
+            // 📦 AGORA CARREGAR CACHE (depois de window.currentLocation estar definida)
+            const cacheLoaded = loadPropertyCache(window.currentIndex);
+            
+            // Se não tem cache, resetar para botões "Carregar Imagem"
+            if (!cacheLoaded) {
+                console.log('🆕 Sem cache, resetando mapas...');
+                resetAllMaps();
+            }
             
             // ✅ Carregar apenas dados que NÃO usam Google Maps API (gratuitos)
             // initSatelliteMap(location); // ❌ Desabilitado - carregar sob demanda
@@ -2019,7 +2021,7 @@
                         <div class="text-sm text-orange-600">
                             <p class="font-semibold">⏱️ Servidor FEMA não respondeu</p>
                             <p class="text-xs mt-1">O servidor oficial da FEMA está muito lento ou indisponível no momento.</p>
-                            <p class="text-xs mt-1">Tente novamente mais tarde ou consulte diretamente: <a href="https://msc.fema.gov/portal/search" target="_blank" class="text-blue-600 underline">FEMA Map Service Center</a></p>
+                            <button onclick="window.open('https://msc.fema.gov/portal/search', '_blank')" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm">🌊 Carregar Flood Risk</button>
                         </div>
                     `;
                 } else if (data.success === false) {
@@ -2027,8 +2029,7 @@
                     document.getElementById('fema-flood-content-section').innerHTML = `
                         <div class="text-sm">
                             <p class="font-semibold text-gray-700">ℹ️ ${data.message}</p>
-                            ${data.suggestion ? `<p class="text-xs mt-2 text-gray-600">Consulte manualmente:</p>
-                            <a href="${data.suggestion}" target="_blank" rel="noopener noreferrer" class="text-xs text-blue-600 underline hover:text-blue-800">FEMA Map Service Center →</a>` : ''}
+                            ${data.suggestion ? `<button onclick="window.open('${data.suggestion}', '_blank')" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm">🌊 Carregar Flood Risk</button>` : ''}
                             <p class="text-xs mt-2 text-gray-500">Coordenadas: ${data.coordinates.lat}, ${data.coordinates.lng}</p>
                         </div>
                     `;
@@ -2040,8 +2041,7 @@
                 document.getElementById('fema-flood-content-section').innerHTML = `
                     <div class="text-sm text-gray-600">
                         <p class="font-semibold">ℹ️ Dados FEMA não disponíveis</p>
-                        <p class="text-xs mt-2">Consulte manualmente em:</p>
-                        <a href="https://msc.fema.gov/portal/search" target="_blank" rel="noopener noreferrer" class="text-xs text-blue-600 underline hover:text-blue-800">FEMA Map Service Center →</a>
+                        <button onclick="window.open('https://msc.fema.gov/portal/search', '_blank')" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm">🌊 Carregar Flood Risk</button>
                     </div>
                 `;
             }

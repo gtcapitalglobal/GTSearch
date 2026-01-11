@@ -361,3 +361,20 @@
 - [x] Solução: Remover modal completamente
 - [x] Prioridade: MÉDIA
 - [x] **RESOLVIDO:** Modais removidos, apenas notificação discreta
+
+
+## ✅ Problemas RESOLVIDOS (Jan 10, 2026)
+
+### Problema 1: Street View cache agora funciona!
+- [x] Correção anterior não resolveu completamente
+- [x] Causa: loadPropertyCache() era chamado ANTES de window.currentLocation ser definida
+- [x] Solução: Movido loadPropertyCache() para dentro de processLocation()
+- [x] Prioridade: ALTA
+- [x] **RESOLVIDO:** Cache agora carrega DEPOIS de window.currentLocation estar pronta
+
+### Problema 2: Link FEMA substituído por botão
+- [x] Remover: "FEMA Map Service Center →" (link)
+- [x] Adicionar: "🌊 Carregar Flood Risk" (botão azul)
+- [x] Manter consistência visual
+- [x] Prioridade: MÉDIA
+- [x] **RESOLVIDO:** 3 lugares substituídos por botão azul consistente
