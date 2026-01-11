@@ -333,3 +333,12 @@
 - [x] Solução: Forçar recriação dos objetos Map a cada propriedade
 - [x] Prioridade: CRÍTICA
 - [x] **RESOLVIDO:** Todos os mapas agora são destruídos e recriados (satelliteMap = null)
+
+
+## ✅ Bug: Link FEMA ainda quebrado (RESOLVIDO - Jan 10, 2026)
+- [x] Link abre: `localhost:3000/Consulte%20manualmente%20em:%20https://msc.fema.gov/portal/search`
+- [x] Deveria abrir: `https://msc.fema.gov/portal/search`
+- [x] Causa: Cache do navegador com versão antiga do HTML
+- [x] Solução: Adicionado seta → e rel="noopener" para forçar atualização
+- [x] Prioridade: ALTA
+- [x] **RESOLVIDO:** Código estava correto, problema era cache do browser

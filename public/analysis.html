@@ -2018,7 +2018,7 @@
                         <div class="text-sm">
                             <p class="font-semibold text-gray-700">ℹ️ ${data.message}</p>
                             ${data.suggestion ? `<p class="text-xs mt-2 text-gray-600">Consulte manualmente:</p>
-                            <a href="${data.suggestion}" target="_blank" class="text-xs text-blue-600 underline">FEMA Map Service Center</a>` : ''}
+                            <a href="${data.suggestion}" target="_blank" rel="noopener noreferrer" class="text-xs text-blue-600 underline hover:text-blue-800">FEMA Map Service Center →</a>` : ''}
                             <p class="text-xs mt-2 text-gray-500">Coordenadas: ${data.coordinates.lat}, ${data.coordinates.lng}</p>
                         </div>
                     `;
@@ -2031,7 +2031,7 @@
                     <div class="text-sm text-gray-600">
                         <p class="font-semibold">ℹ️ Dados FEMA não disponíveis</p>
                         <p class="text-xs mt-2">Consulte manualmente em:</p>
-                        <a href="https://msc.fema.gov/portal/search" target="_blank" class="text-xs text-blue-600 underline">FEMA Map Service Center</a>
+                        <a href="https://msc.fema.gov/portal/search" target="_blank" rel="noopener noreferrer" class="text-xs text-blue-600 underline hover:text-blue-800">FEMA Map Service Center →</a>
                     </div>
                 `;
             }
