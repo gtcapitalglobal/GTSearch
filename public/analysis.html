@@ -799,29 +799,56 @@
         function reattachMapEventListeners(element, type) {
             // Se o elemento tem um botão "Carregar Imagem", reattach o event listener
             const button = element.querySelector('button');
-            if (button && button.textContent.includes('Carregar Imagem')) {
-                button.addEventListener('click', function() {
-                    if (window.currentLocation) {
-                        this.innerHTML = '⏳ Carregando...';
-                        this.disabled = true;
-                        
-                        if (type === 'satellite') {
-                            initSatelliteMap(window.currentLocation);
-                        } else if (type === 'streetview') {
-                            initStreetView(window.currentLocation);
-                        } else if (type === 'terrain') {
-                            initTerrainMap(window.currentLocation);
-                        } else if (type === 'normal') {
-                            initNormalMap(window.currentLocation);
-                        }
-                        
-                        setTimeout(() => {
-                            this.remove();
-                            // Salvar cache após carregar
-                            savePropertyCache(window.currentIndex);
-                        }, 1000);
+            
+            if (!button) {
+                console.log('⚠️ Nenhum botão encontrado em', type);
+                return;
+            }
+            
+            const buttonText = button.textContent || button.innerHTML;
+            console.log('🔍 Botão encontrado:', type, buttonText);
+            
+            // Detectar botões "Carregar Imagem" (com ou sem emoji)
+            if (buttonText.includes('Carregar Imagem') || buttonText.includes('Carregar')) {
+                console.log('✅ Reattaching event listener para', type);
+                
+                // Remover listeners antigos (se existirem)
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+                
+                // Adicionar novo event listener
+                newButton.addEventListener('click', function() {
+                    console.log('👆 Botão clicado:', type);
+                    
+                    if (!window.currentLocation) {
+                        console.error('❌ window.currentLocation não definido!');
+                        return;
                     }
+                    
+                    this.innerHTML = '⏳ Carregando...';
+                    this.disabled = true;
+                    
+                    console.log('📍 Carregando mapa:', type, window.currentLocation);
+                    
+                    if (type === 'satellite') {
+                        initSatelliteMap(window.currentLocation);
+                    } else if (type === 'streetview') {
+                        initStreetView(window.currentLocation);
+                    } else if (type === 'terrain') {
+                        initTerrainMap(window.currentLocation);
+                    } else if (type === 'normal') {
+                        initNormalMap(window.currentLocation);
+                    }
+                    
+                    setTimeout(() => {
+                        this.remove();
+                        // Salvar cache após carregar
+                        console.log('💾 Salvando cache após carregar', type);
+                        savePropertyCache(window.currentIndex);
+                    }, 1500);
                 });
+            } else {
+                console.log('⚠️ Botão não é "Carregar Imagem":', buttonText);
             }
         }
         

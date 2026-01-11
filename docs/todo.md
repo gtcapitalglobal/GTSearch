@@ -306,3 +306,12 @@
 - [x] Benefício: Economiza API calls + UX melhor
 - [x] Prioridade: ALTA
 - [x] **RESOLVIDO:** Sistema de cache implementado com `window.propertyCache`
+
+
+## ✅ Bug: Botões restaurados do cache não funcionam (RESOLVIDO)
+- [x] Cache salva e restaura botões corretamente
+- [x] Mas ao clicar no botão restaurado, nada acontece
+- [x] Causa: Event listeners não são reattachados
+- [x] Solução: Corrigir função reattachMapEventListeners()
+- [x] Prioridade: CRÍTICA
+- [x] **RESOLVIDO:** Melhorada detecção de botões + clone para remover listeners antigos + logs de debug
