@@ -726,6 +726,105 @@
         window.realtorPhotoIndex = 0;
         window.googleMapsApiKey = '';
         
+        // 📦 SISTEMA DE CACHE DE IMAGENS POR PROPRIEDADE
+        // Armazena estado das imagens carregadas para cada propriedade
+        window.propertyCache = {};
+        
+        function getCacheKey(index) {
+            return `property_${index}`;
+        }
+        
+        function savePropertyCache(index) {
+            const key = getCacheKey(index);
+            window.propertyCache[key] = {
+                satelliteMap: document.getElementById('satellite-map')?.innerHTML || null,
+                streetView: document.getElementById('street-view')?.innerHTML || null,
+                terrainMap: document.getElementById('terrain-map-view')?.innerHTML || null,
+                normalMap: document.getElementById('normal-map-view')?.innerHTML || null,
+                timestamp: Date.now()
+            };
+            console.log('💾 Cache salvo para propriedade', index, window.propertyCache[key]);
+        }
+        
+        function loadPropertyCache(index) {
+            const key = getCacheKey(index);
+            const cache = window.propertyCache[key];
+            
+            if (!cache) {
+                console.log('❌ Sem cache para propriedade', index);
+                return false;
+            }
+            
+            console.log('✅ Restaurando cache para propriedade', index);
+            
+            // Restaurar Satellite Map
+            if (cache.satelliteMap) {
+                const satelliteEl = document.getElementById('satellite-map');
+                if (satelliteEl) {
+                    satelliteEl.innerHTML = cache.satelliteMap;
+                    reattachMapEventListeners(satelliteEl, 'satellite');
+                }
+            }
+            
+            // Restaurar Street View
+            if (cache.streetView) {
+                const streetViewEl = document.getElementById('street-view');
+                if (streetViewEl) {
+                    streetViewEl.innerHTML = cache.streetView;
+                    reattachMapEventListeners(streetViewEl, 'streetview');
+                }
+            }
+            
+            // Restaurar Terrain Map
+            if (cache.terrainMap) {
+                const terrainEl = document.getElementById('terrain-map-view');
+                if (terrainEl) {
+                    terrainEl.innerHTML = cache.terrainMap;
+                    reattachMapEventListeners(terrainEl, 'terrain');
+                }
+            }
+            
+            // Restaurar Normal Map
+            if (cache.normalMap) {
+                const normalEl = document.getElementById('normal-map-view');
+                if (normalEl) {
+                    normalEl.innerHTML = cache.normalMap;
+                    reattachMapEventListeners(normalEl, 'normal');
+                }
+            }
+            
+            return true;
+        }
+        
+        function reattachMapEventListeners(element, type) {
+            // Se o elemento tem um botão "Carregar Imagem", reattach o event listener
+            const button = element.querySelector('button');
+            if (button && button.textContent.includes('Carregar Imagem')) {
+                button.addEventListener('click', function() {
+                    if (window.currentLocation) {
+                        this.innerHTML = '⏳ Carregando...';
+                        this.disabled = true;
+                        
+                        if (type === 'satellite') {
+                            initSatelliteMap(window.currentLocation);
+                        } else if (type === 'streetview') {
+                            initStreetView(window.currentLocation);
+                        } else if (type === 'terrain') {
+                            initTerrainMap(window.currentLocation);
+                        } else if (type === 'normal') {
+                            initNormalMap(window.currentLocation);
+                        }
+                        
+                        setTimeout(() => {
+                            this.remove();
+                            // Salvar cache após carregar
+                            savePropertyCache(window.currentIndex);
+                        }, 1000);
+                    }
+                });
+            }
+        }
+        
         // Aliases for easier access
         let properties = window.properties;
         let currentIndex = window.currentIndex;
@@ -899,8 +998,24 @@
             // Atualizar progresso
             atualizarProgresso();
             
-            // Resetar todos os mapas para o estado inicial (botão "Carregar Imagem")
-            resetAllMaps();
+            // 📦 SALVAR CACHE DA PROPRIEDADE ANTERIOR
+            if (currentIndex !== index && currentIndex >= 0) {
+                console.log('💾 Salvando cache da propriedade anterior:', currentIndex);
+                savePropertyCache(currentIndex);
+            }
+            
+            // Atualizar currentIndex
+            currentIndex = index;
+            window.currentIndex = index;
+            
+            // 📦 TENTAR CARREGAR DO CACHE
+            const cacheLoaded = loadPropertyCache(index);
+            
+            // Se não tem cache, resetar para botões "Carregar Imagem"
+            if (!cacheLoaded) {
+                console.log('🆕 Sem cache, resetando mapas...');
+                resetAllMaps();
+            }
 
             // Format fields
             const acres = prop['Acres'] ? `${parseFloat(prop['Acres']).toFixed(2)} acres` : '-';
@@ -1147,6 +1262,9 @@
                 map: satelliteMap,
                 title: 'Propriedade'
             });
+            
+            // 📦 Salvar cache após carregar
+            setTimeout(() => savePropertyCache(window.currentIndex), 1000);
         }
 
         function initStreetView(location) {
@@ -1162,6 +1280,9 @@
             } else {
                 streetView.setPosition(location);
             }
+            
+            // 📦 Salvar cache após carregar
+            setTimeout(() => savePropertyCache(window.currentIndex), 1000);
         }
 
         function initTerrainMap(location) {
@@ -1180,6 +1301,9 @@
                 position: location,
                 map: terrainMap
             });
+            
+            // 📦 Salvar cache após carregar
+            setTimeout(() => savePropertyCache(window.currentIndex), 1000);
         }
 
         function initNormalMap(location) {
@@ -1197,6 +1321,9 @@
                 position: location,
                 map: normalMap
             });
+            
+            // 📦 Salvar cache após carregar
+            setTimeout(() => savePropertyCache(window.currentIndex), 1000);
         }
 
         function loadNearbyPlaces(location) {

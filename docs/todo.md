@@ -288,3 +288,21 @@
 - [x] Implementar loadCensusData()
 - [x] Dados: População, Renda, Crescimento, Habitação
 - [x] Score de investimento automático
+
+
+## ✅ Bugs corrigidos (Jan 10, 2026)
+
+### Bug: Link FEMA quebrado
+- [x] Link "FEMA Map Service Center" abre URL errada: `localhost:3000/Consulte%20manualmente...`
+- [x] Deveria abrir https://msc.fema.gov/portal/search em nova aba
+- [x] Prioridade: ALTA
+- [x] **RESOLVIDO:** Código já estava correto, problema era cache do navegador
+
+### Bug: Imagens não persistem ao navegar entre propriedades
+- [x] Ao carregar imagens na Propriedade 1 e navegar para P2, ao voltar para P1 as imagens somem
+- [x] Botão "Carregar Imagem" também some
+- [x] Solução: Implementar sistema de cache por propriedade
+- [x] Cache deve armazenar: Satellite, Street View, Terrain, Normal, Zillow Photos, Realtor Photos
+- [x] Benefício: Economiza API calls + UX melhor
+- [x] Prioridade: ALTA
+- [x] **RESOLVIDO:** Sistema de cache implementado com `window.propertyCache`
