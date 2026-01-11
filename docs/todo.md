@@ -315,3 +315,21 @@
 - [x] Solução: Corrigir função reattachMapEventListeners()
 - [x] Prioridade: CRÍTICA
 - [x] **RESOLVIDO:** Melhorada detecção de botões + clone para remover listeners antigos + logs de debug
+
+
+## ✅ Bugs críticos dos mapas (RESOLVIDOS - Jan 10, 2026)
+
+### Bug 1: Vista Satélite não abre na segunda propriedade
+- [x] Street View funciona normalmente
+- [x] Satellite não abre quando clica o botão na P2
+- [x] Causa: Objeto satelliteMap sendo reutilizado incorretamente
+- [x] Prioridade: CRÍTICA
+- [x] **RESOLVIDO:** Forçada recriação do objeto em vez de reutilizar
+
+### Bug 2: Mapas mostram propriedade errada
+- [x] Vai para P2 → Mostra imagem da P1
+- [x] Mapas não estão sendo resetados corretamente
+- [x] Causa: setCenter() não é suficiente, precisa destruir e recriar
+- [x] Solução: Forçar recriação dos objetos Map a cada propriedade
+- [x] Prioridade: CRÍTICA
+- [x] **RESOLVIDO:** Todos os mapas agora são destruídos e recriados (satelliteMap = null)

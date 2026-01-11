@@ -1273,15 +1273,20 @@
         }
 
         function initSatelliteMap(location) {
-            if (!satelliteMap) {
-                satelliteMap = new google.maps.Map(document.getElementById('satellite-map'), {
-                    center: location,
-                    zoom: 18,
-                    mapTypeId: 'satellite'
-                });
-            } else {
-                satelliteMap.setCenter(location);
-            }
+            console.log('🛰️ Inicializando Satellite Map para:', location);
+            
+            // 🔥 FORÇAR RECRIAÇÃO (não reutilizar objeto antigo)
+            satelliteMap = null;
+            window.satelliteMap = null;
+            
+            // Criar novo mapa
+            satelliteMap = new google.maps.Map(document.getElementById('satellite-map'), {
+                center: location,
+                zoom: 18,
+                mapTypeId: 'satellite'
+            });
+            
+            window.satelliteMap = satelliteMap;
 
             // Add marker
             new google.maps.Marker({
@@ -1290,67 +1295,87 @@
                 title: 'Propriedade'
             });
             
+            console.log('✅ Satellite Map criado com sucesso');
+            
             // 📦 Salvar cache após carregar
-            setTimeout(() => savePropertyCache(window.currentIndex), 1000);
+            setTimeout(() => savePropertyCache(window.currentIndex), 1500);
         }
 
         function initStreetView(location) {
-            if (!streetView) {
-                streetView = new google.maps.StreetViewPanorama(
-                    document.getElementById('street-view'),
-                    {
-                        position: location,
-                        pov: { heading: 165, pitch: 0 },
-                        zoom: 1
-                    }
-                );
-            } else {
-                streetView.setPosition(location);
-            }
+            console.log('🌍 Inicializando Street View para:', location);
+            
+            // 🔥 FORÇAR RECRIAÇÃO
+            streetView = null;
+            window.streetView = null;
+            
+            streetView = new google.maps.StreetViewPanorama(
+                document.getElementById('street-view'),
+                {
+                    position: location,
+                    pov: { heading: 165, pitch: 0 },
+                    zoom: 1
+                }
+            );
+            
+            window.streetView = streetView;
+            
+            console.log('✅ Street View criado com sucesso');
             
             // 📦 Salvar cache após carregar
-            setTimeout(() => savePropertyCache(window.currentIndex), 1000);
+            setTimeout(() => savePropertyCache(window.currentIndex), 1500);
         }
 
         function initTerrainMap(location) {
-            if (!terrainMap) {
-                terrainMap = new google.maps.Map(document.getElementById('terrain-map-view'), {
-                    center: location,
-                    zoom: 15,
-                    mapTypeId: 'terrain',
-                    mapTypeControl: true
-                });
-            } else {
-                terrainMap.setCenter(location);
-            }
+            console.log('🏞️ Inicializando Terrain Map para:', location);
+            
+            // 🔥 FORÇAR RECRIAÇÃO
+            terrainMap = null;
+            window.terrainMap = null;
+            
+            terrainMap = new google.maps.Map(document.getElementById('terrain-map-view'), {
+                center: location,
+                zoom: 15,
+                mapTypeId: 'terrain',
+                mapTypeControl: true
+            });
+            
+            window.terrainMap = terrainMap;
 
             new google.maps.Marker({
                 position: location,
                 map: terrainMap
             });
             
+            console.log('✅ Terrain Map criado com sucesso');
+            
             // 📦 Salvar cache após carregar
-            setTimeout(() => savePropertyCache(window.currentIndex), 1000);
+            setTimeout(() => savePropertyCache(window.currentIndex), 1500);
         }
 
         function initNormalMap(location) {
-            if (!normalMap) {
-                normalMap = new google.maps.Map(document.getElementById('normal-map'), {
-                    center: location,
-                    zoom: 16,
-                    mapTypeId: 'roadmap'
-                });
-            } else {
-                normalMap.setCenter(location);
-            }
+            console.log('🗺️ Inicializando Normal Map para:', location);
+            
+            // 🔥 FORÇAR RECRIAÇÃO
+            normalMap = null;
+            window.normalMap = null;
+            
+            normalMap = new google.maps.Map(document.getElementById('normal-map'), {
+                center: location,
+                zoom: 16,
+                mapTypeId: 'roadmap'
+            });
+            
+            window.normalMap = normalMap;
 
             new google.maps.Marker({
                 position: location,
                 map: normalMap
             });
             
+            console.log('✅ Normal Map criado com sucesso');
+            
             // 📦 Salvar cache após carregar
-            setTimeout(() => savePropertyCache(window.currentIndex), 1000);
+            setTimeout(() => savePropertyCache(window.currentIndex), 1500);
         }
 
         function loadNearbyPlaces(location) {
