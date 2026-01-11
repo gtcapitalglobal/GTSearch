@@ -378,3 +378,47 @@
 - [x] Manter consistência visual
 - [x] Prioridade: MÉDIA
 - [x] **RESOLVIDO:** 3 lugares substituídos por botão azul consistente
+
+
+## ✅ Problemas críticos RESOLVIDOS (Jan 10, 2026 - Lote Final)
+
+### Problema 1: Botão FEMA duplicado
+- [x] Aparece 2 botões "🌊 Carregar Flood Risk"
+- [x] Um na esquerda (dentro da mensagem de erro)
+- [x] Um na direita (fixo no topo)
+- [x] Solução: Remover o da esquerda, manter só o da direita
+- [x] Prioridade: BAIXA
+- [x] **RESOLVIDO:** 3 botões substituídos por texto "Use o botão acima"
+
+### Problema 2: Vista Satélite mostra controles do Google ao restaurar
+- [x] Ao voltar para propriedade, mostra controles (Mapa/Satélite, zoom, etc)
+- [x] Controles não funcionam (HTML morto)
+- [x] Causa: Cache salva innerHTML com controles do Google
+- [x] Solução: Usar sistema booleano igual Street View
+- [x] Prioridade: ALTA
+- [x] **RESOLVIDO:** satelliteMapLoaded (booleano) + initSatelliteMap()
+
+### Problema 3: Street View trava na primeira propriedade
+- [x] P1 → Abre Street View → Mostra P1 ✅
+- [x] P2 → Navega → Street View continua mostrando P1 ❌
+- [x] P3 → Navega → Street View continua mostrando P1 ❌
+- [x] Causa: Objeto não está sendo atualizado ao mudar propriedade
+- [x] Solução: Destruir e recriar objeto a cada mudança
+- [x] Prioridade: CRÍTICA
+- [x] **RESOLVIDO:** streetViewLoaded (booleano) + initStreetView() com window.currentLocation atualizada
+
+### Problema 4: Terrain e Normal têm mesmo problema
+- [x] Mesma lógica de innerHTML do Satellite
+- [x] Devem ter mesmo bug ao restaurar cache
+- [x] Solução: Aplicar mesma correção do Satellite
+- [x] Prioridade: ALTA
+- [x] **RESOLVIDO:** terrainMapLoaded + normalMapLoaded (booleanos) + init functions
+
+### 🎯 Solução unificada para todos os mapas:
+- [x] Satellite: satelliteMapLoaded (booleano) + recriar objeto
+- [x] Street View: streetViewLoaded (booleano) + recriar objeto
+- [x] Terrain: terrainMapLoaded (booleano) + recriar objeto
+- [x] Normal: normalMapLoaded (booleano) + recriar objeto
+- [x] NUNCA usar innerHTML para mapas do Google
+- [x] Sempre destruir (innerHTML = '') e recriar objetos
+- [x] **IMPLEMENTADO:** Sistema unificado para TODOS os 4 mapas

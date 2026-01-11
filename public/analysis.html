@@ -737,15 +737,24 @@
         function savePropertyCache(index) {
             const key = getCacheKey(index);
             
-            // 🌍 Street View: Verificar se foi carregado (não tem botão)
+            // 💾 Verificar quais mapas foram carregados (não têm botão)
+            const satelliteEl = document.getElementById('satellite-map');
+            const satelliteMapLoaded = satelliteEl && !satelliteEl.querySelector('button');
+            
             const streetViewEl = document.getElementById('street-view');
             const streetViewLoaded = streetViewEl && !streetViewEl.querySelector('button');
             
+            const terrainEl = document.getElementById('terrain-map-view');
+            const terrainMapLoaded = terrainEl && !terrainEl.querySelector('button');
+            
+            const normalEl = document.getElementById('normal-map-view');
+            const normalMapLoaded = normalEl && !normalEl.querySelector('button');
+            
             window.propertyCache[key] = {
-                satelliteMap: document.getElementById('satellite-map')?.innerHTML || null,
-                streetViewLoaded: streetViewLoaded, // 🌍 Salvar estado booleano
-                terrainMap: document.getElementById('terrain-map-view')?.innerHTML || null,
-                normalMap: document.getElementById('normal-map-view')?.innerHTML || null,
+                satelliteMapLoaded: satelliteMapLoaded, // 🛰️ Estado booleano
+                streetViewLoaded: streetViewLoaded,     // 🌍 Estado booleano
+                terrainMapLoaded: terrainMapLoaded,     // 🏞️ Estado booleano
+                normalMapLoaded: normalMapLoaded,       // 🗺️ Estado booleano
                 timestamp: Date.now()
             };
             console.log('💾 Cache salvo para propriedade', index, window.propertyCache[key]);
@@ -763,43 +772,42 @@
             console.log('✅ Restaurando cache para propriedade', index);
             
             // Restaurar Satellite Map
-            if (cache.satelliteMap) {
+            if (cache.satelliteMapLoaded) {
+                console.log('🛰️ Satellite Map foi carregado anteriormente, recriando...');
                 const satelliteEl = document.getElementById('satellite-map');
-                if (satelliteEl) {
-                    satelliteEl.innerHTML = cache.satelliteMap;
-                    reattachMapEventListeners(satelliteEl, 'satellite');
+                if (satelliteEl && window.currentLocation) {
+                    satelliteEl.innerHTML = ''; // Limpar
+                    initSatelliteMap(window.currentLocation);
                 }
             }
             
             // Restaurar Street View
             if (cache.streetViewLoaded) {
                 console.log('🌍 Street View foi carregado anteriormente, recriando...');
-                // Remover botão se existir
                 const streetViewEl = document.getElementById('street-view');
-                if (streetViewEl) {
+                if (streetViewEl && window.currentLocation) {
                     streetViewEl.innerHTML = ''; // Limpar
-                    // Recarregar Street View
-                    if (window.currentLocation) {
-                        initStreetView(window.currentLocation);
-                    }
+                    initStreetView(window.currentLocation);
                 }
             }
             
             // Restaurar Terrain Map
-            if (cache.terrainMap) {
+            if (cache.terrainMapLoaded) {
+                console.log('🏞️ Terrain Map foi carregado anteriormente, recriando...');
                 const terrainEl = document.getElementById('terrain-map-view');
-                if (terrainEl) {
-                    terrainEl.innerHTML = cache.terrainMap;
-                    reattachMapEventListeners(terrainEl, 'terrain');
+                if (terrainEl && window.currentLocation) {
+                    terrainEl.innerHTML = ''; // Limpar
+                    initTerrainMap(window.currentLocation);
                 }
             }
             
             // Restaurar Normal Map
-            if (cache.normalMap) {
+            if (cache.normalMapLoaded) {
+                console.log('🗺️ Normal Map foi carregado anteriormente, recriando...');
                 const normalEl = document.getElementById('normal-map-view');
-                if (normalEl) {
-                    normalEl.innerHTML = cache.normalMap;
-                    reattachMapEventListeners(normalEl, 'normal');
+                if (normalEl && window.currentLocation) {
+                    normalEl.innerHTML = ''; // Limpar
+                    initNormalMap(window.currentLocation);
                 }
             }
             
@@ -2021,7 +2029,7 @@
                         <div class="text-sm text-orange-600">
                             <p class="font-semibold">⏱️ Servidor FEMA não respondeu</p>
                             <p class="text-xs mt-1">O servidor oficial da FEMA está muito lento ou indisponível no momento.</p>
-                            <button onclick="window.open('https://msc.fema.gov/portal/search', '_blank')" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm">🌊 Carregar Flood Risk</button>
+                            <p class="text-xs mt-1">Use o botão "🔍 Carregar Flood Risk" acima para tentar novamente.</p>
                         </div>
                     `;
                 } else if (data.success === false) {
@@ -2029,7 +2037,7 @@
                     document.getElementById('fema-flood-content-section').innerHTML = `
                         <div class="text-sm">
                             <p class="font-semibold text-gray-700">ℹ️ ${data.message}</p>
-                            ${data.suggestion ? `<button onclick="window.open('${data.suggestion}', '_blank')" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm">🌊 Carregar Flood Risk</button>` : ''}
+                            ${data.suggestion ? `<p class="text-xs mt-1">Use o botão "🔍 Carregar Flood Risk" acima para acessar o site da FEMA.</p>` : ''}
                             <p class="text-xs mt-2 text-gray-500">Coordenadas: ${data.coordinates.lat}, ${data.coordinates.lng}</p>
                         </div>
                     `;
@@ -2041,7 +2049,7 @@
                 document.getElementById('fema-flood-content-section').innerHTML = `
                     <div class="text-sm text-gray-600">
                         <p class="font-semibold">ℹ️ Dados FEMA não disponíveis</p>
-                        <button onclick="window.open('https://msc.fema.gov/portal/search', '_blank')" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors text-sm">🌊 Carregar Flood Risk</button>
+                        <p class="text-xs mt-1">Use o botão "🔍 Carregar Flood Risk" acima para consultar manualmente.</p>
                     </div>
                 `;
             }
