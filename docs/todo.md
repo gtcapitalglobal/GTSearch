@@ -233,3 +233,19 @@
   - census-growth (Crescimento)
   - census-housing (Habitação)
 - [ ] **Prioridade: ALTA** (usuário já tem API Key!)
+
+
+## ⚠️ Bug: FEMA Flood Risk API retornando erro 403
+- [x] **Problema:** API FEMA via RapidAPI retorna erro 403 (Forbidden)
+- [x] **Causa:** RapidAPI Key inválida ou não subscrito ao endpoint FEMA
+- [x] **Endpoint:** `fema-flood-hazard-florida.p.rapidapi.com`
+- [x] **Solução aplicada:**
+  - Usuário subscreveu à API "FEMA Flood Hazard Florida" no RapidAPI
+  - Nova API Key fornecida e atualizada no sistema
+  - Servidor reiniciado para aplicar nova chave
+  - API testada e funcionando 100%!
+- [x] **Resultado:** ✅ FUNCIONANDO!
+  - Zona X = Baixo risco de inundação
+  - SFHA: false = Não é área de risco especial
+  - Dados completos: zona, subtipo, elevação, fonte, DFIRM ID
+- [x] **Prioridade: MÉDIA** (funcionalidade importante mas não crítica)
