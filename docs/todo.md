@@ -342,3 +342,22 @@
 - [x] Solução: Adicionado seta → e rel="noopener" para forçar atualização
 - [x] Prioridade: ALTA
 - [x] **RESOLVIDO:** Código estava correto, problema era cache do browser
+
+
+## ✅ Novos bugs identificados e RESOLVIDOS (Jan 10, 2026)
+
+### Bug 1: Street View cache não funciona
+- [x] Vista Satélite → Cache funciona perfeitamente
+- [x] Street View → Cache NÃO restaura ao voltar para propriedade
+- [x] Causa: Street View usa StreetViewPanorama object, não innerHTML
+- [x] Solução: Salvar estado booleano + recriar objeto ao restaurar
+- [x] Prioridade: ALTA
+- [x] **RESOLVIDO:** Cache agora salva `streetViewLoaded: true/false` e recria objeto
+
+### Bug 2: Modal irritante no final da lista
+- [x] Ao chegar na última propriedade, aparece modal: "Deseja voltar ao dashboard?"
+- [x] Isso é intrusivo e desnecessário
+- [x] Já existe botão "Voltar ao Dashboard" no topo
+- [x] Solução: Remover modal completamente
+- [x] Prioridade: MÉDIA
+- [x] **RESOLVIDO:** Modais removidos, apenas notificação discreta

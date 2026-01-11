@@ -736,9 +736,14 @@
         
         function savePropertyCache(index) {
             const key = getCacheKey(index);
+            
+            // 🌍 Street View: Verificar se foi carregado (não tem botão)
+            const streetViewEl = document.getElementById('street-view');
+            const streetViewLoaded = streetViewEl && !streetViewEl.querySelector('button');
+            
             window.propertyCache[key] = {
                 satelliteMap: document.getElementById('satellite-map')?.innerHTML || null,
-                streetView: document.getElementById('street-view')?.innerHTML || null,
+                streetViewLoaded: streetViewLoaded, // 🌍 Salvar estado booleano
                 terrainMap: document.getElementById('terrain-map-view')?.innerHTML || null,
                 normalMap: document.getElementById('normal-map-view')?.innerHTML || null,
                 timestamp: Date.now()
@@ -767,11 +772,16 @@
             }
             
             // Restaurar Street View
-            if (cache.streetView) {
+            if (cache.streetViewLoaded) {
+                console.log('🌍 Street View foi carregado anteriormente, recriando...');
+                // Remover botão se existir
                 const streetViewEl = document.getElementById('street-view');
                 if (streetViewEl) {
-                    streetViewEl.innerHTML = cache.streetView;
-                    reattachMapEventListeners(streetViewEl, 'streetview');
+                    streetViewEl.innerHTML = ''; // Limpar
+                    // Recarregar Street View
+                    if (window.currentLocation) {
+                        initStreetView(window.currentLocation);
+                    }
                 }
             }
             
@@ -2654,9 +2664,8 @@
                     currentIndex++;
                     loadProperty(currentIndex);
                 } else {
-                    if (confirm('✅ Você analisou todas as propriedades!\n\nDeseja voltar ao dashboard?')) {
-                        window.location.href = '/';
-                    }
+                    // ✅ Chegou ao final - não fazer nada (usuário pode clicar "Voltar ao Dashboard" se quiser)
+                    console.log('✅ Última propriedade alcançada');
                 }
             }, 800);
         }
@@ -2753,10 +2762,8 @@
                 loadProperty(currentIndex);
                 mostrarNotificacao('➡️ Próxima propriedade!', 'info');
             } else {
+                // 🎯 Final da lista - apenas mostrar notificação
                 mostrarNotificacao('🎯 Você chegou ao final da lista!', 'info');
-                if (confirm('🎯 Você chegou ao final da lista!\n\nDeseja voltar ao dashboard?')) {
-                    window.location.href = '/';
-                }
             }
         }
         
