@@ -730,12 +730,16 @@
             return `property_${index}`;
         }
         
-        function savePropertyCache(index) {
+        function savePropertyCache(index, flags = {}) {
             const key = getCacheKey(index);
             
-            // 💾 Verificar APENAS se Satellite Map foi carregado
-            const satelliteEl = document.getElementById('satellite-map');
-            const satelliteMapLoaded = satelliteEl && !satelliteEl.querySelector('button');
+            // 💾 Se flags.satelliteMapLoaded foi passado explicitamente, usar ele
+            // Caso contrário, verificar no DOM
+            let satelliteMapLoaded = flags.satelliteMapLoaded;
+            if (satelliteMapLoaded === undefined) {
+                const satelliteEl = document.getElementById('satellite-map');
+                satelliteMapLoaded = satelliteEl && !satelliteEl.querySelector('button');
+            }
             
             window.propertyCache[key] = {
                 satelliteMapLoaded: satelliteMapLoaded, // 🛰️ APENAS Satellite tem cache
@@ -1272,8 +1276,8 @@
             
             console.log('✅ Satellite Map criado com sucesso');
             
-            // 📦 Salvar cache após carregar
-            setTimeout(() => savePropertyCache(window.currentIndex), 1500);
+            // 📦 Salvar cache após carregar (passar flag explícita)
+            setTimeout(() => savePropertyCache(window.currentIndex, { satelliteMapLoaded: true }), 1500);
         }
 
         function initStreetView(location) {
