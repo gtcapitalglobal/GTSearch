@@ -741,8 +741,16 @@
                 satelliteMapLoaded = satelliteEl && !satelliteEl.querySelector('button');
             }
             
+            // 📍 Salvar coordenadas também
+            const location = flags.location || window.currentLocation;
+            const locationData = location ? {
+                lat: typeof location.lat === 'function' ? location.lat() : location.lat,
+                lng: typeof location.lng === 'function' ? location.lng() : location.lng
+            } : null;
+            
             window.propertyCache[key] = {
                 satelliteMapLoaded: satelliteMapLoaded, // 🛰️ APENAS Satellite tem cache
+                location: locationData, // 📍 Coordenadas da propriedade
                 timestamp: Date.now()
             };
             console.log('💾 Cache salvo para propriedade', index, '- Satellite:', satelliteMapLoaded);
@@ -760,12 +768,15 @@
             console.log('✅ Restaurando cache para propriedade', index);
             
             // Restaurar APENAS Satellite Map
-            if (cache.satelliteMapLoaded) {
+            if (cache.satelliteMapLoaded && cache.location) {
                 console.log('🛰️ Satellite Map foi carregado anteriormente, recriando...');
                 const satelliteEl = document.getElementById('satellite-map');
-                if (satelliteEl && window.currentLocation) {
+                if (satelliteEl) {
+                    // 📍 Usar coordenadas SALVAS no cache
+                    const location = new google.maps.LatLng(cache.location.lat, cache.location.lng);
+                    console.log('📍 Usando coordenadas salvas:', cache.location);
                     satelliteEl.innerHTML = ''; // Limpar
-                    initSatelliteMap(window.currentLocation);
+                    initSatelliteMap(location);
                 }
             }
             
@@ -1276,8 +1287,11 @@
             
             console.log('✅ Satellite Map criado com sucesso');
             
-            // 📦 Salvar cache após carregar (passar flag explícita)
-            setTimeout(() => savePropertyCache(window.currentIndex, { satelliteMapLoaded: true }), 1500);
+            // 📦 Salvar cache após carregar (passar flag explícita + location)
+            setTimeout(() => savePropertyCache(window.currentIndex, { 
+                satelliteMapLoaded: true,
+                location: location 
+            }), 1500);
         }
 
         function initStreetView(location) {

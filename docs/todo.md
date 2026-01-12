@@ -457,3 +457,16 @@
 - [ ] Adicionar categoria "Outros" → Marrom (#92400E)
 - [ ] Atualizar legenda do mapa
 - [ ] Atualizar cores dos marcadores
+
+## 🎯 Cache Simplificado - Apenas Satellite (Jan 12, 2026)
+- [x] Implementar cache APENAS para Vista Satélite
+- [x] Remover cache de Street View, Terrain e Normal Map
+- [x] Manter sistema simples e confiável
+- [x] **RESULTADO**: Cache funciona apenas para Satellite Map, economizando chamadas de API
+- [x] **FIX FINAL**: Passar flag explícita `satelliteMapLoaded: true` ao salvar cache em vez de verificar DOM
+
+## 🐛 Bug: Satellite Map mostra coordenadas erradas ao restaurar cache (Jan 12, 2026)
+- [ ] Cache não salva coordenadas da propriedade
+- [ ] Ao restaurar, usa window.currentLocation (coordenadas da nova propriedade)
+- [ ] Resultado: Satellite sempre mostra mesma imagem
+- [ ] Solução: Salvar location no cache e usar ao restaurar
