@@ -722,78 +722,8 @@
         window.realtorPhotoIndex = 0;
         window.googleMapsApiKey = '';
         
-        // 📦 SISTEMA DE CACHE DE IMAGENS POR PROPRIEDADE
-        // Armazena estado das imagens carregadas para cada propriedade
-        window.propertyCache = {};
-        
-        function getCacheKey(index) {
-            return `property_${index}`;
-        }
-        
-        function savePropertyCache(index, flags = {}) {
-            const key = getCacheKey(index);
-            
-            // 💾 Se flags.satelliteMapLoaded foi passado explicitamente, usar ele
-            // Caso contrário, verificar no DOM
-            let satelliteMapLoaded = flags.satelliteMapLoaded;
-            if (satelliteMapLoaded === undefined) {
-                const satelliteEl = document.getElementById('satellite-map');
-                satelliteMapLoaded = satelliteEl && !satelliteEl.querySelector('button');
-            }
-            
-            // 📍 Salvar coordenadas também
-            const location = flags.location || window.currentLocation;
-            const locationData = location ? {
-                lat: typeof location.lat === 'function' ? location.lat() : location.lat,
-                lng: typeof location.lng === 'function' ? location.lng() : location.lng
-            } : null;
-            
-            window.propertyCache[key] = {
-                satelliteMapLoaded: satelliteMapLoaded, // 🛰️ APENAS Satellite tem cache
-                location: locationData, // 📍 Coordenadas da propriedade
-                timestamp: Date.now()
-            };
-            console.log('💾 Cache salvo para propriedade', index, '- Satellite:', satelliteMapLoaded);
-        }
-        
-        function loadPropertyCache(index) {
-            const key = getCacheKey(index);
-            const cache = window.propertyCache[key];
-            
-            console.log('🔍 [CACHE] Tentando carregar cache para propriedade', index);
-            console.log('🔍 [CACHE] Cache encontrado:', cache);
-            
-            if (!cache) {
-                console.log('❌ [CACHE] Sem cache para propriedade', index);
-                return false;
-            }
-            
-            console.log('✅ [CACHE] Cache existe! satelliteMapLoaded:', cache.satelliteMapLoaded);
-            console.log('✅ [CACHE] Location:', cache.location);
-            
-            // Restaurar APENAS Satellite Map
-            if (cache.satelliteMapLoaded && cache.location) {
-                console.log('🛰️ [CACHE] Satellite Map foi carregado anteriormente, recriando...');
-                const satelliteEl = document.getElementById('satellite-map');
-                console.log('🔍 [CACHE] Elemento satellite-map:', satelliteEl);
-                
-                if (satelliteEl) {
-                    // 📍 Usar coordenadas SALVAS no cache
-                    const location = new google.maps.LatLng(cache.location.lat, cache.location.lng);
-                    console.log('📍 [CACHE] Usando coordenadas salvas:', cache.location);
-                    console.log('🚀 [CACHE] Chamando initSatelliteMap()...');
-                    satelliteEl.innerHTML = ''; // Limpar
-                    initSatelliteMap(location);
-                    console.log('✅ [CACHE] initSatelliteMap() chamado com sucesso!');
-                } else {
-                    console.error('❌ [CACHE] Elemento satellite-map NÃO encontrado!');
-                }
-            } else {
-                console.log('⚠️ [CACHE] Satellite Map NÃO estava carregado ou sem location');
-            }
-            
-            return true;
-        }
+        // ✅ SISTEMA SIMPLIFICADO - SEM CACHE
+        // Mapas são carregados sob demanda via botões "Carregar Imagem"
         
         function reattachMapEventListeners(element, type) {
             // Se o elemento tem um botão "Carregar Imagem", reattach o event listener
@@ -841,9 +771,6 @@
                     
                     setTimeout(() => {
                         this.remove();
-                        // Salvar cache após carregar
-                        console.log('💾 Salvando cache após carregar', type);
-                        savePropertyCache(window.currentIndex);
                     }, 1500);
                 });
             } else {
@@ -1024,12 +951,7 @@
             // Atualizar progresso
             atualizarProgresso();
             
-            // 📦 SALVAR CACHE DA PROPRIEDADE ANTERIOR
-            // Usar window.currentIndex (global) em vez de currentIndex (local)
-            if (window.currentIndex !== index && window.currentIndex >= 0) {
-                console.log('💾 Salvando cache da propriedade anterior:', window.currentIndex);
-                savePropertyCache(window.currentIndex);
-            }
+            // ✅ Sistema simplificado - sem cache
             
             // Atualizar currentIndex
             currentIndex = index;
@@ -1249,14 +1171,9 @@
             window.currentLocation = location;
             window.currentProp = prop;
             
-            // 📦 AGORA CARREGAR CACHE (depois de window.currentLocation estar definida)
-            const cacheLoaded = loadPropertyCache(window.currentIndex);
-            
-            // Se não tem cache, resetar para botões "Carregar Imagem"
-            if (!cacheLoaded) {
-                console.log('🆕 Sem cache, resetando mapas...');
-                resetAllMaps();
-            }
+            // ✅ Sempre resetar mapas para botões "Carregar Imagem"
+            console.log('🔄 Resetando mapas...');
+            resetAllMaps();
             
             // ✅ Carregar apenas dados que NÃO usam Google Maps API (gratuitos)
             // initSatelliteMap(location); // ❌ Desabilitado - carregar sob demanda
@@ -1311,11 +1228,7 @@
             
             console.log('✅ Satellite Map criado com sucesso');
             
-            // 📦 Salvar cache após carregar (passar flag explícita + location)
-            setTimeout(() => savePropertyCache(window.currentIndex, { 
-                satelliteMapLoaded: true,
-                location: location 
-            }), 1500);
+            // ✅ Mapa carregado com sucesso
         }
 
         function initStreetView(location) {
