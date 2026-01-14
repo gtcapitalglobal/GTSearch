@@ -704,7 +704,7 @@
             }, 3000);
         }
 
-        function saveOtherApiKeys() {
+        async function saveOtherApiKeys() {
             const openaiKey = document.getElementById('openaiApiKey').value.trim();
             const geminiKey = document.getElementById('geminiApiKey').value.trim();
             const perplexityKey = document.getElementById('perplexityApiKey').value.trim();
@@ -712,6 +712,29 @@
             if (openaiKey) saveEncryptedKey('openaiApiKey', openaiKey);
             if (geminiKey) saveEncryptedKey('geminiApiKey', geminiKey);
             if (perplexityKey) saveEncryptedKey('perplexityApiKey', perplexityKey);
+
+            // 🚀 Enviar para o servidor (para salvar no .env)
+            try {
+                const response = await fetch('/api/config/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        openai: openaiKey,
+                        gemini: geminiKey,
+                        perplexity: perplexityKey
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('✅ API Keys salvas no servidor com sucesso!');
+                } else {
+                    console.error('❌ Erro ao salvar no servidor:', result.error);
+                }
+            } catch (error) {
+                console.error('❌ Erro ao enviar para servidor:', error);
+            }
 
             const indicator = document.getElementById('savedIndicatorOther');
             indicator.classList.add('show');
@@ -1121,7 +1144,7 @@
         // ========================================
 
         // 🔑 Função unificada para salvar RapidAPI Key
-        function saveRapidApiKey() {
+        async function saveRapidApiKey() {
             const apiKey = document.getElementById('rapidApiKey').value.trim();
             if (!apiKey) {
                 alert('❌ Por favor, insira uma API Key!');
@@ -1134,8 +1157,27 @@
             saveEncryptedKey('realtyMoleApiKey', apiKey);
             saveEncryptedKey('femaApiKey', apiKey);
             
+            // 🚀 Enviar para o servidor (para salvar no .env)
+            try {
+                const response = await fetch('/api/config/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rapidapi: apiKey })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    console.log('✅ RapidAPI Key salva no servidor com sucesso!');
+                } else {
+                    console.error('❌ Erro ao salvar no servidor:', result.error);
+                }
+            } catch (error) {
+                console.error('❌ Erro ao enviar para servidor:', error);
+            }
+            
             const resultDiv = document.getElementById('rapidApiTestResult');
-            resultDiv.innerHTML = '<div class="success-message" style="margin-top: 10px;"><strong>✅ Salvo!</strong> RapidAPI Key salva com sucesso.</div>';
+            resultDiv.innerHTML = '<div class="success-message" style="margin-top: 10px;"><strong>✅ Salvo!</strong> RapidAPI Key salva com sucesso (localStorage + .env).</div>';
             setTimeout(() => {
                 resultDiv.innerHTML = '';
             }, 3000);
