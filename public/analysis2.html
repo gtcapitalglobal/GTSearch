@@ -760,24 +760,36 @@
             const key = getCacheKey(index);
             const cache = window.propertyCache[key];
             
+            console.log('🔍 [CACHE] Tentando carregar cache para propriedade', index);
+            console.log('🔍 [CACHE] Cache encontrado:', cache);
+            
             if (!cache) {
-                console.log('❌ Sem cache para propriedade', index);
+                console.log('❌ [CACHE] Sem cache para propriedade', index);
                 return false;
             }
             
-            console.log('✅ Restaurando cache para propriedade', index);
+            console.log('✅ [CACHE] Cache existe! satelliteMapLoaded:', cache.satelliteMapLoaded);
+            console.log('✅ [CACHE] Location:', cache.location);
             
             // Restaurar APENAS Satellite Map
             if (cache.satelliteMapLoaded && cache.location) {
-                console.log('🛰️ Satellite Map foi carregado anteriormente, recriando...');
+                console.log('🛰️ [CACHE] Satellite Map foi carregado anteriormente, recriando...');
                 const satelliteEl = document.getElementById('satellite-map');
+                console.log('🔍 [CACHE] Elemento satellite-map:', satelliteEl);
+                
                 if (satelliteEl) {
                     // 📍 Usar coordenadas SALVAS no cache
                     const location = new google.maps.LatLng(cache.location.lat, cache.location.lng);
-                    console.log('📍 Usando coordenadas salvas:', cache.location);
+                    console.log('📍 [CACHE] Usando coordenadas salvas:', cache.location);
+                    console.log('🚀 [CACHE] Chamando initSatelliteMap()...');
                     satelliteEl.innerHTML = ''; // Limpar
                     initSatelliteMap(location);
+                    console.log('✅ [CACHE] initSatelliteMap() chamado com sucesso!');
+                } else {
+                    console.error('❌ [CACHE] Elemento satellite-map NÃO encontrado!');
                 }
+            } else {
+                console.log('⚠️ [CACHE] Satellite Map NÃO estava carregado ou sem location');
             }
             
             return true;
