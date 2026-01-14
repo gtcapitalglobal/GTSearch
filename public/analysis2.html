@@ -1191,8 +1191,20 @@
 
         function geocodeAndLoadMaps(prop) {
             // 🎯 VERIFICAÇÃO: Usar coordenadas do CSV se disponíveis (evita geocoding)
-            const lat = parseFloat(prop['Latitude'] || prop['Lat'] || prop['lat'] || prop['latitude']);
-            const lng = parseFloat(prop['Longitude'] || prop['Lng'] || prop['lng'] || prop['longitude'] || prop['Lon'] || prop['lon']);
+            let lat, lng;
+            
+            // Tentar coluna "Coordinates" unificada primeiro (formato: "lat,lng")
+            if (prop['Coordinates']) {
+                const coordsStr = prop['Coordinates'].replace(/"/g, '').trim();
+                const coords = coordsStr.split(',');
+                lat = parseFloat(coords[0]);
+                lng = parseFloat(coords[1]);
+                console.log('📍 Usando coluna Coordinates unificada:', coordsStr);
+            } else {
+                // Fallback: colunas separadas
+                lat = parseFloat(prop['Latitude'] || prop['Lat'] || prop['lat'] || prop['latitude']);
+                lng = parseFloat(prop['Longitude'] || prop['Lng'] || prop['lng'] || prop['longitude'] || prop['Lon'] || prop['lon']);
+            }
             
             // Se tem coordenadas válidas, usar direto (sem geocoding)
             if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
