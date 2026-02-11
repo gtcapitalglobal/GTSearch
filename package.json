@@ -6,15 +6,23 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "smoke": "node tests/smoke.test.js"
   },
-  "keywords": ["real-estate", "property-analysis", "dashboard"],
+  "keywords": [
+    "real-estate",
+    "property-analysis",
+    "dashboard"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "axios": "^1.6.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
-    "axios": "^1.6.0"
+    "express": "^4.18.2",
+    "express-rate-limit": "^8.2.1"
   }
 }

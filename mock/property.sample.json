@@ -20,5 +20,10 @@
   "tax_year": 2024,
   "legal_description": "LOT 10 BLOCK 5 SAMPLE SUBDIVISION",
   "source": "mock",
-  "fetched_at": "2024-01-01T00:00:00Z"
+  "fetched_at": "2024-01-01T00:00:00Z",
+  "_meta": {
+    "source": "mock",
+    "provider": "mock",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
 }

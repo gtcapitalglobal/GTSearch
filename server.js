@@ -5,6 +5,8 @@ import axios from 'axios';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import { validateMockOutputMiddleware } from './utils/validator.js';
+import { auditLogMiddleware } from './utils/audit.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,18 +17,76 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ========================================
-// OFFLINE MODE CONFIGURATION
+// OFFLINE MODE CONFIGURATION (FAIL-CLOSED)
 // ========================================
-const OFFLINE_MODE = process.env.OFFLINE_MODE === 'true';
+
+// Required API keys for ONLINE mode
+const REQUIRED_KEYS = [
+  'GOOGLE_MAPS_API_KEY',
+  'OPENAI_API_KEY',
+  'GEMINI_API_KEY',
+  'RAPIDAPI_KEY'
+];
+
+/**
+ * Check if all required keys are present
+ */
+function checkRequiredKeys() {
+  const missingKeys = REQUIRED_KEYS.filter(key => !process.env[key]);
+  return { valid: missingKeys.length === 0, missingKeys };
+}
+
+/**
+ * Determine OFFLINE_MODE with FAIL-CLOSED logic:
+ * 1. If OFFLINE_MODE is missing or invalid => default TRUE
+ * 2. If OFFLINE_MODE=false but keys missing => force TRUE + warn
+ */
+let OFFLINE_MODE;
+const envOfflineMode = process.env.OFFLINE_MODE;
+
+if (envOfflineMode === undefined || envOfflineMode === null || envOfflineMode === '') {
+  // Missing => FAIL-CLOSED (default OFFLINE)
+  OFFLINE_MODE = true;
+  console.warn('⚠️  OFFLINE_MODE not set => defaulting to OFFLINE (fail-closed)');
+} else if (envOfflineMode !== 'true' && envOfflineMode !== 'false') {
+  // Invalid value => FAIL-CLOSED (default OFFLINE)
+  OFFLINE_MODE = true;
+  console.warn(`⚠️  OFFLINE_MODE has invalid value "${envOfflineMode}" => defaulting to OFFLINE (fail-closed)`);
+} else if (envOfflineMode === 'false') {
+  // User wants ONLINE => check keys
+  const keyCheck = checkRequiredKeys();
+  if (!keyCheck.valid) {
+    // Keys missing => FORCE OFFLINE + warn
+    OFFLINE_MODE = true;
+    console.warn('⚠️  OFFLINE_MODE=false but required keys missing:');
+    console.warn(`   Missing: ${keyCheck.missingKeys.join(', ')}`);
+    console.warn('   => FORCING OFFLINE MODE for security');
+  } else {
+    // All keys present => ONLINE OK
+    OFFLINE_MODE = false;
+  }
+} else {
+  // OFFLINE_MODE=true => respect it
+  OFFLINE_MODE = true;
+}
 
 console.log('========================================');
 console.log(`🚀 GTSearch Server Starting`);
 console.log(`📍 Mode: ${OFFLINE_MODE ? '🔒 OFFLINE (No APIs, No Costs)' : '🌐 ONLINE (APIs Enabled)'}`);
+if (!OFFLINE_MODE) {
+  console.log(`🔑 API Keys: ${REQUIRED_KEYS.length} loaded`);
+}
 console.log('========================================');
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Audit logging middleware (logs all API requests)
+app.use('/api', auditLogMiddleware());
+
+// Validation middleware for mock endpoints
+app.use('/api/mock', validateMockOutputMiddleware);
 
 // Desabilitar cache para analysis.html
 app.get('/analysis.html', (req, res) => {
@@ -87,10 +147,12 @@ app.get('/api/health', (req, res) => {
 // Get system status
 app.get('/api/status', (req, res) => {
   res.json({
+    OFFLINE_MODE: OFFLINE_MODE,
     offline_mode: OFFLINE_MODE,
     apis_enabled: !OFFLINE_MODE,
     mock_data_available: true,
-    version: '2.0.0'
+    version: '2.0.0',
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -187,6 +249,15 @@ app.get('/api/mock/zoning', (req, res) => {
 
 // Get mock road access data
 app.get('/api/mock/road-access', (req, res) => {
+  const data = loadMockData('road_access.sample.json');
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load mock data' });
+  }
+  res.json(data);
+});
+
+// Alias with underscore for consistency
+app.get('/api/mock/road_access', (req, res) => {
   const data = loadMockData('road_access.sample.json');
   if (!data) {
     return res.status(500).json({ error: 'Failed to load mock data' });

@@ -96,6 +96,11 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- OFFLINE/ONLINE MODE Banner -->
+    <div id="mode-banner" class="w-full py-2 text-center text-sm font-semibold shadow-md">
+        <span id="mode-text">Carregando...</span>
+    </div>
+    
     <div class="container mx-auto px-4 py-2">
         <!-- Header -->
         <div class="bg-white rounded-lg shadow-lg p-3 mb-2">
@@ -798,6 +803,30 @@
     </div>
 
     <!-- Load Google Maps API -->
+    <script>
+        // Load system status and update banner
+        fetch('/api/status')
+            .then(r => r.json())
+            .then(data => {
+                const banner = document.getElementById('mode-banner');
+                const text = document.getElementById('mode-text');
+                
+                if (data.OFFLINE_MODE || data.offline_mode) {
+                    banner.className = 'w-full py-2 text-center text-sm font-semibold shadow-md bg-yellow-100 text-yellow-900';
+                    text.textContent = '🔒 OFFLINE MODE - Usando dados mock (sem custos de API)';
+                } else {
+                    banner.className = 'w-full py-2 text-center text-sm font-semibold shadow-md bg-green-100 text-green-900';
+                    text.textContent = '🌐 ONLINE MODE - APIs ativas';
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching status:', err);
+                const banner = document.getElementById('mode-banner');
+                banner.className = 'w-full py-2 text-center text-sm font-semibold shadow-md bg-red-100 text-red-900';
+                document.getElementById('mode-text').textContent = '⚠️ Erro ao carregar status do sistema';
+            });
+    </script>
+
     <script>
         // Load API key from server
         console.log('Loading Google Maps API key...');

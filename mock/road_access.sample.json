@@ -15,4 +15,10 @@
   "notes": "Direct access via paved public road. All major utilities available.",
   "source": "mock",
   "last_updated": "2024-01-01"
+,
+  "_meta": {
+    "source": "mock",
+    "provider": "mock",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
 }

@@ -6,7 +6,13 @@
       "description": "Property is near wetlands (>500ft)",
       "notes": "Distance is acceptable, no major concern",
       "source": "mock"
-    }
+    ,
+  "_meta": {
+    "source": "mock",
+    "provider": "mock",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
   ],
   "green_flags": [
     {
@@ -20,10 +26,22 @@
       "description": "All utilities available",
       "notes": "Water, sewer, electric ready to connect",
       "source": "mock"
-    }
+    ,
+  "_meta": {
+    "source": "mock",
+    "provider": "mock",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+}
   ],
   "overall_risk": "Low",
   "recommendation": "BUY",
   "source": "mock",
   "last_updated": "2024-01-01"
+,
+  "_meta": {
+    "source": "mock",
+    "provider": "mock",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
 }
