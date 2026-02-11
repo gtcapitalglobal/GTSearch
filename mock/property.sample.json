@@ -1,0 +1,24 @@
+{
+  "parcel_id": "SAMPLE-12345",
+  "county": "Sample County",
+  "address": "123 Sample Street, Sample City, FL 32000",
+  "coords": {
+    "lat": 28.5383,
+    "lng": -81.3792
+  },
+  "owner": "Sample Owner LLC",
+  "assessed_value": 150000,
+  "market_value": 180000,
+  "lot_size_sqft": 10000,
+  "lot_size_acres": 0.23,
+  "zoning": "R-1 (Residential)",
+  "year_built": null,
+  "property_type": "Vacant Land",
+  "last_sale_date": "2020-05-15",
+  "last_sale_price": 120000,
+  "tax_amount": 2500,
+  "tax_year": 2024,
+  "legal_description": "LOT 10 BLOCK 5 SAMPLE SUBDIVISION",
+  "source": "mock",
+  "fetched_at": "2024-01-01T00:00:00Z"
+}

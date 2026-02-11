@@ -1,0 +1,10 @@
+{
+  "status": "low",
+  "zone": "X (Minimal Flood Hazard)",
+  "flood_insurance_required": false,
+  "base_flood_elevation": null,
+  "risk_level": "Low Risk",
+  "notes": "Property is located in Zone X - area of minimal flood hazard",
+  "source": "mock",
+  "last_updated": "2024-01-01"
+}

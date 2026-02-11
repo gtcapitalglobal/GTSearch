@@ -1,0 +1,21 @@
+{
+  "status": "ok",
+  "zone_code": "R-1",
+  "zone_description": "Single Family Residential",
+  "allowed_uses": [
+    "Single Family Dwelling",
+    "Accessory Structures",
+    "Home Occupation (Limited)"
+  ],
+  "restrictions": {
+    "min_lot_size": 7500,
+    "max_height": 35,
+    "setback_front": 25,
+    "setback_rear": 10,
+    "setback_side": 7.5,
+    "max_lot_coverage": 0.4
+  },
+  "notes": "Standard residential zoning with no major restrictions",
+  "source": "mock",
+  "last_updated": "2024-01-01"
+}

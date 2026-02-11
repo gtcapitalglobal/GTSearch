@@ -1,0 +1,135 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Property Object - Single Source of Truth (SSOT)",
+  "description": "Estrutura padronizada para representar propriedades no GTSearch",
+  "type": "object",
+  "required": ["parcel_id", "county"],
+  "properties": {
+    "parcel_id": {
+      "type": "string",
+      "description": "ID único da parcela (parcel)"
+    },
+    "county": {
+      "type": "string",
+      "description": "Nome do condado"
+    },
+    "address": {
+      "type": "string",
+      "description": "Endereço completo"
+    },
+    "coords": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "type": ["number", "null"],
+          "description": "Latitude"
+        },
+        "lng": {
+          "type": ["number", "null"],
+          "description": "Longitude"
+        }
+      }
+    },
+    "flood": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["unknown", "low", "high"],
+          "description": "Status de risco de inundação"
+        },
+        "source": {
+          "type": "string",
+          "enum": ["mock", "api", "manual"],
+          "description": "Origem dos dados"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Observações adicionais"
+        }
+      }
+    },
+    "road_access": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["unknown", "yes", "no"],
+          "description": "Status de acesso por estrada"
+        },
+        "source": {
+          "type": "string",
+          "enum": ["mock", "api", "manual"]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "zoning": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["unknown", "ok", "risk"],
+          "description": "Status de zoneamento"
+        },
+        "source": {
+          "type": "string",
+          "enum": ["mock", "api", "manual"]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "red_flags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Tipo de red flag (Environmental, Legal, etc.)"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "med", "high"]
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "liquidity_score": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Score de liquidez (0-100)"
+    },
+    "recommendation": {
+      "type": "string",
+      "enum": ["BUY", "REVIEW", "REJECT"],
+      "description": "Recomendação final"
+    },
+    "audit_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ts": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "action": {
+            "type": "string"
+          },
+          "result": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

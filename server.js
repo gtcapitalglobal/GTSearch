@@ -1,0 +1,455 @@
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import axios from 'axios';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// ========================================
+// OFFLINE MODE CONFIGURATION
+// ========================================
+const OFFLINE_MODE = process.env.OFFLINE_MODE === 'true';
+
+console.log('========================================');
+console.log(`🚀 GTSearch Server Starting`);
+console.log(`📍 Mode: ${OFFLINE_MODE ? '🔒 OFFLINE (No APIs, No Costs)' : '🌐 ONLINE (APIs Enabled)'}`);
+console.log('========================================');
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Desabilitar cache para analysis.html
+app.get('/analysis.html', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.sendFile(path.join(__dirname, 'public', 'analysis.html'));
+});
+
+app.use(express.static('public'));
+
+// ========================================
+// UTILITY FUNCTIONS
+// ========================================
+
+/**
+ * Load mock data from /mock folder
+ */
+function loadMockData(filename) {
+  try {
+    const filePath = path.join(__dirname, 'mock', filename);
+    const data = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error(`❌ Error loading mock data: ${filename}`, error.message);
+    return null;
+  }
+}
+
+/**
+ * Check if API call is allowed in current mode
+ */
+function checkAPIAllowed(req, res, next) {
+  if (OFFLINE_MODE) {
+    return res.status(403).json({
+      error: 'API calls disabled in OFFLINE MODE',
+      message: 'Set OFFLINE_MODE=false to enable API calls',
+      offline_mode: true
+    });
+  }
+  next();
+}
+
+// ========================================
+// CORE ENDPOINTS
+// ========================================
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    version: '2.0.0',
+    offline_mode: OFFLINE_MODE,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Get system status
+app.get('/api/status', (req, res) => {
+  res.json({
+    offline_mode: OFFLINE_MODE,
+    apis_enabled: !OFFLINE_MODE,
+    mock_data_available: true,
+    version: '2.0.0'
+  });
+});
+
+// Get current API keys status (without exposing the keys)
+app.get('/api/config/status', (req, res) => {
+  if (OFFLINE_MODE) {
+    return res.json({
+      offline_mode: true,
+      message: 'API keys not checked in OFFLINE MODE',
+      google_maps: false,
+      openai: false,
+      gemini: false,
+      perplexity: false,
+      rapidapi: false
+    });
+  }
+
+  res.json({
+    offline_mode: false,
+    google_maps: !!process.env.GOOGLE_MAPS_API_KEY,
+    openai: !!process.env.OPENAI_API_KEY,
+    gemini: !!process.env.GEMINI_API_KEY,
+    perplexity: !!process.env.PERPLEXITY_API_KEY,
+    rapidapi: !!process.env.RAPIDAPI_KEY
+  });
+});
+
+// ========================================
+// DANGEROUS ENDPOINTS (DISABLED IN OFFLINE MODE)
+// ========================================
+
+// Save API keys - DISABLED in OFFLINE MODE
+app.post('/api/config/save', (req, res) => {
+  if (OFFLINE_MODE) {
+    return res.status(403).json({
+      error: 'Disabled in OFFLINE MODE',
+      message: 'Cannot save API keys in OFFLINE MODE for security reasons',
+      offline_mode: true
+    });
+  }
+
+  // In ONLINE mode, this endpoint should require authentication
+  // For now, we disable it completely
+  return res.status(403).json({
+    error: 'Endpoint disabled',
+    message: 'Use environment variables to configure API keys',
+    recommendation: 'Set keys in .env file or hosting platform'
+  });
+});
+
+// Get Google Maps API Key - DISABLED in OFFLINE MODE
+app.get('/api/google-maps-key', (req, res) => {
+  if (OFFLINE_MODE) {
+    return res.status(403).json({
+      error: 'Disabled in OFFLINE MODE',
+      message: 'Google Maps API not available in OFFLINE MODE',
+      offline_mode: true
+    });
+  }
+
+  res.json({ key: process.env.GOOGLE_MAPS_API_KEY || '' });
+});
+
+// ========================================
+// MOCK DATA ENDPOINTS (ALWAYS AVAILABLE)
+// ========================================
+
+// Get mock property data
+app.get('/api/mock/property', (req, res) => {
+  const data = loadMockData('property.sample.json');
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load mock data' });
+  }
+  res.json(data);
+});
+
+// Get mock flood data
+app.get('/api/mock/flood', (req, res) => {
+  const data = loadMockData('flood.sample.json');
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load mock data' });
+  }
+  res.json(data);
+});
+
+// Get mock zoning data
+app.get('/api/mock/zoning', (req, res) => {
+  const data = loadMockData('zoning.sample.json');
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load mock data' });
+  }
+  res.json(data);
+});
+
+// Get mock road access data
+app.get('/api/mock/road-access', (req, res) => {
+  const data = loadMockData('road_access.sample.json');
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load mock data' });
+  }
+  res.json(data);
+});
+
+// Get mock red flags data
+app.get('/api/mock/redflags', (req, res) => {
+  const data = loadMockData('redflags.sample.json');
+  if (!data) {
+    return res.status(500).json({ error: 'Failed to load mock data' });
+  }
+  res.json(data);
+});
+
+// Get property schema
+app.get('/api/schema/property', (req, res) => {
+  const schema = loadMockData('property.schema.json');
+  if (!schema) {
+    return res.status(500).json({ error: 'Failed to load schema' });
+  }
+  res.json(schema);
+});
+
+// ========================================
+// API PROXY ENDPOINTS (DISABLED IN OFFLINE MODE)
+// ========================================
+
+// Google Maps API Proxy
+app.post('/api/google-maps', checkAPIAllowed, async (req, res) => {
+  try {
+    const { endpoint, params } = req.body;
+    
+    const url = new URL(endpoint);
+    url.searchParams.append('key', process.env.GOOGLE_MAPS_API_KEY);
+    
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.append(key, value);
+      });
+    }
+
+    const response = await axios.get(url.toString());
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// OpenAI API Proxy
+app.post('/api/openai', checkAPIAllowed, async (req, res) => {
+  try {
+    const { messages, model = 'gpt-4', max_tokens = 1000 } = req.body;
+
+    const response = await axios.post(
+      'https://api.openai.com/v1/chat/completions',
+      {
+        model,
+        messages,
+        max_tokens
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+        }
+      }
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+// Google Gemini API Proxy
+app.post('/api/gemini', checkAPIAllowed, async (req, res) => {
+  try {
+    const { prompt, model = 'gemini-2.5-flash' } = req.body;
+
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        contents: [{
+          parts: [{ text: prompt }]
+        }]
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+// Perplexity API Proxy
+app.post('/api/perplexity', checkAPIAllowed, async (req, res) => {
+  try {
+    const { messages, model = 'llama-3.1-sonar-small-128k-online' } = req.body;
+
+    const response = await axios.post(
+      'https://api.perplexity.ai/chat/completions',
+      {
+        model,
+        messages
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.PERPLEXITY_API_KEY}`
+        }
+      }
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+// Zillow API Proxy (RapidAPI)
+app.post('/api/zillow', checkAPIAllowed, async (req, res) => {
+  try {
+    const { endpoint, params } = req.body;
+
+    const url = new URL(`https://zillow-com1.p.rapidapi.com${endpoint}`);
+    
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.append(key, value);
+      });
+    }
+
+    const response = await axios.get(url.toString(), {
+      headers: {
+        'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+        'X-RapidAPI-Host': 'zillow-com1.p.rapidapi.com'
+      }
+    });
+
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+// Realtor.com API Proxy (RapidAPI)
+app.post('/api/realtor', checkAPIAllowed, async (req, res) => {
+  try {
+    const { endpoint, params } = req.body;
+
+    const url = new URL(`https://realtor.p.rapidapi.com${endpoint}`);
+    
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.append(key, value);
+      });
+    }
+
+    const response = await axios.get(url.toString(), {
+      headers: {
+        'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+        'X-RapidAPI-Host': 'realtor.p.rapidapi.com'
+      }
+    });
+
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+// Realty Mole API Proxy
+app.post('/api/realty-mole', checkAPIAllowed, async (req, res) => {
+  try {
+    const { endpoint, params } = req.body;
+
+    const url = new URL(`https://realty-mole-property-api.p.rapidapi.com${endpoint}`);
+    
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.append(key, value);
+      });
+    }
+
+    const response = await axios.get(url.toString(), {
+      headers: {
+        'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+        'X-RapidAPI-Host': 'realty-mole-property-api.p.rapidapi.com'
+      }
+    });
+
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: error.response?.data || error.message });
+  }
+});
+
+// NAIP Aerial Imagery
+app.post('/api/naip', checkAPIAllowed, async (req, res) => {
+  try {
+    const { lat, lng, year } = req.body;
+    
+    // NAIP WMS service URL
+    const wmsUrl = `https://gis.apfo.usda.gov/arcgis/services/NAIP/USDA_CONUS_PRIME/ImageServer/WMSServer`;
+    
+    const params = {
+      SERVICE: 'WMS',
+      VERSION: '1.3.0',
+      REQUEST: 'GetMap',
+      LAYERS: '0',
+      STYLES: '',
+      CRS: 'EPSG:4326',
+      BBOX: `${lng-0.01},${lat-0.01},${lng+0.01},${lat+0.01}`,
+      WIDTH: 800,
+      HEIGHT: 800,
+      FORMAT: 'image/png',
+      TIME: year || '2023'
+    };
+
+    const queryString = new URLSearchParams(params).toString();
+    const fullUrl = `${wmsUrl}?${queryString}`;
+
+    const response = await axios.get(fullUrl, { responseType: 'arraybuffer' });
+    
+    res.set('Content-Type', 'image/png');
+    res.send(response.data);
+  } catch (error) {
+    console.error('NAIP error:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Landsat Satellite Imagery
+app.post('/api/landsat', checkAPIAllowed, async (req, res) => {
+  try {
+    const { lat, lng, year, satellite } = req.body;
+    
+    // For now, return mock response
+    // Real implementation would use USGS or AWS Landsat data
+    res.json({
+      message: 'Landsat endpoint - requires implementation',
+      params: { lat, lng, year, satellite },
+      mock: true
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ========================================
+// START SERVER
+// ========================================
+
+app.listen(PORT, () => {
+  console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`📊 Mode: ${OFFLINE_MODE ? 'OFFLINE' : 'ONLINE'}`);
+  console.log(`🔗 Access: http://localhost:${PORT}`);
+  console.log('========================================');
+});

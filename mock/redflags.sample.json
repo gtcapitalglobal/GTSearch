@@ -1,0 +1,29 @@
+{
+  "red_flags": [
+    {
+      "type": "Environmental",
+      "severity": "low",
+      "description": "Property is near wetlands (>500ft)",
+      "notes": "Distance is acceptable, no major concern",
+      "source": "mock"
+    }
+  ],
+  "green_flags": [
+    {
+      "type": "Location",
+      "description": "Close to major highway",
+      "notes": "Good accessibility and potential for appreciation",
+      "source": "mock"
+    },
+    {
+      "type": "Utilities",
+      "description": "All utilities available",
+      "notes": "Water, sewer, electric ready to connect",
+      "source": "mock"
+    }
+  ],
+  "overall_risk": "Low",
+  "recommendation": "BUY",
+  "source": "mock",
+  "last_updated": "2024-01-01"
+}
