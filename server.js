@@ -88,6 +88,15 @@ app.use('/api', auditLogMiddleware());
 // Validation middleware for mock endpoints
 app.use('/api/mock', validateMockOutputMiddleware);
 
+// ========================================
+// DEFAULT ROUTE - SERVE MAIN DASHBOARD
+// ========================================
+
+// Default route: serve the main dashboard (index.html)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // Desabilitar cache para analysis.html
 app.get('/analysis.html', (req, res) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
@@ -96,6 +105,7 @@ app.get('/analysis.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'analysis.html'));
 });
 
+// Serve static files from public directory
 app.use(express.static('public'));
 
 // ========================================
