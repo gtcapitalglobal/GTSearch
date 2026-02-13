@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Sold Lands</name>
+    <Style id="icon-1899-0F9D58-normal">
+      <IconStyle>
+        <color>ff589d0f</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1899-0F9D58-highlight">
+      <IconStyle>
+        <color>ff589d0f</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1899-0F9D58">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-0F9D58-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-0F9D58-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1899-0F9D58-nodesc-normal">
+      <IconStyle>
+        <color>ff589d0f</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1899-0F9D58-nodesc-highlight">
+      <IconStyle>
+        <color>ff589d0f</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="icon-1899-0F9D58-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-0F9D58-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-0F9D58-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="poly-F9A825-2000-112-normal">
+      <LineStyle>
+        <color>ff25a8f9</color>
+        <width>2</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>7025a8f9</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+    </Style>
+    <Style id="poly-F9A825-2000-112-highlight">
+      <LineStyle>
+        <color>ff25a8f9</color>
+        <width>3</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>7025a8f9</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+    </Style>
+    <StyleMap id="poly-F9A825-2000-112">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#poly-F9A825-2000-112-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#poly-F9A825-2000-112-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Placemark>
+      <name>P01 - 0.23 Acre Buildable land</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v4KIhljE-Rz2RT6cXrN7olXhbDP7vXRglzBfcySzrokw9XLdmY65clP3tWnVZBgaf-o-hphhSYJ-CLe753M6Ub6tynMNZ1OQ1HNLT2Ij7eS3c3vQ72wirGuBPoiVmzheL5kVBGsPQpL8n87boeeuSAELrCbg3SiaVHyyrVqviMObnMfyUJoKDMhBni2mQkVwg2SCIF76EDeflfxfyVYnuGxDRMkbQbfpPsPGIuWaP7Crl3f0aUjhuoJCRoHu2Hcr9XPBmyBOaDbo6d-PssXxziC3bZjJQ2l6OxnQHWp-PYx3g7L43Hdx4JiFh1m87CkIPAZjWkcvV8XikBh2MpE0DFRUuJ0marh1-CEU7OfAIrnQRCjXhWnguYvtDuPSx7_7Sss2nUkWBrwG5xibAeJIgqwC2T4PmdOdGQojRMeZ_zvr8fL5G7PhktknNswWP5BhIj5v9WrvF0wje0ZC6IF_F5B3sxse2NU4MXFNSDvNUgk6R2WErCqa3czc7bSDrx_9Ov9gEbsJKOLUm1tpm1t9M8z6-3IGxmr-Z5uuZk4FbNWrKXRNaaPwzjVZxIpZ1ho7y6FEj1gg05JDYrR4vuEV2isKU9v5OcWofiDWMxEPJqgBWYYL3jKGhJJBuo_32bS1aJoSltX86G-r5dJAtbIyUYM_cL8Dd4M8gN_rCcN-Orgl_5GKBIWaYGEAvF6yMDkhfWuLn_ydEzT2M2MH0wiVgtrB0wRy5JVh5d0MXu_CpFJEDp-cRJW1pWaueFL5dpnBvN7SwxhAtPQOZbrFF7sjNhLudTvGsBh6WKRiYQAwZvQisLuj3bdEC1E31Ur1SkxxLczxwgQXCew3Lujy5SSOECoEDnEKu4d4qEBAUMvZUea9SS4SA5kciIgiyv7MvXwy0CoZeE0Eb35JFg-F4_J3WFJxQkij21C5qIlbjPwzotFZa18dwZNcujEvFU45b_natWNddKGU-zryBZBuDAxUIk1OmNmkDlx7HxtCuyCJseTKPNOShgGtwoSqNMp1gU4SAIA4I8N6dybk7vJu-_PDYGZUlNnrbB0vXtKgo5QIfwkB9TuiSn7n6_LpJgRqMRXwvXvg0CErTqD-utJicDAEVWPvfeI28_Fb17wiIl-u63yxnqmetuaYlLf3tbWpSb4WDzUiVCRd-HdlgqoAnFmyBtYkt2gQ-e_fYERnaU3Z7YExAAf3szK0EHLb-ev6folTgvCtAOuvwf7eXmgFY--RNqiG8udUa-KubHqG8Tsxe13J0rrjg9xpbB3hXqn-crN7IUolOKzASctvslFMEgnHox2C2ZhPgCGGeq0mQVk5fKAds1MDlL_lmKYigikTBxXw-UyZ7qIvmyRWilnb3JOLFJ2aDLDNy0y0NCx5KD1IhVLNvokFD_nR_KS4AO2vM0gDFo3UE-EDQEyT6kYKW0nzygHpB5MU-_z8fDA2s7a5JHxKN6XluGRQhAlliGaQFvqtXTNQRSi6cFvJyeOaqUIIICp04bBFbaXfbCONMj1yJ56LiJQZdCOoQevtHu3_GaWPWuaUFhXs8SvP2BVxVeaVwLgZYUkbKizzLUdiVqZ4xL_1swLnwhmlqhJkOPmfFxAgDzaviIybaetIQLN-uj90HKRdgky9QB8JEozVqRpGqIATkDV6z8s0_e-IvQWeU3TOfIFrLzboLVjd8aOb3dGYW32GXqkhue0NsuDqy3K8gFy9__lIz0JG0PQkY7yI1LCt3MqjLBaEP0Buxp2DyhBTUyoDDcQD6V0VrX4P465ABvMcWyN_lX646m2fOEcckKiKazkVZpgJpmQMQ-USRm78kRsdQT_cuvTTs710aJZiytitXhf5DbVSWhjv3tAryGyscYMQEk_nBOaT_Rx6QEcJEe4mDH0iAwwxakQFgxDYPgIcMP_eUuAXqzB0G96htWUOzja3qD8nTFheZwNhUrYo4IYo8xDFwIjcjD5ucdqg9a5c_WUSFHZ4xIaTPPC0_1C0eta1S37asj59EJ1S0609vHYe7vRCgwoOdCEQmBiAQHTY3GspRWNIJ4H0VrKfxV5zr45O3iWjrqF60vwQHLaKJyobP7dzScVFhyIxc126-A7nd7N6fre4MipgOys2fHeIq3n4ZHU6RKQgxcXFog8WIOKn0Er3osyPFQmXRFbt1cjfWDuwJJpr_FfWZsnQLj1GHQatwCBmQrlri-xMa_UDxOMmbisDNxsjmNNM0tzgNkQRgC_nGQAPz1FY3t1nO-ccS9qN7j9bTnQUiEsRKsdCMehKHezxUTyUPzKzwJKSljc569WlzFt0tb_yFmGQf7ug9kH4lMevHVAeLvZifJkl9celUkYUqiValprvMApBFscvdvCU10diwoeuGc8odCoBuduKjyhRORzo4DtGlUrpJIpntoMVoHjlNubbWroEVK0c2khhwh3-V26EuNg1LTKbvgdLSJwGrL5FSgUuwQKN92XmJ4f7_65JX4fKTIreHD7ZCx-bePMM323eSo-aH1u9hyCTAYJeYChw8FOUvmfIQ3JkM57lA3O3XfBsQVGrppiRoAjAdSIUbDITkbzp1OJTg6f59NM0ECdJ9DnzKEt4_iLeI62cVEemcj7R6XeqYP4I31H24FnfOaPm9zXM7UYYWVdvMQ-0OKWFkC231qxdEpOwlLqz6l07Gq9htk0yUsd_vQ4JQKSC8qF9yYFlhHXyMGuYMEvBW2YC9i1A0iM5YstgYI-OpHRewm878VZOTBeebuPdITfeL2dN4jDWT5p4mvwrLHeTDv9V7hCPxGR-n6ieRjFKAnjQL0BvtYKp664TWy4nOo-SiLb2o6ZLiRUe9kOy9iEUy-2t75Gz5UyI-2K9GGWYIBzPsrYOPykN-91SAJS-kOF_A-DjmfFgwEpcrXI9McbAimAcT303rJwmesbn0BC4QXG-nM8QvPB" height="200" width="auto" /><br><br>https://www.gtlands.com/portfolio/1]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v4KIhljE-Rz2RT6cXrN7olXhbDP7vXRglzBfcySzrokw9XLdmY65clP3tWnVZBgaf-o-hphhSYJ-CLe753M6Ub6tynMNZ1OQ1HNLT2Ij7eS3c3vQ72wirGuBPoiVmzheL5kVBGsPQpL8n87boeeuSAELrCbg3SiaVHyyrVqviMObnMfyUJoKDMhBni2mQkVwg2SCIF76EDeflfxfyVYnuGxDRMkbQbfpPsPGIuWaP7Crl3f0aUjhuoJCRoHu2Hcr9XPBmyBOaDbo6d-PssXxziC3bZjJQ2l6OxnQHWp-PYx3g7L43Hdx4JiFh1m87CkIPAZjWkcvV8XikBh2MpE0DFRUuJ0marh1-CEU7OfAIrnQRCjXhWnguYvtDuPSx7_7Sss2nUkWBrwG5xibAeJIgqwC2T4PmdOdGQojRMeZ_zvr8fL5G7PhktknNswWP5BhIj5v9WrvF0wje0ZC6IF_F5B3sxse2NU4MXFNSDvNUgk6R2WErCqa3czc7bSDrx_9Ov9gEbsJKOLUm1tpm1t9M8z6-3IGxmr-Z5uuZk4FbNWrKXRNaaPwzjVZxIpZ1ho7y6FEj1gg05JDYrR4vuEV2isKU9v5OcWofiDWMxEPJqgBWYYL3jKGhJJBuo_32bS1aJoSltX86G-r5dJAtbIyUYM_cL8Dd4M8gN_rCcN-Orgl_5GKBIWaYGEAvF6yMDkhfWuLn_ydEzT2M2MH0wiVgtrB0wRy5JVh5d0MXu_CpFJEDp-cRJW1pWaueFL5dpnBvN7SwxhAtPQOZbrFF7sjNhLudTvGsBh6WKRiYQAwZvQisLuj3bdEC1E31Ur1SkxxLczxwgQXCew3Lujy5SSOECoEDnEKu4d4qEBAUMvZUea9SS4SA5kciIgiyv7MvXwy0CoZeE0Eb35JFg-F4_J3WFJxQkij21C5qIlbjPwzotFZa18dwZNcujEvFU45b_natWNddKGU-zryBZBuDAxUIk1OmNmkDlx7HxtCuyCJseTKPNOShgGtwoSqNMp1gU4SAIA4I8N6dybk7vJu-_PDYGZUlNnrbB0vXtKgo5QIfwkB9TuiSn7n6_LpJgRqMRXwvXvg0CErTqD-utJicDAEVWPvfeI28_Fb17wiIl-u63yxnqmetuaYlLf3tbWpSb4WDzUiVCRd-HdlgqoAnFmyBtYkt2gQ-e_fYERnaU3Z7YExAAf3szK0EHLb-ev6folTgvCtAOuvwf7eXmgFY--RNqiG8udUa-KubHqG8Tsxe13J0rrjg9xpbB3hXqn-crN7IUolOKzASctvslFMEgnHox2C2ZhPgCGGeq0mQVk5fKAds1MDlL_lmKYigikTBxXw-UyZ7qIvmyRWilnb3JOLFJ2aDLDNy0y0NCx5KD1IhVLNvokFD_nR_KS4AO2vM0gDFo3UE-EDQEyT6kYKW0nzygHpB5MU-_z8fDA2s7a5JHxKN6XluGRQhAlliGaQFvqtXTNQRSi6cFvJyeOaqUIIICp04bBFbaXfbCONMj1yJ56LiJQZdCOoQevtHu3_GaWPWuaUFhXs8SvP2BVxVeaVwLgZYUkbKizzLUdiVqZ4xL_1swLnwhmlqhJkOPmfFxAgDzaviIybaetIQLN-uj90HKRdgky9QB8JEozVqRpGqIATkDV6z8s0_e-IvQWeU3TOfIFrLzboLVjd8aOb3dGYW32GXqkhue0NsuDqy3K8gFy9__lIz0JG0PQkY7yI1LCt3MqjLBaEP0Buxp2DyhBTUyoDDcQD6V0VrX4P465ABvMcWyN_lX646m2fOEcckKiKazkVZpgJpmQMQ-USRm78kRsdQT_cuvTTs710aJZiytitXhf5DbVSWhjv3tAryGyscYMQEk_nBOaT_Rx6QEcJEe4mDH0iAwwxakQFgxDYPgIcMP_eUuAXqzB0G96htWUOzja3qD8nTFheZwNhUrYo4IYo8xDFwIjcjD5ucdqg9a5c_WUSFHZ4xIaTPPC0_1C0eta1S37asj59EJ1S0609vHYe7vRCgwoOdCEQmBiAQHTY3GspRWNIJ4H0VrKfxV5zr45O3iWjrqF60vwQHLaKJyobP7dzScVFhyIxc126-A7nd7N6fre4MipgOys2fHeIq3n4ZHU6RKQgxcXFog8WIOKn0Er3osyPFQmXRFbt1cjfWDuwJJpr_FfWZsnQLj1GHQatwCBmQrlri-xMa_UDxOMmbisDNxsjmNNM0tzgNkQRgC_nGQAPz1FY3t1nO-ccS9qN7j9bTnQUiEsRKsdCMehKHezxUTyUPzKzwJKSljc569WlzFt0tb_yFmGQf7ug9kH4lMevHVAeLvZifJkl9celUkYUqiValprvMApBFscvdvCU10diwoeuGc8odCoBuduKjyhRORzo4DtGlUrpJIpntoMVoHjlNubbWroEVK0c2khhwh3-V26EuNg1LTKbvgdLSJwGrL5FSgUuwQKN92XmJ4f7_65JX4fKTIreHD7ZCx-bePMM323eSo-aH1u9hyCTAYJeYChw8FOUvmfIQ3JkM57lA3O3XfBsQVGrppiRoAjAdSIUbDITkbzp1OJTg6f59NM0ECdJ9DnzKEt4_iLeI62cVEemcj7R6XeqYP4I31H24FnfOaPm9zXM7UYYWVdvMQ-0OKWFkC231qxdEpOwlLqz6l07Gq9htk0yUsd_vQ4JQKSC8qF9yYFlhHXyMGuYMEvBW2YC9i1A0iM5YstgYI-OpHRewm878VZOTBeebuPdITfeL2dN4jDWT5p4mvwrLHeTDv9V7hCPxGR-n6ieRjFKAnjQL0BvtYKp664TWy4nOo-SiLb2o6ZLiRUe9kOy9iEUy-2t75Gz5UyI-2K9GGWYIBzPsrYOPykN-91SAJS-kOF_A-DjmfFgwEpcrXI9McbAimAcT303rJwmesbn0BC4QXG-nM8QvPB</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.408733,27.242201,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 01</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v6B2zxJMVn-5XR6RSHXn-yjjraIUDrGd-LJC1rKOCkaGDQrWoB0bARBIZ0IITc3FsngRGyB0RwhyG9nNVRLikwm9dk6NbzvXj9urlmI4Hobz5KWq8z0T-6M53x_Ajt7_hzWNJN5ClZAEgp7VJ2BzHk96Ptx2K3CmhnCCZ3R3Sdzum2zkhDNOYLwLlH-P6Ui-GuzekHNiKK7WMd13J5Z_9vulbicDAM9AZKs1aNBpDcbOuNkmAMTHtksy3vUwMDyeV1CzNeLzSFEkdYznLOo1teRT-T25wq6I_nShTbMhBNxYgNyUL5DGg4K8W0PF-hJE9RkENnOKd5OAm5FPT5pfg2Jz_NMVTJaJOe9ukmAG7nik_m1t-G2ybbda_WuI9Z-50FxfFqyW318gJENAHbIYNQTqdYXGo-jhgy3mKS-XJLL0hZyUzvynoSFGaByQi3TCJmwBUdWyagCpBOqPZ_ka0E1uuBGwDsmHbKo9oaVyp9Y0nHfNg_GwLsBR5kvyaDtJLTsFH8w8_tpCYppq0QdKw5q_VDO0RS__YEEofxWyGMHT5HOGTn7IG3J8GEeie3Ja_954SD_dMwAfPTdWHiLaBcCeGqO3GP9dkc7sazAyux1SxITLrDskr3LYhk0eThcbwkkobnQvNRSLCcL4tu8R2p4IN2d1D1twxeLsv3I5mUgsttg3_lBj9LKgbH4htu90gmLzM3lA8_Oc6c_cr_VHcWSPB4f85cWRzJzelkDzuizgA-BGrrr8L8bdVl7NGBQLwc6LotASmuZY_weRPnJ6_smMCNUZUDu8Uwthc0OxjqZKr1g6B9F3Q5blUilpjzgww3-WgCTbj__oA2_vdmpfaQ-JtH1gEKQsWSEi8OXRTojkeNn1maTDAnY7wk2ZKEPLHQXGwD-MZWWo0AUobYvYQki6BYvQtsCdWhQxA0A9Y7AozZO1gIcXl0l3dtKHD18WoJLjyWg7sFO0LkNJWyNzrKWUaWd5lm6l7kWzK2-1qPEX7CmSkL1iyzDtAxhVFqaZZyMX9MJVQIdPuYv2GeW94x7xYRUSenm-TmUHdTMvGuoMaJ-tkRsOZTPIuoEYnL5fljSXrkSFffwDoB-FhCCJCCBXZrXmw9zLdiY5W9vyjQg_noHa-Rpf_bat0OgB1NiVcerRyVF6re6cwW_fwGAwfSCiiDXAkDEx52UMxTewyS3gDKGkcmfRdhStY28NCJk0vhrEvOw8W09cQN_ltWJf2DfwgNckmrjkxr60QCpgn00Wlch0cGJLD7RjI58WlchBXR25MdX0SKoKasK98m5KZzI68Gnhk_fyUBSlhyQDY-ePdmXC_UtJvp7MOrWgJN8d4huHvrmM0Eia3uDXCe1chCCTxfoNiK1pswlnbOVyBSkpb6ONNVgTAkCTzMrhiS2rQl4Ybw6eXwxL6dzrnwSoOPrBrD0IWm8vM1oLTWLuEUPZkxMxeYdbrd9_B8VRqoaf5A6YidhogeMK4p-prt8uvaVJw-5f06xphEb17HlzAEiZfwinG_Hrz5oIn6RTbfuoglV6ylYQXhAZekBROgCuM3QhtJ7CAOCrT6QZHqYohStSaJUukvXJhOgOFvHyCM6jYnv5-V5xkeQm2vXtBcea3rYTLGQmVHpxPQLe8ununnwehoFINFLJhD3R3cPRWz44Solw0E3n8f-GdMvBxqp62CCifR-TKDSPqDMXLcia3Wnn8cAiLuUSI1gm3-dazV27HqHe3LXgGnkA1wBLVKr4UxctkOc-uZ4lFpoOh74njMx1fsC-67sY_2BfMqjAvmsErJS58lBT2Y5DH3Z7FjMczJCcx-zU29A9IQDZ831yixi_FYnK8CseHknJ6R3Z5Gl6WF_dkxpYBa71q8abLoNawPK7BIL_8C536C6TbYIQfYJgBf54SWoDshW3pZ8EAfEb5Hv8AjVY1846V4PAEuMquLeo04uSm1pwo-IpSAFJUS8mDiGqd1cZnOD9J4CdHglHKpBQQ4yHTfMQbsqDV5OXulnGugDuSyJWV8USkh0tg5ZsdmQ8xFk7xDGhHEG48M6U_uHxSIf9V7ea25SJ7CYcO7Npa2ncoM2A82yjYFtcMZUYn8QwEBPkINb8cHKA-wtBbqaejM6dqWt2bpjj1lwCyY_nemwLPEeLBJt85jf2wWdwZgQvT_ggNkU7zQoKUo9O1P7vdBr0yNfGqrm4MsT6rmdA0MvFQdb_1eesTJe88g3y39dlgECOzV6EnbCSBEebhRuyvLG3v5Nxgcs4gL3caycV3UnulzQmdO5qWUcEiztuHJSjjI0v5fEh8-_XZrnf0uFVOeFmQiZ-U1bqVt621I7hCVNs_Nxk0m_BwBwBRtqCGxNieJLyOvWtSbLJtXYj_2B3rl3WJzPUUBARikDrKJq5YWIYbTWR1Ft067yjEASKeLpZ97VLDIjNl9eWlVMeKrYtflOye7QQUepr0uI7yr_rcftXiNwzZcbyytoEynSDJcJMLNsce3bfSMxidxEr-B7zkBr6IB3WhTt3L8kBUAWFa_AzlGKWcoU83HzAKK2ZhbuzMNFWLOzO9v7vuc6IlWMBP5UuUpwN9TV0xxx4BZUmNWYdVzY-QSW5ytEHEtiSj68aRtq_DZTWS3Un284Is1UqfKJ7_COqMyNo-WTCl592iswQDqD5X1R2Kk03KC8hCuZK4K8ZofCCP6G37SPD987tNN1uueYykUgoEr9NoLqGQMex2--w1NV3KNQJe4W2rUgtuG-boMFPIZMoHvpmkYaiIwWh0XRq-bANItvbur4tDKzXQDL3SJGR8uaVYFNj4UkTQzFHVtZn_gEOle1wAjtV3SL2hsFMabs0roJ-qPA-az87ODtxQedaI4Eg-tnITsAa8hRf-XmFlYhm9O_ctOntQRvuXTJlNt8cb6HykkRPONK42EVLC5kusZvqNtLCw" height="200" width="auto" /><br><br>]]></description>
+      <styleUrl>#poly-F9A825-2000-112</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v6B2zxJMVn-5XR6RSHXn-yjjraIUDrGd-LJC1rKOCkaGDQrWoB0bARBIZ0IITc3FsngRGyB0RwhyG9nNVRLikwm9dk6NbzvXj9urlmI4Hobz5KWq8z0T-6M53x_Ajt7_hzWNJN5ClZAEgp7VJ2BzHk96Ptx2K3CmhnCCZ3R3Sdzum2zkhDNOYLwLlH-P6Ui-GuzekHNiKK7WMd13J5Z_9vulbicDAM9AZKs1aNBpDcbOuNkmAMTHtksy3vUwMDyeV1CzNeLzSFEkdYznLOo1teRT-T25wq6I_nShTbMhBNxYgNyUL5DGg4K8W0PF-hJE9RkENnOKd5OAm5FPT5pfg2Jz_NMVTJaJOe9ukmAG7nik_m1t-G2ybbda_WuI9Z-50FxfFqyW318gJENAHbIYNQTqdYXGo-jhgy3mKS-XJLL0hZyUzvynoSFGaByQi3TCJmwBUdWyagCpBOqPZ_ka0E1uuBGwDsmHbKo9oaVyp9Y0nHfNg_GwLsBR5kvyaDtJLTsFH8w8_tpCYppq0QdKw5q_VDO0RS__YEEofxWyGMHT5HOGTn7IG3J8GEeie3Ja_954SD_dMwAfPTdWHiLaBcCeGqO3GP9dkc7sazAyux1SxITLrDskr3LYhk0eThcbwkkobnQvNRSLCcL4tu8R2p4IN2d1D1twxeLsv3I5mUgsttg3_lBj9LKgbH4htu90gmLzM3lA8_Oc6c_cr_VHcWSPB4f85cWRzJzelkDzuizgA-BGrrr8L8bdVl7NGBQLwc6LotASmuZY_weRPnJ6_smMCNUZUDu8Uwthc0OxjqZKr1g6B9F3Q5blUilpjzgww3-WgCTbj__oA2_vdmpfaQ-JtH1gEKQsWSEi8OXRTojkeNn1maTDAnY7wk2ZKEPLHQXGwD-MZWWo0AUobYvYQki6BYvQtsCdWhQxA0A9Y7AozZO1gIcXl0l3dtKHD18WoJLjyWg7sFO0LkNJWyNzrKWUaWd5lm6l7kWzK2-1qPEX7CmSkL1iyzDtAxhVFqaZZyMX9MJVQIdPuYv2GeW94x7xYRUSenm-TmUHdTMvGuoMaJ-tkRsOZTPIuoEYnL5fljSXrkSFffwDoB-FhCCJCCBXZrXmw9zLdiY5W9vyjQg_noHa-Rpf_bat0OgB1NiVcerRyVF6re6cwW_fwGAwfSCiiDXAkDEx52UMxTewyS3gDKGkcmfRdhStY28NCJk0vhrEvOw8W09cQN_ltWJf2DfwgNckmrjkxr60QCpgn00Wlch0cGJLD7RjI58WlchBXR25MdX0SKoKasK98m5KZzI68Gnhk_fyUBSlhyQDY-ePdmXC_UtJvp7MOrWgJN8d4huHvrmM0Eia3uDXCe1chCCTxfoNiK1pswlnbOVyBSkpb6ONNVgTAkCTzMrhiS2rQl4Ybw6eXwxL6dzrnwSoOPrBrD0IWm8vM1oLTWLuEUPZkxMxeYdbrd9_B8VRqoaf5A6YidhogeMK4p-prt8uvaVJw-5f06xphEb17HlzAEiZfwinG_Hrz5oIn6RTbfuoglV6ylYQXhAZekBROgCuM3QhtJ7CAOCrT6QZHqYohStSaJUukvXJhOgOFvHyCM6jYnv5-V5xkeQm2vXtBcea3rYTLGQmVHpxPQLe8ununnwehoFINFLJhD3R3cPRWz44Solw0E3n8f-GdMvBxqp62CCifR-TKDSPqDMXLcia3Wnn8cAiLuUSI1gm3-dazV27HqHe3LXgGnkA1wBLVKr4UxctkOc-uZ4lFpoOh74njMx1fsC-67sY_2BfMqjAvmsErJS58lBT2Y5DH3Z7FjMczJCcx-zU29A9IQDZ831yixi_FYnK8CseHknJ6R3Z5Gl6WF_dkxpYBa71q8abLoNawPK7BIL_8C536C6TbYIQfYJgBf54SWoDshW3pZ8EAfEb5Hv8AjVY1846V4PAEuMquLeo04uSm1pwo-IpSAFJUS8mDiGqd1cZnOD9J4CdHglHKpBQQ4yHTfMQbsqDV5OXulnGugDuSyJWV8USkh0tg5ZsdmQ8xFk7xDGhHEG48M6U_uHxSIf9V7ea25SJ7CYcO7Npa2ncoM2A82yjYFtcMZUYn8QwEBPkINb8cHKA-wtBbqaejM6dqWt2bpjj1lwCyY_nemwLPEeLBJt85jf2wWdwZgQvT_ggNkU7zQoKUo9O1P7vdBr0yNfGqrm4MsT6rmdA0MvFQdb_1eesTJe88g3y39dlgECOzV6EnbCSBEebhRuyvLG3v5Nxgcs4gL3caycV3UnulzQmdO5qWUcEiztuHJSjjI0v5fEh8-_XZrnf0uFVOeFmQiZ-U1bqVt621I7hCVNs_Nxk0m_BwBwBRtqCGxNieJLyOvWtSbLJtXYj_2B3rl3WJzPUUBARikDrKJq5YWIYbTWR1Ft067yjEASKeLpZ97VLDIjNl9eWlVMeKrYtflOye7QQUepr0uI7yr_rcftXiNwzZcbyytoEynSDJcJMLNsce3bfSMxidxEr-B7zkBr6IB3WhTt3L8kBUAWFa_AzlGKWcoU83HzAKK2ZhbuzMNFWLOzO9v7vuc6IlWMBP5UuUpwN9TV0xxx4BZUmNWYdVzY-QSW5ytEHEtiSj68aRtq_DZTWS3Un284Is1UqfKJ7_COqMyNo-WTCl592iswQDqD5X1R2Kk03KC8hCuZK4K8ZofCCP6G37SPD987tNN1uueYykUgoEr9NoLqGQMex2--w1NV3KNQJe4W2rUgtuG-boMFPIZMoHvpmkYaiIwWh0XRq-bANItvbur4tDKzXQDL3SJGR8uaVYFNj4UkTQzFHVtZn_gEOle1wAjtV3SL2hsFMabs0roJ-qPA-az87ODtxQedaI4Eg-tnITsAa8hRf-XmFlYhm9O_ctOntQRvuXTJlNt8cb6HykkRPONK42EVLC5kusZvqNtLCw</value>
+        </Data>
+      </ExtendedData>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              -81.40886,27.242375,0
+              -81.408861,27.24203,0
+              -81.408615,27.242028,0
+              -81.408615,27.242371,0
+              -81.40886,27.242375,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+    <Placemark>
+      <name>Property 02 - sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.40599,27.25065,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 03- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.310446,27.248365,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 04- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.535034,27.52959,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 05- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.31824,27.243613,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 06- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.507559,27.490961,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 07- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.313513,27.259334,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 08- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.327361,27.449448,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 09- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.556262,27.637867,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 11- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.378671,27.25835,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 12- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.418402,27.331976,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 13- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.31283,27.259989,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 14- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -82.05998,26.985377,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 15 - Sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -82.209954,26.852914,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 16 - sold</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v7KkrlREwI3xioKZTBIbIBuGwNmlVunW29LF5vza6XMIjfpS6u3qQdIlSBjyvQD9eAmiv9EWdBS1QvMokAwr59LA_mjXV1inJjFJMCkCmpVpEdif2whOG322anWfBjyMI1-XXRSmZAcVi_rpSiv_kPX6v2laomuxPvK1ujxwpsh1sjg7M55EQ4h6uPkjPfGA0SWBndeBOlGrxk58yYqm4LJAJfOh1jzfN3xYvRGyxgcvFXxCETHA8qPtTl8vaCWdGutqE02_yy_SE25goszDCjT9-Is0RujB0XA2qmqYZuTZB-4S-tVQ19aMljZGIJbXob2OEwaGzm4nNwmk3ihixV1IkJPqINYYoNTJVqf3sPJ3WgYamXIGnVy-I7tWs8l6-7od6hIsZapf8L3O4-3WjW2i1DB-mWasdA4CvgAOUW1Due9vMt566RI1ugO7S1l7rg4lR00_AzrZDWUZqb3z_Cm7tWsbsiS6EC0lnVu3KELAZfYRA4aTkrue5xRtf6tiU8Dgh0ixyp9ZDTQOs4v2_zsnBqGPmsc69dSAvUx02AdtmIZQsx-HRgE7OwxERIXAGeg0a34CV75TDlSABPW0QhkO6avTLFBD5g1wS_iscIaR5VZ1fVVjohAK4d4Xfo6qKc_9gaU0eWhP-Px7gizGC1czFMPBU62pUdTx94PThtgOnIOsqM80LRDkNcCNJNsNNeNXOhg5G9Si2t0IbvkiUzo8Bwed03szdY_w6Dp1ZsGYVB0PyS9z2UnYPMEcHqT7wFqmupqrolQw4NOnhEk3Mz53LGsYZ5h-xLmKS2DTOodX7Gjmrf5ScXe9MP5cetwcqcKKsjfFO4CauX9c5gBUiuOqT6ke8sMXlgUAyUAfWwYXz1lVZXD1qyKc4ju9_4qZ7E3US-rUxtJEzIl5jLC_6SUX0qbfE0mQ11BWxvFgeVZWzMayvdABquqbou9fPbxpRO7l_6LJhAYABcGHZ9mnnaOXJzI6M8VtKsYEMuzA6q4RmmojoDqN9SrH1jKGHC5yYg3gx8OfQCdBSbtISWVDT1eYX4WHEoJXLM3WgEhLevLxSn08XgXFZzFK7-XuhEMjDXRc2Xy3MeDOu2JfAhV_G-bUtjdmEeN5_vPGfYH1aSA1ovga2MowVne1oL_Q2N3wMJwl8MlmXYmXwcBjUOIAd2BORoi6LzDlsCkQxMtzeDOUqmObjj2egyJdtYYJAw7VodZVyY32uErMmB7yY5brbRTLvvZNNiQ9g16fas6GKceFOt4K9laizKA1XMBecgTP_gas09JU3U0i-_17t2iiOv1hv7h6oI28NlR_cbK2dI0dlLtqeCwBmjipaQjpnlxqzv8LMcv_sbux6CDsuIW5Ag8XUAtbNiCZFtUyNIEBqg5ZDM0fYgcL_6SWSBR0160a1oyxeHPt6Zn1uYF6mL1Oo6PVjTogyuSPEj99FpuEXSFlKCjYi9xrjT-dWW2bsxLrfExd7ZLglPINXmkvpafQVxGZDC4LxUJrXMwBIGU4NHYFgqK" height="200" width="auto" /><br><br>]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v7KkrlREwI3xioKZTBIbIBuGwNmlVunW29LF5vza6XMIjfpS6u3qQdIlSBjyvQD9eAmiv9EWdBS1QvMokAwr59LA_mjXV1inJjFJMCkCmpVpEdif2whOG322anWfBjyMI1-XXRSmZAcVi_rpSiv_kPX6v2laomuxPvK1ujxwpsh1sjg7M55EQ4h6uPkjPfGA0SWBndeBOlGrxk58yYqm4LJAJfOh1jzfN3xYvRGyxgcvFXxCETHA8qPtTl8vaCWdGutqE02_yy_SE25goszDCjT9-Is0RujB0XA2qmqYZuTZB-4S-tVQ19aMljZGIJbXob2OEwaGzm4nNwmk3ihixV1IkJPqINYYoNTJVqf3sPJ3WgYamXIGnVy-I7tWs8l6-7od6hIsZapf8L3O4-3WjW2i1DB-mWasdA4CvgAOUW1Due9vMt566RI1ugO7S1l7rg4lR00_AzrZDWUZqb3z_Cm7tWsbsiS6EC0lnVu3KELAZfYRA4aTkrue5xRtf6tiU8Dgh0ixyp9ZDTQOs4v2_zsnBqGPmsc69dSAvUx02AdtmIZQsx-HRgE7OwxERIXAGeg0a34CV75TDlSABPW0QhkO6avTLFBD5g1wS_iscIaR5VZ1fVVjohAK4d4Xfo6qKc_9gaU0eWhP-Px7gizGC1czFMPBU62pUdTx94PThtgOnIOsqM80LRDkNcCNJNsNNeNXOhg5G9Si2t0IbvkiUzo8Bwed03szdY_w6Dp1ZsGYVB0PyS9z2UnYPMEcHqT7wFqmupqrolQw4NOnhEk3Mz53LGsYZ5h-xLmKS2DTOodX7Gjmrf5ScXe9MP5cetwcqcKKsjfFO4CauX9c5gBUiuOqT6ke8sMXlgUAyUAfWwYXz1lVZXD1qyKc4ju9_4qZ7E3US-rUxtJEzIl5jLC_6SUX0qbfE0mQ11BWxvFgeVZWzMayvdABquqbou9fPbxpRO7l_6LJhAYABcGHZ9mnnaOXJzI6M8VtKsYEMuzA6q4RmmojoDqN9SrH1jKGHC5yYg3gx8OfQCdBSbtISWVDT1eYX4WHEoJXLM3WgEhLevLxSn08XgXFZzFK7-XuhEMjDXRc2Xy3MeDOu2JfAhV_G-bUtjdmEeN5_vPGfYH1aSA1ovga2MowVne1oL_Q2N3wMJwl8MlmXYmXwcBjUOIAd2BORoi6LzDlsCkQxMtzeDOUqmObjj2egyJdtYYJAw7VodZVyY32uErMmB7yY5brbRTLvvZNNiQ9g16fas6GKceFOt4K9laizKA1XMBecgTP_gas09JU3U0i-_17t2iiOv1hv7h6oI28NlR_cbK2dI0dlLtqeCwBmjipaQjpnlxqzv8LMcv_sbux6CDsuIW5Ag8XUAtbNiCZFtUyNIEBqg5ZDM0fYgcL_6SWSBR0160a1oyxeHPt6Zn1uYF6mL1Oo6PVjTogyuSPEj99FpuEXSFlKCjYi9xrjT-dWW2bsxLrfExd7ZLglPINXmkvpafQVxGZDC4LxUJrXMwBIGU4NHYFgqK</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -80.068986,42.123097,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 17 - 0.09 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v6AyI3z7iMNshpugm7-ds-gFhZL8L7_qW7-0i-gu2aMxEW4LlryuEf1B94hKESsYD1H1bsBGF_2B1amjXe8h2qQx3uxiln91EmBt7Yn_WzldZJC-bHupv6nbCxp7QD0L8dVi2ImEbPPNN5e3_oG9p06J2aIDiC9hFJl8T18GhiLD9WQ75ixiJBgfUOGpQt2pQOI12cStNnnrHrOMCV3qhN5uQrXfu53aZKKep8a6fjUsGVkRvyFzC_iUKSow9f_uItxXDpEwpTj21GOu1LcbnYPJo98EUiWpyj4SOsPCkEuAoAdY0udlo8TJYWAFZMHH5QELO_T0Z5jmPZvHpp51MhcTk4sXVt6cRZBBNuKjxEqjN0QjYmQwZny0r8QmGqp8US2uOCqi5Xrbf1osulwAFZmb2f5ws6gy3jizvwMSTao99O1fW7hIBb5C2oB6qF-9nPk8IXlkYDbOZZCcgucCwCrTbcqUYXaHsuwc6ocCjt9IO4Gj_Qy-672wE-tDM_PTkm8mwXGTcoaslgzFQnQ5jIrg1z_3lBXLQgDc2uwZZgBEqmAM4UTtNPBEDy2naqNKBSfCwZV_mZYEh75LY5Ky97fH4g08lArbKBmkUepRqzm5Sj8kvSPU9zunF_EA8sX9Yx2JRCod7T0rwE3oWPrmiXRf3GxBLu_xk3U4GgeT8Mgi9Fc3mSpoaBU897EdPrR9HFcAEjld99F54mv8OD-JCir1oyyYs3tJxwGqcQ54U75LO5rDQkfvhD7f3tnKYyopm8JRCZte2amNuP79ciUM9sY6ryDhZOs-boGEozCjROzdO73jrZRS5vAE5IRDIGoa6y9sPKP5rDU25q4euonRdVNI88_jf8suYJ9yj36xvabM1oaT3nu9R6p_KWvvERjBpCouh1DXIXOt-NsjK7f605cSdrZ64q8UiNUJ4V-iAtXgKK58C8PPH81UGg6sjZGM0L0WsiRqH2XnyL4Pj08QvmwDRxvHVKY8npz1n8K_uNVReUs6i5VuupparmAgjezF_pPjx5uFlL89sIbspA0hdlQIMHPkZ7Yo7SzZNvMHzR5GlC8dhTIZ3QyjnQ74Z3bJPc1q7q9EP0MuOciioq3fQyNIwhQgv96HvYSNKesV8vkya5ML0Nbbpx8ag6RfnaY4B4ZA7UpWW2PyReSulqdlZytC7VGP6YVJAVsDJ3BpXI7ki_Iw8hkNQBFd8fAbWdpYAbm_YKs2ApMkmZrDIupWOOpQJAlawS82-9ZtWIc9dCYV_3F1uVLq79jh5avPyb8rIryKOC48PR_VFdMh8Nn7h4SPrSEd-HrcGr0OP6NTTxPiDChz5f68LQog0h09RiWvqqBe3gD6Dk7gJZYeJ0mZgQZcIj2VMXM5iXSURGDhGn4xlfb7ZMhDkm_V9Y6YY8UIqkZEYUAEPOqyD8jv1JrmarLetsSl2CVY3I_xmeBbWwvJsNPxuNgn4yggM7aGoUWgbWRzQ8SJ8hgILY8x89keuX8Ti9XgPbW6W6X7gTQ-uAYF1f9HQ" height="200" width="auto" /><br><br>]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v6AyI3z7iMNshpugm7-ds-gFhZL8L7_qW7-0i-gu2aMxEW4LlryuEf1B94hKESsYD1H1bsBGF_2B1amjXe8h2qQx3uxiln91EmBt7Yn_WzldZJC-bHupv6nbCxp7QD0L8dVi2ImEbPPNN5e3_oG9p06J2aIDiC9hFJl8T18GhiLD9WQ75ixiJBgfUOGpQt2pQOI12cStNnnrHrOMCV3qhN5uQrXfu53aZKKep8a6fjUsGVkRvyFzC_iUKSow9f_uItxXDpEwpTj21GOu1LcbnYPJo98EUiWpyj4SOsPCkEuAoAdY0udlo8TJYWAFZMHH5QELO_T0Z5jmPZvHpp51MhcTk4sXVt6cRZBBNuKjxEqjN0QjYmQwZny0r8QmGqp8US2uOCqi5Xrbf1osulwAFZmb2f5ws6gy3jizvwMSTao99O1fW7hIBb5C2oB6qF-9nPk8IXlkYDbOZZCcgucCwCrTbcqUYXaHsuwc6ocCjt9IO4Gj_Qy-672wE-tDM_PTkm8mwXGTcoaslgzFQnQ5jIrg1z_3lBXLQgDc2uwZZgBEqmAM4UTtNPBEDy2naqNKBSfCwZV_mZYEh75LY5Ky97fH4g08lArbKBmkUepRqzm5Sj8kvSPU9zunF_EA8sX9Yx2JRCod7T0rwE3oWPrmiXRf3GxBLu_xk3U4GgeT8Mgi9Fc3mSpoaBU897EdPrR9HFcAEjld99F54mv8OD-JCir1oyyYs3tJxwGqcQ54U75LO5rDQkfvhD7f3tnKYyopm8JRCZte2amNuP79ciUM9sY6ryDhZOs-boGEozCjROzdO73jrZRS5vAE5IRDIGoa6y9sPKP5rDU25q4euonRdVNI88_jf8suYJ9yj36xvabM1oaT3nu9R6p_KWvvERjBpCouh1DXIXOt-NsjK7f605cSdrZ64q8UiNUJ4V-iAtXgKK58C8PPH81UGg6sjZGM0L0WsiRqH2XnyL4Pj08QvmwDRxvHVKY8npz1n8K_uNVReUs6i5VuupparmAgjezF_pPjx5uFlL89sIbspA0hdlQIMHPkZ7Yo7SzZNvMHzR5GlC8dhTIZ3QyjnQ74Z3bJPc1q7q9EP0MuOciioq3fQyNIwhQgv96HvYSNKesV8vkya5ML0Nbbpx8ag6RfnaY4B4ZA7UpWW2PyReSulqdlZytC7VGP6YVJAVsDJ3BpXI7ki_Iw8hkNQBFd8fAbWdpYAbm_YKs2ApMkmZrDIupWOOpQJAlawS82-9ZtWIc9dCYV_3F1uVLq79jh5avPyb8rIryKOC48PR_VFdMh8Nn7h4SPrSEd-HrcGr0OP6NTTxPiDChz5f68LQog0h09RiWvqqBe3gD6Dk7gJZYeJ0mZgQZcIj2VMXM5iXSURGDhGn4xlfb7ZMhDkm_V9Y6YY8UIqkZEYUAEPOqyD8jv1JrmarLetsSl2CVY3I_xmeBbWwvJsNPxuNgn4yggM7aGoUWgbWRzQ8SJ8hgILY8x89keuX8Ti9XgPbW6W6X7gTQ-uAYF1f9HQ</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -80.064395,42.117147,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 20 - 0.27 acres</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.583452,29.736786,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 22 - 0.27 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v4y2h9CLZGiTCPZvVZLlj6B98BBBthVsBaHDD7dtoyeLsFsx1MA0zY7ghD0_ntUMzBEcOoIC9w6nj3SLCPvMgCylyjIXfg0sHKiroHDHsWPciHw922C5HyFXBXQ859OS_3_oI1qSa9_Xqwf7dTDM8K3WWVm_omTZIVgQutxaSMeNQO3PYia7KnM_NtHjF8b8TOz_gbN-YCC0OXXVEiGKou1-3q3fx8890MJrwICJD9BrA8HEa0a__Z1JZk3vDNw7sIdB19C9xLMSqG6s2sYj_xHfo25cXWQqemiw3wm9GcjSfSyr9OG2Lz0OjTDsqT5oO7zmzsb7cP0AHNsPkWnPmJJ6hcR8QaW3BQ3019g5OPeaNQymyLc8RqnnAs-VY7-EN0iMBr5GpErfvZgvKwnbCRpS_W_7snSllXnufDNgIN9BzPH3cQeAEMkm5NNvxXAOrw_Gj7cL3T6JkbH9OhvPYNn4f90bgC5mhUwRbc2BOtChnUBcOMs-4uQhY75sGbuC4L5fAN8nTt-Qq1ycphbSngnJOo5CZ87ELWuRdE80hbNEmrtXAgEIIZxS_kdHYw89S_D4ms5mccyTeC8s3mnKISCdkZQm3RqCgWb2BV43504qHoFZqOPvr6HK769mVJd85-NkYYeeo3rjr9ewMGmpwZRam7Q95xCNAPTlN3LZfD2-yJeX_mLEEm5zQCirmpi2teZPCcXSAN9arSFTcWC_73uwowKh12F4I8C7zqhrv_k23VTS4BcVcGOF7G3ZhDtLQtZQvxG6owzi7RhgQpYva9YYZIU8xjkCzqTFWXMjI9caqRu04jPG0qnHEzKpQVySTUpjVCjShIuxjq91VroAWTSZ-t_6gtH7PIxX5wdgl0xEna_MvSxM5ruzLkGf-IKpF8McMEQiYTQ-B9sWw3e8i-52GAwbOiPcRpUM8C5ATir1wRMLMP7MfjKMlYjl5bnKWFrEhX0KLhU75BohQ5KqsCwQ3aVSaM64q-5yLpIwgOzCIUkL1I0WIruUmS35AJl40BMOAhU-QdUw00fNOeYExGLttQrRYM2n5R2EiXs0fFYc6AXa9CH-cAUK_IyZbLeLM64gGS5inzfPqZWTJI79wSIDi0xlF_jRLaPYKypsm2T-qBqYKy1ueKW6g3uSBK58chxnOF_ibrkcW981fKsEH7jxKRavDPTbDs9lY2otukpu1w7jr35BBpXSfAbA0_LSehTXv7gYLAJgf4SYpP0COl2m9TNKPvZvbTTGl4eoiE6_-pM5SJF0xUkOtp0yDhuXPprxLGgPZUCwmAUw6k6WPSLG4SsULdOQqdnmx9q8j8oH0Zh1rfbxhv9m74s_sSqzrqATkGLE7LMsojDVdE8je18SOL3YIHi6MXMi1B5KeNXzwYM2AR_bhNnm9nxD9eTfQF741Ylf88T_Q_-q6Q7ljrQtuupOL9Qq-NyF6T82NKP28WdPQI5TbJKJcL5Kh1PmJ4NznqEhcR7KbnH_tSrzzRf_5tVxGQB4w89Jc-WYB8ItLyQ0w" height="200" width="auto" /><br><br>]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v4y2h9CLZGiTCPZvVZLlj6B98BBBthVsBaHDD7dtoyeLsFsx1MA0zY7ghD0_ntUMzBEcOoIC9w6nj3SLCPvMgCylyjIXfg0sHKiroHDHsWPciHw922C5HyFXBXQ859OS_3_oI1qSa9_Xqwf7dTDM8K3WWVm_omTZIVgQutxaSMeNQO3PYia7KnM_NtHjF8b8TOz_gbN-YCC0OXXVEiGKou1-3q3fx8890MJrwICJD9BrA8HEa0a__Z1JZk3vDNw7sIdB19C9xLMSqG6s2sYj_xHfo25cXWQqemiw3wm9GcjSfSyr9OG2Lz0OjTDsqT5oO7zmzsb7cP0AHNsPkWnPmJJ6hcR8QaW3BQ3019g5OPeaNQymyLc8RqnnAs-VY7-EN0iMBr5GpErfvZgvKwnbCRpS_W_7snSllXnufDNgIN9BzPH3cQeAEMkm5NNvxXAOrw_Gj7cL3T6JkbH9OhvPYNn4f90bgC5mhUwRbc2BOtChnUBcOMs-4uQhY75sGbuC4L5fAN8nTt-Qq1ycphbSngnJOo5CZ87ELWuRdE80hbNEmrtXAgEIIZxS_kdHYw89S_D4ms5mccyTeC8s3mnKISCdkZQm3RqCgWb2BV43504qHoFZqOPvr6HK769mVJd85-NkYYeeo3rjr9ewMGmpwZRam7Q95xCNAPTlN3LZfD2-yJeX_mLEEm5zQCirmpi2teZPCcXSAN9arSFTcWC_73uwowKh12F4I8C7zqhrv_k23VTS4BcVcGOF7G3ZhDtLQtZQvxG6owzi7RhgQpYva9YYZIU8xjkCzqTFWXMjI9caqRu04jPG0qnHEzKpQVySTUpjVCjShIuxjq91VroAWTSZ-t_6gtH7PIxX5wdgl0xEna_MvSxM5ruzLkGf-IKpF8McMEQiYTQ-B9sWw3e8i-52GAwbOiPcRpUM8C5ATir1wRMLMP7MfjKMlYjl5bnKWFrEhX0KLhU75BohQ5KqsCwQ3aVSaM64q-5yLpIwgOzCIUkL1I0WIruUmS35AJl40BMOAhU-QdUw00fNOeYExGLttQrRYM2n5R2EiXs0fFYc6AXa9CH-cAUK_IyZbLeLM64gGS5inzfPqZWTJI79wSIDi0xlF_jRLaPYKypsm2T-qBqYKy1ueKW6g3uSBK58chxnOF_ibrkcW981fKsEH7jxKRavDPTbDs9lY2otukpu1w7jr35BBpXSfAbA0_LSehTXv7gYLAJgf4SYpP0COl2m9TNKPvZvbTTGl4eoiE6_-pM5SJF0xUkOtp0yDhuXPprxLGgPZUCwmAUw6k6WPSLG4SsULdOQqdnmx9q8j8oH0Zh1rfbxhv9m74s_sSqzrqATkGLE7LMsojDVdE8je18SOL3YIHi6MXMi1B5KeNXzwYM2AR_bhNnm9nxD9eTfQF741Ylf88T_Q_-q6Q7ljrQtuupOL9Qq-NyF6T82NKP28WdPQI5TbJKJcL5Kh1PmJ4NznqEhcR7KbnH_tSrzzRf_5tVxGQB4w89Jc-WYB8ItLyQ0w</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.584398,29.736783,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 24- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -82.951621,29.491905,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 25- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -82.632779,29.504026,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 31 - 0.33 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v4Wqe0yeddD_RwBYQhMrFmuu89Xynbuc1oWucB6RwV75IJ6_WucKhHtYFsapjNWsPKGiYxNIJXOI0YFcIZ9UKruZXTH31WNsp4xqdG3SG6bKgbHV7-NgN7z8aM_iTjpVVNOVtlNqWLrd3NeniZSzIcsp1JgtIwRtkG36DYCOUFoop0phZRG4xhYTbVj1HGKYV8GPOdmtqb-KacBuZf4oBvdWWBcMgQaKeTGuGK0jZtgsEvQaQMuWwJtNyr88yGIa0tKhck1KfBER6KFJKsBynA9wt1w8Jrqmm_bTWmpE2weGnb9YrG4XUhyZJoFQBySxVOL0Fy_met6EYRFNhjA1sOGmdhnPbjJEyT7rWocifZUCUDffRZTGMAr8IFeUmJcoYi7nmlpNDoZCpsekscSnED833cO2M3rr9WqDVM1wbz-V_eo9ShMxeKSCa7cvy9ygBibW5L7K6PrLlLup8iD0zUnHW8IGCVDElFtxtEtbctko7KyrwaNn4BwNcNqX5Ogt_Fzfur9TXuGLtlzEXdQeCoUl97k2zSSacFa41mJQIs_FsRHKBAkIlIOfbjzm_vaQzmpcmCxQqDsEsieri0VFrkZk0kxD29LM8Rmwfyr7AHKEAc5qZeYYlh26oUbomt3FQhy5_8cD6NPdCQwkhH1bFbmE5X-TlkyrMXxDy_sV9EmuuQZ4EuOXVaTEtEOyWsmMDJxuXg9NQj9e_x3iX5KSZqZlou5irETDAipUtWIF30GHGTXWPih-J0ChM1tIqAxyZbhW4vqlU5W-wb0hvjZFcw8xG-TcLMAIdoxHWqGCE0GVo1bTlJnFv_V63hODe3IDB_PULNSjYjkCwh32MJYWimLO4vLcOf8qB0GqPn0JcYsdc_1VHln9aef1jl8xzKeZrD7qGbmS7MplOqVGbOb8u5nSQLkWHwjzYAB2vnl5Z78f3H2_qRXUo0kYmjimUysrfizCM8ka4MO7bJhrEQ5UBG3AfkTPqouwk7y70597waPkTGvoHY-SrBM8eaFiZX7cYlbMkjlAooc-buyTmdy-M5sHvg1YB4zbfWc-ge7-2_DCAdzZB3nJSldaagA7OQQQvn5cWX7mm9tsofv1t3-W5aMM12VmIDOlg_VuRaCrwDZU3cdN44YjvdretjEsZqDZ6_I4T6X31jVlQHViYvSMOmxfb8ppmzgvtoyvLOYs5iVn-KvD5DzglJLRhYwT17otOl5f3vIBGOhQFZgbO9aK_g_4ZKNZQdlzknX74seyvy4YEG-umkr7gEq5YKfqk1YXi43EVSHNarTluh2_4hBkBpxsED93yyFcJt5qF0j55craTbIylwP4fv9t0_LF-82BpKAQ3TuAioeZXLER_5OD4F_UWNzwVCmT26fns6KS8b242DblFb059aP0vHnpzYhvbMJIBTGYKqSWZAczbS8lGyNVkMVkhXzZgi51Y27-yZNCk5VKTArgFJtf_AtKBVb8vQOOlWb23GAiGifog-_YiGzJYu-BohE95Ozkc-adubcX2x49Sc" height="200" width="auto" /><br><br>Parcel ID: 35-09-24-4076-0360-0160<br>Address: Annette Ave, Interlachen, FL 32148]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v4Wqe0yeddD_RwBYQhMrFmuu89Xynbuc1oWucB6RwV75IJ6_WucKhHtYFsapjNWsPKGiYxNIJXOI0YFcIZ9UKruZXTH31WNsp4xqdG3SG6bKgbHV7-NgN7z8aM_iTjpVVNOVtlNqWLrd3NeniZSzIcsp1JgtIwRtkG36DYCOUFoop0phZRG4xhYTbVj1HGKYV8GPOdmtqb-KacBuZf4oBvdWWBcMgQaKeTGuGK0jZtgsEvQaQMuWwJtNyr88yGIa0tKhck1KfBER6KFJKsBynA9wt1w8Jrqmm_bTWmpE2weGnb9YrG4XUhyZJoFQBySxVOL0Fy_met6EYRFNhjA1sOGmdhnPbjJEyT7rWocifZUCUDffRZTGMAr8IFeUmJcoYi7nmlpNDoZCpsekscSnED833cO2M3rr9WqDVM1wbz-V_eo9ShMxeKSCa7cvy9ygBibW5L7K6PrLlLup8iD0zUnHW8IGCVDElFtxtEtbctko7KyrwaNn4BwNcNqX5Ogt_Fzfur9TXuGLtlzEXdQeCoUl97k2zSSacFa41mJQIs_FsRHKBAkIlIOfbjzm_vaQzmpcmCxQqDsEsieri0VFrkZk0kxD29LM8Rmwfyr7AHKEAc5qZeYYlh26oUbomt3FQhy5_8cD6NPdCQwkhH1bFbmE5X-TlkyrMXxDy_sV9EmuuQZ4EuOXVaTEtEOyWsmMDJxuXg9NQj9e_x3iX5KSZqZlou5irETDAipUtWIF30GHGTXWPih-J0ChM1tIqAxyZbhW4vqlU5W-wb0hvjZFcw8xG-TcLMAIdoxHWqGCE0GVo1bTlJnFv_V63hODe3IDB_PULNSjYjkCwh32MJYWimLO4vLcOf8qB0GqPn0JcYsdc_1VHln9aef1jl8xzKeZrD7qGbmS7MplOqVGbOb8u5nSQLkWHwjzYAB2vnl5Z78f3H2_qRXUo0kYmjimUysrfizCM8ka4MO7bJhrEQ5UBG3AfkTPqouwk7y70597waPkTGvoHY-SrBM8eaFiZX7cYlbMkjlAooc-buyTmdy-M5sHvg1YB4zbfWc-ge7-2_DCAdzZB3nJSldaagA7OQQQvn5cWX7mm9tsofv1t3-W5aMM12VmIDOlg_VuRaCrwDZU3cdN44YjvdretjEsZqDZ6_I4T6X31jVlQHViYvSMOmxfb8ppmzgvtoyvLOYs5iVn-KvD5DzglJLRhYwT17otOl5f3vIBGOhQFZgbO9aK_g_4ZKNZQdlzknX74seyvy4YEG-umkr7gEq5YKfqk1YXi43EVSHNarTluh2_4hBkBpxsED93yyFcJt5qF0j55craTbIylwP4fv9t0_LF-82BpKAQ3TuAioeZXLER_5OD4F_UWNzwVCmT26fns6KS8b242DblFb059aP0vHnpzYhvbMJIBTGYKqSWZAczbS8lGyNVkMVkhXzZgi51Y27-yZNCk5VKTArgFJtf_AtKBVb8vQOOlWb23GAiGifog-_YiGzJYu-BohE95Ozkc-adubcX2x49Sc</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.871756,29.670684,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 32 - 0.23 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v4Uf2iaUUh7X875r5r7XWD2alm-H7neiZxxIviwjLDJCtkrPhsD-PwWpCwK5qHxsYJqHsaRq3ZJV6DNeP6ZwaoFHbS_AAuXP6F6nwcevBPb8zb_R1kQspRfLLRw-nZUmSvxRauVFXO8HoK4yy3jwnnAdZdHYGPuarQHxZs0SuyDVLZMK7PCa_iT36ob8fAC5UMkO6vyAZ20coTYa4Ak0jDoz1P4AZ0H49nS0n7nTvNWirGBMWqvOSBseLZV7qGlPHnxSADId-LRGHXelm1NAfRG418PWs4fpbsuU5el6LI-WYhaDfxAQ4QIO51BTBvzU61DIzeCK418RpQOVXPfFQVEuIbmf34NidljuV-tKhrfiIUPpE3zhOzYrwk3NazBikZmdlKr1syTlaf20jf0_5y7Q67f3fAQaVeKhLXybOe39ZCvsUkUMaesMya6PhJou4J_XSawi3DKxm1x3deVrN00ar1I-LVwVJtiOIpTwcf_NcIDisdWuBw597m0IhyZLlRYYqlyWDbhA_8ep_z8JrQTHmcdB6AFe5MncpEnMZG3-KOC7xtY12bZaYMH0sNWUh0o4GOMjWThW58_St_rowqUsxDWQXqL3OLjU4LSMlFq1qyKoP8WQ0jKfGdd4aVS5_WlbQmEijLikW9wEmLXnkjN890pxwD_1A3ndyTzVq5UuDRlbpuY-1dx0OG3fh-VfYiuxMf62450yy9n_RzsU4yr0vmix9wCpiLcKhvfjHhdfzQfnnWSWOoCuElvRewHnPpbPNmtLjm_piIaHRopYthAnd0FYXE1yr0vbktsrsf1ozchUq4MOCafNeOJPpbYzGM0Xz88-ZfbDCzTsyQuN_TG0huBeqrMWrs9e25HQC3nW4Hw-H3kGFBCGJ4ZR0FhkEFfNx5STIlvwizejLcldE5-bRPcJF4APnywhKKfz3yYH4Bhs2MAvVAgepIEiho75n1NBB4VX31mJyAH2KTwGZ5O08KC5ZiTQ4AoKwAZ4VnblTkmj9mE7aENWAuOuHOrZY0Y64Mh8hkDYwgOFmnkOlCqSCUjXzkTBGcgkdBDv_JmboNG183TOZTanxZmOPxPoReghi-jWXJl_gnxX30ScPnjUWHbHd0v7NoG69RfQdwa2j4jpw2DRwh1Jj7cOu0zGxrg69q-6IJS1aO6cH2bleM4kulAtbx6Cdzut-Gnwp5U24y67HojL-MzCISTU2tX22HbgrP4lAD28SKcrSNT3nBk_V20zjk6f_Yl0b7m1LWHV3Tni6z9unOqcxPWw28zhClEuY3CZ1zl_vkoXpUgA5aa3s0QAz82vuCNRGhaoL8CYzGBQx0EFfAgDvPeNDB4RiCjjytY7KhwrPSxxVt632eBrl0v2rWesyDrgmEbNYyp2xnOw6pjvsEswo9STsY0JTK65sr38s7f8RoTKDBTuNC_64oPYVXXCIcgZyNuFvuk2TJr2d2_-YrW2-twvjIkCXDcrJbXwecFyj1TCZ4HcRzO50yz412nQU5e20nP-CrrBYdh68M" height="200" width="auto" /><br><br>]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v4Uf2iaUUh7X875r5r7XWD2alm-H7neiZxxIviwjLDJCtkrPhsD-PwWpCwK5qHxsYJqHsaRq3ZJV6DNeP6ZwaoFHbS_AAuXP6F6nwcevBPb8zb_R1kQspRfLLRw-nZUmSvxRauVFXO8HoK4yy3jwnnAdZdHYGPuarQHxZs0SuyDVLZMK7PCa_iT36ob8fAC5UMkO6vyAZ20coTYa4Ak0jDoz1P4AZ0H49nS0n7nTvNWirGBMWqvOSBseLZV7qGlPHnxSADId-LRGHXelm1NAfRG418PWs4fpbsuU5el6LI-WYhaDfxAQ4QIO51BTBvzU61DIzeCK418RpQOVXPfFQVEuIbmf34NidljuV-tKhrfiIUPpE3zhOzYrwk3NazBikZmdlKr1syTlaf20jf0_5y7Q67f3fAQaVeKhLXybOe39ZCvsUkUMaesMya6PhJou4J_XSawi3DKxm1x3deVrN00ar1I-LVwVJtiOIpTwcf_NcIDisdWuBw597m0IhyZLlRYYqlyWDbhA_8ep_z8JrQTHmcdB6AFe5MncpEnMZG3-KOC7xtY12bZaYMH0sNWUh0o4GOMjWThW58_St_rowqUsxDWQXqL3OLjU4LSMlFq1qyKoP8WQ0jKfGdd4aVS5_WlbQmEijLikW9wEmLXnkjN890pxwD_1A3ndyTzVq5UuDRlbpuY-1dx0OG3fh-VfYiuxMf62450yy9n_RzsU4yr0vmix9wCpiLcKhvfjHhdfzQfnnWSWOoCuElvRewHnPpbPNmtLjm_piIaHRopYthAnd0FYXE1yr0vbktsrsf1ozchUq4MOCafNeOJPpbYzGM0Xz88-ZfbDCzTsyQuN_TG0huBeqrMWrs9e25HQC3nW4Hw-H3kGFBCGJ4ZR0FhkEFfNx5STIlvwizejLcldE5-bRPcJF4APnywhKKfz3yYH4Bhs2MAvVAgepIEiho75n1NBB4VX31mJyAH2KTwGZ5O08KC5ZiTQ4AoKwAZ4VnblTkmj9mE7aENWAuOuHOrZY0Y64Mh8hkDYwgOFmnkOlCqSCUjXzkTBGcgkdBDv_JmboNG183TOZTanxZmOPxPoReghi-jWXJl_gnxX30ScPnjUWHbHd0v7NoG69RfQdwa2j4jpw2DRwh1Jj7cOu0zGxrg69q-6IJS1aO6cH2bleM4kulAtbx6Cdzut-Gnwp5U24y67HojL-MzCISTU2tX22HbgrP4lAD28SKcrSNT3nBk_V20zjk6f_Yl0b7m1LWHV3Tni6z9unOqcxPWw28zhClEuY3CZ1zl_vkoXpUgA5aa3s0QAz82vuCNRGhaoL8CYzGBQx0EFfAgDvPeNDB4RiCjjytY7KhwrPSxxVt632eBrl0v2rWesyDrgmEbNYyp2xnOw6pjvsEswo9STsY0JTK65sr38s7f8RoTKDBTuNC_64oPYVXXCIcgZyNuFvuk2TJr2d2_-YrW2-twvjIkCXDcrJbXwecFyj1TCZ4HcRzO50yz412nQU5e20nP-CrrBYdh68M</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.941266,29.639835,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 33- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.948099,29.61502,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 35- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.851881,29.699728,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 36 - 0.21 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v6UiO3ZuhqQufnJjFpm3op-6RVs5C1GPs1Q9BqF_DAbqAZAKmYJVKKz-bDL-IV1TRD2g3WW6ViUHBfgb2xzJYPBcN00mMztixpv07DXPHT4mdyvr5yktS60DMp_XkdRR0Fxtw8W43zVK_3-v7E73x7qxl56w2-nteWXFOsBAsrX01idEOwPYLSHY8f5E8Py0ZzlYS0c-eD05CNxDz3sgT1WWaZkZpfXUjZMZMez6iAqcsvCtSTsIxNLY7M2obmrFm-ky69D-5XWqzRJWZ1qFEQ7I8F5KJ50_fDtWHib2cmoNQANqosUwtaRhH4KfaruRAi8uvqcj4atHpeIu9YF1--cEJ6M6J4VJiWAnWWQzgsj-l2md4hAIjttsshaRVVOksCqc3kdwjqPxvI20D29iXYAR41dXrKXlnHAbTKOjoc_LYjVMFtw-IPIwZNH9X1dDxBATcoOYHol_mqRt3zsBf1GO8Vxf5pVGPbZOUohOPNiQ1SJWZ0fJ2iaQARQAJ1H5ifajFeuT4_mZQVKkIcU4AyohJENFjh8XYot5psyEkmTh0knOyRRAzB4ilT4q38IMFrqO9qBdlxterd7F39fwugDxa08xIQx-YBCBu8K6_g5wudr7J2o6zF3n1mIRJve_B_NKldbMIaxLx4vn5688gih5vNrg5fqIEmAPN8XTic20ggL6k8Kh5POgWs4vUs0IBO-Eycl2z10MYDDeAlj0gw_FREKeZWVpbijCxsWqR8Njc-uUGqu1B0FcvEWOV9LzNi_aCH8wl1A-06phj8vFXtDNDr56YZQlrDrhWveGGVZvRpl8C8AeFXLhYoAcdleYKueCMZ2gQuDycATmEvmlVdJz-L8Rs0srv0Io_1Xn_PVL2MONZppK8bU1_OmYHolj6vJMkLO-JCKb5_-iqHhjkhRvd6gf_cdFul4VEmKOW8ByfODq1f7QL8bfBJg2Mecr_-qBt4NBNJaZaYW7vPp1c-Fck53hlDkB7XxzzvwbUtRQ8ZjP0u3NC1JQOwbRkrFsgjaKawJPGr4vedKfQ-HKRrFxNBCJmpV0vhmQ3oAWYPIXSSu1Dr_rSLSUXKNT6Zf-aUc_pZnfU-fkCkXncBzysuyswFg4If1DutEhC-fQVl-pPd9ZqXqXyo4aCzTPF6y1axqDrWn6kU3QGHTZdSt-JhtYv_SGpJXKpkHFTo4pHXj6lr6Tz2QUzrL4o6V-oF7ROMuxRy5KZJ8D6Zsl7AkiLROzdmZudt1gFEQDoaPNVCJjm-ToYp4iXohtLht5f4NOUoPTXgD14xvoQ4h8iJo1mbYBcuQQH3h-G77qD7EzHwG6qT-kZYlAkF1vklJiBgKfvohdbEir80ZBjUgdcoISRCezyuWTrL1xPeLyAL8N9QFhxplDmACVpTFnTndZUVPHGoP47sPggZ-WcHMYD4FdRQ8_qQB47EP6-ee0qnc8TBes2qczcE5k6VcA0269qvNKkuIlyYdkUudf-wiwu3GNHMZhmq_Qxa0tNxTzk3o2HE6q2G83mM" height="200" width="auto" /><br><br>]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v6UiO3ZuhqQufnJjFpm3op-6RVs5C1GPs1Q9BqF_DAbqAZAKmYJVKKz-bDL-IV1TRD2g3WW6ViUHBfgb2xzJYPBcN00mMztixpv07DXPHT4mdyvr5yktS60DMp_XkdRR0Fxtw8W43zVK_3-v7E73x7qxl56w2-nteWXFOsBAsrX01idEOwPYLSHY8f5E8Py0ZzlYS0c-eD05CNxDz3sgT1WWaZkZpfXUjZMZMez6iAqcsvCtSTsIxNLY7M2obmrFm-ky69D-5XWqzRJWZ1qFEQ7I8F5KJ50_fDtWHib2cmoNQANqosUwtaRhH4KfaruRAi8uvqcj4atHpeIu9YF1--cEJ6M6J4VJiWAnWWQzgsj-l2md4hAIjttsshaRVVOksCqc3kdwjqPxvI20D29iXYAR41dXrKXlnHAbTKOjoc_LYjVMFtw-IPIwZNH9X1dDxBATcoOYHol_mqRt3zsBf1GO8Vxf5pVGPbZOUohOPNiQ1SJWZ0fJ2iaQARQAJ1H5ifajFeuT4_mZQVKkIcU4AyohJENFjh8XYot5psyEkmTh0knOyRRAzB4ilT4q38IMFrqO9qBdlxterd7F39fwugDxa08xIQx-YBCBu8K6_g5wudr7J2o6zF3n1mIRJve_B_NKldbMIaxLx4vn5688gih5vNrg5fqIEmAPN8XTic20ggL6k8Kh5POgWs4vUs0IBO-Eycl2z10MYDDeAlj0gw_FREKeZWVpbijCxsWqR8Njc-uUGqu1B0FcvEWOV9LzNi_aCH8wl1A-06phj8vFXtDNDr56YZQlrDrhWveGGVZvRpl8C8AeFXLhYoAcdleYKueCMZ2gQuDycATmEvmlVdJz-L8Rs0srv0Io_1Xn_PVL2MONZppK8bU1_OmYHolj6vJMkLO-JCKb5_-iqHhjkhRvd6gf_cdFul4VEmKOW8ByfODq1f7QL8bfBJg2Mecr_-qBt4NBNJaZaYW7vPp1c-Fck53hlDkB7XxzzvwbUtRQ8ZjP0u3NC1JQOwbRkrFsgjaKawJPGr4vedKfQ-HKRrFxNBCJmpV0vhmQ3oAWYPIXSSu1Dr_rSLSUXKNT6Zf-aUc_pZnfU-fkCkXncBzysuyswFg4If1DutEhC-fQVl-pPd9ZqXqXyo4aCzTPF6y1axqDrWn6kU3QGHTZdSt-JhtYv_SGpJXKpkHFTo4pHXj6lr6Tz2QUzrL4o6V-oF7ROMuxRy5KZJ8D6Zsl7AkiLROzdmZudt1gFEQDoaPNVCJjm-ToYp4iXohtLht5f4NOUoPTXgD14xvoQ4h8iJo1mbYBcuQQH3h-G77qD7EzHwG6qT-kZYlAkF1vklJiBgKfvohdbEir80ZBjUgdcoISRCezyuWTrL1xPeLyAL8N9QFhxplDmACVpTFnTndZUVPHGoP47sPggZ-WcHMYD4FdRQ8_qQB47EP6-ee0qnc8TBes2qczcE5k6VcA0269qvNKkuIlyYdkUudf-wiwu3GNHMZhmq_Qxa0tNxTzk3o2HE6q2G83mM</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.849868,29.69706,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 37 - 0.22 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v7nc_XT5IurbfQrUU1lt-RxWizb-1JltwKNR9xe6rW7Zr7jLKGWfaJ-lxpRf1rBTm7-8GxCMJuxxDKLT8mMj-JPwpMMXEykN2UWXjAuubXOANO89J_zw-Y1XLnkPRwo5Tod6LTu3M_S1-PuKK762OGzBgf1-WlBNGeqeG41F74mnIdDNyE3l74FjvHKJl7fSdo4TxQdDyjsD9IgVTJnCPfjx4WwMIumODOTUKmV5dXw5nQ9KmUyOaFjmAXXkzn2BdmZ-AXfiW3bULYNzc_JC7Ds3lb0TgimCyd6FZYqPFuZ-kGfzzeZedFyltsXNWg9MnB3bwYE_e6-wYb3zm-LDua-J2yjkV-amTJODYzbZe-yuX7aqmWFq09nsYIsb_APacrfpT4LkEXKvgmJ91PnkfnLrbIWd3B8Wtn7NnELWpvzOuy3X_RPHtRMHQKHV6TrQYD29wuUpRe6S9lViMHb3rZFE5rwn1OYJp7hpIOBWlaMWP5OoUjX1k5_Ks589-AKYwY0ASkb231gnSUnOcSY-Kz-PrlM-pLmkH8nzzBHxqvb9QpvxsMRq__FQEe5WTcfDCsRom0TUVTcohgB5eILTNArOb7ToChuajG1EANTM7jInGRbqJt7SOPjOh0KR6vdqshYqvlYbZSPJ6WNh_s4eeWUKdIt8AT06KcLdHIFiRKV4QdR-o-eAWVNqOi2Etz8VTQE5fIKv1AMbh1jxOJW72gQCrhiM_smSQwz_2_TL6__p9zpJBSuRyQQpVUM-53QugUKhAvvFvVs4QPQjzDn3gau1jbTuUWt_MaNHKgwA1I29QnxnfO8tL5Ta7WGDQnFBlluV6aYT7mRl-7tqd2iQVbQtLbmmWLAd4KmgPVYfNvKriIdFDDkAN32ZbV8fngbm8InvTXU6m699FQGc073Yvhjj2v3GKc5dJEc-6mkHAbAmT9f202XiDYDdy5sMn1n4m-V3j1-8AjAu1IWfO1VbMjdy23M97OrBh_NGWTI3k_Yq8HioStzMxdAIf7TzIscHMvILLo7y9UtzIE9LsYagq0-oGO6_N8wdXHqD_Lh_0uzJcITc2UPQTZIXRp4tU_Jlj1PdP4t10_G5Lh0I857pGpiqgJsUpzV2vvKiNc_av8ppKcNbAJ9HNM1kKr24zdhFTXHhihM6_l_N2o3wnIT6T75-m0bG_Bmwq_Uxdg4kTKnvNA7UE7c2Zy50lH6dGkDnndSoR4n3RTQRsmPuOwfTNGqKLe5Ss6EJ6orDKTUlqUSERS-kzVIvEfawu3LyCdty05WOwpYqVtstPJ-nVG1oycvg5uXwKm4c8T2325JNYdXZyt9j_IENS4bR5YFBYZY-bTvjiwNkCPjcZc1q5HrRxsorpfjpvcCGNSo_a1NWDITkh-TL_pad9YLXcjmS09dXMFId5E5bmrcq4WlnJaDTIg1N-ZVqc9ItVeBeA-7CpqZvpQtWkp3UPuXHFDqpijJkmWBAGLOx3wBaOmJBJnlVSfi21LD8mVfUqOKqJVosxFqpImmhVc" height="200" width="auto" /><br><br>]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v7nc_XT5IurbfQrUU1lt-RxWizb-1JltwKNR9xe6rW7Zr7jLKGWfaJ-lxpRf1rBTm7-8GxCMJuxxDKLT8mMj-JPwpMMXEykN2UWXjAuubXOANO89J_zw-Y1XLnkPRwo5Tod6LTu3M_S1-PuKK762OGzBgf1-WlBNGeqeG41F74mnIdDNyE3l74FjvHKJl7fSdo4TxQdDyjsD9IgVTJnCPfjx4WwMIumODOTUKmV5dXw5nQ9KmUyOaFjmAXXkzn2BdmZ-AXfiW3bULYNzc_JC7Ds3lb0TgimCyd6FZYqPFuZ-kGfzzeZedFyltsXNWg9MnB3bwYE_e6-wYb3zm-LDua-J2yjkV-amTJODYzbZe-yuX7aqmWFq09nsYIsb_APacrfpT4LkEXKvgmJ91PnkfnLrbIWd3B8Wtn7NnELWpvzOuy3X_RPHtRMHQKHV6TrQYD29wuUpRe6S9lViMHb3rZFE5rwn1OYJp7hpIOBWlaMWP5OoUjX1k5_Ks589-AKYwY0ASkb231gnSUnOcSY-Kz-PrlM-pLmkH8nzzBHxqvb9QpvxsMRq__FQEe5WTcfDCsRom0TUVTcohgB5eILTNArOb7ToChuajG1EANTM7jInGRbqJt7SOPjOh0KR6vdqshYqvlYbZSPJ6WNh_s4eeWUKdIt8AT06KcLdHIFiRKV4QdR-o-eAWVNqOi2Etz8VTQE5fIKv1AMbh1jxOJW72gQCrhiM_smSQwz_2_TL6__p9zpJBSuRyQQpVUM-53QugUKhAvvFvVs4QPQjzDn3gau1jbTuUWt_MaNHKgwA1I29QnxnfO8tL5Ta7WGDQnFBlluV6aYT7mRl-7tqd2iQVbQtLbmmWLAd4KmgPVYfNvKriIdFDDkAN32ZbV8fngbm8InvTXU6m699FQGc073Yvhjj2v3GKc5dJEc-6mkHAbAmT9f202XiDYDdy5sMn1n4m-V3j1-8AjAu1IWfO1VbMjdy23M97OrBh_NGWTI3k_Yq8HioStzMxdAIf7TzIscHMvILLo7y9UtzIE9LsYagq0-oGO6_N8wdXHqD_Lh_0uzJcITc2UPQTZIXRp4tU_Jlj1PdP4t10_G5Lh0I857pGpiqgJsUpzV2vvKiNc_av8ppKcNbAJ9HNM1kKr24zdhFTXHhihM6_l_N2o3wnIT6T75-m0bG_Bmwq_Uxdg4kTKnvNA7UE7c2Zy50lH6dGkDnndSoR4n3RTQRsmPuOwfTNGqKLe5Ss6EJ6orDKTUlqUSERS-kzVIvEfawu3LyCdty05WOwpYqVtstPJ-nVG1oycvg5uXwKm4c8T2325JNYdXZyt9j_IENS4bR5YFBYZY-bTvjiwNkCPjcZc1q5HrRxsorpfjpvcCGNSo_a1NWDITkh-TL_pad9YLXcjmS09dXMFId5E5bmrcq4WlnJaDTIg1N-ZVqc9ItVeBeA-7CpqZvpQtWkp3UPuXHFDqpijJkmWBAGLOx3wBaOmJBJnlVSfi21LD8mVfUqOKqJVosxFqpImmhVc</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.850478,29.698087,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 39 - 0.26 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v7LqygtNy97lA9n9THxlnJjK2wD_fQJRUvsR1JRjZPvnxa2J1_nSHdiNkFXWlY4qRBGbSA1fyyfAFnx7CHBx6z5BYXEPyT2Cx3_eZOWQu45jvwURqkFQi_xeg8RD5QUPtF3LO0SRf5DzYkoE6LDjytog6POsEuRUX3rmoM0E1Wz7mI-CvmzhTw0HorgxeuLKLF4aXyAAyoMzD9qUVzl1DyV8ZX6WqnEpKrhJkDpFUks9mqCcg4TtSAWx9PvN994adHy7Z6DBm-mnRpBkEOuZVAr-NzyhHB1XzgNfoW7F6cMfc5ty48K-pjJgJlqMU07jZ1wbgSceYFR-jFfnZgtoefhAhh5CowJWWS0m8lsWiUcx4E_9HXLTb4dXd7K39jfDah0sNUxj5V0EyQVaWH0Lu0jf57S-DWAcQSBWVXmvdaFRd2cU9PB8POUzyG8Yb5AdlnJY8bBJcjW48cU8xNLsJP1MD-iIQ-Ellg0dB-YBPMlVs1YfKh90Vuay5iCPNc3iDNFZbXebgKwbT7GEwHLjk1UTjtw5nh-iFy4eRNc__MCdwCxfk3go5r66_3OebIzWqVM1HjkZDrnBxVsPephP3MNKipN1njVhqrukvCJcfR2jLxcdlPa5uUoQ1Y-pwCh7Ex6T6SZumg-xVC06mdPsBGoSKgPKF43o7P6qjMYE2MDs0ulaqXBOqCuwABwED9cAGnUtGZdhPyaJOk6MzIjOjUjULFun2wc2Uyyqg9pmo-hY23E3yuQPvIs4b5OQSJ_ek4LMUglDRooGO5KFqJKx0UuTDJC3LUDWmNTrtULQtD5qp2kS0iEJOxVXnwoZDXgKyhGSQ9gkjkTSjouixtEwOuE_J4ZgLcSYw6DULn8B29Bi0NU5MCrIvwbnOo5S2jh2eZ99AsYCHco6RuqFztXWrpu4Ky2nsr7hdQ6lZWvxKFiSp1N3pS7CeAwYsF0xkQ3P-WbEgVMdLQLzTJRQUque2CvXYVOC-D1hji-f9lh4QsGEUZ1tJB-yIXb3i92y4bv3k5XkaCherLriyR2hnmJazRVquieXWuYPrBxcTzorzl6icHC2xkrnpFhzKKndp4qsbfe4oVQcj6JL9UP8tEcNT8fNknL_hPubyNtlt5NYa0Vm_7LW8JaN7P_ocWNYGLcPbYgc_TfwJx87kCZ5QmMaCIVWTHEklOq5bUpCBT21YYG6JFllpOnrXyHIr3aITIuegijgPdKonjrVYO9397iIOFGJqhDrrpD6aRcQdYoF81xllAw9of7kQYhzbygBMPKHanPUYTDTlnqMvNkWIoTSLRl5RfLt_kMrehSgCu3x1oSc4F_VZ6wISIOW4az2Fns9qDOwxgGsJxOGF5LFD8bPPAlU_lNgcGMyu9aLDyKiP8KRKN2AolsykkWJ9P79ejOSMQyHCItWyXBXG5kOSbmLIhEn-evP-HK1TltvI5OjQFRaTUSPl1ZNFPonfut6JrY2yYP-XD3TY7uwEl5TS7CiGgpO1A0FEDFLsYlWbL531S3bznz" height="200" width="auto" /><br><br>]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v7LqygtNy97lA9n9THxlnJjK2wD_fQJRUvsR1JRjZPvnxa2J1_nSHdiNkFXWlY4qRBGbSA1fyyfAFnx7CHBx6z5BYXEPyT2Cx3_eZOWQu45jvwURqkFQi_xeg8RD5QUPtF3LO0SRf5DzYkoE6LDjytog6POsEuRUX3rmoM0E1Wz7mI-CvmzhTw0HorgxeuLKLF4aXyAAyoMzD9qUVzl1DyV8ZX6WqnEpKrhJkDpFUks9mqCcg4TtSAWx9PvN994adHy7Z6DBm-mnRpBkEOuZVAr-NzyhHB1XzgNfoW7F6cMfc5ty48K-pjJgJlqMU07jZ1wbgSceYFR-jFfnZgtoefhAhh5CowJWWS0m8lsWiUcx4E_9HXLTb4dXd7K39jfDah0sNUxj5V0EyQVaWH0Lu0jf57S-DWAcQSBWVXmvdaFRd2cU9PB8POUzyG8Yb5AdlnJY8bBJcjW48cU8xNLsJP1MD-iIQ-Ellg0dB-YBPMlVs1YfKh90Vuay5iCPNc3iDNFZbXebgKwbT7GEwHLjk1UTjtw5nh-iFy4eRNc__MCdwCxfk3go5r66_3OebIzWqVM1HjkZDrnBxVsPephP3MNKipN1njVhqrukvCJcfR2jLxcdlPa5uUoQ1Y-pwCh7Ex6T6SZumg-xVC06mdPsBGoSKgPKF43o7P6qjMYE2MDs0ulaqXBOqCuwABwED9cAGnUtGZdhPyaJOk6MzIjOjUjULFun2wc2Uyyqg9pmo-hY23E3yuQPvIs4b5OQSJ_ek4LMUglDRooGO5KFqJKx0UuTDJC3LUDWmNTrtULQtD5qp2kS0iEJOxVXnwoZDXgKyhGSQ9gkjkTSjouixtEwOuE_J4ZgLcSYw6DULn8B29Bi0NU5MCrIvwbnOo5S2jh2eZ99AsYCHco6RuqFztXWrpu4Ky2nsr7hdQ6lZWvxKFiSp1N3pS7CeAwYsF0xkQ3P-WbEgVMdLQLzTJRQUque2CvXYVOC-D1hji-f9lh4QsGEUZ1tJB-yIXb3i92y4bv3k5XkaCherLriyR2hnmJazRVquieXWuYPrBxcTzorzl6icHC2xkrnpFhzKKndp4qsbfe4oVQcj6JL9UP8tEcNT8fNknL_hPubyNtlt5NYa0Vm_7LW8JaN7P_ocWNYGLcPbYgc_TfwJx87kCZ5QmMaCIVWTHEklOq5bUpCBT21YYG6JFllpOnrXyHIr3aITIuegijgPdKonjrVYO9397iIOFGJqhDrrpD6aRcQdYoF81xllAw9of7kQYhzbygBMPKHanPUYTDTlnqMvNkWIoTSLRl5RfLt_kMrehSgCu3x1oSc4F_VZ6wISIOW4az2Fns9qDOwxgGsJxOGF5LFD8bPPAlU_lNgcGMyu9aLDyKiP8KRKN2AolsykkWJ9P79ejOSMQyHCItWyXBXG5kOSbmLIhEn-evP-HK1TltvI5OjQFRaTUSPl1ZNFPonfut6JrY2yYP-XD3TY7uwEl5TS7CiGgpO1A0FEDFLsYlWbL531S3bznz</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.906303,29.626373,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 40 - 0.28 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v4QkEXpNaElLgGkKiiZgDtRofO9HbM5ts-H2gu7LjEwWKyNYf4zeuegTxUVbeJ19JnGW6C9Pef7kH3avARllLcTQNkx12tRmiITwWQ5VGCzqqpk0ID9C9ek1hvsO395z_sudmu2-sXicySqUif-_vn7sLK_E88IQwvd2Xx2bG8FD32iPA6BIDo3SY7z08CHoW4tzfCN9DK6OgSLQITvxMgmeUgxGQfGBd01Ml9pxkCidt5G9xdmZOb-TPMh7H3L0CZQwfIKNUouJG8bfjDAH-A5jgQeLdQ4222VcaLh8i2A1R1LxRSHVKpTceL9J7VuBpvO_we5gt0hkxqcjb6DFZk-qbv4e7JgxLJV8nOXmm9VLUBm-hRoag-0mgcQJQHh45jiH481Gh_tvr4DXzI7srO3aetxDxn0_33-YCEZMCeLqDHpforkfo-s4H6PRvwiZAvUWC_ORg476keCLf6mEnWuKXLc-gLc_QBIH5_khGwHFv4G_ReUg2KddAvQyQIpeNQ8wxadB5Ld90btuhbIUX0q0w2LMhA_AR8iFCcQtJ-DEGwC0HUdtn13Kyg0DINo7Rzqh5k8RnwFczWnmzbPlHSwT9WWUI06nEmUkr47GgwX-fTO9tZYCpXbw-YTaEadQox_I-ZydgaXJoDYICbdPIdNz14oxWW1NRrYbWoinSRHAKOWf7NE9zBtgBSY6Rh1fEiS5XVXWjbGHV-axKVDyzuZnqEtZxgRFjyI0AaG_UYTUtQ_OhJlVGI-VVfHAGRxIYj8rT7nDqJWeTX1OZCjAzyWPpUi7v3K6o6MJn48-fX9kOdZcpovtoLknMT9oWjuCzj3SWjfVumVkDAaBy4cEZp8B_4sn__rplZam2QPyWH8MY9gWS-TyWJEd1xncOcZZicTE0KjlBHUqi8dxpZE12AdqGjrEjrZd9hNqHleAa-Na6nKFnseb3vrwhoohUB694oKg-cRLW2jIlnu2SkNI7JjophkCVspWNKWdiO_Yhm79XAaxbSRDsQYhi7h9FNSNPsLFe4QYD_0l4QSrfAWFtWApdrxH3O0D5HDqkN0V-bAClZhzlrmdRFDln35FWMpehlUBrR5_0FIPWyWRGKHYlkLrVSFxKvffh4YzD6SrWVwpK8FTLgzaGXH4ytrEAnCdnap-YBhaLU1wYX3Rxb0HRFsWOAAET2oMyTIJ14g2nMtBFhRd88I6IOwzE_w5-YNPVvorwjW_1AhNoWyXl_fV4LhUkKigVDGlaWzT69T388UKFZyxpXlx4Pdiv1CLouYIah3MluPNF6pbFJdGbWwZUu-D91FkEm9vJ5adx7x_171TiOm8n3Q8TOntpPy87C-xwsSdvw_hpd4fQAaBiiLwUYarHrse5TfosbwoMX1aMwRbCpdXYSip7YoI6yAOZobgqWljMlPV3QovP2wfytP68Mb2BkYNer1B4wueyxjqd_AwwZg3sYTcrixQET5-3F5DPFvHDCt6Ra0yxbw6V18q3C2K2k92AGMkGMxffDb7K9s7aQMxUU" height="200" width="auto" /><br><br>]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v4QkEXpNaElLgGkKiiZgDtRofO9HbM5ts-H2gu7LjEwWKyNYf4zeuegTxUVbeJ19JnGW6C9Pef7kH3avARllLcTQNkx12tRmiITwWQ5VGCzqqpk0ID9C9ek1hvsO395z_sudmu2-sXicySqUif-_vn7sLK_E88IQwvd2Xx2bG8FD32iPA6BIDo3SY7z08CHoW4tzfCN9DK6OgSLQITvxMgmeUgxGQfGBd01Ml9pxkCidt5G9xdmZOb-TPMh7H3L0CZQwfIKNUouJG8bfjDAH-A5jgQeLdQ4222VcaLh8i2A1R1LxRSHVKpTceL9J7VuBpvO_we5gt0hkxqcjb6DFZk-qbv4e7JgxLJV8nOXmm9VLUBm-hRoag-0mgcQJQHh45jiH481Gh_tvr4DXzI7srO3aetxDxn0_33-YCEZMCeLqDHpforkfo-s4H6PRvwiZAvUWC_ORg476keCLf6mEnWuKXLc-gLc_QBIH5_khGwHFv4G_ReUg2KddAvQyQIpeNQ8wxadB5Ld90btuhbIUX0q0w2LMhA_AR8iFCcQtJ-DEGwC0HUdtn13Kyg0DINo7Rzqh5k8RnwFczWnmzbPlHSwT9WWUI06nEmUkr47GgwX-fTO9tZYCpXbw-YTaEadQox_I-ZydgaXJoDYICbdPIdNz14oxWW1NRrYbWoinSRHAKOWf7NE9zBtgBSY6Rh1fEiS5XVXWjbGHV-axKVDyzuZnqEtZxgRFjyI0AaG_UYTUtQ_OhJlVGI-VVfHAGRxIYj8rT7nDqJWeTX1OZCjAzyWPpUi7v3K6o6MJn48-fX9kOdZcpovtoLknMT9oWjuCzj3SWjfVumVkDAaBy4cEZp8B_4sn__rplZam2QPyWH8MY9gWS-TyWJEd1xncOcZZicTE0KjlBHUqi8dxpZE12AdqGjrEjrZd9hNqHleAa-Na6nKFnseb3vrwhoohUB694oKg-cRLW2jIlnu2SkNI7JjophkCVspWNKWdiO_Yhm79XAaxbSRDsQYhi7h9FNSNPsLFe4QYD_0l4QSrfAWFtWApdrxH3O0D5HDqkN0V-bAClZhzlrmdRFDln35FWMpehlUBrR5_0FIPWyWRGKHYlkLrVSFxKvffh4YzD6SrWVwpK8FTLgzaGXH4ytrEAnCdnap-YBhaLU1wYX3Rxb0HRFsWOAAET2oMyTIJ14g2nMtBFhRd88I6IOwzE_w5-YNPVvorwjW_1AhNoWyXl_fV4LhUkKigVDGlaWzT69T388UKFZyxpXlx4Pdiv1CLouYIah3MluPNF6pbFJdGbWwZUu-D91FkEm9vJ5adx7x_171TiOm8n3Q8TOntpPy87C-xwsSdvw_hpd4fQAaBiiLwUYarHrse5TfosbwoMX1aMwRbCpdXYSip7YoI6yAOZobgqWljMlPV3QovP2wfytP68Mb2BkYNer1B4wueyxjqd_AwwZg3sYTcrixQET5-3F5DPFvHDCt6Ra0yxbw6V18q3C2K2k92AGMkGMxffDb7K9s7aQMxUU</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.635805,29.543691,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 41 - 0.33 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v5PLO_0rsqdPpf3P4dr7r9hpixYRD3XKstTz_C2kI1R_2_MuLpPe1tk6E5tnPEx8PWdOPkk7BZqNMmPaJ3k1GReoUqAxI5etW8wtccwxIrIR4Kl-Wq0HLc2T5YAUPZfnCpv4wBWMupzmsuKMDwEyb-7qJarTwz1jqQNPcY3x55-DTvyuI2vUX9031ZDb7FCHhEIgU-IA8s8uDC4mDlbdk-Vhg1RZZG1myxmQzG_cp93aSWr6FM-YV33Q1JeBnp_dvYuiNEDfuG_7biwHozkSueD9w4EguGVaxllfFTM0NL5cIMElXpwPh0WQyJnnWiQsB3uMVH2q5VKkj3Be95vQI_rCJNwr6DIUBXVJQ1QIvvvI5k-kntsQeocxjP54H6_fAHz7t5aNkmihf0i9DnQRbnDX1DJ_gtIrk_MdICdSNoxxDTSR42LdOktBGzRLrrzhCAfr0B73IcpCdxdnLPTCQ3zX8seIR1UHVzp1tiD2hpvKIGJDIBbj1Vnk1PllnBZm2AsehIgYghHJ5mtlnPZRzMhwZXgewP0C-kKG1LYz554hl8v5llqn0Z-AyVupev9qz6b79B6-vXgcKly3wQqJ9ZkbHXi6WwWHkLbUKSeY_t8n-hz9w5H0-R3h8UweBOxf19fmrPiX-62OKj02ybtgBEDxi4EeUGajEXIWqOzM7siixaWrEjvuV0SpXFlU2tf0jCL6bhIdnsQj6gTlA4AfZ4JgMxCUowDYLB2R1Vs-MwpRmZEC1nqEHMQ3pkiNytnXmy0TTPegoruQgYyE2IG5WN3HgQGG5CjtPOAkpGoW7qAInBg3wniUL0FfIdifH3pWQhn7edxH5RDQKFrnXv-2zAAoLxic5HEEbEY82z-xlXOqHQGlgdurTAtwtLVY3O7bjRvRgYp7DszgwkGKvmXt0egNe2REtUvOW-CqXNi3lv1w_IRSVio-0-3GPctHJ1P8G2CXG4lg29GYd2mxHUD9yWK6Gxr3U2tJaMLPhRP777x7ZWeEGb9sSnDRRQQhtYzG6wXfl8MeoIfkoFO_LFr8Z_unQfbnPyfHXMKthqtzv8VOV6XpWG4QBSEA0gARQfFH4T-swj320ZytDX1gsBBAmcMXw2D5AizN7_DAR8E4Ny3XNzT9S5CGOMfLgbyxNAjHoL6SR6Hw9X2LYpYp88_7vJNjP1rmC0WtCa-UjuizK9XjhvYFfc3CbBanyzr3KVa855KoI3Kkh0Q12PS4jQNoujIMtE0x3V8B1EQ67gxs67qVr2DePCljMgwAwb_tQWCTgpwNHRRSOgyuNUXK3BOdISUhS8F1HCqO0Y0Jdpo--9nI9d-Sbh42BaBg1sNHtKvad_KpJMpVQmRv_gHBhp38QeA5u2NoWFfepZzMZ2frGvihtZWopFGCqvFxf2nzYC3BBSm9RCcRz-6Flbt1_M55ybyVzp3sYYFBGh2vNmOyb5P5bFyrV-F91kQU9EwMzwjZePdrtyIkhlifoCPThxAXFdkNUxhB-Wb5aL8jZO4aSGfRy-fits" height="200" width="auto" /><br><br>]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v5PLO_0rsqdPpf3P4dr7r9hpixYRD3XKstTz_C2kI1R_2_MuLpPe1tk6E5tnPEx8PWdOPkk7BZqNMmPaJ3k1GReoUqAxI5etW8wtccwxIrIR4Kl-Wq0HLc2T5YAUPZfnCpv4wBWMupzmsuKMDwEyb-7qJarTwz1jqQNPcY3x55-DTvyuI2vUX9031ZDb7FCHhEIgU-IA8s8uDC4mDlbdk-Vhg1RZZG1myxmQzG_cp93aSWr6FM-YV33Q1JeBnp_dvYuiNEDfuG_7biwHozkSueD9w4EguGVaxllfFTM0NL5cIMElXpwPh0WQyJnnWiQsB3uMVH2q5VKkj3Be95vQI_rCJNwr6DIUBXVJQ1QIvvvI5k-kntsQeocxjP54H6_fAHz7t5aNkmihf0i9DnQRbnDX1DJ_gtIrk_MdICdSNoxxDTSR42LdOktBGzRLrrzhCAfr0B73IcpCdxdnLPTCQ3zX8seIR1UHVzp1tiD2hpvKIGJDIBbj1Vnk1PllnBZm2AsehIgYghHJ5mtlnPZRzMhwZXgewP0C-kKG1LYz554hl8v5llqn0Z-AyVupev9qz6b79B6-vXgcKly3wQqJ9ZkbHXi6WwWHkLbUKSeY_t8n-hz9w5H0-R3h8UweBOxf19fmrPiX-62OKj02ybtgBEDxi4EeUGajEXIWqOzM7siixaWrEjvuV0SpXFlU2tf0jCL6bhIdnsQj6gTlA4AfZ4JgMxCUowDYLB2R1Vs-MwpRmZEC1nqEHMQ3pkiNytnXmy0TTPegoruQgYyE2IG5WN3HgQGG5CjtPOAkpGoW7qAInBg3wniUL0FfIdifH3pWQhn7edxH5RDQKFrnXv-2zAAoLxic5HEEbEY82z-xlXOqHQGlgdurTAtwtLVY3O7bjRvRgYp7DszgwkGKvmXt0egNe2REtUvOW-CqXNi3lv1w_IRSVio-0-3GPctHJ1P8G2CXG4lg29GYd2mxHUD9yWK6Gxr3U2tJaMLPhRP777x7ZWeEGb9sSnDRRQQhtYzG6wXfl8MeoIfkoFO_LFr8Z_unQfbnPyfHXMKthqtzv8VOV6XpWG4QBSEA0gARQfFH4T-swj320ZytDX1gsBBAmcMXw2D5AizN7_DAR8E4Ny3XNzT9S5CGOMfLgbyxNAjHoL6SR6Hw9X2LYpYp88_7vJNjP1rmC0WtCa-UjuizK9XjhvYFfc3CbBanyzr3KVa855KoI3Kkh0Q12PS4jQNoujIMtE0x3V8B1EQ67gxs67qVr2DePCljMgwAwb_tQWCTgpwNHRRSOgyuNUXK3BOdISUhS8F1HCqO0Y0Jdpo--9nI9d-Sbh42BaBg1sNHtKvad_KpJMpVQmRv_gHBhp38QeA5u2NoWFfepZzMZ2frGvihtZWopFGCqvFxf2nzYC3BBSm9RCcRz-6Flbt1_M55ybyVzp3sYYFBGh2vNmOyb5P5bFyrV-F91kQU9EwMzwjZePdrtyIkhlifoCPThxAXFdkNUxhB-Wb5aL8jZO4aSGfRy-fits</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.922528,29.638773,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 42 - 0.28 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v4Jl4qeq5Xq6dIDBpsEkbgeU2qkn4T6LudBa183vLyu1DgEBUP5I-7JKI9hfG5RAVPRs7jywxxuH9SDdkJDIit56Ka8SMScXuLYI_Xfhe9x19bABR59jHvf09MaR1nZq93ni56ROJ46-gxRsjZx4jziVyTEXnKQ41qBmRA7L57lBQ7Sth9eb73YC17zGJWkrx_-zAcOYkdmYNKuRehBsRo0wD9EOfnoF6ZjzbSAMzoMMRmAOwj-6xSdMDrloFm2o2Kdh_OQpBA4Kqr1Bv36jbdFpH-Bt5B4JicFhuj1HGqOFwfzNOhrEdqJ5LqAm-16dDvIT8bqcGEeuW-hhU64gDsRtHt0UvkUSdxXJwfrePq8R_zU-dAoXSADtv6HVwUILZyQNU_uMFx3mGXefHzFwIVtknzRaS9JGDpX-EOxSV8icwye-tyPs5EHdrwC2ZwV3jXj87hSblhLG60gB1oi2KA8H7ksVGPjAQOIW3Fyc6nyBmXP0BwKjeUZd8ovYrMdlzQp6NuG_8lc-gA5OpaNl_XPvCpF6mzuiDRThLEcqJvzdoh9R5vYBEil54OhQKfWbgfk9C_B4m9OH1t3bg0AmN7OuTmXmcSd0TXhlXsi-g9d5Ww80eqeFv9hlcLWqKo_hY80ecliWQbr_7tNq33yo53bTUfxTuiKwG3FfcfIHGd1T9xVabeyQA4fjwgTRg10YPwL0DFtS7jg7ISrlVnz2JossElzyk27U4JY2RswenGqwbOYt_2sAIv_DvP0bgM6TJOK-eQ3D9Vwwkhq33YZCXzXMjp59SHfgnr1bU95ZQCOMgXOBqpfUxnp842qAo_ioYhLHcNUT5JiUzQAENbHMh_CpPOv8Bie9wgH9q9_k32-5Ft-XLax5BCM_ZHYFn-lXohiC6HzyLY_uhbfdxpSciuz9OPzKILaLgHYD9VVB73n1bvVyTAhi6Vnj2WEfXnQhW3u-bv4sy7MdAyBEmO9hUs3SSJWO4wMgaC_qKa31TK42EKR6ulk2lMmOxSf_uQzTvkHXcV2b7Fz_kU-wBYSHsljqcR06OOm1YuI9u4onZ-UbJ91hRM7jLqR45rS3hR1Z3jKieizgLeZ_JMARzW-Jgip3tojFRKUK9HEPn58dVSdFwl6mVcq5GMvWC8TEfBzIQP7ubCZK7iaHieCWbtA9tjZxOI-waqcj6XNR9NPzvJ3HTDy4kk_kVz-YLpx4zNACCkgEY-Tope9wepEBldSMRtyeWUgkq4Fb9R8bBAnCbwVnWTericiL4rOqBrhDduwW80FcMmtLyzI04xPvFRUINT-1n18lMKwqH-ergmx6-B1YGMXDvuz6k6uuzZDKYysjGnCU-otKPTuK1c_mk3TDbg-xFbAzpnMvWwywDMOiVY1N7o9PtmFQofq9DNhUiBKi8hpoikrAAay7obfbbD0n1HoeKQa6m4gZhJp7-NIajPyIL46l13AycSAyyszo07Ze8c-JUoGnUHkLGI4xJpHemJezw5yXiO9M29kCX9Y4FJtwx3k" height="200" width="auto" /><br><br>]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v4Jl4qeq5Xq6dIDBpsEkbgeU2qkn4T6LudBa183vLyu1DgEBUP5I-7JKI9hfG5RAVPRs7jywxxuH9SDdkJDIit56Ka8SMScXuLYI_Xfhe9x19bABR59jHvf09MaR1nZq93ni56ROJ46-gxRsjZx4jziVyTEXnKQ41qBmRA7L57lBQ7Sth9eb73YC17zGJWkrx_-zAcOYkdmYNKuRehBsRo0wD9EOfnoF6ZjzbSAMzoMMRmAOwj-6xSdMDrloFm2o2Kdh_OQpBA4Kqr1Bv36jbdFpH-Bt5B4JicFhuj1HGqOFwfzNOhrEdqJ5LqAm-16dDvIT8bqcGEeuW-hhU64gDsRtHt0UvkUSdxXJwfrePq8R_zU-dAoXSADtv6HVwUILZyQNU_uMFx3mGXefHzFwIVtknzRaS9JGDpX-EOxSV8icwye-tyPs5EHdrwC2ZwV3jXj87hSblhLG60gB1oi2KA8H7ksVGPjAQOIW3Fyc6nyBmXP0BwKjeUZd8ovYrMdlzQp6NuG_8lc-gA5OpaNl_XPvCpF6mzuiDRThLEcqJvzdoh9R5vYBEil54OhQKfWbgfk9C_B4m9OH1t3bg0AmN7OuTmXmcSd0TXhlXsi-g9d5Ww80eqeFv9hlcLWqKo_hY80ecliWQbr_7tNq33yo53bTUfxTuiKwG3FfcfIHGd1T9xVabeyQA4fjwgTRg10YPwL0DFtS7jg7ISrlVnz2JossElzyk27U4JY2RswenGqwbOYt_2sAIv_DvP0bgM6TJOK-eQ3D9Vwwkhq33YZCXzXMjp59SHfgnr1bU95ZQCOMgXOBqpfUxnp842qAo_ioYhLHcNUT5JiUzQAENbHMh_CpPOv8Bie9wgH9q9_k32-5Ft-XLax5BCM_ZHYFn-lXohiC6HzyLY_uhbfdxpSciuz9OPzKILaLgHYD9VVB73n1bvVyTAhi6Vnj2WEfXnQhW3u-bv4sy7MdAyBEmO9hUs3SSJWO4wMgaC_qKa31TK42EKR6ulk2lMmOxSf_uQzTvkHXcV2b7Fz_kU-wBYSHsljqcR06OOm1YuI9u4onZ-UbJ91hRM7jLqR45rS3hR1Z3jKieizgLeZ_JMARzW-Jgip3tojFRKUK9HEPn58dVSdFwl6mVcq5GMvWC8TEfBzIQP7ubCZK7iaHieCWbtA9tjZxOI-waqcj6XNR9NPzvJ3HTDy4kk_kVz-YLpx4zNACCkgEY-Tope9wepEBldSMRtyeWUgkq4Fb9R8bBAnCbwVnWTericiL4rOqBrhDduwW80FcMmtLyzI04xPvFRUINT-1n18lMKwqH-ergmx6-B1YGMXDvuz6k6uuzZDKYysjGnCU-otKPTuK1c_mk3TDbg-xFbAzpnMvWwywDMOiVY1N7o9PtmFQofq9DNhUiBKi8hpoikrAAay7obfbbD0n1HoeKQa6m4gZhJp7-NIajPyIL46l13AycSAyyszo07Ze8c-JUoGnUHkLGI4xJpHemJezw5yXiO9M29kCX9Y4FJtwx3k</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.832449,29.643713,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 43- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.851879,29.699522,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 44 - 0.21 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v702JooP5tF9dMqaQBpMM3JrLYobzUEX6BCy87A5gnDUNDOtk_rVcgMveeltu5qbDtW9o5e6hGX2K4oKQYZyPgIVgteOnRNJj0m2MtMAwOFndnHuG85Q7sf9_wc8hS0Z1XVUyzERR6lUArOCbR8i7foi-4fcIw_uF0Ad6mVWdGOo_piDmAjVgHWGQXRiy9pOZ8bJAAbuOk_GZ7l5hrt5Ngfn8fO4WeVN0xVJHwnzWQAfBoOFzWdc3bo_flZuSU_lGDSxQDFOjh7RI6XqvJaPFJ0Mz25qQWH7cXQpqK2XO4NiySXsreLP4dcS5zVdH78QxOnLcv7c7gdoocM7q7edhzzbgTJDz9Do9nNyvNLMds_-LHNcSgHvaIHdZXBSPe7zIucnIXuHj5lzzJvKRJXbsNs1afmXLG36Boib6Vfr1zEqMcjnDexB5ypRjACKky7rQv9q8L0fs0aRjOtVjdVKM7uXNe34DZ4vTSdB3BVSTex3w6-Ihc_gTDDL7v-m2e65zwfpQL8d9e369tzLqyj9fft7-0x9kXk2euycVoIJPghR-dTyf4aRRBnlwaF4rmX42xpY0pNSgvHh8YW3CA8zhp6X5au2e-bhzaDLq3PumQ6ouYgNcAEDASo7wiZIi5d27sd74dBcEK-4JOtVBWwMmD-62B7CWaAIz6aAB2pmXJ6RkrfOPf_kFWkTBKhCKNkiBYUnbhSU51rFL1rPdyqqidSjko_L5EviKjvo9OKwbUESIgQvaXdaXtJ0W_kNugPEFGTJT3dgMLXuFTn8EGUWIMmbJL-6eCQ-1q8TDiA0FaA4KPM-d9xvgTSRye-d8wl_KlasgtdGiORvb9xdf6mznPXPxxWE2pYXIS5WdEb7-4S1jIvoFbrMVUzvjk4tzT0netDVhxIRbNM3WhRHbPytm8X_8JHbUxcc6yPgtKfQzNhAzG5UuD_Dq0fvx6Ab4TY_2pfZZG6i57zCOCLxt_UDQi-bGjS69fku723x_joie-YVi01sCK8dUIIiqNx7SR3E--mcl0lBISCt6pq9xsIBeqFavscVT0KgAz88Mg-M30FMc5Zd5fLDQId4jfFcb1YUa9PGcdA-IdxyiugJVKr0e2HmpszAoNvb0G0Y7f8TVEyc_9nvgyeDzi8PQPAi41R0ATje0cq-6ahfj5FDqAjWSPBj1cFOhI98Ctiq0PGJ4p3myQT59uREOnDlQ1YsP3Qsrzi6GY7QK5q8R5EAc7DmORe_OfNiibeEJDZcjsENqLTUshfxBmZX8_vRRn56aP77V73JxmNKQ2WnS0nbuAUh5OxUuDWiwLQ51aRJ80HbClvL7pb3ZdsN5leCUOS8lxRryjTleuZaiqNPWo4aB3Oo21m8H1yVNvCWhxYqFkYFuZyf88B6ThGRbblUGT0hgBYbB72DODybYYKMLii1EUtGEEGBM6T4lzaSxyy4_rjiKNr6J8bIA8utYhWdrpOQ9wcVxC03qBRUUUDm2qFdQmXqJYkTY9kK6KLc6DScJqNt6dqn-DH2Ng" height="200" width="auto" /><br><br>]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v702JooP5tF9dMqaQBpMM3JrLYobzUEX6BCy87A5gnDUNDOtk_rVcgMveeltu5qbDtW9o5e6hGX2K4oKQYZyPgIVgteOnRNJj0m2MtMAwOFndnHuG85Q7sf9_wc8hS0Z1XVUyzERR6lUArOCbR8i7foi-4fcIw_uF0Ad6mVWdGOo_piDmAjVgHWGQXRiy9pOZ8bJAAbuOk_GZ7l5hrt5Ngfn8fO4WeVN0xVJHwnzWQAfBoOFzWdc3bo_flZuSU_lGDSxQDFOjh7RI6XqvJaPFJ0Mz25qQWH7cXQpqK2XO4NiySXsreLP4dcS5zVdH78QxOnLcv7c7gdoocM7q7edhzzbgTJDz9Do9nNyvNLMds_-LHNcSgHvaIHdZXBSPe7zIucnIXuHj5lzzJvKRJXbsNs1afmXLG36Boib6Vfr1zEqMcjnDexB5ypRjACKky7rQv9q8L0fs0aRjOtVjdVKM7uXNe34DZ4vTSdB3BVSTex3w6-Ihc_gTDDL7v-m2e65zwfpQL8d9e369tzLqyj9fft7-0x9kXk2euycVoIJPghR-dTyf4aRRBnlwaF4rmX42xpY0pNSgvHh8YW3CA8zhp6X5au2e-bhzaDLq3PumQ6ouYgNcAEDASo7wiZIi5d27sd74dBcEK-4JOtVBWwMmD-62B7CWaAIz6aAB2pmXJ6RkrfOPf_kFWkTBKhCKNkiBYUnbhSU51rFL1rPdyqqidSjko_L5EviKjvo9OKwbUESIgQvaXdaXtJ0W_kNugPEFGTJT3dgMLXuFTn8EGUWIMmbJL-6eCQ-1q8TDiA0FaA4KPM-d9xvgTSRye-d8wl_KlasgtdGiORvb9xdf6mznPXPxxWE2pYXIS5WdEb7-4S1jIvoFbrMVUzvjk4tzT0netDVhxIRbNM3WhRHbPytm8X_8JHbUxcc6yPgtKfQzNhAzG5UuD_Dq0fvx6Ab4TY_2pfZZG6i57zCOCLxt_UDQi-bGjS69fku723x_joie-YVi01sCK8dUIIiqNx7SR3E--mcl0lBISCt6pq9xsIBeqFavscVT0KgAz88Mg-M30FMc5Zd5fLDQId4jfFcb1YUa9PGcdA-IdxyiugJVKr0e2HmpszAoNvb0G0Y7f8TVEyc_9nvgyeDzi8PQPAi41R0ATje0cq-6ahfj5FDqAjWSPBj1cFOhI98Ctiq0PGJ4p3myQT59uREOnDlQ1YsP3Qsrzi6GY7QK5q8R5EAc7DmORe_OfNiibeEJDZcjsENqLTUshfxBmZX8_vRRn56aP77V73JxmNKQ2WnS0nbuAUh5OxUuDWiwLQ51aRJ80HbClvL7pb3ZdsN5leCUOS8lxRryjTleuZaiqNPWo4aB3Oo21m8H1yVNvCWhxYqFkYFuZyf88B6ThGRbblUGT0hgBYbB72DODybYYKMLii1EUtGEEGBM6T4lzaSxyy4_rjiKNr6J8bIA8utYhWdrpOQ9wcVxC03qBRUUUDm2qFdQmXqJYkTY9kK6KLc6DScJqNt6dqn-DH2Ng</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.85048,29.698293,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 45- sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.558359,29.442996,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 46 - 1.40 acre</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v4THRuCYMmd90Z8r_Jnort1frWiYF_kNATUZO4805OGIC9ZEa-yC_6ZPcAMfFeAZniioSyb93uFKM40fQGjzSGsX5MKgMUPYunjyZ6IAAFG8Gy7FImunm_pTpTeaAeM-82nWtDWKAagp-TF3slDBxvLsEkbn3RTWeAQ4vHoo4QxpEBhIu7LbJVuR33O8PTHRiku8Sijcfj-5mhDvpdJeT2wyW6_3YfUtAOq_8D563sLRfLpPjucGoeri273y2hHwZ7Tl_4ghXDYx2Qq3Yfzx7L94SCG3ZljAsL1kHFGfdxE3yOSQyJucBLwd-R30AQ753jPl1ytbDs3KdtXDx4vck4rA0WZ9WOyaM4ZO2oc0HZ0bC9qgXI1SdtUgjNOSR9sZg7_47SyZSQ1tnpK4hVjanJXPhMX4uSxwU7ruhmsP1dHLZUvI7MifnhjRXaToqyz8ZFCyPDZ6qXh5Vl56ou5LIeqP_f6INH3TKnE20NEUFpocO60xZmk5EuDh2DdAGOSJf_epldc3m19vB3HNSL9vrfm9iYLDVAcSOqpHOhNdloiQHSVOK_KwKVOcE_wnjqEQMW0sB5-llTQdFlDrpILyNlO764vmsku7-Yif3NBBMutRSDrbCfyFNGEvdZF6wiYLfiseuDHUKkqFkbjBTzaLtO9Hi39fMlDmr_edyXpDs3YH0_tkNM55t3BgUjR5x4acuzZ3EzrVGY0li5ErGwEWoWMCwOH7SHGirSUoSIIYt9xEv0GzVZE4QBRmi-c9DKg10IAu6SRbGAUEdo88peXbyAYyHQgs4U40nNoLYI0AFRqThrH_UTc8dowi4XRWaCSVU8GPc1b6PW8rsz9i5hOqaUh1gNkVOG92lBGZTOuNTbJbhN3hY_o5ofJhyET2bFm-EbCbhfjN6b7zIdiOdjXzTvZYDcU-fUbB-nCnJpSVlhch71Js_1IySuyxZhF617vrkeL7OeWtVU4DaGNlF2SWX7aFeBnROURh9cLZLSQdWyM-57LFEwYrydNCZVxAAcBTYRiAOyyWhgOAkaCKDE968w9ekShAJKj-ciy7YlPUp2Lra3GHtqE2KSCnXzJTNmK1KHuVxza1vLGjJN_pQ3sOUovXMKEdDmTH_Ccre8S6rRRDaKStKdnrJ11hdLqMFJYUd5Mbj2-hDN1cdyzkQxJoekqWUpE3J623zekG3C5HgnR7CXr7pBGkiK_oMUreuxYBSTpI7O9J2tugBPvYNapg22Kkd-7e3GbpLDP9g1hpZbWUajUIgHdFSEVMABGa9gnC58xcaq6zvOYv7SeFlx8EsRs1hS7sXysnICLM0fMuVZBCuJ-UNI58bLhHOrNtc9gM1IWavqy2NYoeFda0X2qOhppxzM5-bWvcJs8XsNZQVbw_xcMrQZMU-85TIhcchnajq42gY9VyObWeluKyaSUgB8eBqbeBVrB3oirfdlr0f2QZRW-RfF9AwEU3lP4AOCTIBmueobwVMMEPSl3-1xPZW7ulDHREgc2aSycP4qwKiy28qkBDA" height="200" width="auto" /><br><br>$39,000]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v4THRuCYMmd90Z8r_Jnort1frWiYF_kNATUZO4805OGIC9ZEa-yC_6ZPcAMfFeAZniioSyb93uFKM40fQGjzSGsX5MKgMUPYunjyZ6IAAFG8Gy7FImunm_pTpTeaAeM-82nWtDWKAagp-TF3slDBxvLsEkbn3RTWeAQ4vHoo4QxpEBhIu7LbJVuR33O8PTHRiku8Sijcfj-5mhDvpdJeT2wyW6_3YfUtAOq_8D563sLRfLpPjucGoeri273y2hHwZ7Tl_4ghXDYx2Qq3Yfzx7L94SCG3ZljAsL1kHFGfdxE3yOSQyJucBLwd-R30AQ753jPl1ytbDs3KdtXDx4vck4rA0WZ9WOyaM4ZO2oc0HZ0bC9qgXI1SdtUgjNOSR9sZg7_47SyZSQ1tnpK4hVjanJXPhMX4uSxwU7ruhmsP1dHLZUvI7MifnhjRXaToqyz8ZFCyPDZ6qXh5Vl56ou5LIeqP_f6INH3TKnE20NEUFpocO60xZmk5EuDh2DdAGOSJf_epldc3m19vB3HNSL9vrfm9iYLDVAcSOqpHOhNdloiQHSVOK_KwKVOcE_wnjqEQMW0sB5-llTQdFlDrpILyNlO764vmsku7-Yif3NBBMutRSDrbCfyFNGEvdZF6wiYLfiseuDHUKkqFkbjBTzaLtO9Hi39fMlDmr_edyXpDs3YH0_tkNM55t3BgUjR5x4acuzZ3EzrVGY0li5ErGwEWoWMCwOH7SHGirSUoSIIYt9xEv0GzVZE4QBRmi-c9DKg10IAu6SRbGAUEdo88peXbyAYyHQgs4U40nNoLYI0AFRqThrH_UTc8dowi4XRWaCSVU8GPc1b6PW8rsz9i5hOqaUh1gNkVOG92lBGZTOuNTbJbhN3hY_o5ofJhyET2bFm-EbCbhfjN6b7zIdiOdjXzTvZYDcU-fUbB-nCnJpSVlhch71Js_1IySuyxZhF617vrkeL7OeWtVU4DaGNlF2SWX7aFeBnROURh9cLZLSQdWyM-57LFEwYrydNCZVxAAcBTYRiAOyyWhgOAkaCKDE968w9ekShAJKj-ciy7YlPUp2Lra3GHtqE2KSCnXzJTNmK1KHuVxza1vLGjJN_pQ3sOUovXMKEdDmTH_Ccre8S6rRRDaKStKdnrJ11hdLqMFJYUd5Mbj2-hDN1cdyzkQxJoekqWUpE3J623zekG3C5HgnR7CXr7pBGkiK_oMUreuxYBSTpI7O9J2tugBPvYNapg22Kkd-7e3GbpLDP9g1hpZbWUajUIgHdFSEVMABGa9gnC58xcaq6zvOYv7SeFlx8EsRs1hS7sXysnICLM0fMuVZBCuJ-UNI58bLhHOrNtc9gM1IWavqy2NYoeFda0X2qOhppxzM5-bWvcJs8XsNZQVbw_xcMrQZMU-85TIhcchnajq42gY9VyObWeluKyaSUgB8eBqbeBVrB3oirfdlr0f2QZRW-RfF9AwEU3lP4AOCTIBmueobwVMMEPSl3-1xPZW7ulDHREgc2aSycP4qwKiy28qkBDA</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.43593,27.056302,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 47 - 0.23 acres</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v7hDi81DXEvNphbcQfQQToU0tTFVs8U7zge3PSCT3LHVayXZtTKt3A1qBZ4t9Kie7YLsXyKB94XjkX7mNzeMhD1QIo6ruw5hvsPqCMDwTtA1QK-4cuj8g2PfgtDkSYzreFtv2aojIJqcTRkvfId_Uhn4dVy8RfSpVKQr359FBpPRu4L5bPoSVE9wFZqik4yItu4hDtxnkBcyJfc-DSvpoGlEF_W2_EmYU_gF0NKPuKJgsFPyYvcyIORdPEiePUpKrbj5JvMIn6raEb1IspSLpSr90x2S123TKCj0xgOz7VKPXgfRh1qRHbJP_9ZKCs34-V60M-4gRR0QIup0EHCGazXHh-PcWbJXLlcvdKaGEaQtftpcupJxD0xeb4VXijMZL6DJE4iIvZ8R98l47SMwwj-jX9xG9CqC5EJOcD-_Uip-q3i91nZCBCUZR7mxvuiqekIEeIb5crnTbA7ryxfoKoNlcYM8vIugu02XSqsIbhbvJBq4LfdYFKxxSHg6SFQ9vzfgTob_KV7Pw8NPWH5k_Axd3HyUZqQ5ZFknzzMAkmUGC-gBpwVqoRJzxwriz9BHigllmGALvGWw2R6Wi3aM9d1X7a55hoj7yTx92-bDxAqkF717L_I5kUpgWbuHEhK3p_kfNmVPVbRqnlbgAkceoZxduHDH_lcHgXgDgfH8JHcOcICnFjm_OYp5J150AbX3XbqE1Sp_dEdFiiUXR5Kg3HBem4o8HveG7CXmBrtg7ubadEfUtdvMYxndTX2S-AHk4nAyRyJtHEpgTu-rmYCUYDnOi-qmR8u8dLi6ccW91XD9N3ssgjnCUnE0fGntwNX304lrwLku_iBecKoVNmFkYgnkykJqgtePUqkPC7S9xbUXF0PumzDoarp8A1VsSE1tF41bcoBXToSjUu_8GlQgziVG9-9G5YC8ft7S0FPX4we1eBaRf1Dqyg4MLQDbD6OSaTahKs0flBT-IGSiKN5ZJlK9LiiSBempyC0BWi-1_6Ci_LEcXsSSUf41VBg8RXMMvSmXZ7R0agTjdokzn4HZL-R5GRCkRMZWRcOVSceTQiF2HtWA53ntVBhQ1F64PvA2YrGn04BtgnAoG4lTH5IC1rEMIrAWE6ZAtTBPqtVmVrXOF9Qea5S4jFvzRoitAE-dLMGBWSy18txh0M2T9a7x3kbDQgMbI48hVmWrhSPJG2OVhcS_wc40LE1xgVek9ClFcioHiirdtsVwgcBOzlUfaDjEQIcL-lEmmWbAmEgVUHgE1Z21LgrYMaRcUhatwiauKPB3lLk1DFFy5QjzSyH1sdNHp4ZTz43mNyBerOvSg9i4G4TdCV1pKNN0FDdLuErvRNY_95cnb8NbX7n-N9weUNJhH7BdQ5NmPyMqWPC0Lpd4IYAxbvfQ94nnoda9PFzgrqby-Ffv-TSObH2F-o7MTqYbTrc323WXxtC2rTA9HaWXcuOkOwu9XNdtbqZm3o-fUxVXQKdSZJ1YZAygT8ad5rT1FLhlg8M_Za5bOa_HoY-W_Vh" height="200" width="auto" /><br><br>$16,000]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v7hDi81DXEvNphbcQfQQToU0tTFVs8U7zge3PSCT3LHVayXZtTKt3A1qBZ4t9Kie7YLsXyKB94XjkX7mNzeMhD1QIo6ruw5hvsPqCMDwTtA1QK-4cuj8g2PfgtDkSYzreFtv2aojIJqcTRkvfId_Uhn4dVy8RfSpVKQr359FBpPRu4L5bPoSVE9wFZqik4yItu4hDtxnkBcyJfc-DSvpoGlEF_W2_EmYU_gF0NKPuKJgsFPyYvcyIORdPEiePUpKrbj5JvMIn6raEb1IspSLpSr90x2S123TKCj0xgOz7VKPXgfRh1qRHbJP_9ZKCs34-V60M-4gRR0QIup0EHCGazXHh-PcWbJXLlcvdKaGEaQtftpcupJxD0xeb4VXijMZL6DJE4iIvZ8R98l47SMwwj-jX9xG9CqC5EJOcD-_Uip-q3i91nZCBCUZR7mxvuiqekIEeIb5crnTbA7ryxfoKoNlcYM8vIugu02XSqsIbhbvJBq4LfdYFKxxSHg6SFQ9vzfgTob_KV7Pw8NPWH5k_Axd3HyUZqQ5ZFknzzMAkmUGC-gBpwVqoRJzxwriz9BHigllmGALvGWw2R6Wi3aM9d1X7a55hoj7yTx92-bDxAqkF717L_I5kUpgWbuHEhK3p_kfNmVPVbRqnlbgAkceoZxduHDH_lcHgXgDgfH8JHcOcICnFjm_OYp5J150AbX3XbqE1Sp_dEdFiiUXR5Kg3HBem4o8HveG7CXmBrtg7ubadEfUtdvMYxndTX2S-AHk4nAyRyJtHEpgTu-rmYCUYDnOi-qmR8u8dLi6ccW91XD9N3ssgjnCUnE0fGntwNX304lrwLku_iBecKoVNmFkYgnkykJqgtePUqkPC7S9xbUXF0PumzDoarp8A1VsSE1tF41bcoBXToSjUu_8GlQgziVG9-9G5YC8ft7S0FPX4we1eBaRf1Dqyg4MLQDbD6OSaTahKs0flBT-IGSiKN5ZJlK9LiiSBempyC0BWi-1_6Ci_LEcXsSSUf41VBg8RXMMvSmXZ7R0agTjdokzn4HZL-R5GRCkRMZWRcOVSceTQiF2HtWA53ntVBhQ1F64PvA2YrGn04BtgnAoG4lTH5IC1rEMIrAWE6ZAtTBPqtVmVrXOF9Qea5S4jFvzRoitAE-dLMGBWSy18txh0M2T9a7x3kbDQgMbI48hVmWrhSPJG2OVhcS_wc40LE1xgVek9ClFcioHiirdtsVwgcBOzlUfaDjEQIcL-lEmmWbAmEgVUHgE1Z21LgrYMaRcUhatwiauKPB3lLk1DFFy5QjzSyH1sdNHp4ZTz43mNyBerOvSg9i4G4TdCV1pKNN0FDdLuErvRNY_95cnb8NbX7n-N9weUNJhH7BdQ5NmPyMqWPC0Lpd4IYAxbvfQ94nnoda9PFzgrqby-Ffv-TSObH2F-o7MTqYbTrc323WXxtC2rTA9HaWXcuOkOwu9XNdtbqZm3o-fUxVXQKdSZJ1YZAygT8ad5rT1FLhlg8M_Za5bOa_HoY-W_Vh</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.407679,27.26742,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 48 - Sold</name>
+      <description><![CDATA[<img src="https://lh3.googleusercontent.com/umsh/AN6v0v4vnZxCLBfyv7E-ld9fUSMDtDysrHuenzvRBv1QlFYurzxYEq6EMusx4gl6w8ro8e-Hh-v-ZQSalQ8bWh34VKloXtx-n_8ITyDIi6mJdks1EgHnPztqcN1laIHilmJRHY9tlIXssj9h3tCuRqWVfXpO79G0CgCvV_7hVBCA8FcH6VsvIs3JXiPqKKutcmCyBXE5YcOQqUxCWXMaHEmf0XhjaqaplMjsuqGLZnetb8tcKdeE41qWQg6A9bD-4Bp4V-hjDNsukvXhW9VgA3FFPKy9mv4DupLTWuRUDiWocKie_TlUgFZvhFlaElJpy7KoMQ4v233_6L_qCIbCw0q_3H4Uu6rAZuhev1tzZrGGwVBd7U7cbvb7wN-diowWJnjSIaOmN96aTxV-A58GsDK4yjlv3dIApLmQWVWkx1izGj7k1vmni1HnD_iI1zSlX9Bo2NKIlj8FuixNpfzNNFxCEZFqNIs6JYebIVxa5TeIC7U1lMmdnNWSU7ymNy3vuJheaIZx9s7pBkm4C3GiA8tubnQiY-ESx9O1F3j3UKzZjCWZnitWzQmgFB0jH8MXyJzB2XrG1ucJGcFf0TL2NXJv4V96fmJo5eskUbiswRBnjqA3Yu0j3UanKlFYmD7AMuEgTZnKHbxuCFP1nS9lIcYwrTvsu6WZb9IuHRajdpO72MQ1iEqXhX-KUqsFHUnbTprGSO6mpryGDd2vdjer4CWppuv16Ri_zA" height="200" width="auto" /><br><br>]]></description>
+      <styleUrl>#icon-1899-0F9D58</styleUrl>
+      <ExtendedData>
+        <Data name="gx_media_links">
+          <value>https://lh3.googleusercontent.com/umsh/AN6v0v4vnZxCLBfyv7E-ld9fUSMDtDysrHuenzvRBv1QlFYurzxYEq6EMusx4gl6w8ro8e-Hh-v-ZQSalQ8bWh34VKloXtx-n_8ITyDIi6mJdks1EgHnPztqcN1laIHilmJRHY9tlIXssj9h3tCuRqWVfXpO79G0CgCvV_7hVBCA8FcH6VsvIs3JXiPqKKutcmCyBXE5YcOQqUxCWXMaHEmf0XhjaqaplMjsuqGLZnetb8tcKdeE41qWQg6A9bD-4Bp4V-hjDNsukvXhW9VgA3FFPKy9mv4DupLTWuRUDiWocKie_TlUgFZvhFlaElJpy7KoMQ4v233_6L_qCIbCw0q_3H4Uu6rAZuhev1tzZrGGwVBd7U7cbvb7wN-diowWJnjSIaOmN96aTxV-A58GsDK4yjlv3dIApLmQWVWkx1izGj7k1vmni1HnD_iI1zSlX9Bo2NKIlj8FuixNpfzNNFxCEZFqNIs6JYebIVxa5TeIC7U1lMmdnNWSU7ymNy3vuJheaIZx9s7pBkm4C3GiA8tubnQiY-ESx9O1F3j3UKzZjCWZnitWzQmgFB0jH8MXyJzB2XrG1ucJGcFf0TL2NXJv4V96fmJo5eskUbiswRBnjqA3Yu0j3UanKlFYmD7AMuEgTZnKHbxuCFP1nS9lIcYwrTvsu6WZb9IuHRajdpO72MQ1iEqXhX-KUqsFHUnbTprGSO6mpryGDd2vdjer4CWppuv16Ri_zA</value>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.346377,27.345015,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 49</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.873355,29.678799,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 49a</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.873353,29.678592,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 50 - Sold</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.863276,29.671077,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 50b</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.863275,29.670871,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 50c</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.863273,29.670665,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 51</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.587334,29.379176,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 52</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.586079,29.379174,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 53</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.588798,29.376915,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 58</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.594062,29.37866,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 59</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.594564,29.378661,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 60</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.592083,29.380389,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property 61</name>
+      <styleUrl>#icon-1899-0F9D58-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          -81.592341,29.380396,0
+        </coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>

@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Partners Available Lands</name>
+    <Style id="icon-1899-01579B-normal">
+      <IconStyle>
+        <color>ff9b5701</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1899-01579B-highlight">
+      <IconStyle>
+        <color>ff9b5701</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1899-01579B">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-01579B-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-01579B-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1899-0288D1-normal">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1899-0288D1-highlight">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1899-0288D1">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-0288D1-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-0288D1-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="icon-1899-3949AB-normal">
+      <IconStyle>
+        <color>ffab4939</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <Style id="icon-1899-3949AB-highlight">
+      <IconStyle>
+        <color>ffab4939</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+    </Style>
+    <StyleMap id="icon-1899-3949AB">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-3949AB-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-3949AB-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Placemark>
+      <name>Property PN1- 0.22 acres</name>
+      <description><![CDATA[descrição: 16-10-24-4065-0030-0200<br>0.22 acres <br>10K<br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-3949AB</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>16-10-24-4065-0030-0200
+0.22 acres 
+10K</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.909362,29.626207,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PN2 - 0.23 acres</name>
+      <description><![CDATA[descrição: 24-10-23-4074-0590-0220<br>0.23 acres <br>$6.5k<br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-3949AB</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>24-10-23-4074-0590-0220
+0.23 acres 
+$6.5k</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.946629,29.614653,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PW1 - 0.23 acres</name>
+      <description><![CDATA[descrição: C22373016016100130<br>345 Summertime Ave, Lake Placid, FL 33852<br>0.23 acres<br> 10K<br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-3949AB</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>C22373016016100130
+345 Summertime Ave, Lake Placid, FL 33852
+0.23 acres
+ 10K</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.316392,27.253923,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PW2 - 0.22 acres</name>
+      <description><![CDATA[descrição: C22373001000600190<br>260 Deerwalk Ave, Lake Placid, FL 33852<br>0.22 acres 10K<br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-3949AB</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value>C22373001000600190
+260 Deerwalk Ave, Lake Placid, FL 33852
+0.22 acres 10K</value>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.321356,27.248581,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PW3 - 0.21 acres</name>
+      <description><![CDATA[descrição: <br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-3949AB</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -82.581855,29.432779,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PW4 - 1 acres</name>
+      <description><![CDATA[descrição: <br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-01579B</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -82.542562,29.161476,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Property PR1 - 0.31 acres</name>
+      <description><![CDATA[descrição: <br>Latitude: <br>Longitude: <br>Coordinates: ]]></description>
+      <styleUrl>#icon-1899-0288D1</styleUrl>
+      <ExtendedData>
+        <Data name="descrição">
+          <value/>
+        </Data>
+        <Data name="Latitude">
+          <value/>
+        </Data>
+        <Data name="Longitude">
+          <value/>
+        </Data>
+        <Data name="Coordinates">
+          <value/>
+        </Data>
+      </ExtendedData>
+      <Point>
+        <coordinates>
+          -81.440715,27.310831,0
+        </coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>

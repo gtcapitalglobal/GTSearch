@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise Detalhada - GT Lands</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        .map-container { height: 450px; width: 100%; }
+        .tab-button { transition: all 0.3s; }
+        .tab-button.active { background-color: #3b82f6; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: grid; }
+        .photo-gallery { position: relative; overflow: hidden; }
+        .photo-nav { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-2">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-3 mb-2">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <img src="logo.png" alt="GT Lands Logo" class="h-12">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">
+                            📊 Análise Detalhada
+                        </h1>
+                        <p class="text-sm text-gray-600 mt-0.5" id="propertyCount">Carregando...</p>
+                    </div>
+                </div>
+                <button onclick="voltarAoDashboard()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm">
+                    ← Voltar ao Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white rounded-lg shadow-lg mb-3">
+            <div class="flex border-b border-gray-200">
+                <button class="tab-button active flex-1 px-4 py-2 font-semibold text-sm text-gray-700 hover:bg-blue-50" data-tab="property-info">
+                    📋 Informações
+                </button>
+                <button class="tab-button flex-1 px-4 py-2 font-semibold text-sm text-gray-700 hover:bg-blue-50" data-tab="google-maps">
+                    🗺️ Google Maps
+                </button>
+                <button class="tab-button flex-1 px-4 py-2 font-semibold text-sm text-gray-700 hover:bg-blue-50" data-tab="terrain-map">
+                    🏔️ Terreno + Mapa
+                </button>
+                <button class="tab-button flex-1 px-4 py-2 font-semibold text-sm text-gray-700 hover:bg-blue-50" data-tab="photos">
+                    📸 Fotos
+                </button>
+            </div>
+
+            <!-- Tab Content: Property Info -->
+            <div class="tab-content active p-3" id="property-info">
+                <div class="grid grid-cols-3 gap-x-4 gap-y-2 text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-600 text-xs">Parcel #:</span>
+                        <span class="font-semibold" id="prop-parcel-tab">-</span>
+                        <button onclick="copyParcelNumber()" class="text-blue-600 hover:text-blue-800 transition-colors text-xs" title="Copiar Parcel #">
+                            📋
+                        </button>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Owner:</span>
+                        <span class="font-semibold ml-1" id="prop-owner-tab">-</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-600 text-xs">Address:</span>
+                        <span class="font-semibold ml-1" id="prop-address-tab">-</span>
+                        <button onclick="copyAddress()" class="text-blue-600 hover:text-blue-800 transition-colors text-xs" title="Copiar Address">
+                            📋
+                        </button>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Acres:</span>
+                        <span class="font-semibold ml-1" id="prop-acres-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Amount Due:</span>
+                        <span class="font-semibold ml-1 text-green-600" id="prop-amount-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Type:</span>
+                        <span class="font-semibold ml-1" id="prop-type-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">County:</span>
+                        <span class="font-semibold ml-1" id="prop-county-tab">-</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-gray-600 text-xs">Coordinates:</span>
+                        <span class="font-semibold ml-1 text-xs" id="prop-coordinates-tab">-</span>
+                        <button onclick="copyCoordinates()" class="text-blue-600 hover:text-blue-800 transition-colors text-xs" title="Copiar Coordinates">
+                            📋
+                        </button>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">C/S Number:</span>
+                        <span class="font-semibold ml-1" id="prop-cs-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Square Feet:</span>
+                        <span class="font-semibold ml-1" id="prop-sqft-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Land Value:</span>
+                        <span class="font-semibold ml-1 text-green-600" id="prop-land-value-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Improvements:</span>
+                        <span class="font-semibold ml-1 text-green-600" id="prop-improvements-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Total Value:</span>
+                        <span class="font-semibold ml-1 text-green-600" id="prop-total-value-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Assessed Value:</span>
+                        <span class="font-semibold ml-1 text-green-600" id="prop-assessed-value-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Status:</span>
+                        <span class="font-semibold ml-1" id="prop-status-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Occupancy:</span>
+                        <span class="font-semibold ml-1" id="prop-occupancy-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Neighborhood:</span>
+                        <span class="font-semibold ml-1" id="prop-neighborhood-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Zip:</span>
+                        <span class="font-semibold ml-1" id="prop-zip-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Opportunity Zone:</span>
+                        <span class="font-semibold ml-1" id="prop-opportunity-zone-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Tax Sale Year:</span>
+                        <span class="font-semibold ml-1" id="prop-tax-sale-year-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Delinquent Year:</span>
+                        <span class="font-semibold ml-1" id="prop-delinquent-year-tab">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs">Zoneamento:</span>
+                        <span class="font-semibold ml-1" id="prop-zoning-tab">-</span>
+                    </div>
+                    <div class="col-span-3">
+                        <span class="text-gray-600 text-xs">Legal Description:</span>
+                        <div class="font-semibold ml-1 text-xs mt-1 break-words" id="prop-legal-tab">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Google Maps -->
+            <div class="tab-content p-3" id="google-maps">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-800 mb-2">🛰️ Vista Satélite</h3>
+                        <div id="satellite-map" class="map-container bg-gray-200 rounded-lg"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-800 mb-2">🚶 Street View</h3>
+                        <div id="street-view" class="map-container bg-gray-200 rounded-lg"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Terrain + Map -->
+            <div class="tab-content p-3" id="terrain-map">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-800 mb-2">🏔️ Vista Terreno (Relevo)</h3>
+                        <div id="terrain-map-view" class="map-container bg-gray-200 rounded-lg"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-800 mb-2">🗺️ Mapa Normal</h3>
+                        <div id="normal-map" class="map-container bg-gray-200 rounded-lg"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Photos -->
+            <div class="tab-content p-3" id="photos">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-800 mb-2">🏡 Zillow Photos</h3>
+                        <div id="zillow-photos" class="map-container bg-gray-200 rounded-lg flex items-center justify-center photo-gallery">
+                            <button class="photo-nav left-4 bg-white p-2 rounded-full shadow-lg" id="zillow-prev">◄</button>
+                            <img id="zillow-photo" src="" alt="Zillow Photo" class="w-full h-full object-cover rounded-lg hidden">
+                            <div id="zillow-loading" class="text-gray-500">Carregando fotos...</div>
+                            <button class="photo-nav right-4 bg-white p-2 rounded-full shadow-lg" id="zillow-next">►</button>
+                        </div>
+                        <p class="text-center text-sm text-gray-600 mt-2" id="zillow-counter">0 / 0</p>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-gray-800 mb-2">🏠 Realtor Photos</h3>
+                        <div id="realtor-photos" class="map-container bg-gray-200 rounded-lg flex items-center justify-center photo-gallery">
+                            <button class="photo-nav left-4 bg-white p-2 rounded-full shadow-lg" id="realtor-prev">◄</button>
+                            <img id="realtor-photo" src="" alt="Realtor Photo" class="w-full h-full object-cover rounded-lg hidden">
+                            <div id="realtor-loading" class="text-gray-500">Carregando fotos...</div>
+                            <button class="photo-nav right-4 bg-white p-2 rounded-full shadow-lg" id="realtor-next">►</button>
+                        </div>
+                        <p class="text-center text-sm text-gray-600 mt-2" id="realtor-counter">0 / 0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nearby Places (Compact) -->
+        <div class="bg-white rounded-lg shadow-lg p-3 mb-2">
+            <h3 class="text-sm font-bold text-gray-700 mb-2">🏘️ Locais Próximos:</h3>
+            <div class="flex gap-6 text-sm" id="nearby-places">
+                <div>🏫 <span id="schools-count">-</span> Escolas</div>
+                <div>🏥 <span id="hospitals-count">-</span> Hospitais</div>
+                <div>🛒 <span id="supermarkets-count">-</span> Supermercados</div>
+                <div>🌳 <span id="parks-count">-</span> Parques</div>
+            </div>
+        </div>
+
+        <!-- Elevation & Flood Risk -->
+        <div class="bg-white rounded-lg shadow-lg p-3 mb-2">
+            <h3 class="text-sm font-bold text-gray-700 mb-2">🏔️ Elevação do Terreno:</h3>
+            <div class="flex gap-6 text-sm items-center" id="elevation-info">
+                <div>
+                    <span class="text-gray-600">Elevação:</span>
+                    <span class="font-semibold ml-1" id="elevation-value">Carregando...</span>
+                </div>
+                <div>
+                    <span class="text-gray-600">Risco de Alagamento:</span>
+                    <span class="font-semibold ml-1" id="flood-risk">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Land Use Analysis -->
+        <div class="bg-white rounded-lg shadow-lg p-3 mb-2">
+            <h3 class="text-sm font-bold text-gray-700 mb-2">🌍 Uso do Solo (Raio 500m):</h3>
+            <div id="land-use-content">
+                <p class="text-sm text-gray-600">Carregando análise...</p>
+            </div>
+        </div>
+
+        <!-- FEMA Flood Risk -->
+        <div class="bg-white rounded-lg shadow-lg p-3 mb-2">
+            <h3 class="text-sm font-bold text-gray-700 mb-2">🌊 FEMA Flood Risk:</h3>
+            <div id="fema-flood-content">
+                <p class="text-sm text-gray-600">Carregando análise...</p>
+            </div>
+        </div>
+
+        <!-- Water Proximity -->
+        <div class="bg-white rounded-lg shadow-lg p-3 mb-2">
+            <h3 class="text-sm font-bold text-gray-700 mb-2">💧 Proximidade de Água:</h3>
+            <div id="water-proximity-content">
+                <p class="text-sm text-gray-600">Carregando análise...</p>
+            </div>
+        </div>
+
+        <!-- NDVI Estimate -->
+        <div class="bg-white rounded-lg shadow-lg p-3 mb-2">
+            <h3 class="text-sm font-bold text-gray-700 mb-2">🌿 NDVI Estimado (Vegetação):</h3>
+            <div id="ndvi-content">
+                <p class="text-sm text-gray-600">Aguardando análise de uso do solo...</p>
+            </div>
+        </div>
+
+        <!-- Google Earth Link -->
+        <div class="bg-white rounded-lg shadow-lg p-3 mb-2">
+            <h3 class="text-sm font-bold text-gray-700 mb-2">🕰️ Mudanças Temporais:</h3>
+            <div id="google-earth-content">
+                <p class="text-sm text-gray-600">Aguardando coordenadas...</p>
+            </div>
+        </div>
+
+        <!-- Property Information -->
+        <div class="bg-white rounded-lg shadow-lg p-3 mb-2">
+            <h3 class="text-sm font-bold text-gray-800 mb-2">📋 Informações da Propriedade</h3>
+            <div class="grid grid-cols-3 gap-x-4 gap-y-1 text-sm" id="property-info">
+                <div class="flex items-center gap-1">
+                    <span class="text-gray-600 text-xs">Parcel #:</span>
+                    <span class="font-semibold ml-1" id="prop-parcel">-</span>
+                    <button onclick="copyParcelNumber()" class="text-blue-600 hover:text-blue-800 transition-colors text-xs" title="Copiar Parcel #">
+                        📋
+                    </button>
+                    <span id="copy-feedback" class="text-xs text-green-600 font-semibold" style="display:none;">Copiado!</span>
+                </div>
+                <div>
+                    <span class="text-gray-600 text-xs">Owner:</span>
+                    <span class="font-semibold ml-1" id="prop-owner">-</span>
+                </div>
+                <div>
+                    <span class="text-gray-600 text-xs">Address:</span>
+                    <span class="font-semibold ml-1" id="prop-address">-</span>
+                </div>
+                <div>
+                    <span class="text-gray-600 text-xs">Acres:</span>
+                    <span class="font-semibold ml-1" id="prop-acres">-</span>
+                </div>
+                <div>
+                    <span class="text-gray-600 text-xs">Amount Due:</span>
+                    <span class="font-semibold ml-1 text-green-600" id="prop-amount">-</span>
+                </div>
+                <div>
+                    <span class="text-gray-600 text-xs">Type:</span>
+                    <span class="font-semibold ml-1" id="prop-type">-</span>
+                </div>
+                <div>
+                    <span class="text-gray-600 text-xs">County:</span>
+                    <span class="font-semibold ml-1" id="prop-county">-</span>
+                </div>
+                <div class="col-span-3">
+                    <span class="text-gray-600 text-xs">Legal Description:</span>
+                    <span class="font-semibold ml-1 text-xs cursor-help" id="prop-legal" title="Clique para ver completo">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="bg-white rounded-lg shadow-lg p-2">
+            <div class="flex items-center justify-center gap-4">
+                <button id="prev-property" class="px-4 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-semibold text-sm">
+                    ◄ Anterior
+                </button>
+                <span class="text-gray-700 font-semibold text-sm" id="property-nav">Propriedade 1 de 1</span>
+                <button id="next-property" class="px-4 py-1.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-semibold text-sm">
+                    Próxima ►
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Google Maps API -->
+    <script>
+        // Load API key from server
+        console.log('Loading Google Maps API key...');
+        fetch('/api/google-maps-key')
+            .then(r => r.json())
+            .then(data => {
+                console.log('API Key received:', data.key ? 'Yes' : 'No');
+                window.googleMapsApiKey = data.key; // Save for later use
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places&callback=initMaps`;
+                script.async = true;
+                script.defer = true;
+                script.onerror = () => console.error('Failed to load Google Maps API');
+                script.onload = () => console.log('Google Maps API loaded successfully');
+                document.head.appendChild(script);
+            })
+            .catch(err => console.error('Error fetching API key:', err));
+    </script>
+
+    <script>
+        // Global variables (window scope for cross-script access)
+        window.properties = [];
+        window.currentIndex = 0;
+        window.satelliteMap = null;
+        window.streetView = null;
+        window.terrainMap = null;
+        window.normalMap = null;
+        window.placesService = null;
+        window.zillowPhotos = [];
+        window.realtorPhotos = [];
+        window.zillowPhotoIndex = 0;
+        window.realtorPhotoIndex = 0;
+        window.googleMapsApiKey = '';
+        
+        // Aliases for easier access
+        let properties = window.properties;
+        let currentIndex = window.currentIndex;
+        let satelliteMap = window.satelliteMap;
+        let streetView = window.streetView;
+        let terrainMap = window.terrainMap;
+        let normalMap = window.normalMap;
+        let placesService = window.placesService;
+        let zillowPhotos = window.zillowPhotos;
+        let realtorPhotos = window.realtorPhotos;
+        let zillowPhotoIndex = window.zillowPhotoIndex;
+        let realtorPhotoIndex = window.realtorPhotoIndex;
+        let googleMapsApiKey = window.googleMapsApiKey;
+
+        // Load properties from localStorage
+        console.log('=== SCRIPT CARREGADO ===');
+        
+        function initializeApp() {
+            console.log('=== initializeApp CHAMADO ===');
+            const stored = localStorage.getItem('selectedProperties');
+            console.log('stored:', stored ? 'TEM DADOS' : 'VAZIO');
+            if (!stored) {
+                alert('Nenhuma propriedade selecionada. Redirecionando...');
+                window.location.href = '/';
+                return;
+            }
+
+            window.properties = JSON.parse(stored);
+            properties = window.properties;
+            console.log('Loaded properties:', properties);
+            
+            document.getElementById('propertyCount').textContent = `${properties.length} propriedade(s) selecionada(s)`;
+            
+            // Setup tab switching
+            setupTabs();
+            
+            // Setup navigation
+            setupNavigation();
+            
+            // Wait for Google Maps to load, then load first property
+            if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
+                console.log('Google Maps already loaded, loading property...');
+                loadProperty(0);
+            } else {
+                console.log('Waiting for Google Maps to load...');
+                // initMaps will be called by Google Maps callback
+            }
+        }
+        
+        // Call immediately if DOM is ready, otherwise wait
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            // DOM already loaded
+            initializeApp();
+        }
+
+        function setupTabs() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+
+                    // Add active class to clicked
+                    button.classList.add('active');
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        }
+
+        function setupNavigation() {
+            document.getElementById('prev-property').addEventListener('click', () => {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    loadProperty(currentIndex);
+                }
+            });
+
+            document.getElementById('next-property').addEventListener('click', () => {
+                if (currentIndex < properties.length - 1) {
+                    currentIndex++;
+                    loadProperty(currentIndex);
+                }
+            });
+
+            // Photo navigation
+            document.getElementById('zillow-prev').addEventListener('click', () => {
+                if (zillowPhotoIndex > 0) {
+                    zillowPhotoIndex--;
+                    showZillowPhoto(zillowPhotoIndex);
+                }
+            });
+
+            document.getElementById('zillow-next').addEventListener('click', () => {
+                if (zillowPhotoIndex < zillowPhotos.length - 1) {
+                    zillowPhotoIndex++;
+                    showZillowPhoto(zillowPhotoIndex);
+                }
+            });
+
+            document.getElementById('realtor-prev').addEventListener('click', () => {
+                if (realtorPhotoIndex > 0) {
+                    realtorPhotoIndex--;
+                    showRealtorPhoto(realtorPhotoIndex);
+                }
+            });
+
+            document.getElementById('realtor-next').addEventListener('click', () => {
+                if (realtorPhotoIndex < realtorPhotos.length - 1) {
+                    realtorPhotoIndex++;
+                    showRealtorPhoto(realtorPhotoIndex);
+                }
+            });
+        }
+
+        window.initMaps = function() {
+            console.log('Initializing maps...');
+            // Maps will be initialized when first property is loaded
+            loadProperty(0);
+        }
+
+        function loadProperty(index) {
+            const prop = properties[index];
+            console.log('Loading property:', prop);
+
+            // Update navigation
+            document.getElementById('property-nav').textContent = `Propriedade ${index + 1} de ${properties.length}`;
+            document.getElementById('prev-property').disabled = index === 0;
+            document.getElementById('next-property').disabled = index === properties.length - 1;
+
+            // Update property info (seção antiga abaixo das tabs)
+            document.getElementById('prop-parcel').textContent = prop['Parcel #'];
+            document.getElementById('prop-owner').textContent = prop['Name'];
+            document.getElementById('prop-address').textContent = `${prop['Address']}, ${prop['City']}`;
+            document.getElementById('prop-acres').textContent = prop['Acres'];
+            // Remove $ duplicado do Amount Due
+            const amountDue = prop['Amount Due'] || '-';
+            document.getElementById('prop-amount').textContent = amountDue.replace('$', '').trim();
+            document.getElementById('prop-type').textContent = prop['Type'];
+            document.getElementById('prop-county').textContent = prop['County'];
+            
+            // Update property info na ABA (IDs com sufixo -tab)
+            document.getElementById('prop-parcel-tab').textContent = prop['Parcel #'];
+            document.getElementById('prop-owner-tab').textContent = prop['Name'];
+            document.getElementById('prop-address-tab').textContent = `${prop['Address']}, ${prop['City']}`;
+            document.getElementById('prop-acres-tab').textContent = prop['Acres'];
+            document.getElementById('prop-amount-tab').textContent = amountDue.replace('$', '').trim();
+            document.getElementById('prop-type-tab').textContent = prop['Type'];
+            document.getElementById('prop-county-tab').textContent = prop['County'];
+            
+            // Legal Description with truncate and full tooltip (seção antiga)
+            const legalEl = document.getElementById('prop-legal');
+            const legalFull = prop['Legal Desc'] || '-';
+            const legalTruncated = legalFull.length > 50 ? legalFull.substring(0, 50) + '...' : legalFull;
+            legalEl.textContent = legalTruncated;
+            legalEl.title = legalFull;
+            
+            // Legal Description completo na ABA (sem truncar)
+            const legalTabEl = document.getElementById('prop-legal-tab');
+            legalTabEl.textContent = legalFull;
+            
+            // Campos extras do CSV
+            document.getElementById('prop-coordinates-tab').textContent = prop['Coordinates'] || '-';
+            document.getElementById('prop-cs-tab').textContent = prop['CS'] || '-';
+            document.getElementById('prop-sqft-tab').textContent = prop['Square Feet'] || '-';
+            document.getElementById('prop-land-value-tab').textContent = prop['Land'] || '-';
+            document.getElementById('prop-improvements-tab').textContent = prop['Improvements'] || '-';
+            document.getElementById('prop-total-value-tab').textContent = prop['Total Value'] || '-';
+            document.getElementById('prop-assessed-value-tab').textContent = prop['Assessed Value'] || '-';
+            document.getElementById('prop-status-tab').textContent = prop['Status'] || '-';
+            document.getElementById('prop-occupancy-tab').textContent = prop['Occupancy'] || '-';
+            document.getElementById('prop-neighborhood-tab').textContent = prop['Neighborhood'] || '-';
+            document.getElementById('prop-zip-tab').textContent = prop['Zip'] || '-';
+            document.getElementById('prop-opportunity-zone-tab').textContent = prop['Opportunity Zone'] || '-';
+            document.getElementById('prop-tax-sale-year-tab').textContent = prop['Tax Sale Year'] || '-';
+            document.getElementById('prop-delinquent-year-tab').textContent = prop['Delinquent Year'] || '-';
+            document.getElementById('prop-zoning-tab').textContent = prop['Zoning'] || '-'; // Pode não existir no CSV
+
+            // Geocode address and load maps
+            geocodeAndLoadMaps(prop);
+        }
+
+        function geocodeAndLoadMaps(prop) {
+            const address = `${prop['Address']}, ${prop['City']}, FL`;
+            console.log('Geocoding address:', address);
+
+            const geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ address: address }, (results, status) => {
+                if (status === 'OK') {
+                    const location = results[0].geometry.location;
+                    console.log('Geocoded location:', location.toString());
+                    
+                    // Initialize/update all maps
+                    initSatelliteMap(location);
+                    initStreetView(location);
+                    initTerrainMap(location);
+                    initNormalMap(location);
+                    loadNearbyPlaces(location);
+                    loadElevation(location);
+                    loadLandUse(location);
+                    loadFemaFlood(location);
+                    loadWaterProximity(location);
+                    createGoogleEarthLink(location);
+                    
+                    // Load photos from APIs
+                    loadZillowPhotos(prop);
+                    loadRealtorPhotos(prop);
+                } else {
+                    console.error('Geocoding failed:', status);
+                    alert('Não foi possível localizar o endereço no mapa.');
+                }
+            });
+        }
+
+        function initSatelliteMap(location) {
+            if (!satelliteMap) {
+                satelliteMap = new google.maps.Map(document.getElementById('satellite-map'), {
+                    center: location,
+                    zoom: 18,
+                    mapTypeId: 'satellite'
+                });
+            } else {
+                satelliteMap.setCenter(location);
+            }
+
+            // Add marker
+            new google.maps.Marker({
+                position: location,
+                map: satelliteMap,
+                title: 'Propriedade'
+            });
+        }
+
+        function initStreetView(location) {
+            if (!streetView) {
+                streetView = new google.maps.StreetViewPanorama(
+                    document.getElementById('street-view'),
+                    {
+                        position: location,
+                        pov: { heading: 165, pitch: 0 },
+                        zoom: 1
+                    }
+                );
+            } else {
+                streetView.setPosition(location);
+            }
+        }
+
+        function initTerrainMap(location) {
+            if (!terrainMap) {
+                terrainMap = new google.maps.Map(document.getElementById('terrain-map-view'), {
+                    center: location,
+                    zoom: 15,
+                    mapTypeId: 'terrain',
+                    mapTypeControl: true
+                });
+            } else {
+                terrainMap.setCenter(location);
+            }
+
+            new google.maps.Marker({
+                position: location,
+                map: terrainMap
+            });
+        }
+
+        function initNormalMap(location) {
+            if (!normalMap) {
+                normalMap = new google.maps.Map(document.getElementById('normal-map'), {
+                    center: location,
+                    zoom: 16,
+                    mapTypeId: 'roadmap'
+                });
+            } else {
+                normalMap.setCenter(location);
+            }
+
+            new google.maps.Marker({
+                position: location,
+                map: normalMap
+            });
+        }
+
+        function loadNearbyPlaces(location) {
+            if (!placesService) {
+                placesService = new google.maps.places.PlacesService(satelliteMap);
+            }
+
+            // Search for schools
+            placesService.nearbySearch({
+                location: location,
+                radius: 3000,
+                type: 'school'
+            }, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    document.getElementById('schools-count').textContent = results.length;
+                }
+            });
+
+            // Search for hospitals
+            placesService.nearbySearch({
+                location: location,
+                radius: 5000,
+                type: 'hospital'
+            }, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    document.getElementById('hospitals-count').textContent = results.length;
+                }
+            });
+
+            // Search for supermarkets
+            placesService.nearbySearch({
+                location: location,
+                radius: 3000,
+                type: 'supermarket'
+            }, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    document.getElementById('supermarkets-count').textContent = results.length;
+                }
+            });
+
+            // Search for parks
+            placesService.nearbySearch({
+                location: location,
+                radius: 3000,
+                type: 'park'
+            }, (results, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    document.getElementById('parks-count').textContent = results.length;
+                }
+            });
+        }
+
+        function loadElevation(location) {
+            const elevator = new google.maps.ElevationService();
+            
+            elevator.getElevationForLocations({
+                locations: [location]
+            }, (results, status) => {
+                if (status === 'OK' && results[0]) {
+                    const elevationMeters = results[0].elevation;
+                    const elevationFeet = (elevationMeters * 3.28084).toFixed(1);
+                    
+                    // Display elevation
+                    document.getElementById('elevation-value').textContent = `${elevationMeters.toFixed(1)}m (${elevationFeet}ft)`;
+                    
+                    // Calculate flood risk
+                    let riskLevel, riskColor, riskIcon;
+                    if (elevationMeters < 3) {
+                        riskLevel = '⚠️ ALTO RISCO';
+                        riskColor = 'text-red-600';
+                        riskIcon = '🚨';
+                    } else if (elevationMeters < 10) {
+                        riskLevel = '⚠️ RISCO MÉDIO';
+                        riskColor = 'text-orange-600';
+                        riskIcon = '⚠️';
+                    } else if (elevationMeters < 30) {
+                        riskLevel = '✅ RISCO BAIXO';
+                        riskColor = 'text-yellow-600';
+                        riskIcon = '✅';
+                    } else {
+                        riskLevel = '✅ MUITO SEGURO';
+                        riskColor = 'text-green-600';
+                        riskIcon = '✅';
+                    }
+                    
+                    const floodRiskEl = document.getElementById('flood-risk');
+                    floodRiskEl.textContent = `${riskIcon} ${riskLevel}`;
+                    floodRiskEl.className = `font-semibold ml-1 ${riskColor}`;
+                } else {
+                    document.getElementById('elevation-value').textContent = 'N/A';
+                    document.getElementById('flood-risk').textContent = 'N/A';
+                    console.error('Elevation request failed:', status);
+                }
+            });
+        }
+
+        async function loadLandUse(location) {
+            try {
+                const response = await fetch('/api/land-use', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        lat: location.lat(), 
+                        lng: location.lng() 
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    const { analysis } = data;
+                    const { percentages, dominant, dominantIcon, details } = analysis;
+                    
+                    // Create visual representation
+                    let html = `
+                        <div class="mb-2">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-2xl">${dominantIcon}</span>
+                                <span class="font-semibold text-sm">Tipo Dominante: ${dominant}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                    `;
+                    
+                    // Forest
+                    if (percentages.forest > 0) {
+                        html += `
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">🌳</span>
+                                <div class="flex-1">
+                                    <div class="flex justify-between mb-0.5">
+                                        <span>Floresta/Vegetação</span>
+                                        <span class="font-semibold">${percentages.forest}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                        <div class="bg-green-600 h-1.5 rounded-full" style="width: ${percentages.forest}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    // Urban
+                    if (percentages.urban > 0) {
+                        html += `
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">🏘️</span>
+                                <div class="flex-1">
+                                    <div class="flex justify-between mb-0.5">
+                                        <span>Área Urbana</span>
+                                        <span class="font-semibold">${percentages.urban}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                        <div class="bg-gray-600 h-1.5 rounded-full" style="width: ${percentages.urban}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    // Water
+                    if (percentages.water > 0) {
+                        html += `
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">💧</span>
+                                <div class="flex-1">
+                                    <div class="flex justify-between mb-0.5">
+                                        <span>Água/Área Alagada</span>
+                                        <span class="font-semibold">${percentages.water}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                        <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${percentages.water}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    // Agricultural
+                    if (percentages.agricultural > 0) {
+                        html += `
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">🌾</span>
+                                <div class="flex-1">
+                                    <div class="flex justify-between mb-0.5">
+                                        <span>Agricultura/Campo</span>
+                                        <span class="font-semibold">${percentages.agricultural}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                        <div class="bg-yellow-600 h-1.5 rounded-full" style="width: ${percentages.agricultural}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    html += '</div>';
+                    
+                    // Additional details
+                    if (details.buildings > 0) {
+                        html += `<div class="mt-2 text-xs text-gray-600">🏠 ${details.buildings} construções próximas</div>`;
+                    }
+                    
+                    if (analysis.roads > 0) {
+                        html += `<div class="text-xs text-gray-600">🛣️ ${analysis.roads} estradas próximas</div>`;
+                    }
+                    
+                    document.getElementById('land-use-content').innerHTML = html;
+                    
+                    // Calculate NDVI estimate based on land use
+                    calculateNDVI(percentages);
+                } else {
+                    document.getElementById('land-use-content').innerHTML = '<p class="text-sm text-gray-600">Não foi possível analisar o uso do solo</p>';
+                    document.getElementById('ndvi-content').innerHTML = '<p class="text-sm text-gray-600">Não foi possível calcular NDVI</p>';
+                }
+            } catch (error) {
+                console.error('Land use error:', error);
+                document.getElementById('land-use-content').innerHTML = '<p class="text-sm text-red-600">Erro ao carregar análise de uso do solo</p>';
+            }
+        }
+
+        async function loadFemaFlood(location) {
+            try {
+                const response = await fetch('/api/fema-flood', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        lat: location.lat(), 
+                        lng: location.lng() 
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success && data.flood) {
+                    const { flood } = data;
+                    
+                    let html = `
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-3xl">${flood.riskIcon}</span>
+                            <div>
+                                <div class="font-semibold text-sm text-${flood.riskColor}-600">
+                                    Risco: ${flood.riskLevel}
+                                </div>
+                                <div class="text-xs text-gray-600">Zona FEMA: ${flood.zone}</div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-700 mb-2">${flood.description}</p>
+                    `;
+                    
+                    if (flood.insuranceRequired) {
+                        html += `
+                            <div class="bg-red-50 border border-red-200 rounded p-2 text-xs">
+                                <strong class="text-red-700">⚠️ Seguro Obrigatório:</strong>
+                                <span class="text-red-600">Esta propriedade requer seguro contra inundação</span>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="bg-green-50 border border-green-200 rounded p-2 text-xs">
+                                <strong class="text-green-700">✅ Seguro Opcional:</strong>
+                                <span class="text-green-600">Seguro contra inundação não é obrigatório</span>
+                            </div>
+                        `;
+                    }
+                    
+                    document.getElementById('fema-flood-content').innerHTML = html;
+                } else {
+                    document.getElementById('fema-flood-content').innerHTML = '<p class="text-sm text-gray-600">Não foi possível obter dados de risco de inundação</p>';
+                }
+            } catch (error) {
+                console.error('FEMA flood error:', error);
+                document.getElementById('fema-flood-content').innerHTML = '<p class="text-sm text-red-600">Erro ao carregar dados de inundação</p>';
+            }
+        }
+
+        async function loadWaterProximity(location) {
+            try {
+                if (!placesService) {
+                    placesService = new google.maps.places.PlacesService(satelliteMap);
+                }
+                
+                const waterTypes = [
+                    { type: 'natural_feature', name: 'Corpo d\'Água', icon: '🌊' },
+                    { type: 'park', name: 'Parque/Lago', icon: '🌳' }
+                ];
+                
+                let waterBodies = [];
+                let searchesCompleted = 0;
+                
+                waterTypes.forEach(waterType => {
+                    placesService.nearbySearch({
+                        location: location,
+                        radius: 2000, // 2km
+                        keyword: 'river lake water pond creek'
+                    }, (results, status) => {
+                        searchesCompleted++;
+                        
+                        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                            results.forEach(place => {
+                                const distance = google.maps.geometry.spherical.computeDistanceBetween(
+                                    location,
+                                    place.geometry.location
+                                );
+                                
+                                // Filter water-related places
+                                const name = place.name.toLowerCase();
+                                if (name.includes('river') || name.includes('lake') || 
+                                    name.includes('creek') || name.includes('pond') ||
+                                    name.includes('water') || name.includes('rio') ||
+                                    name.includes('lago')) {
+                                    waterBodies.push({
+                                        name: place.name,
+                                        distance: Math.round(distance),
+                                        icon: waterType.icon
+                                    });
+                                }
+                            });
+                        }
+                        
+                        // When all searches complete
+                        if (searchesCompleted === waterTypes.length) {
+                            displayWaterProximity(waterBodies, location);
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Water proximity error:', error);
+                document.getElementById('water-proximity-content').innerHTML = 
+                    '<p class="text-sm text-red-600">Erro ao carregar dados de proximidade de água</p>';
+            }
+        }
+        
+        function displayWaterProximity(waterBodies, location) {
+            // Remove duplicates and sort by distance
+            const unique = [];
+            const seen = new Set();
+            
+            waterBodies.forEach(wb => {
+                if (!seen.has(wb.name)) {
+                    seen.add(wb.name);
+                    unique.push(wb);
+                }
+            });
+            
+            unique.sort((a, b) => a.distance - b.distance);
+            const closest = unique.slice(0, 3); // Top 3
+            
+            if (closest.length === 0) {
+                document.getElementById('water-proximity-content').innerHTML = `
+                    <div class="flex items-center gap-2 text-sm">
+                        <span class="text-2xl">✅</span>
+                        <span class="text-green-600 font-semibold">Nenhum corpo d'água próximo (raio 2km)</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-1">Baixo risco de inundação por proximidade de água</p>
+                `;
+                return;
+            }
+            
+            let html = '<div class="space-y-2">';
+            
+            closest.forEach(wb => {
+                const distanceKm = (wb.distance / 1000).toFixed(2);
+                const distanceM = wb.distance;
+                
+                let riskIcon, riskText, riskColor;
+                if (distanceM < 100) {
+                    riskIcon = '🚨';
+                    riskText = 'MUITO PRÓXIMO';
+                    riskColor = 'red';
+                } else if (distanceM < 500) {
+                    riskIcon = '⚠️';
+                    riskText = 'PRÓXIMO';
+                    riskColor = 'orange';
+                } else {
+                    riskIcon = '✅';
+                    riskText = 'DISTÂNCIA SEGURA';
+                    riskColor = 'green';
+                }
+                
+                html += `
+                    <div class="flex items-center justify-between text-xs border-b border-gray-100 pb-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg">${wb.icon}</span>
+                            <span class="font-semibold">${wb.name}</span>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-semibold">${distanceM < 1000 ? distanceM + 'm' : distanceKm + 'km'}</div>
+                            <div class="text-${riskColor}-600 text-xs">${riskIcon} ${riskText}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            
+            // Overall risk assessment
+            const closestDistance = closest[0].distance;
+            if (closestDistance < 100) {
+                html += `
+                    <div class="bg-red-50 border border-red-200 rounded p-2 text-xs mt-2">
+                        <strong class="text-red-700">🚨 Alerta:</strong>
+                        <span class="text-red-600">Propriedade muito próxima de água - alto risco de inundação</span>
+                    </div>
+                `;
+            } else if (closestDistance < 500) {
+                html += `
+                    <div class="bg-orange-50 border border-orange-200 rounded p-2 text-xs mt-2">
+                        <strong class="text-orange-700">⚠️ Atenção:</strong>
+                        <span class="text-orange-600">Proximidade moderada de água - verificar histórico de inundações</span>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('water-proximity-content').innerHTML = html;
+        }
+
+        function calculateNDVI(landUsePercentages) {
+            // Estimate NDVI based on land use percentages
+            // NDVI scale: -1 to 1
+            // Forest: 0.6-0.9
+            // Agriculture: 0.4-0.6
+            // Urban: 0.1-0.3
+            // Water: -0.1-0.1
+            
+            let ndvi = 0;
+            ndvi += (landUsePercentages.forest / 100) * 0.75;      // Forest contributes high NDVI
+            ndvi += (landUsePercentages.agricultural / 100) * 0.50; // Agriculture moderate
+            ndvi += (landUsePercentages.urban / 100) * 0.20;        // Urban low
+            ndvi += (landUsePercentages.water / 100) * 0.05;        // Water very low
+            
+            // Determine vegetation density
+            let density, densityColor, densityIcon;
+            if (ndvi >= 0.7) {
+                density = 'Muito Densa';
+                densityColor = 'green';
+                densityIcon = '🌳🌳🌳';
+            } else if (ndvi >= 0.5) {
+                density = 'Densa';
+                densityColor = 'green';
+                densityIcon = '🌳🌳';
+            } else if (ndvi >= 0.3) {
+                density = 'Moderada';
+                densityColor = 'yellow';
+                densityIcon = '🌳';
+            } else if (ndvi >= 0.15) {
+                density = 'Esparsa';
+                densityColor = 'orange';
+                densityIcon = '🌾';
+            } else {
+                density = 'Mínima/Ausente';
+                densityColor = 'gray';
+                densityIcon = '🏭';
+            }
+            
+            // Estimate clearing cost
+            let clearingCost, clearingTime;
+            if (ndvi >= 0.7) {
+                clearingCost = '$30.000 - $50.000';
+                clearingTime = '4-6 meses';
+            } else if (ndvi >= 0.5) {
+                clearingCost = '$15.000 - $30.000';
+                clearingTime = '2-4 meses';
+            } else if (ndvi >= 0.3) {
+                clearingCost = '$5.000 - $15.000';
+                clearingTime = '1-2 meses';
+            } else if (ndvi >= 0.15) {
+                clearingCost = '$2.000 - $5.000';
+                clearingTime = '2-4 semanas';
+            } else {
+                clearingCost = '$500 - $2.000';
+                clearingTime = '1-2 semanas';
+            }
+            
+            let html = `
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-2xl">${densityIcon}</span>
+                    <div>
+                        <div class="font-semibold text-sm text-${densityColor}-600">
+                            Índice NDVI: ${ndvi.toFixed(2)}
+                        </div>
+                        <div class="text-xs text-gray-600">Densidade de Vegetação: ${density}</div>
+                    </div>
+                </div>
+                
+                <div class="mb-2">
+                    <div class="text-xs text-gray-600 mb-1">Barra de Vegetação:</div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-${densityColor}-600 h-2 rounded-full" style="width: ${(ndvi * 100).toFixed(0)}%"></div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-blue-50 border border-blue-200 rounded p-2">
+                        <div class="text-blue-700 font-semibold">💰 Custo de Limpeza:</div>
+                        <div class="text-blue-600">${clearingCost}</div>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-200 rounded p-2">
+                        <div class="text-purple-700 font-semibold">⏱️ Tempo Estimado:</div>
+                        <div class="text-purple-600">${clearingTime}</div>
+                    </div>
+                </div>
+            `;
+            
+            if (ndvi >= 0.6) {
+                html += `
+                    <div class="bg-orange-50 border border-orange-200 rounded p-2 text-xs mt-2">
+                        <strong class="text-orange-700">⚠️ Atenção:</strong>
+                        <span class="text-orange-600">Vegetação densa - custo alto de limpeza. Considere negociar desconto no preço.</span>
+                    </div>
+                `;
+            } else if (ndvi < 0.2) {
+                html += `
+                    <div class="bg-green-50 border border-green-200 rounded p-2 text-xs mt-2">
+                        <strong class="text-green-700">✅ Vantagem:</strong>
+                        <span class="text-green-600">Terreno limpo - pronto para construção com custo mínimo de preparação.</span>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('ndvi-content').innerHTML = html;
+        }
+
+        function createGoogleEarthLink(location) {
+            const lat = location.lat();
+            const lng = location.lng();
+            
+            // Google Earth Web URL with coordinates
+            const earthUrl = `https://earth.google.com/web/@${lat},${lng},500a,1000d,35y,0h,0t,0r`;
+            
+            let html = `
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-3xl">🌍</span>
+                    <div class="flex-1">
+                        <p class="text-xs text-gray-700 mb-2">
+                            Veja como esta propriedade mudou ao longo do tempo usando o Google Earth.
+                        </p>
+                    </div>
+                </div>
+                
+                <a href="${earthUrl}" target="_blank" 
+                   class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded-lg text-sm font-semibold transition-colors">
+                    🚀 Abrir no Google Earth
+                </a>
+                
+                <div class="mt-2 text-xs text-gray-600">
+                    <strong>🔍 O que você pode ver:</strong>
+                    <ul class="list-disc list-inside mt-1 space-y-0.5">
+                        <li>Imagens históricas desde 1984</li>
+                        <li>Comparação lado a lado (2010 vs 2024)</li>
+                        <li>Mudanças na vegetação e construções</li>
+                        <li>Evolução da área ao longo dos anos</li>
+                    </ul>
+                </div>
+            `;
+            
+            document.getElementById('google-earth-content').innerHTML = html;
+        }
+
+        async function loadZillowPhotos(prop) {
+            document.getElementById('zillow-loading').textContent = 'Carregando fotos...';
+            zillowPhotos = [];
+            zillowPhotoIndex = 0;
+
+            try {
+                // Use lat/lng directly from prop if available
+                if (prop.lat && prop.lng) {
+                    // Step 2: Search Zillow property by coordinates
+                    const searchResponse = await fetch('/api/zillow/search', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ lat: prop.lat, lng: prop.lng })
+                    });
+                    
+                    if (!searchResponse.ok) {
+                        throw new Error('Propriedade não encontrada no Zillow');
+                    }
+                    
+                    const searchData = await searchResponse.json();
+                    const zpid = searchData.zpid || searchData.results?.[0]?.zpid;
+                    
+                    if (!zpid) {
+                        throw new Error('ZPID não encontrado');
+                    }
+                    
+                    // Step 3: Get property images
+                    const imagesResponse = await fetch('/api/zillow/images', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ zpid })
+                    });
+                    
+                    if (!imagesResponse.ok) {
+                        throw new Error('Erro ao buscar fotos');
+                    }
+                    
+                    const imagesData = await imagesResponse.json();
+                    zillowPhotos = imagesData.images || imagesData.photos || [];
+                    
+                    if (zillowPhotos.length === 0) {
+                        document.getElementById('zillow-loading').textContent = 'Nenhuma foto disponível no Zillow';
+                    } else {
+                        document.getElementById('zillow-loading').style.display = 'none';
+                        updateZillowPhoto();
+                    }
+                    return;
+                }
+                
+                // Step 1: Get coordinates from address (using Geocoding API)
+                const geocodeResponse = await fetch(
+                    `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(prop['Address'] + ', ' + prop['City'] + ', FL')}&key=${window.googleMapsApiKey}`
+                );
+                const geocodeData = await geocodeResponse.json();
+
+                if (!geocodeData.results || geocodeData.results.length === 0) {
+                    throw new Error('Endereço não encontrado');
+                }
+
+                const location = geocodeData.results[0].geometry.location;
+
+                // Step 2: Search Zillow property by coordinates
+                const searchResponse = await fetch('/api/zillow/search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ lat: location.lat, lng: location.lng })
+                });
+
+                if (!searchResponse.ok) {
+                    throw new Error('Propriedade não encontrada no Zillow');
+                }
+
+                const searchData = await searchResponse.json();
+                const zpid = searchData.zpid || searchData.results?.[0]?.zpid;
+
+                if (!zpid) {
+                    throw new Error('ZPID não encontrado');
+                }
+
+                // Step 3: Get property images
+                const imagesResponse = await fetch('/api/zillow/images', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ zpid })
+                });
+
+                if (!imagesResponse.ok) {
+                    throw new Error('Erro ao buscar fotos');
+                }
+
+                const imagesData = await imagesResponse.json();
+                zillowPhotos = imagesData.images || imagesData.photos || [];
+
+                if (zillowPhotos.length === 0) {
+                    document.getElementById('zillow-loading').textContent = 'Nenhuma foto disponível no Zillow';
+                } else {
+                    document.getElementById('zillow-loading').style.display = 'none';
+                    updateZillowPhoto();
+                }
+            } catch (error) {
+                console.error('Zillow error:', error);
+                document.getElementById('zillow-loading').textContent = `Erro: ${error.message}`;
+            }
+        }
+
+        async function loadRealtorPhotos(prop) {
+            document.getElementById('realtor-loading').textContent = 'Carregando fotos...';
+            realtorPhotos = [];
+            realtorPhotoIndex = 0;
+
+            try {
+                // Use Realty Mole API (accepts address directly)
+                const response = await fetch('/api/realtymole/property', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        address: prop['Address'],
+                        city: prop['City'],
+                        state: 'FL',
+                        zip: prop.zip || ''
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Propriedade não encontrada');
+                }
+
+                const data = await response.json();
+                realtorPhotos = data.photos || data.images || [];
+
+                if (realtorPhotos.length === 0) {
+                    document.getElementById('realtor-loading').textContent = 'Nenhuma foto disponível no Realty Mole';
+                } else {
+                    document.getElementById('realtor-loading').style.display = 'none';
+                    updateRealtorPhoto();
+                }
+            } catch (error) {
+                console.error('Realty Mole error:', error);
+                document.getElementById('realtor-loading').textContent = `Erro: ${error.message}`;
+            }
+        }
+
+        function showZillowPhoto(index) {
+            if (zillowPhotos.length > 0) {
+                document.getElementById('zillow-photo').src = zillowPhotos[index];
+                document.getElementById('zillow-photo').classList.remove('hidden');
+                document.getElementById('zillow-loading').classList.add('hidden');
+                document.getElementById('zillow-counter').textContent = `${index + 1} / ${zillowPhotos.length}`;
+            }
+        }
+
+        function showRealtorPhoto(index) {
+            if (realtorPhotos.length > 0) {
+                document.getElementById('realtor-photo').src = realtorPhotos[index];
+                document.getElementById('realtor-photo').classList.remove('hidden');
+                document.getElementById('realtor-loading').classList.add('hidden');
+                document.getElementById('realtor-counter').textContent = `${index + 1} / ${realtorPhotos.length}`;
+            }
+        }
+
+        function copyParcelNumber() {
+            const parcelNumber = document.getElementById('prop-parcel').textContent;
+            if (parcelNumber && parcelNumber !== '-') {
+                navigator.clipboard.writeText(parcelNumber)
+                    .then(() => {
+                        const feedback = document.getElementById('copy-feedback');
+                        feedback.style.display = 'inline';
+                        setTimeout(() => {
+                            feedback.style.display = 'none';
+                        }, 2000);
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy:', err);
+                        alert('Erro ao copiar. Tente novamente.');
+                    });
+            }
+        }
+        
+        function copyAddress() {
+            const address = document.getElementById('prop-address-tab').textContent;
+            if (address && address !== '-') {
+                navigator.clipboard.writeText(address)
+                    .then(() => {
+                        alert('✅ Endereço copiado!');
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy:', err);
+                        alert('Erro ao copiar. Tente novamente.');
+                    });
+            }
+        }
+        
+        function voltarAoDashboard() {
+            // NÃO apaga as propriedades selecionadas - apenas volta para o dashboard
+            // O localStorage 'selectedProperties' permanece intacto
+            window.location.href = '/';
+        }
+        
+        function copyCoordinates() {
+            const coordinates = document.getElementById('prop-coordinates-tab').textContent;
+            if (coordinates && coordinates !== '-') {
+                navigator.clipboard.writeText(coordinates)
+                    .then(() => {
+                        alert('✅ Coordenadas copiadas!');
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy:', err);
+                        alert('Erro ao copiar. Tente novamente.');
+                    });
+            }
+        }
+    </script>
+</body>
+</html>
+
