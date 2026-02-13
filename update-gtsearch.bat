@@ -20,8 +20,10 @@ echo.
 echo [2/5] Baixando atualizacoes do GitHub...
 git pull origin main
 if errorlevel 1 (
+    echo.
     echo ERRO: Falha ao baixar atualizacoes!
     echo Verifique sua conexao com a internet
+    echo.
     pause
     exit /b 1
 )
@@ -54,3 +56,13 @@ start http://localhost:3000
 
 REM Iniciar servidor
 npm start
+
+REM Se o servidor parar, manter janela aberta
+if errorlevel 1 (
+    echo.
+    echo ========================================
+    echo ERRO: Servidor parou inesperadamente!
+    echo ========================================
+    echo.
+    pause
+)
