@@ -1,4 +1,3 @@
-<!-- Cache Buster: 2026-01-12-10:50 -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -722,8 +721,93 @@
         window.realtorPhotoIndex = 0;
         window.googleMapsApiKey = '';
         
-        // ✅ SISTEMA SIMPLIFICADO - SEM CACHE
-        // Mapas são carregados sob demanda via botões "Carregar Imagem"
+        // 📦 SISTEMA DE CACHE DE IMAGENS POR PROPRIEDADE
+        // Armazena estado das imagens carregadas para cada propriedade
+        window.propertyCache = {};
+        
+        function getCacheKey(index) {
+            return `property_${index}`;
+        }
+        
+        function savePropertyCache(index) {
+            const key = getCacheKey(index);
+            
+            // 💾 Verificar quais mapas foram carregados (não têm botão)
+            const satelliteEl = document.getElementById('satellite-map');
+            const satelliteMapLoaded = satelliteEl && !satelliteEl.querySelector('button');
+            
+            const streetViewEl = document.getElementById('street-view');
+            const streetViewLoaded = streetViewEl && !streetViewEl.querySelector('button');
+            
+            const terrainEl = document.getElementById('terrain-map-view');
+            const terrainMapLoaded = terrainEl && !terrainEl.querySelector('button');
+            
+            const normalEl = document.getElementById('normal-map-view');
+            const normalMapLoaded = normalEl && !normalEl.querySelector('button');
+            
+            window.propertyCache[key] = {
+                satelliteMapLoaded: satelliteMapLoaded, // 🛰️ Estado booleano
+                streetViewLoaded: streetViewLoaded,     // 🌍 Estado booleano
+                terrainMapLoaded: terrainMapLoaded,     // 🏞️ Estado booleano
+                normalMapLoaded: normalMapLoaded,       // 🗺️ Estado booleano
+                timestamp: Date.now()
+            };
+            console.log('💾 Cache salvo para propriedade', index, window.propertyCache[key]);
+        }
+        
+        function loadPropertyCache(index) {
+            const key = getCacheKey(index);
+            const cache = window.propertyCache[key];
+            
+            if (!cache) {
+                console.log('❌ Sem cache para propriedade', index);
+                return false;
+            }
+            
+            console.log('✅ Restaurando cache para propriedade', index);
+            
+            // Restaurar Satellite Map
+            if (cache.satelliteMapLoaded) {
+                console.log('🛰️ Satellite Map foi carregado anteriormente, recriando...');
+                const satelliteEl = document.getElementById('satellite-map');
+                if (satelliteEl && window.currentLocation) {
+                    satelliteEl.innerHTML = ''; // Limpar
+                    initSatelliteMap(window.currentLocation);
+                }
+            }
+            
+            // Restaurar Street View
+            if (cache.streetViewLoaded) {
+                console.log('🌍 Street View foi carregado anteriormente, recriando...');
+                const streetViewEl = document.getElementById('street-view');
+                if (streetViewEl && window.currentLocation) {
+                    streetViewEl.innerHTML = ''; // Limpar
+                    initStreetView(window.currentLocation);
+                }
+            }
+            
+            // Restaurar Terrain Map
+            if (cache.terrainMapLoaded) {
+                console.log('🏞️ Terrain Map foi carregado anteriormente, recriando...');
+                const terrainEl = document.getElementById('terrain-map-view');
+                if (terrainEl && window.currentLocation) {
+                    terrainEl.innerHTML = ''; // Limpar
+                    initTerrainMap(window.currentLocation);
+                }
+            }
+            
+            // Restaurar Normal Map
+            if (cache.normalMapLoaded) {
+                console.log('🗺️ Normal Map foi carregado anteriormente, recriando...');
+                const normalEl = document.getElementById('normal-map-view');
+                if (normalEl && window.currentLocation) {
+                    normalEl.innerHTML = ''; // Limpar
+                    initNormalMap(window.currentLocation);
+                }
+            }
+            
+            return true;
+        }
         
         function reattachMapEventListeners(element, type) {
             // Se o elemento tem um botão "Carregar Imagem", reattach o event listener
@@ -771,6 +855,9 @@
                     
                     setTimeout(() => {
                         this.remove();
+                        // Salvar cache após carregar
+                        console.log('💾 Salvando cache após carregar', type);
+                        savePropertyCache(window.currentIndex);
                     }, 1500);
                 });
             } else {
@@ -951,7 +1038,12 @@
             // Atualizar progresso
             atualizarProgresso();
             
-            // ✅ Sistema simplificado - sem cache
+            // 📦 SALVAR CACHE DA PROPRIEDADE ANTERIOR
+            // Usar window.currentIndex (global) em vez de currentIndex (local)
+            if (window.currentIndex !== index && window.currentIndex >= 0) {
+                console.log('💾 Salvando cache da propriedade anterior:', window.currentIndex);
+                savePropertyCache(window.currentIndex);
+            }
             
             // Atualizar currentIndex
             currentIndex = index;
@@ -1125,20 +1217,8 @@
 
         function geocodeAndLoadMaps(prop) {
             // 🎯 VERIFICAÇÃO: Usar coordenadas do CSV se disponíveis (evita geocoding)
-            let lat, lng;
-            
-            // Tentar coluna "Coordinates" unificada primeiro (formato: "lat,lng")
-            if (prop['Coordinates']) {
-                const coordsStr = prop['Coordinates'].replace(/"/g, '').trim();
-                const coords = coordsStr.split(',');
-                lat = parseFloat(coords[0]);
-                lng = parseFloat(coords[1]);
-                console.log('📍 Usando coluna Coordinates unificada:', coordsStr);
-            } else {
-                // Fallback: colunas separadas
-                lat = parseFloat(prop['Latitude'] || prop['Lat'] || prop['lat'] || prop['latitude']);
-                lng = parseFloat(prop['Longitude'] || prop['Lng'] || prop['lng'] || prop['longitude'] || prop['Lon'] || prop['lon']);
-            }
+            const lat = parseFloat(prop['Latitude'] || prop['Lat'] || prop['lat'] || prop['latitude']);
+            const lng = parseFloat(prop['Longitude'] || prop['Lng'] || prop['lng'] || prop['longitude'] || prop['Lon'] || prop['lon']);
             
             // Se tem coordenadas válidas, usar direto (sem geocoding)
             if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
@@ -1171,9 +1251,14 @@
             window.currentLocation = location;
             window.currentProp = prop;
             
-            // ✅ Sempre resetar mapas para botões "Carregar Imagem"
-            console.log('🔄 Resetando mapas...');
-            resetAllMaps();
+            // 📦 AGORA CARREGAR CACHE (depois de window.currentLocation estar definida)
+            const cacheLoaded = loadPropertyCache(window.currentIndex);
+            
+            // Se não tem cache, resetar para botões "Carregar Imagem"
+            if (!cacheLoaded) {
+                console.log('🆕 Sem cache, resetando mapas...');
+                resetAllMaps();
+            }
             
             // ✅ Carregar apenas dados que NÃO usam Google Maps API (gratuitos)
             // initSatelliteMap(location); // ❌ Desabilitado - carregar sob demanda
@@ -1228,7 +1313,8 @@
             
             console.log('✅ Satellite Map criado com sucesso');
             
-            // ✅ Mapa carregado com sucesso
+            // 📦 Salvar cache após carregar
+            setTimeout(() => savePropertyCache(window.currentIndex), 1500);
         }
 
         function initStreetView(location) {
@@ -1250,7 +1336,9 @@
             window.streetView = streetView;
             
             console.log('✅ Street View criado com sucesso');
-            // Street View NÃO tem cache
+            
+            // 📦 Salvar cache após carregar
+            setTimeout(() => savePropertyCache(window.currentIndex), 1500);
         }
 
         function initTerrainMap(location) {
@@ -1275,7 +1363,9 @@
             });
             
             console.log('✅ Terrain Map criado com sucesso');
-            // Terrain Map NÃO tem cache
+            
+            // 📦 Salvar cache após carregar
+            setTimeout(() => savePropertyCache(window.currentIndex), 1500);
         }
 
         function initNormalMap(location) {
@@ -1299,7 +1389,9 @@
             });
             
             console.log('✅ Normal Map criado com sucesso');
-            // Normal Map NÃO tem cache
+            
+            // 📦 Salvar cache após carregar
+            setTimeout(() => savePropertyCache(window.currentIndex), 1500);
         }
 
         function loadNearbyPlaces(location) {

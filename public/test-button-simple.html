@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste Simples - Botão Analisar</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        .log { background: #f0f0f0; padding: 10px; margin: 10px 0; border-left: 4px solid #007bff; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Teste Simples - Botão Analisar Selecionadas</h1>
+    
+    <div id="logs"></div>
+    
+    <button id="testBtn" onclick="testFunction()">🧪 Testar Função</button>
+    <button id="analyzeBtn" onclick="analyzeSelectedProperties()">📊 Analisar Selecionadas</button>
+    
+    <script>
+        function log(msg) {
+            const div = document.createElement('div');
+            div.className = 'log';
+            div.textContent = new Date().toLocaleTimeString() + ' - ' + msg;
+            document.getElementById('logs').appendChild(div);
+        }
+        
+        log('✅ Página carregada');
+        
+        function testFunction() {
+            log('✅ testFunction() foi chamada!');
+            alert('testFunction() funcionou!');
+        }
+        
+        // Simular dados globais
+        window.allNewProperties = [
+            {'Parcel Number': '123', 'Owner': 'Test Owner', 'Address': 'Test Address'}
+        ];
+        
+        log('✅ allNewProperties criado com ' + allNewProperties.length + ' propriedade');
+        
+        // Função analyzeSelectedProperties (copiada do index.html)
+        function analyzeSelectedProperties() {
+            log('🔄 analyzeSelectedProperties() foi chamada!');
+            
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+            log('Checkboxes marcados: ' + rowCheckboxes.length);
+            
+            if (rowCheckboxes.length === 0) {
+                log('⚠️ Nenhum checkbox marcado - mostrando alert');
+                alert('Selecione pelo menos uma propriedade para analisar.');
+                return;
+            }
+            
+            const selectedProperties = [];
+            rowCheckboxes.forEach(cb => {
+                const index = parseInt(cb.getAttribute('data-index'));
+                const property = allNewProperties[index];
+                if (property) {
+                    selectedProperties.push(property);
+                }
+            });
+            
+            log('✅ Propriedades selecionadas: ' + selectedProperties.length);
+            
+            localStorage.setItem('selectedProperties', JSON.stringify(selectedProperties));
+            log('✅ Salvo no localStorage');
+            
+            log('🔄 Redirecionando para analysis.html...');
+            window.location.href = 'analysis.html';
+        }
+        
+        log('✅ Função analyzeSelectedProperties() definida');
+        log('👉 Clique no botão "Analisar Selecionadas" para testar');
+    </script>
+</body>
+</html>
+

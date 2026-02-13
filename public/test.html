@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+    <h1 id="test">Aguardando...</h1>
+    <script>
+        console.log('SCRIPT EXECUTADO!');
+        document.getElementById('test').textContent = 'JavaScript Funcionando!';
+        
+        const stored = localStorage.getItem('selectedProperties');
+        console.log('localStorage:', stored ? 'TEM DADOS' : 'VAZIO');
+        
+        if (stored) {
+            const props = JSON.parse(stored);
+            console.log('Propriedades:', props);
+            document.getElementById('test').textContent = `${props.length} propriedades encontradas!`;
+        }
+    </script>
+</body>
+</html>
