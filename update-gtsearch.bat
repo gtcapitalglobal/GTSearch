@@ -12,12 +12,12 @@ if not exist "package.json" (
     exit /b 1
 )
 
-echo [1/5] Parando servidor antigo (se estiver rodando)...
+echo [1/4] Parando servidor antigo (se estiver rodando)...
 taskkill /F /IM node.exe 2>nul
 timeout /t 2 /nobreak >nul
 echo.
 
-echo [2/5] Baixando atualizacoes do GitHub...
+echo [2/4] Baixando atualizacoes do GitHub...
 git pull origin main
 if errorlevel 1 (
     echo.
@@ -29,11 +29,11 @@ if errorlevel 1 (
 )
 echo.
 
-echo [3/5] Verificando dependencias...
+echo [3/4] Verificando dependencias...
 npm install
 echo.
 
-echo [4/5] Verificando arquivo .env...
+echo [4/4] Verificando arquivo .env...
 if not exist ".env" (
     echo Criando arquivo .env...
     echo OFFLINE_MODE=true > .env
@@ -41,28 +41,34 @@ if not exist ".env" (
     echo.
 )
 
-echo [5/5] Iniciando servidor...
-echo.
 echo ========================================
-echo Servidor iniciado com sucesso!
-echo Acesse: http://localhost:3000
+echo Iniciando servidor em nova janela...
+echo ========================================
 echo.
-echo Pressione Ctrl+C para parar o servidor
+echo O servidor vai abrir em uma janela separada.
+echo Aguarde 5 segundos e o navegador abrira automaticamente.
+echo.
+echo Para parar o servidor: feche a janela do servidor
 echo ========================================
 echo.
 
-REM Abrir navegador automaticamente
+REM Abrir servidor em nova janela que nao fecha
+start "GTSearch Server" cmd /k "npm start"
+
+REM Aguardar 5 segundos para servidor iniciar
+echo Aguardando servidor iniciar...
+timeout /t 5 /nobreak >nul
+
+REM Abrir navegador
 start http://localhost:3000
 
-REM Iniciar servidor
-npm start
-
-REM Se o servidor parar, manter janela aberta
-if errorlevel 1 (
-    echo.
-    echo ========================================
-    echo ERRO: Servidor parou inesperadamente!
-    echo ========================================
-    echo.
-    pause
-)
+echo.
+echo ========================================
+echo Pronto! Sistema iniciado com sucesso!
+echo ========================================
+echo.
+echo Servidor rodando em: http://localhost:3000
+echo Janela do servidor: "GTSearch Server"
+echo.
+echo Pressione qualquer tecla para fechar esta janela...
+pause >nul
