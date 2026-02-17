@@ -142,6 +142,88 @@
             box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
         }
         
+        /* Alert Badges */
+        .alert-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-weight: bold;
+            font-size: 0.7rem;
+            margin-right: 0.25rem;
+            animation: pulse-warning 2s infinite;
+        }
+        
+        .alert-badge.alert-risk {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+        }
+        
+        .alert-badge.alert-warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+        
+        .alert-badge.alert-info {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+        
+        /* Alert Row Backgrounds */
+        .alert-row-risk {
+            background-color: #fee2e2 !important;
+            transition: all 0.3s;
+        }
+        
+        .alert-row-risk:hover {
+            background-color: #fecaca !important;
+        }
+        
+        .alert-row-warning {
+            background-color: #fef3c7 !important;
+            transition: all 0.3s;
+        }
+        
+        .alert-row-warning:hover {
+            background-color: #fde68a !important;
+        }
+        
+        .alert-row-info {
+            background-color: #dbeafe !important;
+            transition: all 0.3s;
+        }
+        
+        .alert-row-info:hover {
+            background-color: #bfdbfe !important;
+        }
+        
+        /* Dark mode alert styles */
+        body.dark-mode .alert-row-risk {
+            background-color: #450a0a !important;
+        }
+        
+        body.dark-mode .alert-row-risk:hover {
+            background-color: #7f1d1d !important;
+        }
+        
+        body.dark-mode .alert-row-warning {
+            background-color: #451a03 !important;
+        }
+        
+        body.dark-mode .alert-row-warning:hover {
+            background-color: #78350f !important;
+        }
+        
+        body.dark-mode .alert-row-info {
+            background-color: #172554 !important;
+        }
+        
+        body.dark-mode .alert-row-info:hover {
+            background-color: #1e3a8a !important;
+        }
+        
         @keyframes pulse-warning {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.8; transform: scale(1.05); }
@@ -972,6 +1054,29 @@
                 );
             }
             
+            // Check for total alert keywords
+            const alertKeywords = JSON.parse(localStorage.getItem('alertKeywords') || '{"risk": ["UNDIVIDED"], "warning": [], "info": []}');
+            const totalAlertsThreshold = parseInt(localStorage.getItem('totalAlertsThreshold') || '10');
+            let totalAlerts = 0;
+            
+            allNewProperties.forEach(prop => {
+                const legalDesc = (prop['Legal Description'] || '').toUpperCase();
+                const allKeywords = [...(alertKeywords.risk || []), ...(alertKeywords.warning || []), ...(alertKeywords.info || [])];
+                
+                allKeywords.forEach(keyword => {
+                    if (legalDesc.includes(keyword.toUpperCase())) {
+                        totalAlerts++;
+                    }
+                });
+            });
+            
+            if (totalAlerts > totalAlertsThreshold) {
+                showNotification(
+                    `⚠️ ALERTA: ${totalAlerts} propriedades com palavras-chave detectadas! (Limite: ${totalAlertsThreshold})`,
+                    'warning'
+                );
+            }
+            
             if (allNewProperties.length > 0) {
                 document.getElementById('deleteNewBtn').classList.remove('hidden');
                 document.getElementById('downloadsSection').classList.remove('hidden');
@@ -1110,9 +1215,47 @@
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = filteredProperties.map((row, index) => {
                 const originalIndex = allNewProperties.indexOf(row);
-                const hasUndivided = (row['Legal Description'] || '').toUpperCase().includes('UNDIVIDED');
-                const rowClass = hasUndivided ? 'undivided-alert text-[10px]' : 'hover:bg-blue-50 transition-colors text-[10px]';
-                const undividedBadge = hasUndivided ? '<span class="undivided-badge">⚠️ UNDIVIDED</span> ' : '';
+                const legalDesc = (row['Legal Description'] || '').toUpperCase();
+                const hasUndivided = legalDesc.includes('UNDIVIDED');
+                
+                // Check for custom alert keywords
+                const alertKeywords = JSON.parse(localStorage.getItem('alertKeywords') || '{"risk": ["UNDIVIDED"], "warning": [], "info": []}');
+                let alertBadges = '';
+                let rowClass = 'hover:bg-blue-50 transition-colors text-[10px]';
+                
+                // Check risk keywords (red)
+                if (alertKeywords.risk) {
+                    alertKeywords.risk.forEach(keyword => {
+                        if (legalDesc.includes(keyword.toUpperCase())) {
+                            alertBadges += `<span class="alert-badge alert-risk">⚠️ ${keyword}</span> `;
+                            rowClass = 'alert-row-risk text-[10px]';
+                        }
+                    });
+                }
+                
+                // Check warning keywords (yellow)
+                if (alertKeywords.warning && !alertBadges) {
+                    alertKeywords.warning.forEach(keyword => {
+                        if (legalDesc.includes(keyword.toUpperCase())) {
+                            alertBadges += `<span class="alert-badge alert-warning">⚡ ${keyword}</span> `;
+                            if (rowClass === 'hover:bg-blue-50 transition-colors text-[10px]') {
+                                rowClass = 'alert-row-warning text-[10px]';
+                            }
+                        }
+                    });
+                }
+                
+                // Check info keywords (blue)
+                if (alertKeywords.info && !alertBadges) {
+                    alertKeywords.info.forEach(keyword => {
+                        if (legalDesc.includes(keyword.toUpperCase())) {
+                            alertBadges += `<span class="alert-badge alert-info">ℹ️ ${keyword}</span> `;
+                            if (rowClass === 'hover:bg-blue-50 transition-colors text-[10px]') {
+                                rowClass = 'alert-row-info text-[10px]';
+                            }
+                        }
+                    });
+                }
                 
                 // Acres color coding
                 const acres = parseFloat(row.Acres) || 0;
@@ -1139,7 +1282,7 @@
                         <button class="favorite-btn text-xl hover:scale-125 transition-transform" data-parcel="${row['Parcel Number']}" title="${isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}">${starIcon}</button>
                     </td>
                     <td class="px-1 py-0.5 whitespace-nowrap text-center text-gray-500 font-medium">${index + 1}</td>
-                    <td class="px-1 py-0.5 whitespace-nowrap">${undividedBadge}${row['Parcel Number']}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${alertBadges}${row['Parcel Number']}</td>
                     <td class="px-1 py-0.5 whitespace-nowrap ${acresClass} font-semibold">${row.Acres}</td>
                     <td class="px-1 py-0.5 whitespace-nowrap">${row['Parcel Type'] || 'N/A'}</td>
                     <td class="px-1 py-0.5 whitespace-nowrap cursor-pointer">${row.Name}</td>

@@ -328,6 +328,68 @@
             display: block;
         }
 
+        .keywords-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            min-height: 40px;
+            padding: 10px;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 1px dashed #d1d5db;
+        }
+        
+        .keyword-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .keyword-tag.risk {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+        }
+        
+        .keyword-tag.warning {
+            background: #fef3c7;
+            color: #d97706;
+            border: 1px solid #fcd34d;
+        }
+        
+        .keyword-tag.info {
+            background: #dbeafe;
+            color: #2563eb;
+            border: 1px solid #93c5fd;
+        }
+        
+        .keyword-tag button {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .keyword-tag button:hover {
+            background: rgba(0,0,0,0.1);
+            transform: scale(1.1);
+        }
+
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
@@ -551,6 +613,63 @@
                 
                 <div class="saved-indicator" id="savedIndicatorOther">
                     ✅ APIs salvas com sucesso!
+                </div>
+            </div>
+            
+            <!-- Alert Keywords Configuration -->
+            <div class="settings-card">
+                <h2>⚠️ Alertas de Legal Description</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Configure palavras-chave para monitorar no campo "Legal Description" das propriedades.
+                    O sistema alertará automaticamente quando detectar essas palavras.
+                </p>
+                
+                <!-- Risk Alerts (Red) -->
+                <h3 style="color: #dc2626;">⚠️ Alertas de Risco (Vermelho)</h3>
+                <div id="riskKeywordsList" class="keywords-list"></div>
+                <div class="input-group">
+                    <input type="text" id="riskKeywordInput" placeholder="Digite uma palavra-chave (ex: EASEMENT)" style="margin-bottom: 10px;">
+                    <button class="btn btn-danger" onclick="addKeyword('risk')">+ Adicionar Alerta de Risco</button>
+                </div>
+                
+                <!-- Warning Alerts (Yellow) -->
+                <h3 style="color: #f59e0b; margin-top: 30px;">⚡ Alertas de Atenção (Amarelo)</h3>
+                <div id="warningKeywordsList" class="keywords-list"></div>
+                <div class="input-group">
+                    <input type="text" id="warningKeywordInput" placeholder="Digite uma palavra-chave (ex: RIGHT OF WAY)" style="margin-bottom: 10px;">
+                    <button class="btn" style="background: #f59e0b; color: white;" onclick="addKeyword('warning')">+ Adicionar Alerta de Atenção</button>
+                </div>
+                
+                <!-- Info Alerts (Blue) -->
+                <h3 style="color: #3b82f6; margin-top: 30px;">ℹ️ Alertas Informativos (Azul)</h3>
+                <div id="infoKeywordsList" class="keywords-list"></div>
+                <div class="input-group">
+                    <input type="text" id="infoKeywordInput" placeholder="Digite uma palavra-chave (ex: MINERAL RIGHTS)" style="margin-bottom: 10px;">
+                    <button class="btn btn-info" onclick="addKeyword('info')">+ Adicionar Alerta Informativo</button>
+                </div>
+                
+                <!-- Threshold Settings -->
+                <hr style="margin: 30px 0; border: 1px solid #e0e0e0;">
+                <h3>📊 Configurações de Limite</h3>
+                <div class="input-group">
+                    <label for="undividedThreshold">Limite de Propriedades UNDIVIDED</label>
+                    <input type="number" id="undividedThreshold" value="5" min="1" max="100">
+                    <small>Alertar quando o número de propriedades UNDIVIDED exceder este valor</small>
+                </div>
+                
+                <div class="input-group">
+                    <label for="totalAlertsThreshold">Limite Total de Alertas</label>
+                    <input type="number" id="totalAlertsThreshold" value="10" min="1" max="100">
+                    <small>Alertar quando o total de propriedades com palavras-chave exceder este valor</small>
+                </div>
+                
+                <div class="button-group" style="margin-top: 20px;">
+                    <button class="btn btn-success" onclick="saveAlertSettings()">💾 Salvar Configurações</button>
+                    <button class="btn btn-secondary" onclick="resetAlertSettings()">🔄 Resetar para Padrão</button>
+                </div>
+                
+                <div class="saved-indicator" id="savedIndicatorAlerts">
+                    ✅ Configurações de alertas salvas com sucesso!
                 </div>
             </div>
         </div>
@@ -1577,6 +1696,115 @@
                 }
             }
         });
+        
+        // ========================================
+        // ALERT KEYWORDS MANAGEMENT
+        // ========================================
+        
+        // Load alert keywords on page load
+        function loadAlertKeywords() {
+            const alertKeywords = JSON.parse(localStorage.getItem('alertKeywords') || '{"risk": ["UNDIVIDED"], "warning": [], "info": []}');
+            
+            // Render each type
+            renderKeywords('risk', alertKeywords.risk || []);
+            renderKeywords('warning', alertKeywords.warning || []);
+            renderKeywords('info', alertKeywords.info || []);
+            
+            // Load thresholds
+            document.getElementById('undividedThreshold').value = localStorage.getItem('undividedThreshold') || '5';
+            document.getElementById('totalAlertsThreshold').value = localStorage.getItem('totalAlertsThreshold') || '10';
+        }
+        
+        function renderKeywords(type, keywords) {
+            const container = document.getElementById(`${type}KeywordsList`);
+            container.innerHTML = '';
+            
+            if (keywords.length === 0) {
+                container.innerHTML = '<p style="color: #9ca3af; font-size: 0.9rem; margin: 0;">Nenhuma palavra-chave adicionada</p>';
+                return;
+            }
+            
+            keywords.forEach(keyword => {
+                const tag = document.createElement('div');
+                tag.className = `keyword-tag ${type}`;
+                tag.innerHTML = `
+                    <span>${keyword}</span>
+                    <button onclick="removeKeyword('${type}', '${keyword}')">×</button>
+                `;
+                container.appendChild(tag);
+            });
+        }
+        
+        function addKeyword(type) {
+            const input = document.getElementById(`${type}KeywordInput`);
+            const keyword = input.value.trim().toUpperCase();
+            
+            if (!keyword) {
+                alert('Por favor, digite uma palavra-chave!');
+                return;
+            }
+            
+            const alertKeywords = JSON.parse(localStorage.getItem('alertKeywords') || '{"risk": ["UNDIVIDED"], "warning": [], "info": []}');
+            
+            if (!alertKeywords[type]) {
+                alertKeywords[type] = [];
+            }
+            
+            if (alertKeywords[type].includes(keyword)) {
+                alert('Esta palavra-chave já foi adicionada!');
+                return;
+            }
+            
+            alertKeywords[type].push(keyword);
+            localStorage.setItem('alertKeywords', JSON.stringify(alertKeywords));
+            
+            renderKeywords(type, alertKeywords[type]);
+            input.value = '';
+            
+            showSavedIndicator('savedIndicatorAlerts');
+        }
+        
+        function removeKeyword(type, keyword) {
+            if (!confirm(`Remover "${keyword}" dos alertas de ${type === 'risk' ? 'risco' : type === 'warning' ? 'atenção' : 'informativos'}?`)) {
+                return;
+            }
+            
+            const alertKeywords = JSON.parse(localStorage.getItem('alertKeywords') || '{"risk": ["UNDIVIDED"], "warning": [], "info": []}');
+            
+            if (alertKeywords[type]) {
+                alertKeywords[type] = alertKeywords[type].filter(k => k !== keyword);
+                localStorage.setItem('alertKeywords', JSON.stringify(alertKeywords));
+                renderKeywords(type, alertKeywords[type]);
+                showSavedIndicator('savedIndicatorAlerts');
+            }
+        }
+        
+        function saveAlertSettings() {
+            const undividedThreshold = document.getElementById('undividedThreshold').value;
+            const totalAlertsThreshold = document.getElementById('totalAlertsThreshold').value;
+            
+            localStorage.setItem('undividedThreshold', undividedThreshold);
+            localStorage.setItem('totalAlertsThreshold', totalAlertsThreshold);
+            
+            showSavedIndicator('savedIndicatorAlerts');
+            alert('✅ Configurações de alertas salvas com sucesso!');
+        }
+        
+        function resetAlertSettings() {
+            if (!confirm('Resetar todas as configurações de alertas para o padrão?')) {
+                return;
+            }
+            
+            localStorage.setItem('alertKeywords', JSON.stringify({"risk": ["UNDIVIDED"], "warning": [], "info": []}));
+            localStorage.setItem('undividedThreshold', '5');
+            localStorage.setItem('totalAlertsThreshold', '10');
+            
+            loadAlertKeywords();
+            alert('✅ Configurações resetadas para o padrão!');
+        }
+        
+        // Load alert keywords on page load
+        loadAlertKeywords();
     </script>
 </body>
 </html>
