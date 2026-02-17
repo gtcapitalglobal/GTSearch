@@ -1429,17 +1429,37 @@
                 .map(cb => parseInt(cb.getAttribute('data-index')))
                 .sort((a, b) => b - a);
             
-            // Remove from map
-            indicesToDelete.forEach(index => {
-                const property = allNewProperties[index];
-                if (property && property.marker) {
-                    newPropertiesLayer.removeLayer(property.marker);
-                }
-            });
-            
             // Remove from array
             indicesToDelete.forEach(index => {
                 allNewProperties.splice(index, 1);
+            });
+            
+            // Clear all yellow markers from map
+            newPropertiesLayer.clearLayers();
+            
+            // Re-add markers for remaining properties
+            allNewProperties.forEach(row => {
+                const coordsStr = row.Coordinates.replace(/"/g, '').trim();
+                const coords = coordsStr.split(',');
+                const lat = parseFloat(coords[0]);
+                const lng = parseFloat(coords[1]);
+                
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    const marker = L.marker([lat, lng], { icon: icons.new })
+                        .bindPopup(`
+                            <strong>${row.Name}</strong><br>
+                            ${row.Address}<br>
+                            ${row.City}, ${row.State} ${row.Zip}<br>
+                            <strong>Parcel ID:</strong> ${row['Parcel Number']}<br>
+                            <strong>Tipo:</strong> ${row['Parcel Type'] || 'N/A'}<br>
+                            <strong>Acres:</strong> ${row.Acres}<br>
+                            <strong>Amount Due:</strong> $${row['Amount Due']}<br><br>
+                            <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" class="inline-block bg-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-700" style="color: white !important;">
+                                📍 Ver Street View
+                            </a>
+                        `)
+                        .addTo(newPropertiesLayer);
+                }
             });
             
             // Rebuild county data
