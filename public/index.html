@@ -114,6 +114,38 @@
         .marker-bounce {
             animation: marker-bounce 0.6s ease-in-out 3;
         }
+        
+        /* Table Density Styles */
+        .table-compact td { padding: 0.125rem 0.25rem !important; font-size: 0.7rem !important; }
+        .table-comfortable td { padding: 0.25rem 0.5rem !important; font-size: 0.75rem !important; }
+        .table-spacious td { padding: 0.5rem 0.75rem !important; font-size: 0.875rem !important; }
+        
+        /* Acres Color Coding */
+        .acres-small { background-color: #d1fae5 !important; } /* Green - < 0.25 */
+        .acres-medium { background-color: #fef3c7 !important; } /* Yellow - 0.25-0.5 */
+        .acres-large { background-color: #fed7aa !important; } /* Orange - > 0.5 */
+        
+        body.dark-mode .acres-small { background-color: #065f46 !important; }
+        body.dark-mode .acres-medium { background-color: #78350f !important; }
+        body.dark-mode .acres-large { background-color: #9a3412 !important; }
+        
+        /* Enhanced UNDIVIDED Badge */
+        .undivided-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-weight: bold;
+            font-size: 0.7rem;
+            animation: pulse-warning 2s infinite;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+        }
+        
+        @keyframes pulse-warning {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
@@ -277,7 +309,15 @@
         <!-- Data Table -->
         <div id="tableSection" class="hidden bg-white rounded-lg shadow-lg p-6">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-gray-800">📋 Dados Completos (Novas Propriedades)</h2>
+                <div class="flex-1">
+                    <h2 class="text-2xl font-bold text-gray-800">📋 Dados Completos (Novas Propriedades)</h2>
+                    <div class="flex gap-2 mt-2">
+                        <span class="text-sm text-gray-600">Densidade:</span>
+                        <button class="density-btn text-xs px-2 py-1 rounded bg-gray-200 hover:bg-gray-300" data-density="compact">📄 Compacta</button>
+                        <button class="density-btn text-xs px-2 py-1 rounded bg-blue-600 text-white" data-density="comfortable">📊 Confortável</button>
+                        <button class="density-btn text-xs px-2 py-1 rounded bg-gray-200 hover:bg-gray-300" data-density="spacious">📝 Espaçosa</button>
+                    </div>
+                </div>
                 <div class="flex gap-3 flex-wrap">
                     <button id="filterTerrenoBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
                         🏞️ Terreno 0.20
@@ -923,6 +963,15 @@
             document.getElementById('avgAcres').textContent = avgAcres.toFixed(2);
             document.getElementById('undividedCount').textContent = undividedCount;
             
+            // Alert if too many UNDIVIDED properties
+            const undividedThreshold = parseInt(localStorage.getItem('undividedThreshold') || '5');
+            if (undividedCount > undividedThreshold) {
+                showNotification(
+                    `⚠️ ALERTA: ${undividedCount} propriedades UNDIVIDED detectadas! (Limite: ${undividedThreshold})`,
+                    'warning'
+                );
+            }
+            
             if (allNewProperties.length > 0) {
                 document.getElementById('deleteNewBtn').classList.remove('hidden');
                 document.getElementById('downloadsSection').classList.remove('hidden');
@@ -1063,7 +1112,14 @@
                 const originalIndex = allNewProperties.indexOf(row);
                 const hasUndivided = (row['Legal Description'] || '').toUpperCase().includes('UNDIVIDED');
                 const rowClass = hasUndivided ? 'undivided-alert text-[10px]' : 'hover:bg-blue-50 transition-colors text-[10px]';
-                const warningIcon = hasUndivided ? '<span data-tooltip="⚠️ ATENÇÃO: Propriedade UNDIVIDED - Alto Risco!">⚠️</span> ' : '';
+                const undividedBadge = hasUndivided ? '<span class="undivided-badge">⚠️ UNDIVIDED</span> ' : '';
+                
+                // Acres color coding
+                const acres = parseFloat(row.Acres) || 0;
+                let acresClass = '';
+                if (acres < 0.25) acresClass = 'acres-small';
+                else if (acres <= 0.5) acresClass = 'acres-medium';
+                else acresClass = 'acres-large';
                 
                 // Check if property is favorited
                 const favorites = JSON.parse(localStorage.getItem('gtSearchFavorites') || '[]');
@@ -1083,8 +1139,8 @@
                         <button class="favorite-btn text-xl hover:scale-125 transition-transform" data-parcel="${row['Parcel Number']}" title="${isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}">${starIcon}</button>
                     </td>
                     <td class="px-1 py-0.5 whitespace-nowrap text-center text-gray-500 font-medium">${index + 1}</td>
-                    <td class="px-1 py-0.5 whitespace-nowrap">${warningIcon}${row['Parcel Number']}</td>
-                    <td class="px-1 py-0.5 whitespace-nowrap">${row.Acres}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${undividedBadge}${row['Parcel Number']}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap ${acresClass} font-semibold">${row.Acres}</td>
                     <td class="px-1 py-0.5 whitespace-nowrap">${row['Parcel Type'] || 'N/A'}</td>
                     <td class="px-1 py-0.5 whitespace-nowrap cursor-pointer">${row.Name}</td>
                     <td class="px-1 py-0.5 whitespace-nowrap">${row.Address}</td>
@@ -1662,16 +1718,78 @@
         }
         
         function showExportOptions() {
-            const format = prompt('Escolha o formato de exportação:\n\n1 - CSV\n2 - KML\n\nDigite 1 ou 2:');
-            
-            if (format === '1') {
-                exportSelectedAsCSV();
-            } else if (format === '2') {
-                exportSelectedAsKML();
+            // Show export modal
+            const modal = document.getElementById('exportModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                loadExportTemplates();
             }
         }
         
-        function exportSelectedAsCSV() {
+        // Export Templates Management
+        function saveExportTemplate() {
+            const templateName = prompt('Nome do template:');
+            if (!templateName) return;
+            
+            const selectedColumns = Array.from(document.querySelectorAll('.column-checkbox:checked'))
+                .map(cb => cb.value);
+            
+            const templates = JSON.parse(localStorage.getItem('exportTemplates') || '{}');
+            templates[templateName] = selectedColumns;
+            localStorage.setItem('exportTemplates', JSON.stringify(templates));
+            
+            loadExportTemplates();
+            alert(`✅ Template "${templateName}" salvo!`);
+        }
+        
+        function loadExportTemplates() {
+            const templates = JSON.parse(localStorage.getItem('exportTemplates') || '{}');
+            const select = document.getElementById('templateSelect');
+            if (!select) return;
+            
+            select.innerHTML = '<option value="">-- Selecione um template --</option>';
+            Object.keys(templates).forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            });
+        }
+        
+        function applyExportTemplate() {
+            const select = document.getElementById('templateSelect');
+            const templateName = select.value;
+            if (!templateName) return;
+            
+            const templates = JSON.parse(localStorage.getItem('exportTemplates') || '{}');
+            const columns = templates[templateName];
+            
+            // Uncheck all
+            document.querySelectorAll('.column-checkbox').forEach(cb => cb.checked = false);
+            
+            // Check template columns
+            columns.forEach(col => {
+                const checkbox = document.querySelector(`.column-checkbox[value="${col}"]`);
+                if (checkbox) checkbox.checked = true;
+            });
+        }
+        
+        function deleteExportTemplate() {
+            const select = document.getElementById('templateSelect');
+            const templateName = select.value;
+            if (!templateName) return;
+            
+            if (!confirm(`Deletar template "${templateName}"?`)) return;
+            
+            const templates = JSON.parse(localStorage.getItem('exportTemplates') || '{}');
+            delete templates[templateName];
+            localStorage.setItem('exportTemplates', JSON.stringify(templates));
+            
+            loadExportTemplates();
+            alert(`✅ Template "${templateName}" deletado!`);
+        }
+        
+        function exportSelectedAsCSV(selectedColumns = null) {
             const rowCheckboxes = document.querySelectorAll('.row-checkbox:checked');
             
             if (rowCheckboxes.length === 0) {
@@ -1679,7 +1797,7 @@
                 return;
             }
             
-            const selectedProperties = Array.from(rowCheckboxes)
+            let selectedProperties = Array.from(rowCheckboxes)
                 .map(cb => {
                     try {
                         const propData = cb.getAttribute('data-property');
@@ -1691,6 +1809,19 @@
                 })
                 .filter(p => p);
             
+            // Filter columns if specified
+            if (selectedColumns && selectedColumns.length > 0) {
+                selectedProperties = selectedProperties.map(prop => {
+                    const filtered = {};
+                    selectedColumns.forEach(col => {
+                        if (prop.hasOwnProperty(col)) {
+                            filtered[col] = prop[col];
+                        }
+                    });
+                    return filtered;
+                });
+            }
+            
             const csv = Papa.unparse(selectedProperties);
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
@@ -1701,6 +1832,13 @@
             a.download = `selected_properties_${dateStr}.csv`;
             a.click();
             URL.revokeObjectURL(url);
+            
+            // Close modal if open
+            const modal = document.getElementById('exportModal');
+            if (modal) modal.classList.add('hidden');
+            
+            // Show success notification
+            showNotification(`✅ ${rowCheckboxes.length} propriedades exportadas com sucesso!`, 'success');
         }
         
         function exportSelectedAsKML() {
@@ -2147,7 +2285,189 @@
             
             console.log(`🔄 Tabela ordenada por coluna ${columnIndex} (${direction})`);
         }
+        
+        // ===== 🎨 TABLE DENSITY CONTROLS =====
+        let currentDensity = 'comfortable';
+        const densityButtons = document.querySelectorAll('.density-btn');
+        const dataTable = document.getElementById('dataTable');
+        
+        densityButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const density = this.getAttribute('data-density');
+                
+                // Remove all density classes
+                dataTable.classList.remove('table-compact', 'table-comfortable', 'table-spacious');
+                
+                // Add new density class
+                dataTable.classList.add(`table-${density}`);
+                
+                // Update button styles
+                densityButtons.forEach(b => {
+                    b.classList.remove('bg-blue-600', 'text-white');
+                    b.classList.add('bg-gray-200', 'hover:bg-gray-300');
+                });
+                this.classList.remove('bg-gray-200', 'hover:bg-gray-300');
+                this.classList.add('bg-blue-600', 'text-white');
+                
+                // Save preference
+                localStorage.setItem('tableDensity', density);
+                currentDensity = density;
+            });
+        });
+        
+        // Restore density preference
+        const savedDensity = localStorage.getItem('tableDensity') || 'comfortable';
+        const savedDensityBtn = document.querySelector(`[data-density="${savedDensity}"]`);
+        if (savedDensityBtn) {
+            savedDensityBtn.click();
+        }
+        
+        // ===== ⚡ KEYBOARD SHORTCUTS =====
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+F: Focus on global search
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                const globalSearch = document.getElementById('globalSearch');
+                if (globalSearch) {
+                    globalSearch.focus();
+                    globalSearch.select();
+                }
+            }
+            
+            // Ctrl+A: Select all visible rows
+            if (e.ctrlKey && e.key === 'a') {
+                const tableSection = document.getElementById('tableSection');
+                if (tableSection && !tableSection.classList.contains('hidden')) {
+                    e.preventDefault();
+                    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                    if (selectAllCheckbox) {
+                        selectAllCheckbox.checked = true;
+                        selectAllCheckbox.dispatchEvent(new Event('change'));
+                    }
+                }
+            }
+            
+            // Ctrl+E: Export selected properties
+            if (e.ctrlKey && e.key === 'e') {
+                const exportBtn = document.getElementById('exportSelectedBtn');
+                if (exportBtn && !exportBtn.classList.contains('hidden')) {
+                    e.preventDefault();
+                    exportBtn.click();
+                }
+            }
+            
+            // Delete: Delete selected properties
+            if (e.key === 'Delete') {
+                const deleteBtn = document.getElementById('deleteSelectedBtn');
+                if (deleteBtn && !deleteBtn.classList.contains('hidden')) {
+                    e.preventDefault();
+                    deleteBtn.click();
+                }
+            }
+        });
     </script>
+    
+    <!-- Export Modal -->
+    <div id="exportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-2xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">📤 Exportar Propriedades</h2>
+                <button onclick="document.getElementById('exportModal').classList.add('hidden')" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+            </div>
+            
+            <!-- Templates Section -->
+            <div class="mb-6 p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-lg font-semibold mb-3">💾 Templates</h3>
+                <div class="flex gap-2 mb-2">
+                    <select id="templateSelect" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg">
+                        <option value="">-- Selecione um template --</option>
+                    </select>
+                    <button onclick="applyExportTemplate()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">✅ Aplicar</button>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="saveExportTemplate()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">💾 Salvar Template</button>
+                    <button onclick="deleteExportTemplate()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">🗑️ Deletar Template</button>
+                </div>
+            </div>
+            
+            <!-- Column Selection -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold mb-3">📋 Selecionar Colunas</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-60 overflow-y-auto p-2 border border-gray-200 rounded-lg">
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="Parcel Number" checked>
+                        <span class="text-sm">Parcel Number</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="Name" checked>
+                        <span class="text-sm">Name</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="Address" checked>
+                        <span class="text-sm">Address</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="City" checked>
+                        <span class="text-sm">City</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="State" checked>
+                        <span class="text-sm">State</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="Zip" checked>
+                        <span class="text-sm">Zip</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="County" checked>
+                        <span class="text-sm">County</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="Acres" checked>
+                        <span class="text-sm">Acres</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="Parcel Type" checked>
+                        <span class="text-sm">Parcel Type</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="Amount Due" checked>
+                        <span class="text-sm">Amount Due</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="Legal Description" checked>
+                        <span class="text-sm">Legal Description</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="Latitude" checked>
+                        <span class="text-sm">Latitude</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="Longitude" checked>
+                        <span class="text-sm">Longitude</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input type="checkbox" class="column-checkbox" value="Coordinates" checked>
+                        <span class="text-sm">Coordinates</span>
+                    </label>
+                </div>
+                <div class="flex gap-2 mt-2">
+                    <button onclick="document.querySelectorAll('.column-checkbox').forEach(cb => cb.checked = true)" class="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded">✅ Selecionar Todas</button>
+                    <button onclick="document.querySelectorAll('.column-checkbox').forEach(cb => cb.checked = false)" class="text-sm px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded">❌ Desmarcar Todas</button>
+                </div>
+            </div>
+            
+            <!-- Export Buttons -->
+            <div class="flex gap-3">
+                <button onclick="const cols = Array.from(document.querySelectorAll('.column-checkbox:checked')).map(cb => cb.value); exportSelectedAsCSV(cols);" class="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                    📄 Exportar CSV
+                </button>
+                <button onclick="exportSelectedAsKML(); document.getElementById('exportModal').classList.add('hidden');" class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                    🗺️ Exportar KML
+                </button>
+            </div>
+        </div>
+    </div>
     
     <!-- Workflow System e Analysis Functions removidos - arquivos não existem -->
 </body>
