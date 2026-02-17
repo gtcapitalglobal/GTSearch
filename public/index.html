@@ -1700,8 +1700,52 @@
                 return acres >= 0.20 && parcelType !== 'Land & Structures';
             });
             
-            // Atualizar mapa removendo marcadores filtrados
-            // (os marcadores já foram
+            // Limpar todos os marcadores amarelos do mapa
+            newPropertiesLayer.clearLayers();
+            
+            // Re-adicionar apenas os marcadores das propriedades filtradas
+            allNewProperties.forEach(row => {
+                const coordsStr = row.Coordinates.replace(/"/g, '').trim();
+                const coords = coordsStr.split(',');
+                const lat = parseFloat(coords[0]);
+                const lng = parseFloat(coords[1]);
+                
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    const marker = L.marker([lat, lng], { icon: icons.new })
+                        .bindPopup(`
+                            <strong>${row.Name}</strong><br>
+                            ${row.Address}<br>
+                            ${row.City}, ${row.State} ${row.Zip}<br>
+                            <strong>Parcel ID:</strong> ${row['Parcel Number']}<br>
+                            <strong>Tipo:</strong> ${row['Parcel Type'] || 'N/A'}<br>
+                            <strong>Acres:</strong> ${row.Acres}<br>
+                            <strong>Amount Due:</strong> $${row['Amount Due']}<br><br>
+                            <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" class="inline-block bg-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-700" style="color: white !important;">
+                                📍 Ver Street View
+                            </a>
+                        `)
+                        .addTo(newPropertiesLayer);
+                    
+                    // Add click event to marker
+                    marker.on('click', function() {
+                        const tableSection = document.getElementById('tableSection');
+                        const tableBody = document.getElementById('tableBody');
+                        const rows = tableBody.getElementsByTagName('tr');
+                        
+                        for (let i = 0; i < rows.length; i++) {
+                            const parcelCell = rows[i].cells[2];
+                            if (parcelCell && parcelCell.textContent.trim() === row['Parcel Number']) {
+                                rows[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                rows[i].style.backgroundColor = '#fef3c7';
+                                setTimeout(() => {
+                                    rows[i].style.backgroundColor = '';
+                                }, 5000);
+                                break;
+                            }
+                        }
+                    });
+                }
+            });
             
             // Atualizar tabela
             populateTable();
