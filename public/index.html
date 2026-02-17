@@ -1500,8 +1500,12 @@
             
             const selectedProperties = Array.from(rowCheckboxes)
                 .map(cb => {
-                    const index = parseInt(cb.getAttribute('data-index'));
-                    return allNewProperties[index];
+                    try {
+                        return JSON.parse(cb.getAttribute('data-property'));
+                    } catch (e) {
+                        console.error('Erro ao parsear propriedade:', e);
+                        return null;
+                    }
                 })
                 .filter(p => p);
             
