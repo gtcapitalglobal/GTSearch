@@ -3,497 +3,1885 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GTSearch - Property Manager v22.0</title>
-    <link rel="icon" type="image/png" href="/logo.png">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>GTSearch - Property Manager v23.0 - FIXED</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
-        .property-card {
-            transition: all 0.3s ease;
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: linear-gradient(to bottom right, #1a202c, #2d3748) !important;
         }
-        .property-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        body.dark-mode .bg-white {
+            background-color: #2d3748 !important;
         }
-        .property-card.selected {
-            border: 2px solid #3b82f6;
-            background-color: #eff6ff;
+        body.dark-mode .text-gray-800 {
+            color: #e2e8f0 !important;
+        }
+        body.dark-mode .text-gray-600 {
+            color: #cbd5e0 !important;
+        }
+        body.dark-mode .text-gray-700 {
+            color: #cbd5e0 !important;
+        }
+        body.dark-mode .text-gray-500 {
+            color: #a0aec0 !important;
+        }
+        body.dark-mode .bg-gray-50 {
+            background-color: #374151 !important;
+        }
+        body.dark-mode .divide-gray-200 > * {
+            border-color: #4a5568 !important;
+        }
+        body.dark-mode .border-gray-300 {
+            border-color: #4a5568 !important;
+        }
+        body.dark-mode .hover\:bg-blue-50:hover {
+            background-color: #2c5282 !important;
+        }
+        body.dark-mode input {
+            background-color: #374151 !important;
+            color: #e2e8f0 !important;
+        }
+        .row-highlight {
+            background-color: #fef3c7 !important;
+            transition: background-color 0.3s ease;
+        }
+        
+        /* Animações */
+        @keyframes slide-in {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slide-out {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        .animate-slide-in { animation: slide-in 0.3s ease-out; }
+        .animate-slide-out { animation: slide-out 0.3s ease-in; }
+        
+        /* Mobile First Optimizations */
+        @media (max-width: 768px) {
+            .mobile-compact { font-size: 0.75rem !important; padding: 0.25rem !important; }
+            .mobile-hidden { display: none !important; }
+            .mobile-full { width: 100% !important; }
+            table { font-size: 0.7rem; }
+            button { font-size: 0.65rem; padding: 0.25rem 0.5rem; }
+        }
+        
+        /* Tooltips */
+        [data-tooltip] { position: relative; }
+        [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 0.25rem;
+        }
+        }
+        body.dark-mode .row-highlight {
+            background-color: #78350f !important;
+        }
+        
+        /* UNDIVIDED Alert Styles */
+        .undivided-alert {
+            background-color: #fee2e2 !important;
+            border: 3px solid #dc2626 !important;
+        }
+        body.dark-mode .undivided-alert {
+            background-color: #7f1d1d !important;
+            border: 3px solid #dc2626 !important;
+        }
+        
+        /* Bounce animation for map markers */
+        @keyframes marker-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        .marker-bounce {
+            animation: marker-bounce 0.6s ease-in-out 3;
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Banner OFFLINE/ONLINE MODE -->
-    <div id="mode-banner" class="w-full py-2 text-center text-sm font-semibold shadow-md bg-gray-200 text-gray-700">
-        <span id="mode-text">Carregando...</span>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <img src="logo.png" alt="GTSearch Logo" class="h-16 md:h-20">
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-bold text-gray-800">
+                            GTSearch - Property Manager <span class="text-xl md:text-2xl text-gray-500">v22.0</span>
+                        </h1>
+                        <p class="text-xs text-gray-400 -mt-1">Versão: 11/19/2025 às 14:45 (Miami)</p>
+                        <p class="text-gray-600 mt-2">Visualize propriedades antigas e compare com novas</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="settings.html" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 no-underline">
+                        <span>⚙️</span>
+                        <span>Configurações</span>
+                    </a>
+                    <button id="darkModeToggle" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2">
+                        <span id="darkModeIcon">🌙</span>
+                        <span id="darkModeText">Modo Escuro</span>
+                    </button>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">📍 Mapa de Propriedades</h2>
+                <div class="flex gap-3">
+                    <button id="importKMLBtn" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                        📦 Importar KML ou CSV (Base)
+                    </button>
+                    <div class="relative">
+                        <button id="deleteOldDropdown" class="bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-700 transition-colors flex items-center gap-2">
+                            🗑️ Deletar KML ou CSV (base) ▼
+                        </button>
+                        <div id="deleteOldMenu" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200" style="z-index: 9999;">
+                            <button class="delete-category-btn w-full text-left px-4 py-3 hover:bg-green-50 transition-colors border-b border-gray-100 flex items-center gap-2" data-category="available">
+                                <span class="w-4 h-4 bg-green-600 rounded-full"></span>
+                                <span class="text-gray-700">Deletar Available Lands</span>
+                            </button>
+                            <button class="delete-category-btn w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 flex items-center gap-2" data-category="partners">
+                                <span class="w-4 h-4 bg-gray-600 rounded-full"></span>
+                                <span class="text-gray-700">Deletar Partners Available</span>
+                            </button>
+                            <button class="delete-category-btn w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 flex items-center gap-2" data-category="sold">
+                                <span class="w-4 h-4 rounded-full" style="background-color: #99E9F2;"></span>
+                                <span class="text-gray-700">Deletar Sold Lands</span>
+                            </button>
+                            <button class="delete-category-btn w-full text-left px-4 py-3 hover:bg-red-50 transition-colors border-b border-gray-100 flex items-center gap-2" data-category="blocked">
+                                <span class="w-4 h-4 rounded-full" style="background-color: #FCA5A5;"></span>
+                                <span class="text-gray-700">Deletar Blocked/Paused</span>
+                            </button>
+                            <button class="delete-category-btn w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 flex items-center gap-2" data-category="outros">
+                                <span class="w-4 h-4 rounded-full" style="background-color: #92400E;"></span>
+                                <span class="text-gray-700">Deletar Outros</span>
+                            </button>
+                            <button id="deleteAllOldBtn" class="w-full text-left px-4 py-3 hover:bg-orange-50 transition-colors font-semibold text-orange-600">
+                                🗑️ Deletar TODAS as Antigas
+                            </button>
+                        </div>
+                    </div>
+                    <button id="deleteNewBtn" class="hidden bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors">
+                        🗑️ Deletar Propriedades Pesquisadas
+                    </button>
+                </div>
+            </div>
+            <div id="map" class="w-full h-96 rounded-lg shadow-lg"></div>
+            <div class="mt-4 flex flex-wrap items-center gap-4 text-sm">
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-green-600 rounded-full"></div>
+                    <span class="text-gray-700">Available Lands (<span id="availableCount">0</span>)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-gray-600 rounded-full"></div>
+                    <span class="text-gray-700">Partners Available (<span id="partnersCount">0</span>)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded-full" style="background-color: #99E9F2;"></div>
+                    <span class="text-gray-700">Sold Lands (<span id="soldCount">0</span>)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded-full border-2 border-white" style="background-color: #FCA5A5;"></div>
+                    <span class="text-gray-700">Blocked/Paused (<span id="blockedCount">0</span>)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-yellow-400 rounded-full"></div>
+                    <span class="text-gray-700">Novas Propriedades (<span id="newCount">0</span>)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 rounded-full" style="background-color: #92400E;"></div>
+                    <span class="text-gray-700">Outros (<span id="outrosCount">0</span>)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">📥 (IPP) Importar Propriedades Para Pesquisa</h2>
+            <div id="dropZone" class="border-4 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-500 transition-colors cursor-pointer">
+                <input type="file" id="fileInput" accept=".csv" multiple class="hidden">
+                <p class="text-gray-600 text-lg mb-2">Arraste e solte ou clique para selecionar</p>
+                <p class="text-gray-400 text-sm">Arquivo CSV exportado do Parcel Fair</p>
+            </div>
+            <div id="fileList" class="mt-4"></div>
+        </div>
+
+        <!-- Downloads Section -->
+        <div id="downloadsSection" class="hidden bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">⬇️ Downloads por Condado</h2>
+            <div id="downloadButtons" class="flex flex-wrap gap-3"></div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
+                <h3 class="text-sm font-semibold opacity-90 mb-2">Total de Propriedades</h3>
+                <p id="totalProperties" class="text-4xl font-bold">0</p>
+            </div>
+            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
+                <h3 class="text-sm font-semibold opacity-90 mb-2">Condados</h3>
+                <p id="totalCounties" class="text-4xl font-bold">0</p>
+            </div>
+            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
+                <h3 class="text-sm font-semibold opacity-90 mb-2">Arquivos Carregados</h3>
+                <p id="totalFiles" class="text-4xl font-bold">0</p>
+            </div>
+            <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg p-6 text-white">
+                <h3 class="text-sm font-semibold opacity-90 mb-2">Novas no Mapa</h3>
+                <p id="newOnMap" class="text-4xl font-bold">0</p>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div id="tableSection" class="hidden bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">📋 Dados Completos (Novas Propriedades)</h2>
+                <div class="flex gap-3 flex-wrap">
+                    <button id="filterTerrenoBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        🏞️ Terreno 0.20
+                    </button>
+                    <button id="analyzeSelectedBtn" class="hidden bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                        📊 Analisar Selecionadas
+                    </button>
+                    <button id="saveForAnalysisBtn" class="hidden bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
+                        💾 Salvar para Análise
+                    </button>
+                    <button id="deleteSelectedBtn" class="hidden bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors">
+                        🗑️ Deletar Selecionadas
+                    </button>
+                    <button id="exportSelectedBtn" class="hidden bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors">
+                        📅 Exportar Selecionadas
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filtros -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">👤 Nome</label>
+                        <input type="text" id="filterName" placeholder="Buscar por nome..." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">📍 Condado</label>
+                        <select id="filterCounty" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Todos os Condados</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">🏛️ Cidade</label>
+                        <select id="filterCity" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Todas as Cidades</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">🏠 Tipo de Propriedade</label>
+                        <select id="filterType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Todos</option>
+                            <option value="Land Only">Apenas Terrenos (Land Only)</option>
+                            <option value="Land & Structures">Apenas Casa (Land & Structures)</option>
+                            <option value="Structures Only">Apenas Estrutura (Structures Only)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">📏 Acres</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="filterAcresMin" placeholder="Mínimo" class="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" step="0.01">
+                            <input type="number" id="filterAcresMax" placeholder="Máximo" class="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" step="0.01">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">💵 Valor (Amount Due)</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="filterAmountMin" placeholder="Mínimo" class="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" step="0.01">
+                            <input type="number" id="filterAmountMax" placeholder="Máximo" class="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" step="0.01">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center mb-4">
+                <p class="text-sm text-gray-600">
+                    Mostrando <span id="filteredCount" class="font-bold text-blue-600">0</span> de <span id="totalCount" class="font-bold">0</span> propriedades
+                </p>
+                <div class="flex gap-3">
+                    <button id="deleteFilteredBtn" class="hidden px-4 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors">
+                        🗑️ Deletar Propriedades Filtradas
+                    </button>
+                    <button id="clearFiltersBtn" class="px-4 py-2 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 transition-colors">
+                        ❌ Limpar Filtros
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table id="dataTable" class="min-w-full divide-y divide-gray-200 text-xs">
+                    <thead class="bg-gray-50 text-xs font-bold uppercase">
+                        <tr>
+                            <th class="px-3 py-3 text-left">
+                                <input type="checkbox" id="selectAllCheckbox" class="w-4 h-4 cursor-pointer">
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(0)">
+                                Parcel # <span id="sort-icon-0">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(1)">
+                                Acres <span id="sort-icon-1">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(2)">
+                                Type <span id="sort-icon-2">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(3)">
+                                Name <span id="sort-icon-3">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(4)">
+                                Address <span id="sort-icon-4">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(5)">
+                                City <span id="sort-icon-5">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(6)">
+                                County <span id="sort-icon-6">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(7)">
+                                Amount <span id="sort-icon-7">⇅</span>
+                            </th>
+                            <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(8)">
+                                Legal Desc <span id="sort-icon-8">⇅</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="bg-white divide-y divide-gray-200"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Hidden file input for KML import -->
+        <input type="file" id="kmlFileInput" accept=".kml,.csv" multiple class="hidden">
     </div>
 
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold text-xl">GT</span>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900">GTSearch</h1>
-                        <p class="text-sm text-gray-500">Property Manager v22.0</p>
-                    </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <button onclick="refreshData()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                        🔄 Atualizar
-                    </button>
-                    <button onclick="analyzeSelected()" id="analyze-btn" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
-                        📊 Analisar Selecionadas (<span id="selected-count">0</span>)
-                    </button>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600 font-medium">Total de Propriedades</p>
-                        <p class="text-3xl font-bold text-gray-900 mt-2" id="total-properties">0</p>
-                    </div>
-                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span class="text-2xl">🏘️</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600 font-medium">Aprovadas</p>
-                        <p class="text-3xl font-bold text-green-600 mt-2" id="approved-properties">0</p>
-                    </div>
-                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                        <span class="text-2xl">✅</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600 font-medium">Reprovadas</p>
-                        <p class="text-3xl font-bold text-red-600 mt-2" id="rejected-properties">0</p>
-                    </div>
-                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                        <span class="text-2xl">❌</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-gray-600 font-medium">Pendentes</p>
-                        <p class="text-3xl font-bold text-yellow-600 mt-2" id="pending-properties">0</p>
-                    </div>
-                    <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                        <span class="text-2xl">⏳</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filters and Search -->
-        <div class="bg-white rounded-lg shadow p-6 mb-8">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">🔍 Buscar Propriedade</label>
-                    <input type="text" id="search-input" placeholder="Buscar por endereço, parcel ID, cidade..." 
-                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                           onkeyup="filterProperties()">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">📍 Status</label>
-                    <select id="status-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="filterProperties()">
-                        <option value="all">Todos</option>
-                        <option value="approved">Aprovadas</option>
-                        <option value="rejected">Reprovadas</option>
-                        <option value="pending">Pendentes</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">🏷️ Ordenar por</label>
-                    <select id="sort-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="sortProperties()">
-                        <option value="recent">Mais Recentes</option>
-                        <option value="price-high">Maior Preço</option>
-                        <option value="price-low">Menor Preço</option>
-                        <option value="address">Endereço (A-Z)</option>
-                    </select>
-                </div>
-            </div>
-            <div class="mt-4 flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <button onclick="selectAll()" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                        ✅ Selecionar Todas
-                    </button>
-                    <button onclick="deselectAll()" class="text-sm text-gray-600 hover:text-gray-800 font-medium">
-                        ❌ Desmarcar Todas
-                    </button>
-                </div>
-                <div class="text-sm text-gray-600">
-                    <span id="filtered-count">0</span> propriedades encontradas
-                </div>
-            </div>
-        </div>
-
-        <!-- Properties List -->
-        <div id="properties-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Properties will be loaded here -->
-        </div>
-
-        <!-- Loading State -->
-        <div id="loading-state" class="text-center py-12">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p class="mt-4 text-gray-600">Carregando propriedades...</p>
-        </div>
-
-        <!-- Empty State -->
-        <div id="empty-state" class="hidden text-center py-12">
-            <div class="text-6xl mb-4">🏘️</div>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">Nenhuma propriedade encontrada</h3>
-            <p class="text-gray-600">Tente ajustar os filtros de busca</p>
-        </div>
-    </main>
+    <!-- Módulo de Análise (Ideias 11, 12, 13) - arquivo removido -->
 
     <script>
-        let allProperties = [];
-        let selectedProperties = new Set();
+        // Initialize map
+        const map = L.map('map').setView([27.32, -81.37], 10);
+        
+        // Define multiple base map styles
+        const baseMaps = {
+            '🗺️ OpenStreetMap': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }),
+            '🛰️ Satellite': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '© Esri, Maxar, Earthstar Geographics'
+            }),
+            '🌙 Dark Mode': L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '© OpenStreetMap, © CartoDB'
+            }),
+            '🏔️ Terrain': L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap, © OpenTopoMap'
+            })
+        };
+        
+        // Add default layer
+        baseMaps['🗺️ OpenStreetMap'].addTo(map);
+        
+        // Add layer control (top-right corner)
+        L.control.layers(baseMaps, null, { position: 'topright' }).addTo(map);
 
-        // Load mode status
-        async function loadModeStatus() {
-            try {
-                const response = await fetch('/api/status');
-                const data = await response.json();
+        // Layer groups
+        const existingPropertiesLayer = L.layerGroup().addTo(map);
+        const newPropertiesLayer = L.layerGroup().addTo(map);
+        
+        // Category-specific layers
+        const categoryLayers = {
+            available: L.layerGroup().addTo(map),
+            partners: L.layerGroup().addTo(map),
+            sold: L.layerGroup().addTo(map),
+            blocked: L.layerGroup().addTo(map),
+            outros: L.layerGroup().addTo(map)
+        };
+
+        // Data storage
+        let allNewProperties = [];
+        let loadedFiles = [];
+        let countyData = {};
+
+        // Counters
+        let propertyCounts = {
+            available: 0,
+            partners: 0,
+            sold: 0,
+            blocked: 0,
+            new: 0,
+            outros: 0
+        };
+
+        // Custom marker icons with house SVG
+        const createHouseIcon = (color) => L.divIcon({
+            html: `<svg width="30" height="45" viewBox="0 0 30 45">
+                <path d="M15 2C9 2 4 7 4 13c0 9 11 20 11 20s11-11 11-20c0-6-5-11-11-11z" fill="${color}" stroke="${color === '#1a1a1a' ? '#000' : color}" stroke-width="1.5"/>
+                <g transform="translate(15, 13)">
+                    <path d="M-4,-4 L0,-7 L4,-4 Z" fill="#FFF"/>
+                    <rect x="-4" y="-4" width="8" height="6" fill="#FFF"/>
+                    <rect x="-1.5" y="-1" width="3" height="4" fill="${color}"/>
+                    <rect x="-3.5" y="-3" width="2" height="2" fill="#87CEEB"/>
+                    <rect x="1.5" y="-3" width="2" height="2" fill="#87CEEB"/>
+                </g>
+            </svg>`,
+            className: 'custom-marker',
+            iconSize: [30, 45],
+            iconAnchor: [15, 45],
+            popupAnchor: [0, -45]
+        });
+
+        const createSoldIcon = () => L.divIcon({
+            html: `<svg width="30" height="45" viewBox="0 0 30 45">
+                <path d="M15 2C9 2 4 7 4 13c0 9 11 20 11 20s11-11 11-20c0-6-5-11-11-11z" fill="#99E9F2" stroke="#67C3D4" stroke-width="1.5"/>
+                <g transform="translate(15, 13)">
+                    <path d="M-4,-4 L0,-7 L4,-4 Z" fill="#FFF"/>
+                    <rect x="-4" y="-4" width="8" height="6" fill="#FFF"/>
+                    <rect x="-1.5" y="-1" width="3" height="4" fill="#99E9F2"/>
+                    <rect x="-3.5" y="-3" width="2" height="2" fill="#87CEEB"/>
+                    <rect x="1.5" y="-3" width="2" height="2" fill="#87CEEB"/>
+                </g>
+                <rect x="7.5" y="4" width="15" height="6" fill="#dc2626" rx="1"/>
+                <text x="15" y="8.5" font-family="Arial" font-size="4" font-weight="bold" fill="#FFF" text-anchor="middle">SOLD</text>
+            </svg>`,
+            className: 'custom-marker',
+            iconSize: [30, 45],
+            iconAnchor: [15, 45],
+            popupAnchor: [0, -45]
+        });
+
+        const createBlockedIcon = () => L.divIcon({
+            html: `<svg width="30" height="45" viewBox="0 0 30 45">
+                <path d="M15 2C9 2 4 7 4 13c0 9 11 20 11 20s11-11 11-20c0-6-5-11-11-11z" fill="#FCA5A5" stroke="#F87171" stroke-width="1.5"/>
+                <circle cx="15" cy="13" r="5" fill="none" stroke="#FFF" stroke-width="1.5"/>
+                <line x1="11.5" y1="9.5" x2="18.5" y2="16.5" stroke="#FFF" stroke-width="1.5"/>
+            </svg>`,
+            className: 'custom-marker',
+            iconSize: [30, 45],
+            iconAnchor: [15, 45],
+            popupAnchor: [0, -45]
+        });
+
+        const icons = {
+            available: createHouseIcon('#16a34a'),
+            partners: createHouseIcon('#6b7280'),
+            sold: createSoldIcon(),
+            blocked: createBlockedIcon(),
+            new: createHouseIcon('#facc15'),
+            outros: createHouseIcon('#92400E')
+        };
+
+        // Load KML files automatically
+        // ORDEM IMPORTANTE: Sold/Blocked primeiro para evitar que duplicatas sejam marcadas como Available
+        const kmlFiles = [
+            { file: 'SoldLands.kml', type: 'sold', name: 'Sold Lands' },
+            { file: 'BlockedPaused.kml', type: 'blocked', name: 'Blocked/Paused' },
+            { file: 'AvailableLands.kml', type: 'available', name: 'Available Lands' },
+            { file: 'PartnersAvailableLands.kml', type: 'partners', name: 'Partners Available' },
+            { file: 'Outros.kml', type: 'outros', name: 'Outros' }
+        ];
+
+        let kmlLoadedCount = 0;
+
+        // ===== SISTEMA DE DEDUPLICAÇÃO =====
+        const seenProperties = new Map(); // Armazena propriedades já processadas por número
+        
+        // Função para extrair número da propriedade do nome
+        function extractPropertyNumber(name) {
+            // Padrões: "P19", "P-19", "Property 19", "Property 19 - ...", etc.
+            const match = name.match(/P-?(\d+)|Property\s+(\d+)/i);
+            return match ? (match[1] || match[2]) : null;
+        }
+        
+        // Função para detectar se é Point ou Polygon
+        function isPoint(placemark) {
+            const point = placemark.getElementsByTagName('Point')[0];
+            return point !== undefined && point !== null;
+        }
+        
+        function parseKML(kmlText, type, name) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(kmlText, 'text/xml');
+            const placemarks = xmlDoc.getElementsByTagName('Placemark');
+            
+            for (let placemark of placemarks) {
+                const nameEl = placemark.getElementsByTagName('name')[0];
                 
-                const banner = document.getElementById('mode-banner');
-                const text = document.getElementById('mode-text');
+                // Try to get Point coordinates first
+                let coordsEl = placemark.getElementsByTagName('coordinates')[0];
                 
-                if (data.OFFLINE_MODE || data.offline_mode) {
-                    banner.className = 'w-full py-2 text-center text-sm font-semibold shadow-md bg-yellow-100 text-yellow-900';
-                    text.textContent = '🔒 OFFLINE MODE - Usando dados mock (sem custos de API)';
-                } else {
-                    banner.className = 'w-full py-2 text-center text-sm font-semibold shadow-md bg-green-100 text-green-900';
-                    text.textContent = '🌐 ONLINE MODE - APIs ativas';
+                if (nameEl && coordsEl) {
+                    // Get all coordinates text and split by whitespace and commas
+                    const coordsText = coordsEl.textContent.trim();
+                    const coordLines = coordsText.split(/\s+/);
+                    
+                    // Get first coordinate (for polygons, use centroid of first point)
+                    const firstCoord = coordLines[0].split(',');
+                    const lng = parseFloat(firstCoord[0]);
+                    const lat = parseFloat(firstCoord[1]);
+                    
+                    if (!isNaN(lat) && !isNaN(lng)) {
+                        // ===== DEDUPLICAÇÃO BASEADA EM NÚMERO DA PROPRIEDADE =====
+                        const propertyNumber = extractPropertyNumber(nameEl.textContent);
+                        const isPointGeometry = isPoint(placemark);
+                        
+                        let isDuplicate = false;
+                        let duplicateOf = null;
+                        
+                        if (propertyNumber) {
+                            // Verificar se já existe propriedade com o mesmo número
+                            if (seenProperties.has(propertyNumber)) {
+                                const existingProp = seenProperties.get(propertyNumber);
+                                
+                                // Se a existente é Point e a atual é Polygon, remover a atual
+                                if (existingProp.isPoint && !isPointGeometry) {
+                                    isDuplicate = true;
+                                    duplicateOf = existingProp.name;
+                                }
+                                // Se a existente é Polygon e a atual é Point, substituir
+                                else if (!existingProp.isPoint && isPointGeometry) {
+                                    console.log(`🔄 Substituindo "${existingProp.name}" (Polygon) por "${nameEl.textContent}" (Point)`);
+                                    // Não marcar como duplicata, vai substituir
+                                }
+                                // Se ambos são do mesmo tipo, manter o primeiro
+                                else {
+                                    isDuplicate = true;
+                                    duplicateOf = existingProp.name;
+                                }
+                            }
+                        }
+                        
+                        if (isDuplicate) {
+                            console.log(`⚠️ Duplicata detectada e removida: "${nameEl.textContent}" (duplicata de "${duplicateOf}")`);
+                            continue; // Pular esta propriedade duplicada
+                        }
+                        
+                        // Registrar propriedade como vista (por número)
+                        if (propertyNumber) {
+                            seenProperties.set(propertyNumber, {
+                                name: nameEl.textContent,
+                                type: type,
+                                lat: lat,
+                                lng: lng,
+                                isPoint: isPointGeometry
+                            });
+                        }
+                        
+                        // Criar marcador (apenas se não for duplicata)
+                        const marker = L.marker([lat, lng], { icon: icons[type] })
+                            .bindPopup(`
+                                <strong>${nameEl.textContent}</strong><br>
+                                ${name}<br><br>
+                                <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" class="inline-block bg-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-700" style="color: white !important;">
+                                    📍 Ver Street View
+                                </a>
+                            `)
+                            .addTo(existingPropertiesLayer)
+                            .addTo(categoryLayers[type]);
+                        
+                        propertyCounts[type]++;
+                        // Atualizar contador em tempo real
+                        const currentCount = propertyCounts[type];
+                        document.getElementById(`${type}Count`).textContent = currentCount;
+                        console.log(`📍 Adicionada: "${nameEl.textContent}" → ${type} count: ${currentCount}`);
+                    }
                 }
-            } catch (error) {
-                const banner = document.getElementById('mode-banner');
-                const text = document.getElementById('mode-text');
-                banner.className = 'w-full py-2 text-center text-sm font-semibold shadow-md bg-red-100 text-red-900';
-                text.textContent = '⚠️ ERRO - Não foi possível carregar o status';
             }
         }
 
-        // Load properties
-        async function loadProperties() {
-            try {
-                const response = await fetch('/api/mock/property');
-                const data = await response.json();
-                
-                // Generate mock properties
-                allProperties = generateMockProperties(data);
-                
-                updateStatistics();
-                renderProperties();
-                
-                document.getElementById('loading-state').classList.add('hidden');
-            } catch (error) {
-                console.error('Error loading properties:', error);
-                document.getElementById('loading-state').innerHTML = `
-                    <div class="text-center py-12">
-                        <div class="text-6xl mb-4">⚠️</div>
-                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Erro ao carregar propriedades</h3>
-                        <p class="text-gray-600">${error.message}</p>
-                        <button onclick="loadProperties()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            Tentar Novamente
-                        </button>
-                    </div>
-                `;
-            }
+        // Load all KML files
+        if (kmlFiles.length > 0) {
+            kmlFiles.forEach(({ file, type, name }) => {
+                fetch(file)
+                    .then(response => response.text())
+                    .then(kmlText => {
+                        parseKML(kmlText, type, name);
+                        kmlLoadedCount++;
+                        console.log(`✅ ${name} carregado com sucesso!`);
+                        
+                        if (kmlLoadedCount === kmlFiles.length) {
+                            // Mostrar contadores finais
+                            console.log('\n' + '='.repeat(80));
+                            console.log('📊 CONTADORES FINAIS:');
+                            console.log('='.repeat(80));
+                            console.log(`Available Lands: ${propertyCounts.available}`);
+                            console.log(`Sold Lands: ${propertyCounts.sold}`);
+                            console.log(`Blocked/Paused: ${propertyCounts.blocked}`);
+                            console.log(`Partners Available: ${propertyCounts.partners}`);
+                            console.log(`Outros: ${propertyCounts.outros}`);
+                            console.log(`TOTAL: ${Object.values(propertyCounts).reduce((a,b) => a+b, 0)}`);
+                            console.log('='.repeat(80) + '\n');
+                            const layers = existingPropertiesLayer.getLayers();
+                            if (layers.length > 0) {
+                                const bounds = L.latLngBounds([]);
+                                layers.forEach(layer => bounds.extend(layer.getLatLng()));
+                                map.fitBounds(bounds, { padding: [50, 50] });
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        console.error(`Error loading ${file}:`, err);
+                        kmlLoadedCount++;
+                        
+                        if (kmlLoadedCount === kmlFiles.length) {
+                            const layers = existingPropertiesLayer.getLayers();
+                            if (layers.length > 0) {
+                                const bounds = L.latLngBounds([]);
+                                layers.forEach(layer => bounds.extend(layer.getLatLng()));
+                                map.fitBounds(bounds, { padding: [50, 50] });
+                            }
+                        }
+                    });
+            });
         }
 
-        // Generate mock properties
-        function generateMockProperties(sample) {
-            const properties = [];
-            const addresses = [
-                '123 Main St, Miami, FL 33101',
-                '456 Oak Ave, Orlando, FL 32801',
-                '789 Pine Rd, Tampa, FL 33602',
-                '321 Elm St, Jacksonville, FL 32202',
-                '654 Maple Dr, Fort Lauderdale, FL 33301',
-                '987 Cedar Ln, West Palm Beach, FL 33401',
-                '147 Birch Way, Tallahassee, FL 32301',
-                '258 Spruce Ct, Gainesville, FL 32601',
-                '369 Willow Pl, Sarasota, FL 34236',
-                '741 Ash Blvd, Naples, FL 34102',
-                '852 Hickory St, Clearwater, FL 33755',
-                '963 Walnut Ave, St Petersburg, FL 33701',
-                '159 Chestnut Rd, Lakeland, FL 33801',
-                '357 Poplar Dr, Daytona Beach, FL 32114',
-                '486 Magnolia Ln, Fort Myers, FL 33901',
-                '624 Sycamore Way, Pensacola, FL 32501',
-                '735 Redwood Ct, Port St Lucie, FL 34952',
-                '846 Sequoia Pl, Cape Coral, FL 33904',
-                '957 Juniper Blvd, Boca Raton, FL 33432',
-                '168 Cypress St, Kissimmee, FL 34741',
-                '279 Palmetto Ave, Ocala, FL 34470',
-                '381 Dogwood Rd, Melbourne, FL 32901'
-            ];
-            
-            const statuses = ['pending', 'approved', 'rejected'];
-            
-            for (let i = 0; i < 22; i++) {
-                properties.push({
-                    id: `PROP-${String(i + 1).padStart(4, '0')}`,
-                    parcel_id: `${Math.floor(Math.random() * 90000) + 10000}-${Math.floor(Math.random() * 9000) + 1000}`,
-                    address: addresses[i],
-                    city: addresses[i].split(', ')[1].split(', ')[0],
-                    state: 'FL',
-                    zip: addresses[i].split(', ')[2],
-                    price: Math.floor(Math.random() * 500000) + 50000,
-                    sqft: Math.floor(Math.random() * 3000) + 800,
-                    bedrooms: Math.floor(Math.random() * 4) + 1,
-                    bathrooms: Math.floor(Math.random() * 3) + 1,
-                    status: statuses[Math.floor(Math.random() * statuses.length)],
-                    date_added: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    zoning: sample.zoning || 'Residential',
-                    flood_zone: sample.flood_zone || 'Zone X',
-                    road_access: sample.road_access || 'Paved'
-                });
+        // File upload handlers
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-blue-500', 'bg-blue-50');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+            handleFiles(e.dataTransfer.files);
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        function handleFiles(files) {
+            for (let file of files) {
+                if (file.name.endsWith('.csv')) {
+                    loadedFiles.push(file);
+                    processCSV(file);
+                }
             }
-            
-            return properties;
+            updateFileList();
         }
 
-        // Update statistics
-        function updateStatistics() {
-            const total = allProperties.length;
-            const approved = allProperties.filter(p => p.status === 'approved').length;
-            const rejected = allProperties.filter(p => p.status === 'rejected').length;
-            const pending = allProperties.filter(p => p.status === 'pending').length;
-            
-            document.getElementById('total-properties').textContent = total;
-            document.getElementById('approved-properties').textContent = approved;
-            document.getElementById('rejected-properties').textContent = rejected;
-            document.getElementById('pending-properties').textContent = pending;
-        }
-
-        // Render properties
-        function renderProperties() {
-            const container = document.getElementById('properties-container');
-            const filteredProperties = getFilteredProperties();
-            
-            if (filteredProperties.length === 0) {
-                container.innerHTML = '';
-                document.getElementById('empty-state').classList.remove('hidden');
-                document.getElementById('filtered-count').textContent = '0';
-                return;
-            }
-            
-            document.getElementById('empty-state').classList.add('hidden');
-            document.getElementById('filtered-count').textContent = filteredProperties.length;
-            
-            container.innerHTML = filteredProperties.map(property => `
-                <div class="property-card bg-white rounded-lg shadow hover:shadow-lg p-6 cursor-pointer ${selectedProperties.has(property.id) ? 'selected' : ''}" 
-                     onclick="toggleProperty('${property.id}')">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="flex items-center space-x-2">
-                            <input type="checkbox" 
-                                   ${selectedProperties.has(property.id) ? 'checked' : ''} 
-                                   onclick="event.stopPropagation(); toggleProperty('${property.id}')"
-                                   class="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
-                            <span class="text-xs font-semibold px-2 py-1 rounded ${getStatusBadgeClass(property.status)}">
-                                ${getStatusText(property.status)}
-                            </span>
-                        </div>
-                        <span class="text-xs text-gray-500">${property.date_added}</span>
-                    </div>
-                    
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">${property.address}</h3>
-                    <p class="text-sm text-gray-600 mb-3">Parcel ID: ${property.parcel_id}</p>
-                    
-                    <div class="grid grid-cols-2 gap-2 mb-4 text-sm">
-                        <div class="flex items-center text-gray-600">
-                            <span class="mr-1">🛏️</span> ${property.bedrooms} quartos
-                        </div>
-                        <div class="flex items-center text-gray-600">
-                            <span class="mr-1">🚿</span> ${property.bathrooms} banheiros
-                        </div>
-                        <div class="flex items-center text-gray-600">
-                            <span class="mr-1">📐</span> ${property.sqft.toLocaleString()} sqft
-                        </div>
-                        <div class="flex items-center text-gray-600">
-                            <span class="mr-1">🏘️</span> ${property.zoning}
-                        </div>
-                    </div>
-                    
-                    <div class="pt-4 border-t border-gray-200 flex items-center justify-between">
-                        <span class="text-2xl font-bold text-blue-600">$${property.price.toLocaleString()}</span>
-                        <button onclick="event.stopPropagation(); viewDetails('${property.id}')" 
-                                class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
-                            Ver Detalhes
-                        </button>
-                    </div>
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = loadedFiles.map((file, index) => `
+                <div class="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
+                    <span class="text-green-700">✓ ${file.name}</span>
+                    <button onclick="removeFile(${index})" class="text-red-600 hover:text-red-800">✕</button>
                 </div>
             `).join('');
         }
 
-        // Get filtered properties
-        function getFilteredProperties() {
-            let filtered = [...allProperties];
+        function removeFile(index) {
+            loadedFiles.splice(index, 1);
+            updateFileList();
+            reprocessAllFiles();
+        }
+
+        function reprocessAllFiles() {
+            allNewProperties = [];
+            countyData = {};
+            newPropertiesLayer.clearLayers();
             
-            // Filter by search
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            if (searchTerm) {
-                filtered = filtered.filter(p => 
-                    p.address.toLowerCase().includes(searchTerm) ||
-                    p.parcel_id.toLowerCase().includes(searchTerm) ||
-                    p.city.toLowerCase().includes(searchTerm)
+            loadedFiles.forEach(file => processCSV(file));
+        }
+
+        function processCSV(file) {
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: (results) => {
+                    // ✅ VALIDAÇÕES BÁSICAS
+                    const validationErrors = [];
+                    let validCount = 0;
+                    let invalidCount = 0;
+                    
+                    const data = results.data.filter(row => {
+                        // Validar se tem coordenadas
+                        if (!row.Coordinates || !row.Coordinates.trim()) {
+                            invalidCount++;
+                            return false;
+                        }
+                        
+                        // Validar coordenadas
+                        const coordsStr = row.Coordinates.replace(/"/g, '').trim();
+                        const coords = coordsStr.split(',');
+                        const lat = parseFloat(coords[0]);
+                        const lng = parseFloat(coords[1]);
+                        
+                        // Validar se coordenadas são números válidos
+                        if (isNaN(lat) || isNaN(lng)) {
+                            invalidCount++;
+                            validationErrors.push(`Coordenadas inválidas: ${row['Parcel Number'] || 'Desconhecido'}`);
+                            return false;
+                        }
+                        
+                        // Validar se coordenadas estão na Flórida (lat: 24-31, lng: -87 a -80)
+                        if (lat < 24 || lat > 31 || lng < -87 || lng > -80) {
+                            invalidCount++;
+                            validationErrors.push(`Coordenadas fora da Flórida: ${row['Parcel Number'] || 'Desconhecido'} (${lat}, ${lng})`);
+                            return false;
+                        }
+                        
+                        // Validar Parcel Number
+                        if (!row['Parcel Number'] || row['Parcel Number'].trim() === '') {
+                            invalidCount++;
+                            validationErrors.push(`Parcel Number vazio`);
+                            return false;
+                        }
+                        
+                        // Validar Acres (deve ser > 0)
+                        const acres = parseFloat(row.Acres);
+                        if (isNaN(acres) || acres <= 0) {
+                            invalidCount++;
+                            validationErrors.push(`Acres inválido: ${row['Parcel Number']} (${row.Acres})`);
+                            return false;
+                        }
+                        
+                        validCount++;
+                        return true;
+                    });
+                    
+                    // Mostrar resultado das validações
+                    if (invalidCount > 0) {
+                        console.warn(`⚠️ ${invalidCount} propriedades inválidas foram removidas`);
+                        console.warn('Erros:', validationErrors.slice(0, 10)); // Mostrar apenas primeiros 10
+                        
+                        showNotification(
+                            `⚠️ ${validCount} propriedades válidas importadas. ${invalidCount} inválidas foram removidas.`,
+                            'warning'
+                        );
+                    } else {
+                        showNotification(
+                            `✅ ${validCount} propriedades importadas com sucesso!`,
+                            'success'
+                        );
+                    }
+                    
+                    data.forEach(row => {
+                        // Remove quotes and split coordinates
+                        const coordsStr = row.Coordinates.replace(/"/g, '').trim();
+                        const coords = coordsStr.split(',');
+                        const lat = parseFloat(coords[0]);
+                        const lng = parseFloat(coords[1]);
+                        
+                        if (!isNaN(lat) && !isNaN(lng)) {
+                            const marker = L.marker([lat, lng], { icon: icons.new })
+                                .bindPopup(`
+                                    <strong>${row.Name}</strong><br>
+                                    ${row.Address}<br>
+                                    ${row.City}, ${row.State} ${row.Zip}<br>
+                                    <strong>Parcel ID:</strong> ${row['Parcel Number']}<br>
+                                    <strong>Tipo:</strong> ${row['Parcel Type'] || 'N/A'}<br>
+                                    <strong>Acres:</strong> ${row.Acres}<br>
+                                    <strong>Amount Due:</strong> $${row['Amount Due']}<br><br>
+                                    <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" class="inline-block bg-blue-600 px-3 py-1 rounded text-sm hover:bg-blue-700" style="color: white !important;">
+                                        📍 Ver Street View
+                                    </a>
+                                `)
+                                .addTo(newPropertiesLayer);
+                            
+                            // Add click event to marker to highlight table row
+                            marker.on('click', function() {
+                                const tableSection = document.getElementById('tableSection');
+                                const tableBody = document.getElementById('tableBody');
+                                const rows = tableBody.getElementsByTagName('tr');
+                                
+                                // Remove previous highlights
+                                for (let r of rows) {
+                                    r.classList.remove('row-highlight');
+                                }
+                                
+                                // Find row by Parcel Number (more reliable than index)
+                                const parcelNumber = row['Parcel Number'];
+                                for (let i = 0; i < rows.length; i++) {
+                                    const rowText = rows[i].textContent;
+                                    if (rowText.includes(parcelNumber)) {
+                                        rows[i].classList.add('row-highlight');
+                                        
+                                        // Scroll to row
+                                        rows[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                        
+                                        // Remove highlight after 5 seconds
+                                        setTimeout(() => {
+                                            rows[i].classList.remove('row-highlight');
+                                        }, 5000);
+                                        
+                                        console.log(`✅ Propriedade destacada: ${parcelNumber}`);
+                                        break;
+                                    }
+                                }
+                            });
+                            
+                            row.marker = marker;
+                            allNewProperties.push(row);
+                            
+                            const county = row.County;
+                            if (!countyData[county]) {
+                                countyData[county] = [];
+                            }
+                            countyData[county].push(row);
+                        }
+                    });
+                    
+                    propertyCounts.new = allNewProperties.length;
+                    updateUI();
+                }
+            });
+        }
+
+        function updateUI() {
+            document.getElementById('newCount').textContent = propertyCounts.new;
+            document.getElementById('totalProperties').textContent = propertyCounts.new;
+            document.getElementById('totalCounties').textContent = Object.keys(countyData).length;
+            document.getElementById('totalFiles').textContent = loadedFiles.length;
+            document.getElementById('newOnMap').textContent = propertyCounts.new;
+            
+            if (allNewProperties.length > 0) {
+                document.getElementById('deleteNewBtn').classList.remove('hidden');
+                document.getElementById('downloadsSection').classList.remove('hidden');
+                document.getElementById('tableSection').classList.remove('hidden');
+                
+                generateDownloadButtons();
+                populateTable();
+                
+                const allLayers = [...existingPropertiesLayer.getLayers(), ...newPropertiesLayer.getLayers()];
+                if (allLayers.length > 0) {
+                    const bounds = L.latLngBounds([]);
+                    allLayers.forEach(layer => bounds.extend(layer.getLatLng()));
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                }
+            }
+        }
+
+        function generateDownloadButtons() {
+            const container = document.getElementById('downloadButtons');
+            container.innerHTML = '';
+            
+            Object.keys(countyData).forEach(county => {
+                const properties = countyData[county];
+                const firstProp = properties[0];
+                const date = new Date(firstProp['Next Auction']);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const dateStr = `${day}${month}`;
+                
+                const button = document.createElement('button');
+                button.className = 'bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors';
+                button.innerHTML = `⬇️ ${county} - ${properties.length} propriedades`;
+                button.onclick = () => downloadCountyCSV(county, dateStr, properties);
+                container.appendChild(button);
+            });
+        }
+
+        function downloadCountyCSV(county, dateStr, properties) {
+            const csv = Papa.unparse(properties);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${county}_${dateStr}_coordinates.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function populateTable() {
+            // Apply filters
+            const filterName = document.getElementById('filterName').value.toLowerCase();
+            const filterCounty = document.getElementById('filterCounty').value;
+            const filterCity = document.getElementById('filterCity').value;
+            const filterType = document.getElementById('filterType').value;
+            const filterAcresMin = parseFloat(document.getElementById('filterAcresMin').value) || 0;
+            const filterAcresMax = parseFloat(document.getElementById('filterAcresMax').value) || Infinity;
+            const filterAmountMin = parseFloat(document.getElementById('filterAmountMin').value) || 0;
+            const filterAmountMax = parseFloat(document.getElementById('filterAmountMax').value) || Infinity;
+            
+            const filteredProperties = allNewProperties.filter(row => {
+                const acres = parseFloat(row.Acres) || 0;
+                const amount = parseFloat(row['Amount Due']) || 0;
+                const name = (row.Name || '').toLowerCase();
+                const type = row['Parcel Type'] || '';
+                
+                return (
+                    (!filterName || name.includes(filterName)) &&
+                    (!filterCounty || row.County === filterCounty) &&
+                    (!filterCity || row.City === filterCity) &&
+                    (!filterType || type === filterType) &&
+                    (acres >= filterAcresMin && acres <= filterAcresMax) &&
+                    (amount >= filterAmountMin && amount <= filterAmountMax)
                 );
-            }
+            });
             
-            // Filter by status
-            const statusFilter = document.getElementById('status-filter').value;
-            if (statusFilter !== 'all') {
-                filtered = filtered.filter(p => p.status === statusFilter);
-            }
+            // Store filtered properties globally for delete function
+            window.currentFilteredProperties = filteredProperties;
             
-            // Sort
-            const sortBy = document.getElementById('sort-filter').value;
-            switch(sortBy) {
-                case 'recent':
-                    filtered.sort((a, b) => new Date(b.date_added) - new Date(a.date_added));
-                    break;
-                case 'price-high':
-                    filtered.sort((a, b) => b.price - a.price);
-                    break;
-                case 'price-low':
-                    filtered.sort((a, b) => a.price - b.price);
-                    break;
-                case 'address':
-                    filtered.sort((a, b) => a.address.localeCompare(b.address));
-                    break;
-            }
+            // Update counters
+            document.getElementById('totalCount').textContent = allNewProperties.length;
+            document.getElementById('filteredCount').textContent = filteredProperties.length;
             
-            return filtered;
-        }
-
-        // Toggle property selection
-        function toggleProperty(id) {
-            if (selectedProperties.has(id)) {
-                selectedProperties.delete(id);
+            // Show/hide delete filtered button
+            const deleteFilteredBtn = document.getElementById('deleteFilteredBtn');
+            const hasActiveFilters = filterName || filterCounty || filterCity || filterType || 
+                                     filterAcresMin > 0 || filterAcresMax < Infinity || 
+                                     filterAmountMin > 0 || filterAmountMax < Infinity;
+            
+            if (hasActiveFilters && filteredProperties.length > 0 && filteredProperties.length < allNewProperties.length) {
+                deleteFilteredBtn.classList.remove('hidden');
             } else {
-                selectedProperties.add(id);
+                deleteFilteredBtn.classList.add('hidden');
             }
-            updateSelectedCount();
-            renderProperties();
+            
+            // Populate county dropdown
+            const countySelect = document.getElementById('filterCounty');
+            const currentCounty = countySelect.value;
+            const counties = [...new Set(allNewProperties.map(p => p.County))].sort();
+            countySelect.innerHTML = '<option value="">Todos os Condados</option>' + 
+                counties.map(c => `<option value="${c}" ${c === currentCounty ? 'selected' : ''}>${c}</option>`).join('');
+            
+            // Populate city dropdown
+            const citySelect = document.getElementById('filterCity');
+            const currentCity = citySelect.value;
+            const cities = [...new Set(allNewProperties.map(p => p.City).filter(c => c))].sort();
+            citySelect.innerHTML = '<option value="">Todas as Cidades</option>' + 
+                cities.map(c => `<option value="${c}" ${c === currentCity ? 'selected' : ''}>${c}</option>`).join('');
+            
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = filteredProperties.map((row, index) => {
+                const originalIndex = allNewProperties.indexOf(row);
+                const hasUndivided = (row['Legal Description'] || '').toUpperCase().includes('UNDIVIDED');
+                const rowClass = hasUndivided ? 'undivided-alert text-[10px]' : 'hover:bg-blue-50 transition-colors text-[10px]';
+                const warningIcon = hasUndivided ? '<span data-tooltip="⚠️ ATENÇÃO: Propriedade UNDIVIDED - Alto Risco!">⚠️</span> ' : '';
+                
+                // Create a clean copy without marker (to avoid circular reference)
+                const cleanRow = Object.assign({}, row);
+                delete cleanRow.marker;
+                
+                return `
+                <tr class="${rowClass}" data-index="${originalIndex}">
+                    <td class="px-2 py-1 whitespace-nowrap text-center">
+                        <input type="checkbox" class="row-checkbox w-3 h-3 cursor-pointer" data-index="${originalIndex}" data-property='${JSON.stringify(cleanRow).replace(/'/g, "&apos;")}'>
+                    </td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${warningIcon}${row['Parcel Number']}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${row.Acres}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${row['Parcel Type'] || 'N/A'}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap cursor-pointer">${row.Name}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${row.Address}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${row.City}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${row.County}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">$${row['Amount Due']}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${(row['Legal Description'] || 'N/A').substring(0, 50)}...</td>
+                </tr>
+            `}).join('');
+            
+            const rows = tbody.querySelectorAll('tr');
+            rows.forEach(row => {
+                row.addEventListener('click', (e) => {
+                    // Don't trigger if clicking checkbox
+                    if (e.target.type === 'checkbox') return;
+                    
+                    const index = parseInt(row.getAttribute('data-index'));
+                    const property = allNewProperties[index];
+                    
+                    if (property && property.marker) {
+                        // Center on map with animation
+                        map.setView(property.marker.getLatLng(), 16);
+                        
+                        // Open popup
+                        property.marker.openPopup();
+                        
+                        // Add bounce animation to marker
+                        const markerElement = property.marker.getElement();
+                        if (markerElement) {
+                            markerElement.classList.add('marker-bounce');
+                            setTimeout(() => {
+                                markerElement.classList.remove('marker-bounce');
+                            }, 1800);
+                        }
+                        
+                        // Scroll to top
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+            
+            // Setup checkbox listeners
+            setupCheckboxListeners();
         }
 
-        // Update selected count
-        function updateSelectedCount() {
-            const count = selectedProperties.size;
-            document.getElementById('selected-count').textContent = count;
-            document.getElementById('analyze-btn').disabled = count === 0;
+        // Dropdown menu toggle
+        const deleteOldDropdown = document.getElementById('deleteOldDropdown');
+        const deleteOldMenu = document.getElementById('deleteOldMenu');
+        
+        deleteOldDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteOldMenu.classList.toggle('hidden');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            deleteOldMenu.classList.add('hidden');
+        });
+        
+        deleteOldMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+        
+        // Delete specific category
+        const deleteCategoryButtons = document.querySelectorAll('.delete-category-btn');
+        deleteCategoryButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const category = btn.getAttribute('data-category');
+                const categoryNames = {
+                    available: 'Available Lands',
+                    partners: 'Partners Available',
+                    sold: 'Sold Lands',
+                    blocked: 'Blocked/Paused',
+                    outros: 'Outros'
+                };
+                
+                if (confirm(`Tem certeza que deseja deletar ${categoryNames[category]}?`)) {
+                    categoryLayers[category].clearLayers();
+                    propertyCounts[category] = 0;
+                    document.getElementById(`${category}Count`).textContent = 0;
+                    deleteOldMenu.classList.add('hidden');
+                    
+                    // Adjust map view
+                    const allLayers = [...existingPropertiesLayer.getLayers(), ...newPropertiesLayer.getLayers()];
+                    if (allLayers.length > 0) {
+                        const bounds = L.latLngBounds([]);
+                        allLayers.forEach(layer => bounds.extend(layer.getLatLng()));
+                        map.fitBounds(bounds, { padding: [50, 50] });
+                    } else {
+                        map.setView([27.32, -81.37], 10);
+                    }
+                }
+            });
+        });
+        
+        // Delete all old properties
+        document.getElementById('deleteAllOldBtn').addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja deletar TODAS as propriedades antigas (KML)?')) {
+                existingPropertiesLayer.clearLayers();
+                Object.keys(categoryLayers).forEach(cat => {
+                    categoryLayers[cat].clearLayers();
+                    propertyCounts[cat] = 0;
+                    document.getElementById(`${cat}Count`).textContent = 0;
+                });
+                
+                deleteOldMenu.classList.add('hidden');
+                
+                const newLayers = newPropertiesLayer.getLayers();
+                if (newLayers.length > 0) {
+                    const bounds = L.latLngBounds([]);
+                    newLayers.forEach(layer => bounds.extend(layer.getLatLng()));
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                } else {
+                    map.setView([27.32, -81.37], 10);
+                }
+            }
+        });
+
+        // Delete new properties
+        document.getElementById('deleteNewBtn').addEventListener('click', () => {
+            if (confirm('Tem certeza que deseja deletar todas as novas propriedades?')) {
+                allNewProperties = [];
+                countyData = {};
+                loadedFiles = [];
+                newPropertiesLayer.clearLayers();
+                propertyCounts.new = 0;
+                
+                document.getElementById('deleteNewBtn').classList.add('hidden');
+                document.getElementById('downloadsSection').classList.add('hidden');
+                document.getElementById('tableSection').classList.add('hidden');
+                document.getElementById('fileList').innerHTML = '';
+                
+                updateUI();
+                
+                const layers = existingPropertiesLayer.getLayers();
+                if (layers.length > 0) {
+                    const bounds = L.latLngBounds([]);
+                    layers.forEach(layer => bounds.extend(layer.getLatLng()));
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                }
+            }
+        });
+
+        // Import KML functionality
+        const kmlFileInput = document.getElementById('kmlFileInput');
+        document.getElementById('importKMLBtn').addEventListener('click', () => {
+            kmlFileInput.click();
+        });
+
+        // Function to parse CSV from Google My Maps
+        function parseCSV(csvText, type, name) {
+            const lines = csvText.split('\n');
+            let count = 0;
+            
+            for (let i = 1; i < lines.length; i++) { // Skip header
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                // Parse CSV line (handle quoted fields)
+                const match = line.match(/^"([^"]+)","?([^"]*?)"?,?/);
+                if (!match) continue;
+                
+                const geom = match[1];
+                const propName = match[2] || `Property ${i}`;
+                
+                let lat, lng;
+                
+                // Extract coordinates from POINT (-81.40599 27.25065)
+                const pointMatch = geom.match(/POINT \(([^ ]+) ([^ ]+)\)/);
+                if (pointMatch) {
+                    lng = parseFloat(pointMatch[1]);
+                    lat = parseFloat(pointMatch[2]);
+                } else {
+                    // Extract from POLYGON ((-81.406225 27.250928, ...))
+                    const polygonMatch = geom.match(/POLYGON \(\(([^ ]+) ([^ ]+),/);
+                    if (polygonMatch) {
+                        lng = parseFloat(polygonMatch[1]);
+                        lat = parseFloat(polygonMatch[2]);
+                    }
+                }
+                
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    const marker = L.marker([lat, lng], { icon: icons[type] })
+                        .bindPopup(`<strong>${propName}</strong><br>${name}`)
+                        .addTo(existingPropertiesLayer)
+                        .addTo(categoryLayers[type]);
+                    
+                    count++;
+                    propertyCounts[type]++;
+                }
+            }
+            
+            document.getElementById(`${type}Count`).textContent = propertyCounts[type];
+            console.log(`Imported ${count} properties from CSV`);
         }
 
-        // Select all
-        function selectAll() {
-            const filtered = getFilteredProperties();
-            filtered.forEach(p => selectedProperties.add(p.id));
-            updateSelectedCount();
-            renderProperties();
-        }
+        kmlFileInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            for (let file of files) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const fileContent = event.target.result;
+                    let type = 'available';
+                    let name = file.name.replace(/\.(kml|csv)$/, '');
+                    
+                    // Determine type from filename
+                    if (file.name.toLowerCase().includes('sold')) {
+                        type = 'sold';
+                    } else if (file.name.toLowerCase().includes('blocked') || file.name.toLowerCase().includes('paused')) {
+                        type = 'blocked';
+                    } else if (file.name.toLowerCase().includes('partner')) {
+                        type = 'partners';
+                    }
+                    
+                    // Parse based on file type
+                    if (file.name.endsWith('.kml')) {
+                        parseKML(fileContent, type, name);
+                    } else if (file.name.endsWith('.csv')) {
+                        parseCSV(fileContent, type, name);
+                    }
+                    
+                    // Adjust map view
+                    const layers = existingPropertiesLayer.getLayers();
+                    if (layers.length > 0) {
+                        const bounds = L.latLngBounds([]);
+                        layers.forEach(layer => bounds.extend(layer.getLatLng()));
+                        map.fitBounds(bounds, { padding: [50, 50] });
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
 
-        // Deselect all
-        function deselectAll() {
-            selectedProperties.clear();
-            updateSelectedCount();
-            renderProperties();
-        }
-
-        // Filter properties
-        function filterProperties() {
-            renderProperties();
-        }
-
-        // Sort properties
-        function sortProperties() {
-            renderProperties();
-        }
-
-        // Refresh data
-        function refreshData() {
-            selectedProperties.clear();
-            updateSelectedCount();
-            document.getElementById('loading-state').classList.remove('hidden');
-            document.getElementById('properties-container').innerHTML = '';
-            loadProperties();
-        }
-
-        // View details
-        function viewDetails(id) {
-            const property = allProperties.find(p => p.id === id);
-            sessionStorage.setItem('currentProperty', JSON.stringify(property));
-            window.location.href = '/analysis2.html';
-        }
-
-        // Analyze selected
-        function analyzeSelected() {
-            if (selectedProperties.size === 0) {
-                alert('Por favor, selecione pelo menos uma propriedade para analisar.');
+        // Filter event listeners
+        document.getElementById('filterName').addEventListener('input', populateTable);
+        document.getElementById('filterCounty').addEventListener('change', populateTable);
+        document.getElementById('filterCity').addEventListener('change', populateTable);
+        document.getElementById('filterType').addEventListener('change', populateTable);
+        document.getElementById('filterAcresMin').addEventListener('input', populateTable);
+        document.getElementById('filterAcresMax').addEventListener('input', populateTable);
+        document.getElementById('filterAmountMin').addEventListener('input', populateTable);
+        document.getElementById('filterAmountMax').addEventListener('input', populateTable);
+        
+        document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+            document.getElementById('filterName').value = '';
+            document.getElementById('filterCounty').value = '';
+            document.getElementById('filterCity').value = '';
+            document.getElementById('filterType').value = '';
+            document.getElementById('filterAcresMin').value = '';
+            document.getElementById('filterAcresMax').value = '';
+            document.getElementById('filterAmountMin').value = '';
+            document.getElementById('filterAmountMax').value = '';
+            populateTable();
+        });
+        
+        // Delete filtered properties
+        document.getElementById('deleteFilteredBtn').addEventListener('click', () => {
+            const filteredProps = window.currentFilteredProperties || [];
+            if (filteredProps.length === 0) return;
+            
+            const count = filteredProps.length;
+            if (!confirm(`Tem certeza que deseja deletar ${count} propriedade(s) filtrada(s)?\n\nEsta ação não pode ser desfeita!`)) {
                 return;
             }
             
-            const selected = allProperties.filter(p => selectedProperties.has(p.id));
-            sessionStorage.setItem('selectedProperties', JSON.stringify(selected));
-            sessionStorage.setItem('currentIndex', '0');
+            // Remove from map
+            filteredProps.forEach(prop => {
+                if (prop.marker) {
+                    newPropertiesLayer.removeLayer(prop.marker);
+                }
+            });
             
-            window.location.href = '/analysis2.html';
-        }
-
-        // Get status badge class
-        function getStatusBadgeClass(status) {
-            switch(status) {
-                case 'approved':
-                    return 'bg-green-100 text-green-800';
-                case 'rejected':
-                    return 'bg-red-100 text-red-800';
-                case 'pending':
-                    return 'bg-yellow-100 text-yellow-800';
-                default:
-                    return 'bg-gray-100 text-gray-800';
-            }
-        }
-
-        // Get status text
-        function getStatusText(status) {
-            switch(status) {
-                case 'approved':
-                    return '✅ Aprovada';
-                case 'rejected':
-                    return '❌ Reprovada';
-                case 'pending':
-                    return '⏳ Pendente';
-                default:
-                    return '❓ Desconhecido';
-            }
-        }
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            loadModeStatus();
-            loadProperties();
+            // Remove from allNewProperties array
+            allNewProperties = allNewProperties.filter(prop => !filteredProps.includes(prop));
+            
+            // Rebuild countyData
+            countyData = {};
+            allNewProperties.forEach(row => {
+                const county = row.County;
+                if (!countyData[county]) {
+                    countyData[county] = [];
+                }
+                countyData[county].push(row);
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('allNewProperties', JSON.stringify(allNewProperties));
+            
+            // Update UI
+            propertyCounts.new = allNewProperties.length;
+            updateUI();
+            
+            alert(`${count} propriedade(s) deletada(s) com sucesso!`);
         });
+
+        // Checkbox and selection functionality
+        function setupCheckboxListeners() {
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+            const analyzeSelectedBtn = document.getElementById('analyzeSelectedBtn');
+            const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+            const exportSelectedBtn = document.getElementById('exportSelectedBtn');
+            
+            // Select all checkbox
+            selectAllCheckbox.addEventListener('change', () => {
+                rowCheckboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+                updateSelectionButtons();
+            });
+            
+            // Individual checkboxes
+            rowCheckboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    updateSelectionButtons();
+                    // Update select all checkbox
+                    const allChecked = Array.from(rowCheckboxes).every(c => c.checked);
+                    selectAllCheckbox.checked = allChecked;
+                });
+            });
+            
+            // Delete selected button
+            deleteSelectedBtn.addEventListener('click', deleteSelectedProperties);
+            
+            // Export selected button
+            exportSelectedBtn.addEventListener('click', showExportOptions);
+            
+            // Save for analysis button
+            const saveForAnalysisBtn = document.getElementById('saveForAnalysisBtn');
+            saveForAnalysisBtn.addEventListener('click', saveSelectedForAnalysis);
+        }
+        
+        function updateSelectionButtons() {
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+            const checkedCount = Array.from(rowCheckboxes).filter(cb => cb.checked).length;
+            const analyzeSelectedBtn = document.getElementById('analyzeSelectedBtn');
+            const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+            const exportSelectedBtn = document.getElementById('exportSelectedBtn');
+            
+            const saveForAnalysisBtn = document.getElementById('saveForAnalysisBtn');
+            
+            if (checkedCount > 0) {
+                analyzeSelectedBtn.classList.remove('hidden');
+                deleteSelectedBtn.classList.remove('hidden');
+                exportSelectedBtn.classList.remove('hidden');
+                saveForAnalysisBtn.classList.remove('hidden');
+            } else {
+                analyzeSelectedBtn.classList.add('hidden');
+                deleteSelectedBtn.classList.add('hidden');
+                exportSelectedBtn.classList.add('hidden');
+                saveForAnalysisBtn.classList.add('hidden');
+            }
+        }
+        
+        function saveSelectedForAnalysis() {
+            console.log('💜 Botão Salvar para Análise clicado!');
+            
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+            
+            if (rowCheckboxes.length === 0) {
+                alert('Nenhuma propriedade selecionada!');
+                return;
+            }
+            
+            const selectedProperties = Array.from(rowCheckboxes)
+                .map(cb => {
+                    const index = parseInt(cb.getAttribute('data-index'));
+                    return allNewProperties[index];
+                })
+                .filter(p => p);
+            
+            // Salvar no localStorage
+            localStorage.setItem('properties', JSON.stringify(selectedProperties));
+            
+            alert(`✅ ${selectedProperties.length} propriedades salvas para análise!\n\nVocê pode abrir a página de análise (analysis2.html) para analisá-las.`);
+            
+            console.log(`💾 ${selectedProperties.length} propriedades salvas no localStorage`);
+        }
+        
+        function analyzeSelectedProperties() {
+            console.log('🔵 Botão Analisar Selecionadas clicado!');
+            
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+            console.log('Checkboxes marcados:', rowCheckboxes.length);
+            
+            if (rowCheckboxes.length === 0) {
+                alert('Selecione pelo menos uma propriedade para analisar.');
+                return;
+            }
+            
+            // Get selected properties data from data-property attribute (more reliable)
+            const selectedProperties = [];
+            rowCheckboxes.forEach(function(checkbox) {
+                try {
+                    const propData = checkbox.getAttribute('data-property');
+                    if (propData) {
+                        const prop = JSON.parse(propData.replace(/&apos;/g, "'"));
+                        selectedProperties.push(prop);
+                        console.log('Propriedade adicionada:', prop['Parcel Number']);
+                    } else {
+                        console.error('Checkbox sem data-property!');
+                    }
+                } catch (e) {
+                    console.error('Erro ao parsear propriedade:', e);
+                }
+            });
+            
+            console.log('Propriedades selecionadas:', selectedProperties.length);
+            
+            if (selectedProperties.length === 0) {
+                alert('Erro: Não foi possível coletar os dados das propriedades!');
+                return;
+            }
+            
+            // Save selected properties for analysis
+            localStorage.setItem('selectedProperties', JSON.stringify(selectedProperties));
+            console.log('Salvo no localStorage:', selectedProperties.length, 'propriedades');
+            
+            // Redirect to analysis page
+            window.location.href = 'analysis2.html';
+        }
+        
+        function deleteSelectedProperties() {
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+            
+            if (rowCheckboxes.length === 0) return;
+            
+            if (!confirm(`Tem certeza que deseja deletar ${rowCheckboxes.length} propriedade(s) selecionada(s)?`)) {
+                return;
+            }
+            
+            // Get indices to delete (in reverse order to avoid index shifting)
+            const indicesToDelete = Array.from(rowCheckboxes)
+                .map(cb => parseInt(cb.getAttribute('data-index')))
+                .sort((a, b) => b - a);
+            
+            // Remove from map
+            indicesToDelete.forEach(index => {
+                const property = allNewProperties[index];
+                if (property && property.marker) {
+                    newPropertiesLayer.removeLayer(property.marker);
+                }
+            });
+            
+            // Remove from array
+            indicesToDelete.forEach(index => {
+                allNewProperties.splice(index, 1);
+            });
+            
+            // Rebuild county data
+            countyData = {};
+            allNewProperties.forEach(row => {
+                const county = row.County;
+                if (!countyData[county]) {
+                    countyData[county] = [];
+                }
+                countyData[county].push(row);
+            });
+            
+            // Update UI
+            propertyCounts.new = allNewProperties.length;
+            updateUI();
+            
+            // Uncheck select all
+            document.getElementById('selectAllCheckbox').checked = false;
+        }
+        
+        function showExportOptions() {
+            const format = prompt('Escolha o formato de exportação:\n\n1 - CSV\n2 - KML\n\nDigite 1 ou 2:');
+            
+            if (format === '1') {
+                exportSelectedAsCSV();
+            } else if (format === '2') {
+                exportSelectedAsKML();
+            }
+        }
+        
+        function exportSelectedAsCSV() {
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+            
+            if (rowCheckboxes.length === 0) {
+                alert('Nenhuma propriedade selecionada!');
+                return;
+            }
+            
+            const selectedProperties = Array.from(rowCheckboxes)
+                .map(cb => {
+                    const index = parseInt(cb.getAttribute('data-index'));
+                    return allNewProperties[index];
+                })
+                .filter(p => p);
+            
+            const csv = Papa.unparse(selectedProperties);
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const date = new Date();
+            const dateStr = `${String(date.getDate()).padStart(2, '0')}${String(date.getMonth() + 1).padStart(2, '0')}`;
+            a.download = `selected_properties_${dateStr}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function exportSelectedAsKML() {
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+            
+            if (rowCheckboxes.length === 0) {
+                alert('Nenhuma propriedade selecionada!');
+                return;
+            }
+            
+            const selectedProperties = Array.from(rowCheckboxes)
+                .map(cb => {
+                    const index = parseInt(cb.getAttribute('data-index'));
+                    return allNewProperties[index];
+                })
+                .filter(p => p);
+            
+            let kml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+            kml += `<kml xmlns="http://www.opengis.net/kml/2.2">\n`;
+            kml += `  <Document>\n`;
+            kml += `    <name>Selected Properties</name>\n`;
+            
+            selectedProperties.forEach(prop => {
+                kml += `    <Placemark>\n`;
+                kml += `      <name>${prop.Name}</name>\n`;
+                kml += `      <description>Parcel ID: ${prop['Parcel Number']}\nAcres: ${prop.Acres}\nAmount Due: $${prop['Amount Due']}</description>\n`;
+                kml += `      <Point>\n`;
+                kml += `        <coordinates>${prop.Longitude},${prop.Latitude},0</coordinates>\n`;
+                kml += `      </Point>\n`;
+                kml += `    </Placemark>\n`;
+            });
+            
+            kml += `  </Document>\n`;
+            kml += `</kml>`;
+            
+            const blob = new Blob([kml], { type: 'application/vnd.google-earth.kml+xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const date = new Date();
+            const dateStr = `${String(date.getDate()).padStart(2, '0')}${String(date.getMonth() + 1).padStart(2, '0')}`;
+            a.download = `selected_properties_${dateStr}.kml`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Dark Mode functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        const darkModeText = document.getElementById('darkModeText');
+        const body = document.body;
+        
+        // Check saved preference
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
+        if (isDarkMode) {
+            body.classList.add('dark-mode');
+            darkModeIcon.textContent = '☀️';
+            darkModeText.textContent = 'Modo Claro';
+        }
+        
+        // ============================================
+        // FUNÇÕES DE ANÁLISE (IDEIAS 11, 12, 13)
+        // ============================================
+
+        // Funções auxiliares
+        function showLoading(message) {
+            const loading = document.createElement('div');
+            loading.id = 'loadingModal';
+            loading.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            loading.innerHTML = `
+                <div class="bg-white rounded-lg p-8 text-center">
+                    <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
+                    <p class="text-lg font-semibold text-gray-800">${message}</p>
+                </div>
+            `;
+            document.body.appendChild(loading);
+        }
+
+        function hideLoading() {
+            const loading = document.getElementById('loadingModal');
+            if (loading) loading.remove();
+        }
+
+        // Armazenar propriedades globalmente
+        window.allProperties = allNewProperties;
+
+        // Funções de navegação para análise
+        window.openPropertyAnalysis = function(parcelNumber) {
+            const property = allNewProperties.find(p => p['Parcel Number'] === parcelNumber);
+            if (!property) {
+                alert('❌ Propriedade não encontrada!');
+                return;
+            }
+            
+            // Salvar dados no localStorage
+            localStorage.setItem('currentProperty', JSON.stringify(property));
+            localStorage.setItem('allProperties', JSON.stringify(allNewProperties));
+            
+            // Redirecionar para tela de análise
+            window.location.href = 'screen2-prototype.html';
+        };
+
+        window.openCompsAnalysis = function(parcelNumber) {
+            const property = allNewProperties.find(p => p['Parcel Number'] === parcelNumber);
+            if (!property) {
+                alert('❌ Propriedade não encontrada!');
+                return;
+            }
+            
+            // Salvar dados no localStorage
+            localStorage.setItem('currentProperty', JSON.stringify(property));
+            localStorage.setItem('allProperties', JSON.stringify(allNewProperties));
+            
+            // Redirecionar para tela de comps
+            window.location.href = 'comps-bid-prototype.html';
+        };
+
+        darkModeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isNowDark = body.classList.contains('dark-mode');
+            
+            if (isNowDark) {
+                darkModeIcon.textContent = '☀️';
+                darkModeText.textContent = 'Modo Claro';
+                localStorage.setItem('darkMode', 'true');
+            } else {
+                darkModeIcon.textContent = '🌙';
+                darkModeText.textContent = 'Modo Escuro';
+                localStorage.setItem('darkMode', 'false');
+            }
+        });
+        
+        // Timestamp is now fixed in HTML (version timestamp from Git commit)
+        
+        // ============================================
+        // CARREGAMENTO AUTOMÁTICO DE KML
+        // ============================================
+        async function loadDefaultKMLFiles() {
+            const kmlFiles = [
+                { url: 'AvailableLands.kml', name: 'Available Lands' },
+                { url: 'SoldLands.kml', name: 'Sold Lands' },
+                { url: 'BlockedPaused.kml', name: 'Blocked/Paused' },
+                { url: 'PartnersAvailableLands.kml', name: 'Partners Available Lands' }
+            ];
+            
+            for (const file of kmlFiles) {
+                try {
+                    const response = await fetch(file.url);
+                    const kmlText = await response.text();
+                    const parser = new DOMParser();
+                    const kmlDoc = parser.parseFromString(kmlText, 'text/xml');
+                    const placemarks = kmlDoc.getElementsByTagName('Placemark');
+                    
+                    for (let i = 0; i < placemarks.length; i++) {
+                        const placemark = placemarks[i];
+                        const name = placemark.getElementsByTagName('name')[0]?.textContent || '';
+                        const description = placemark.getElementsByTagName('description')[0]?.textContent || '';
+                        const coordinates = placemark.getElementsByTagName('coordinates')[0]?.textContent.trim();
+                        
+                        if (coordinates) {
+                            const [lng, lat] = coordinates.split(',').map(c => parseFloat(c.trim()));
+                            if (!isNaN(lat) && !isNaN(lng)) {
+                                const marker = L.marker([lat, lng], {
+                                    icon: L.divIcon({
+                                        className: 'custom-div-icon',
+                                        html: `<div style="background-color: ${file.url.includes('Sold') ? '#ef4444' : file.url.includes('Blocked') ? '#f59e0b' : file.url.includes('Partners') ? '#8b5cf6' : '#10b981'}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white;"></div>`,
+                                        iconSize: [12, 12],
+                                        iconAnchor: [6, 6]
+                                    })
+                                });
+                                
+                                marker.bindPopup(`
+                                    <div style="min-width: 200px;">
+                                        <h3 style="margin: 0 0 8px 0; font-weight: bold;">${name}</h3>
+                                        <p style="margin: 0; font-size: 12px; color: #666;">${description}</p>
+                                        <p style="margin: 4px 0 0 0; font-size: 11px; color: #999;">Fonte: ${file.name}</p>
+                                    </div>
+                                `);
+                                
+                                marker.addTo(map);
+                            }
+                        }
+                    }
+                    
+                    console.log(`✅ ${file.name} carregado com sucesso!`);
+                } catch (error) {
+                    console.error(`❌ Erro ao carregar ${file.name}:`, error);
+                }
+            }
+        }
+        
+        // Carregar KML automaticamente após 1 segundo
+        setTimeout(loadDefaultKMLFiles, 1000);
+        
+        // Event Listener para o botão Terreno 0.20
+        document.getElementById('filterTerrenoBtn').addEventListener('click', function() {
+            console.log('🏞️ Filtro Terreno 0.20 ativado!');
+            
+            // Filtrar propriedades: >= 0.20 acres E apenas Land Only
+            allNewProperties = allNewProperties.filter(prop => {
+                const acres = parseFloat(prop.Acres) || 0;
+                const parcelType = prop['Parcel Type'] || '';
+                return acres >= 0.20 && parcelType !== 'Land & Structures';
+            });
+            
+            // Atualizar mapa removendo marcadores filtrados
+            // (os marcadores já foram
+            
+            // Atualizar tabela
+            populateTable();
+            
+            // Esconder botão após uso
+            this.classList.add('hidden');
+            
+            alert(`✅ Filtro aplicado!\n- Removidas: < 0.20 acres\n- Removidas: Land & Structures\nTotal restante: ${allNewProperties.length}`);
+        });
+        
+        // ===== 🔔 SISTEMA DE NOTIFICAÇÕES =====
+        
+        function showNotification(message, type = 'info') {
+            // Criar elemento de notificação
+            const notification = document.createElement('div');
+            notification.className = 'notification-toast';
+            
+            // Definir cores baseado no tipo
+            let bgColor, borderColor, icon;
+            switch(type) {
+                case 'success':
+                    bgColor = 'bg-green-50';
+                    borderColor = 'border-green-500';
+                    icon = '✅';
+                    break;
+                case 'error':
+                    bgColor = 'bg-red-50';
+                    borderColor = 'border-red-500';
+                    icon = '❌';
+                    break;
+                case 'warning':
+                    bgColor = 'bg-yellow-50';
+                    borderColor = 'border-yellow-500';
+                    icon = '⚠️';
+                    break;
+                default:
+                    bgColor = 'bg-blue-50';
+                    borderColor = 'border-blue-500';
+                    icon = 'ℹ️';
+            }
+            
+            notification.innerHTML = `
+                <div class="${bgColor} ${borderColor} border-l-4 p-4 rounded shadow-lg max-w-md">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">${icon}</span>
+                        <p class="text-sm font-medium text-gray-800">${message}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Adicionar estilos inline
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                animation: slideIn 0.3s ease-out;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remover após 5 segundos
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 5000);
+        }
+        
+        // Adicionar estilos de animação
+        if (!document.getElementById('notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'notification-styles';
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes slideOut {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        // ===== FIM SISTEMA DE NOTIFICAÇÕES =====
+        
+        // Event Listener para o botão Analisar Selecionadas
+        document.addEventListener('DOMContentLoaded', function() {
+            const analyzeBtn = document.getElementById('analyzeSelectedBtn');
+            if (analyzeBtn) {
+                analyzeBtn.addEventListener('click', function() {
+                    console.log('🔴 Botão clicado via addEventListener!');
+                    analyzeSelectedProperties();
+                });
+                console.log('✅ Event listener adicionado ao botão analyzeSelectedBtn');
+            } else {
+                console.error('❌ Botão analyzeSelectedBtn não encontrado!');
+            }
+        });
+        
+        // ============================================
+        // FUNÇÃO DE ORDENAÇÃO DA TABELA
+        // ============================================
+        let sortDirections = {}; // Armazena direção de ordenação para cada coluna
+        
+        function sortTable(columnIndex) {
+            const table = document.getElementById('dataTable');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            // Determinar direção da ordenação (alternar entre asc/desc)
+            if (!sortDirections[columnIndex]) {
+                sortDirections[columnIndex] = 'asc';
+            } else if (sortDirections[columnIndex] === 'asc') {
+                sortDirections[columnIndex] = 'desc';
+            } else {
+                sortDirections[columnIndex] = 'asc';
+            }
+            
+            const direction = sortDirections[columnIndex];
+            
+            // Resetar ícones de todas as colunas
+            for (let i = 0; i < 9; i++) {
+                const icon = document.getElementById(`sort-icon-${i}`);
+                if (icon) icon.textContent = '⇅';
+            }
+            
+            // Atualizar ícone da coluna atual
+            const currentIcon = document.getElementById(`sort-icon-${columnIndex}`);
+            if (currentIcon) {
+                currentIcon.textContent = direction === 'asc' ? '↑' : '↓';
+            }
+            
+            // Ordenar linhas
+            rows.sort((a, b) => {
+                // +1 porque a primeira coluna é o checkbox
+                const cellA = a.cells[columnIndex + 1]?.textContent.trim() || '';
+                const cellB = b.cells[columnIndex + 1]?.textContent.trim() || '';
+                
+                // Tentar converter para número se possível
+                const numA = parseFloat(cellA.replace(/[^0-9.-]/g, ''));
+                const numB = parseFloat(cellB.replace(/[^0-9.-]/g, ''));
+                
+                let comparison = 0;
+                
+                // Se ambos são números válidos, comparar como números
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    comparison = numA - numB;
+                } else {
+                    // Caso contrário, comparar como strings
+                    comparison = cellA.localeCompare(cellB, 'pt-BR', { numeric: true, sensitivity: 'base' });
+                }
+                
+                return direction === 'asc' ? comparison : -comparison;
+            });
+            
+            // Limpar tbody e adicionar linhas ordenadas
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+            
+            console.log(`🔄 Tabela ordenada por coluna ${columnIndex} (${direction})`);
+        }
     </script>
+    
+    <!-- Workflow System e Analysis Functions removidos - arquivos não existem -->
 </body>
 </html>
+

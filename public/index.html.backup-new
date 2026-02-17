@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTSearch - Property Manager v22.0</title>
+    <link rel="icon" type="image/png" href="/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .property-card {
+            transition: all 0.3s ease;
+        }
+        .property-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .property-card.selected {
+            border: 2px solid #3b82f6;
+            background-color: #eff6ff;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Banner OFFLINE/ONLINE MODE -->
+    <div id="mode-banner" class="w-full py-2 text-center text-sm font-semibold shadow-md bg-gray-200 text-gray-700">
+        <span id="mode-text">Carregando...</span>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-xl">GT</span>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">GTSearch</h1>
+                        <p class="text-sm text-gray-500">Property Manager v22.0</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="refreshData()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        🔄 Atualizar
+                    </button>
+                    <button onclick="analyzeSelected()" id="analyze-btn" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed" disabled>
+                        📊 Analisar Selecionadas (<span id="selected-count">0</span>)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 font-medium">Total de Propriedades</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2" id="total-properties">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span class="text-2xl">🏘️</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 font-medium">Aprovadas</p>
+                        <p class="text-3xl font-bold text-green-600 mt-2" id="approved-properties">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <span class="text-2xl">✅</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6 border-l-4 border-red-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 font-medium">Reprovadas</p>
+                        <p class="text-3xl font-bold text-red-600 mt-2" id="rejected-properties">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                        <span class="text-2xl">❌</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-600 font-medium">Pendentes</p>
+                        <p class="text-3xl font-bold text-yellow-600 mt-2" id="pending-properties">0</p>
+                    </div>
+                    <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                        <span class="text-2xl">⏳</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">🔍 Buscar Propriedade</label>
+                    <input type="text" id="search-input" placeholder="Buscar por endereço, parcel ID, cidade..." 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                           onkeyup="filterProperties()">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">📍 Status</label>
+                    <select id="status-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="filterProperties()">
+                        <option value="all">Todos</option>
+                        <option value="approved">Aprovadas</option>
+                        <option value="rejected">Reprovadas</option>
+                        <option value="pending">Pendentes</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">🏷️ Ordenar por</label>
+                    <select id="sort-filter" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" onchange="sortProperties()">
+                        <option value="recent">Mais Recentes</option>
+                        <option value="price-high">Maior Preço</option>
+                        <option value="price-low">Menor Preço</option>
+                        <option value="address">Endereço (A-Z)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <button onclick="selectAll()" class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                        ✅ Selecionar Todas
+                    </button>
+                    <button onclick="deselectAll()" class="text-sm text-gray-600 hover:text-gray-800 font-medium">
+                        ❌ Desmarcar Todas
+                    </button>
+                </div>
+                <div class="text-sm text-gray-600">
+                    <span id="filtered-count">0</span> propriedades encontradas
+                </div>
+            </div>
+        </div>
+
+        <!-- Properties List -->
+        <div id="properties-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Properties will be loaded here -->
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <p class="mt-4 text-gray-600">Carregando propriedades...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-12">
+            <div class="text-6xl mb-4">🏘️</div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Nenhuma propriedade encontrada</h3>
+            <p class="text-gray-600">Tente ajustar os filtros de busca</p>
+        </div>
+    </main>
+
+    <script>
+        let allProperties = [];
+        let selectedProperties = new Set();
+
+        // Load mode status
+        async function loadModeStatus() {
+            try {
+                const response = await fetch('/api/status');
+                const data = await response.json();
+                
+                const banner = document.getElementById('mode-banner');
+                const text = document.getElementById('mode-text');
+                
+                if (data.OFFLINE_MODE || data.offline_mode) {
+                    banner.className = 'w-full py-2 text-center text-sm font-semibold shadow-md bg-yellow-100 text-yellow-900';
+                    text.textContent = '🔒 OFFLINE MODE - Usando dados mock (sem custos de API)';
+                } else {
+                    banner.className = 'w-full py-2 text-center text-sm font-semibold shadow-md bg-green-100 text-green-900';
+                    text.textContent = '🌐 ONLINE MODE - APIs ativas';
+                }
+            } catch (error) {
+                const banner = document.getElementById('mode-banner');
+                const text = document.getElementById('mode-text');
+                banner.className = 'w-full py-2 text-center text-sm font-semibold shadow-md bg-red-100 text-red-900';
+                text.textContent = '⚠️ ERRO - Não foi possível carregar o status';
+            }
+        }
+
+        // Load properties
+        async function loadProperties() {
+            try {
+                const response = await fetch('/api/mock/property');
+                const data = await response.json();
+                
+                // Generate mock properties
+                allProperties = generateMockProperties(data);
+                
+                updateStatistics();
+                renderProperties();
+                
+                document.getElementById('loading-state').classList.add('hidden');
+            } catch (error) {
+                console.error('Error loading properties:', error);
+                document.getElementById('loading-state').innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="text-6xl mb-4">⚠️</div>
+                        <h3 class="text-xl font-semibold text-gray-900 mb-2">Erro ao carregar propriedades</h3>
+                        <p class="text-gray-600">${error.message}</p>
+                        <button onclick="loadProperties()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Tentar Novamente
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Generate mock properties
+        function generateMockProperties(sample) {
+            const properties = [];
+            const addresses = [
+                '123 Main St, Miami, FL 33101',
+                '456 Oak Ave, Orlando, FL 32801',
+                '789 Pine Rd, Tampa, FL 33602',
+                '321 Elm St, Jacksonville, FL 32202',
+                '654 Maple Dr, Fort Lauderdale, FL 33301',
+                '987 Cedar Ln, West Palm Beach, FL 33401',
+                '147 Birch Way, Tallahassee, FL 32301',
+                '258 Spruce Ct, Gainesville, FL 32601',
+                '369 Willow Pl, Sarasota, FL 34236',
+                '741 Ash Blvd, Naples, FL 34102',
+                '852 Hickory St, Clearwater, FL 33755',
+                '963 Walnut Ave, St Petersburg, FL 33701',
+                '159 Chestnut Rd, Lakeland, FL 33801',
+                '357 Poplar Dr, Daytona Beach, FL 32114',
+                '486 Magnolia Ln, Fort Myers, FL 33901',
+                '624 Sycamore Way, Pensacola, FL 32501',
+                '735 Redwood Ct, Port St Lucie, FL 34952',
+                '846 Sequoia Pl, Cape Coral, FL 33904',
+                '957 Juniper Blvd, Boca Raton, FL 33432',
+                '168 Cypress St, Kissimmee, FL 34741',
+                '279 Palmetto Ave, Ocala, FL 34470',
+                '381 Dogwood Rd, Melbourne, FL 32901'
+            ];
+            
+            const statuses = ['pending', 'approved', 'rejected'];
+            
+            for (let i = 0; i < 22; i++) {
+                properties.push({
+                    id: `PROP-${String(i + 1).padStart(4, '0')}`,
+                    parcel_id: `${Math.floor(Math.random() * 90000) + 10000}-${Math.floor(Math.random() * 9000) + 1000}`,
+                    address: addresses[i],
+                    city: addresses[i].split(', ')[1].split(', ')[0],
+                    state: 'FL',
+                    zip: addresses[i].split(', ')[2],
+                    price: Math.floor(Math.random() * 500000) + 50000,
+                    sqft: Math.floor(Math.random() * 3000) + 800,
+                    bedrooms: Math.floor(Math.random() * 4) + 1,
+                    bathrooms: Math.floor(Math.random() * 3) + 1,
+                    status: statuses[Math.floor(Math.random() * statuses.length)],
+                    date_added: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                    zoning: sample.zoning || 'Residential',
+                    flood_zone: sample.flood_zone || 'Zone X',
+                    road_access: sample.road_access || 'Paved'
+                });
+            }
+            
+            return properties;
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const total = allProperties.length;
+            const approved = allProperties.filter(p => p.status === 'approved').length;
+            const rejected = allProperties.filter(p => p.status === 'rejected').length;
+            const pending = allProperties.filter(p => p.status === 'pending').length;
+            
+            document.getElementById('total-properties').textContent = total;
+            document.getElementById('approved-properties').textContent = approved;
+            document.getElementById('rejected-properties').textContent = rejected;
+            document.getElementById('pending-properties').textContent = pending;
+        }
+
+        // Render properties
+        function renderProperties() {
+            const container = document.getElementById('properties-container');
+            const filteredProperties = getFilteredProperties();
+            
+            if (filteredProperties.length === 0) {
+                container.innerHTML = '';
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('filtered-count').textContent = '0';
+                return;
+            }
+            
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('filtered-count').textContent = filteredProperties.length;
+            
+            container.innerHTML = filteredProperties.map(property => `
+                <div class="property-card bg-white rounded-lg shadow hover:shadow-lg p-6 cursor-pointer ${selectedProperties.has(property.id) ? 'selected' : ''}" 
+                     onclick="toggleProperty('${property.id}')">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" 
+                                   ${selectedProperties.has(property.id) ? 'checked' : ''} 
+                                   onclick="event.stopPropagation(); toggleProperty('${property.id}')"
+                                   class="w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500">
+                            <span class="text-xs font-semibold px-2 py-1 rounded ${getStatusBadgeClass(property.status)}">
+                                ${getStatusText(property.status)}
+                            </span>
+                        </div>
+                        <span class="text-xs text-gray-500">${property.date_added}</span>
+                    </div>
+                    
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">${property.address}</h3>
+                    <p class="text-sm text-gray-600 mb-3">Parcel ID: ${property.parcel_id}</p>
+                    
+                    <div class="grid grid-cols-2 gap-2 mb-4 text-sm">
+                        <div class="flex items-center text-gray-600">
+                            <span class="mr-1">🛏️</span> ${property.bedrooms} quartos
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <span class="mr-1">🚿</span> ${property.bathrooms} banheiros
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <span class="mr-1">📐</span> ${property.sqft.toLocaleString()} sqft
+                        </div>
+                        <div class="flex items-center text-gray-600">
+                            <span class="mr-1">🏘️</span> ${property.zoning}
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4 border-t border-gray-200 flex items-center justify-between">
+                        <span class="text-2xl font-bold text-blue-600">$${property.price.toLocaleString()}</span>
+                        <button onclick="event.stopPropagation(); viewDetails('${property.id}')" 
+                                class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">
+                            Ver Detalhes
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Get filtered properties
+        function getFilteredProperties() {
+            let filtered = [...allProperties];
+            
+            // Filter by search
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            if (searchTerm) {
+                filtered = filtered.filter(p => 
+                    p.address.toLowerCase().includes(searchTerm) ||
+                    p.parcel_id.toLowerCase().includes(searchTerm) ||
+                    p.city.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Filter by status
+            const statusFilter = document.getElementById('status-filter').value;
+            if (statusFilter !== 'all') {
+                filtered = filtered.filter(p => p.status === statusFilter);
+            }
+            
+            // Sort
+            const sortBy = document.getElementById('sort-filter').value;
+            switch(sortBy) {
+                case 'recent':
+                    filtered.sort((a, b) => new Date(b.date_added) - new Date(a.date_added));
+                    break;
+                case 'price-high':
+                    filtered.sort((a, b) => b.price - a.price);
+                    break;
+                case 'price-low':
+                    filtered.sort((a, b) => a.price - b.price);
+                    break;
+                case 'address':
+                    filtered.sort((a, b) => a.address.localeCompare(b.address));
+                    break;
+            }
+            
+            return filtered;
+        }
+
+        // Toggle property selection
+        function toggleProperty(id) {
+            if (selectedProperties.has(id)) {
+                selectedProperties.delete(id);
+            } else {
+                selectedProperties.add(id);
+            }
+            updateSelectedCount();
+            renderProperties();
+        }
+
+        // Update selected count
+        function updateSelectedCount() {
+            const count = selectedProperties.size;
+            document.getElementById('selected-count').textContent = count;
+            document.getElementById('analyze-btn').disabled = count === 0;
+        }
+
+        // Select all
+        function selectAll() {
+            const filtered = getFilteredProperties();
+            filtered.forEach(p => selectedProperties.add(p.id));
+            updateSelectedCount();
+            renderProperties();
+        }
+
+        // Deselect all
+        function deselectAll() {
+            selectedProperties.clear();
+            updateSelectedCount();
+            renderProperties();
+        }
+
+        // Filter properties
+        function filterProperties() {
+            renderProperties();
+        }
+
+        // Sort properties
+        function sortProperties() {
+            renderProperties();
+        }
+
+        // Refresh data
+        function refreshData() {
+            selectedProperties.clear();
+            updateSelectedCount();
+            document.getElementById('loading-state').classList.remove('hidden');
+            document.getElementById('properties-container').innerHTML = '';
+            loadProperties();
+        }
+
+        // View details
+        function viewDetails(id) {
+            const property = allProperties.find(p => p.id === id);
+            sessionStorage.setItem('currentProperty', JSON.stringify(property));
+            window.location.href = '/analysis2.html';
+        }
+
+        // Analyze selected
+        function analyzeSelected() {
+            if (selectedProperties.size === 0) {
+                alert('Por favor, selecione pelo menos uma propriedade para analisar.');
+                return;
+            }
+            
+            const selected = allProperties.filter(p => selectedProperties.has(p.id));
+            sessionStorage.setItem('selectedProperties', JSON.stringify(selected));
+            sessionStorage.setItem('currentIndex', '0');
+            
+            window.location.href = '/analysis2.html';
+        }
+
+        // Get status badge class
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'approved':
+                    return 'bg-green-100 text-green-800';
+                case 'rejected':
+                    return 'bg-red-100 text-red-800';
+                case 'pending':
+                    return 'bg-yellow-100 text-yellow-800';
+                default:
+                    return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Get status text
+        function getStatusText(status) {
+            switch(status) {
+                case 'approved':
+                    return '✅ Aprovada';
+                case 'rejected':
+                    return '❌ Reprovada';
+                case 'pending':
+                    return '⏳ Pendente';
+                default:
+                    return '❓ Desconhecido';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadModeStatus();
+            loadProperties();
+        });
+    </script>
+</body>
+</html>
