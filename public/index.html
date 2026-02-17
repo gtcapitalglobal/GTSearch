@@ -235,22 +235,42 @@
         </div>
 
         <!-- Summary Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 text-white">
-                <h3 class="text-sm font-semibold opacity-90 mb-2">Total de Propriedades</h3>
-                <p id="totalProperties" class="text-4xl font-bold">0</p>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg shadow-lg p-4 text-white">
+                <h3 class="text-xs font-semibold opacity-90 mb-1">Total de Propriedades</h3>
+                <p id="totalProperties" class="text-3xl font-bold">0</p>
             </div>
-            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-6 text-white">
-                <h3 class="text-sm font-semibold opacity-90 mb-2">Condados</h3>
-                <p id="totalCounties" class="text-4xl font-bold">0</p>
+            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg shadow-lg p-4 text-white">
+                <h3 class="text-xs font-semibold opacity-90 mb-1">Condados</h3>
+                <p id="totalCounties" class="text-3xl font-bold">0</p>
             </div>
-            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-6 text-white">
-                <h3 class="text-sm font-semibold opacity-90 mb-2">Arquivos Carregados</h3>
-                <p id="totalFiles" class="text-4xl font-bold">0</p>
+            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-lg p-4 text-white">
+                <h3 class="text-xs font-semibold opacity-90 mb-1">Arquivos Carregados</h3>
+                <p id="totalFiles" class="text-3xl font-bold">0</p>
             </div>
-            <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg p-6 text-white">
-                <h3 class="text-sm font-semibold opacity-90 mb-2">Novas no Mapa</h3>
-                <p id="newOnMap" class="text-4xl font-bold">0</p>
+            <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg shadow-lg p-4 text-white">
+                <h3 class="text-xs font-semibold opacity-90 mb-1">Novas no Mapa</h3>
+                <p id="newOnMap" class="text-3xl font-bold">0</p>
+            </div>
+        </div>
+        
+        <!-- Additional Statistics Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg shadow-lg p-4 text-white">
+                <h3 class="text-xs font-semibold opacity-90 mb-1">📏 Total de Acres</h3>
+                <p id="totalAcres" class="text-3xl font-bold">0</p>
+            </div>
+            <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg shadow-lg p-4 text-white">
+                <h3 class="text-xs font-semibold opacity-90 mb-1">💵 Valor Total</h3>
+                <p id="totalValue" class="text-2xl font-bold">$0</p>
+            </div>
+            <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-4 text-white">
+                <h3 class="text-xs font-semibold opacity-90 mb-1">📊 Média de Acres</h3>
+                <p id="avgAcres" class="text-3xl font-bold">0</p>
+            </div>
+            <div class="bg-gradient-to-br from-red-500 to-red-600 rounded-lg shadow-lg p-4 text-white">
+                <h3 class="text-xs font-semibold opacity-90 mb-1">⚠️ UNDIVIDED</h3>
+                <p id="undividedCount" class="text-3xl font-bold">0</p>
             </div>
         </div>
 
@@ -261,6 +281,9 @@
                 <div class="flex gap-3 flex-wrap">
                     <button id="filterTerrenoBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
                         🏞️ Terreno 0.20
+                    </button>
+                    <button id="filterFavoritesBtn" class="bg-yellow-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-yellow-700 transition-colors">
+                        ⭐ Favoritos (<span id="favoritesCount">0</span>)
                     </button>
                     <button id="analyzeSelectedBtn" class="hidden bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
                         📊 Analisar Selecionadas
@@ -274,6 +297,15 @@
                     <button id="exportSelectedBtn" class="hidden bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors">
                         📅 Exportar Propriedades Selecionadas
                     </button>
+                </div>
+            </div>
+            
+            <!-- Global Search -->
+            <div class="mb-4">
+                <div class="relative">
+                    <input type="text" id="globalSearch" placeholder="🔍 Busca rápida global (Parcel #, Nome, Endereço, Legal Description...)" class="w-full px-4 py-3 pl-12 text-lg border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                    <span class="absolute left-4 top-3.5 text-2xl">🔍</span>
+                    <button id="clearGlobalSearch" class="hidden absolute right-3 top-3 px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded-lg text-sm font-semibold transition-colors">✕ Limpar</button>
                 </div>
             </div>
             
@@ -342,6 +374,9 @@
                         <tr>
                             <th class="px-3 py-3 text-left">
                                 <input type="checkbox" id="selectAllCheckbox" class="w-4 h-4 cursor-pointer">
+                            </th>
+                            <th class="px-2 py-2 text-center text-gray-600">
+                                ⭐
                             </th>
                             <th class="px-2 py-2 text-center text-gray-600">
                                 #
@@ -872,10 +907,29 @@
             document.getElementById('totalFiles').textContent = loadedFiles.length;
             document.getElementById('newOnMap').textContent = propertyCounts.new;
             
+            // Calculate new statistics
+            const totalAcres = allNewProperties.reduce((sum, p) => sum + (parseFloat(p.Acres) || 0), 0);
+            const totalValue = allNewProperties.reduce((sum, p) => {
+                const value = parseFloat(p['Amount Due'].replace(/[^0-9.-]+/g, '')) || 0;
+                return sum + value;
+            }, 0);
+            const avgAcres = allNewProperties.length > 0 ? totalAcres / allNewProperties.length : 0;
+            const undividedCount = allNewProperties.filter(p => 
+                (p['Legal Description'] || '').toUpperCase().includes('UNDIVIDED')
+            ).length;
+            
+            document.getElementById('totalAcres').textContent = totalAcres.toFixed(2);
+            document.getElementById('totalValue').textContent = '$' + totalValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('avgAcres').textContent = avgAcres.toFixed(2);
+            document.getElementById('undividedCount').textContent = undividedCount;
+            
             if (allNewProperties.length > 0) {
                 document.getElementById('deleteNewBtn').classList.remove('hidden');
                 document.getElementById('downloadsSection').classList.remove('hidden');
                 document.getElementById('tableSection').classList.remove('hidden');
+                
+                // Restore saved filters when data is loaded
+                restoreFilters();
                 
                 generateDownloadButtons();
                 populateTable();
@@ -922,6 +976,7 @@
 
         function populateTable() {
             // Apply filters
+            const globalSearch = document.getElementById('globalSearch').value.toLowerCase();
             const filterName = document.getElementById('filterName').value.toLowerCase();
             const filterCounty = document.getElementById('filterCounty').value;
             const filterCity = document.getElementById('filterCity').value;
@@ -931,13 +986,31 @@
             const filterAmountMin = parseFloat(document.getElementById('filterAmountMin').value) || 0;
             const filterAmountMax = parseFloat(document.getElementById('filterAmountMax').value) || Infinity;
             
+            // Get favorites list
+            const favorites = JSON.parse(localStorage.getItem('gtSearchFavorites') || '[]');
+            
             const filteredProperties = allNewProperties.filter(row => {
                 const acres = parseFloat(row.Acres) || 0;
                 const amount = parseFloat(row['Amount Due']) || 0;
                 const name = (row.Name || '').toLowerCase();
                 const type = row['Parcel Type'] || '';
                 
+                // Favorites filter
+                const favoriteMatch = !showingFavoritesOnly || favorites.includes(row['Parcel Number']);
+                
+                // Global search - searches across multiple fields
+                const globalMatch = !globalSearch || [
+                    row['Parcel Number'],
+                    row.Name,
+                    row.Address,
+                    row.City,
+                    row.County,
+                    row['Legal Description']
+                ].some(field => (field || '').toLowerCase().includes(globalSearch));
+                
                 return (
+                    favoriteMatch &&
+                    globalMatch &&
                     (!filterName || name.includes(filterName)) &&
                     (!filterCounty || row.County === filterCounty) &&
                     (!filterCity || row.City === filterCity) &&
@@ -946,6 +1019,11 @@
                     (amount >= filterAmountMin && amount <= filterAmountMax)
                 );
             });
+            
+            // Update favorites count
+            const favCount = allNewProperties.filter(p => favorites.includes(p['Parcel Number'])).length;
+            const favCountElements = document.querySelectorAll('#favoritesCount');
+            favCountElements.forEach(el => el.textContent = favCount);
             
             // Store filtered properties globally for delete function
             window.currentFilteredProperties = filteredProperties;
@@ -987,6 +1065,11 @@
                 const rowClass = hasUndivided ? 'undivided-alert text-[10px]' : 'hover:bg-blue-50 transition-colors text-[10px]';
                 const warningIcon = hasUndivided ? '<span data-tooltip="⚠️ ATENÇÃO: Propriedade UNDIVIDED - Alto Risco!">⚠️</span> ' : '';
                 
+                // Check if property is favorited
+                const favorites = JSON.parse(localStorage.getItem('gtSearchFavorites') || '[]');
+                const isFavorite = favorites.includes(row['Parcel Number']);
+                const starIcon = isFavorite ? '⭐' : '☆';
+                
                 // Create a clean copy without marker (to avoid circular reference)
                 const cleanRow = Object.assign({}, row);
                 delete cleanRow.marker;
@@ -995,6 +1078,9 @@
                 <tr class="${rowClass}" data-index="${originalIndex}">
                     <td class="px-2 py-1 whitespace-nowrap text-center">
                         <input type="checkbox" class="row-checkbox w-3 h-3 cursor-pointer" data-index="${originalIndex}" data-property='${JSON.stringify(cleanRow).replace(/'/g, "&apos;")}'>
+                    </td>
+                    <td class="px-1 py-0.5 whitespace-nowrap text-center">
+                        <button class="favorite-btn text-xl hover:scale-125 transition-transform" data-parcel="${row['Parcel Number']}" title="${isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}">${starIcon}</button>
                     </td>
                     <td class="px-1 py-0.5 whitespace-nowrap text-center text-gray-500 font-medium">${index + 1}</td>
                     <td class="px-1 py-0.5 whitespace-nowrap">${warningIcon}${row['Parcel Number']}</td>
@@ -1040,8 +1126,35 @@
                 });
             });
             
+            // Setup favorite button listeners
+            const favoriteButtons = tbody.querySelectorAll('.favorite-btn');
+            favoriteButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Don't trigger row click
+                    const parcelNumber = btn.getAttribute('data-parcel');
+                    toggleFavorite(parcelNumber);
+                });
+            });
+            
             // Setup checkbox listeners
             setupCheckboxListeners();
+        }
+        
+        // Favorites management
+        function toggleFavorite(parcelNumber) {
+            let favorites = JSON.parse(localStorage.getItem('gtSearchFavorites') || '[]');
+            const index = favorites.indexOf(parcelNumber);
+            
+            if (index > -1) {
+                // Remove from favorites
+                favorites.splice(index, 1);
+            } else {
+                // Add to favorites
+                favorites.push(parcelNumber);
+            }
+            
+            localStorage.setItem('gtSearchFavorites', JSON.stringify(favorites));
+            populateTable(); // Refresh table to update star icons
         }
 
         // Dropdown menu toggle
@@ -1232,15 +1345,76 @@
             }
         });
 
-        // Filter event listeners
-        document.getElementById('filterName').addEventListener('input', populateTable);
-        document.getElementById('filterCounty').addEventListener('change', populateTable);
-        document.getElementById('filterCity').addEventListener('change', populateTable);
-        document.getElementById('filterType').addEventListener('change', populateTable);
-        document.getElementById('filterAcresMin').addEventListener('input', populateTable);
-        document.getElementById('filterAcresMax').addEventListener('input', populateTable);
-        document.getElementById('filterAmountMin').addEventListener('input', populateTable);
-        document.getElementById('filterAmountMax').addEventListener('input', populateTable);
+        // Global Search event listeners
+        document.getElementById('globalSearch').addEventListener('input', function() {
+            const value = this.value;
+            const clearBtn = document.getElementById('clearGlobalSearch');
+            if (value) {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+            saveFilters();
+            populateTable();
+        });
+        
+        document.getElementById('clearGlobalSearch').addEventListener('click', function() {
+            document.getElementById('globalSearch').value = '';
+            this.classList.add('hidden');
+            populateTable();
+        });
+        
+        // Filter event listeners (with auto-save)
+        document.getElementById('filterName').addEventListener('input', () => { saveFilters(); populateTable(); });
+        document.getElementById('filterCounty').addEventListener('change', () => { saveFilters(); populateTable(); });
+        document.getElementById('filterCity').addEventListener('change', () => { saveFilters(); populateTable(); });
+        document.getElementById('filterType').addEventListener('change', () => { saveFilters(); populateTable(); });
+        document.getElementById('filterAcresMin').addEventListener('input', () => { saveFilters(); populateTable(); });
+        document.getElementById('filterAcresMax').addEventListener('input', () => { saveFilters(); populateTable(); });
+        document.getElementById('filterAmountMin').addEventListener('input', () => { saveFilters(); populateTable(); });
+        document.getElementById('filterAmountMax').addEventListener('input', () => { saveFilters(); populateTable(); });
+        
+        // Auto-save filters to localStorage
+        function saveFilters() {
+            const filters = {
+                globalSearch: document.getElementById('globalSearch').value,
+                filterName: document.getElementById('filterName').value,
+                filterCounty: document.getElementById('filterCounty').value,
+                filterCity: document.getElementById('filterCity').value,
+                filterType: document.getElementById('filterType').value,
+                filterAcresMin: document.getElementById('filterAcresMin').value,
+                filterAcresMax: document.getElementById('filterAcresMax').value,
+                filterAmountMin: document.getElementById('filterAmountMin').value,
+                filterAmountMax: document.getElementById('filterAmountMax').value
+            };
+            localStorage.setItem('gtSearchFilters', JSON.stringify(filters));
+        }
+        
+        // Restore filters from localStorage
+        function restoreFilters() {
+            const saved = localStorage.getItem('gtSearchFilters');
+            if (saved) {
+                try {
+                    const filters = JSON.parse(saved);
+                    document.getElementById('globalSearch').value = filters.globalSearch || '';
+                    document.getElementById('filterName').value = filters.filterName || '';
+                    document.getElementById('filterCounty').value = filters.filterCounty || '';
+                    document.getElementById('filterCity').value = filters.filterCity || '';
+                    document.getElementById('filterType').value = filters.filterType || '';
+                    document.getElementById('filterAcresMin').value = filters.filterAcresMin || '';
+                    document.getElementById('filterAcresMax').value = filters.filterAcresMax || '';
+                    document.getElementById('filterAmountMin').value = filters.filterAmountMin || '';
+                    document.getElementById('filterAmountMax').value = filters.filterAmountMax || '';
+                    
+                    // Show clear button if global search has value
+                    if (filters.globalSearch) {
+                        document.getElementById('clearGlobalSearch').classList.remove('hidden');
+                    }
+                } catch (e) {
+                    console.error('Error restoring filters:', e);
+                }
+            }
+        }
         
         document.getElementById('clearFiltersBtn').addEventListener('click', () => {
             document.getElementById('filterName').value = '';
@@ -1251,6 +1425,9 @@
             document.getElementById('filterAcresMax').value = '';
             document.getElementById('filterAmountMin').value = '';
             document.getElementById('filterAmountMax').value = '';
+            document.getElementById('globalSearch').value = '';
+            document.getElementById('clearGlobalSearch').classList.add('hidden');
+            saveFilters();
             populateTable();
         });
         
@@ -1783,6 +1960,24 @@
             this.classList.add('hidden');
             
             alert(`✅ Filtro aplicado!\n- Removidas: < 0.20 acres\n- Removidas: Land & Structures\nTotal restante: ${allNewProperties.length}`);
+        });
+        
+        // Event Listener para o botão Favoritos
+        let showingFavoritesOnly = false;
+        document.getElementById('filterFavoritesBtn').addEventListener('click', function() {
+            showingFavoritesOnly = !showingFavoritesOnly;
+            
+            if (showingFavoritesOnly) {
+                this.classList.remove('bg-yellow-600', 'hover:bg-yellow-700');
+                this.classList.add('bg-green-600', 'hover:bg-green-700');
+                this.innerHTML = '✅ Mostrando Favoritos (<span id="favoritesCount">0</span>)';
+            } else {
+                this.classList.remove('bg-green-600', 'hover:bg-green-700');
+                this.classList.add('bg-yellow-600', 'hover:bg-yellow-700');
+                this.innerHTML = '⭐ Favoritos (<span id="favoritesCount">0</span>)';
+            }
+            
+            populateTable();
         });
         
         // ===== 🔔 SISTEMA DE NOTIFICAÇÕES =====
