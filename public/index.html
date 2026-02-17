@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>GTSearch - Property Manager v23.0 - FIXED</title>
+    <title>GTSearch - Property Manager v23.0 - Basic</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -239,7 +239,7 @@
                     <img src="logo.png" alt="GTSearch Logo" class="h-16 md:h-20">
                     <div>
                         <h1 class="text-3xl md:text-4xl font-bold text-gray-800">
-                            GTSearch - Property Manager <span class="text-xl md:text-2xl text-gray-500">v22.0</span>
+                            GTSearch - Property Manager <span class="text-xl md:text-2xl text-gray-500">v23.0 - Basic</span>
                         </h1>
                         <p class="text-xs text-gray-400 -mt-1">Versão: 11/19/2025 às 14:45 (Miami)</p>
                         <p class="text-gray-600 mt-2">Visualize propriedades antigas e compare com novas</p>
@@ -395,8 +395,8 @@
                     <h2 class="text-2xl font-bold text-gray-800">📋 Dados Completos (Novas Propriedades)</h2>
                     <div class="flex gap-2 mt-2">
                         <span class="text-sm text-gray-600">Densidade:</span>
-                        <button class="density-btn text-xs px-2 py-1 rounded bg-gray-200 hover:bg-gray-300" data-density="compact">📄 Compacta</button>
-                        <button class="density-btn text-xs px-2 py-1 rounded bg-blue-600 text-white" data-density="comfortable">📊 Confortável</button>
+                        <button class="density-btn text-xs px-2 py-1 rounded bg-blue-600 text-white" data-density="compact">📄 Compacta</button>
+                        <button class="density-btn text-xs px-2 py-1 rounded bg-gray-200 hover:bg-gray-300" data-density="comfortable">📊 Confortável</button>
                         <button class="density-btn text-xs px-2 py-1 rounded bg-gray-200 hover:bg-gray-300" data-density="spacious">📝 Espaçosa</button>
                     </div>
                 </div>
@@ -2459,7 +2459,7 @@
         });
         
         // Restore density preference
-        const savedDensity = localStorage.getItem('tableDensity') || 'comfortable';
+        const savedDensity = localStorage.getItem('tableDensity') || 'compact';
         const savedDensityBtn = document.querySelector(`[data-density="${savedDensity}"]`);
         if (savedDensityBtn) {
             savedDensityBtn.click();
