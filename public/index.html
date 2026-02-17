@@ -1501,7 +1501,8 @@
             const selectedProperties = Array.from(rowCheckboxes)
                 .map(cb => {
                     try {
-                        return JSON.parse(cb.getAttribute('data-property'));
+                        const propData = cb.getAttribute('data-property');
+                        return JSON.parse(propData.replace(/&apos;/g, "'"));
                     } catch (e) {
                         console.error('Erro ao parsear propriedade:', e);
                         return null;
