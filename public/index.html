@@ -407,9 +407,7 @@
                     <button id="filterFavoritesBtn" class="bg-yellow-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-yellow-700 transition-colors">
                         ⭐ Favoritos (<span id="favoritesCount">0</span>)
                     </button>
-                    <button id="viewApprovedBtn" class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
-                        ✅ Ver Aprovadas (<span id="approvedCount">0</span>)
-                    </button>
+
                     <button id="analyzeSelectedBtn" class="hidden bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
                         📊 Analisar Selecionadas
                     </button>
@@ -2404,23 +2402,7 @@
             } else {
                 console.error('❌ Botão analyzeSelectedBtn não encontrado!');
             }
-            
-            // Event Listener para o botão Ver Aprovadas
-            const viewApprovedBtn = document.getElementById('viewApprovedBtn');
-            if (viewApprovedBtn) {
-                viewApprovedBtn.addEventListener('click', function() {
-                    window.location.href = 'approved-cards.html';
-                });
-            }
-            
-            // Update approved count on page load
-            updateApprovedCount();
-        });
-        
-        function updateApprovedCount() {
-            const approvedProperties = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
-            const countElement = document.getElementById('approvedCount');
-            if (countElement) {
+           Element) {
                 countElement.textContent = approvedProperties.length;
             }
         }

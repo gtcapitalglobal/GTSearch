@@ -126,6 +126,9 @@
                     <button onclick="aprovarPropriedade()" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
                         ✅ Aprovar
                     </button>
+                    <button onclick="window.location.href='approved-cards.html'" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+                        👁️ Ver Aprovadas (<span id="approvedCount">0</span>)
+                    </button>
                     <button onclick="anteriorPropriedade()" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
                         ⬅️ Anterior
                     </button>
@@ -2658,13 +2661,22 @@
         }
         
         function atualizarContadorAprovadas() {
-            const aprovadas = properties.filter(p => p.status === 'Approved').length;
+            const approvedProperties = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
+            const aprovadas = approvedProperties.length;
+            
+            // Update old counter (if exists)
             const counterElement = document.getElementById('approved-count');
             if (counterElement) {
                 counterElement.textContent = aprovadas;
                 // Animar contador
                 counterElement.classList.add('scale-125');
                 setTimeout(() => counterElement.classList.remove('scale-125'), 300);
+            }
+            
+            // Update new button counter
+            const approvedCount = document.getElementById('approvedCount');
+            if (approvedCount) {
+                approvedCount.textContent = aprovadas;
             }
         }
         
