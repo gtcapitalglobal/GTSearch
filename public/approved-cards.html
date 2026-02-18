@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTSearch - Propriedades Aprovadas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .property-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .property-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-green {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .input-field {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            ring: 2px;
+            ring-color: #3b82f6;
+        }
+        .calc-result {
+            background-color: #f3f4f6;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-md mb-6">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <img src="logo.png" alt="GTSearch Logo" class="h-16">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">
+                            ✅ Propriedades Aprovadas
+                        </h1>
+                        <p class="text-gray-600 mt-1">Análise Financeira e Cálculo de ROI</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <a href="index.html" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2 no-underline">
+                        ← Dashboard
+                    </a>
+                    <button id="exportBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
+                        📥 Exportar CSV
+                    </button>
+                    <button id="generateAuctionCardsBtn" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2">
+                        🎴 Gerar Cards de Leilão
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats -->
+    <div class="container mx-auto px-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-600 text-sm">Total de Propriedades</div>
+                <div class="text-3xl font-bold text-blue-600" id="totalCount">0</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-600 text-sm">Total Investido</div>
+                <div class="text-2xl font-bold text-red-600" id="totalInvested">$0</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-600 text-sm">Valor de Mercado Total</div>
+                <div class="text-2xl font-bold text-green-600" id="totalMarketValue">$0</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-600 text-sm">Lucro Estimado</div>
+                <div class="text-2xl font-bold text-purple-600" id="totalProfit">$0</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-600 text-sm">ROI Médio</div>
+                <div class="text-3xl font-bold text-orange-600" id="avgROI">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="container mx-auto px-4 pb-8">
+        <div id="cardsContainer" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Cards will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Load approved properties from localStorage
+        let approvedProperties = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
+
+        // Initialize financial data if not exists
+        approvedProperties = approvedProperties.map(prop => ({
+            ...prop,
+            marketPrice: prop.marketPrice || '',
+            liens: prop.liens || '',
+            estimatedCosts: prop.estimatedCosts || '',
+            bid: prop.bid || '',
+            roi: prop.roi || 0
+        }));
+
+        if (approvedProperties.length === 0) {
+            document.getElementById('cardsContainer').innerHTML = `
+                <div class="col-span-full text-center py-12">
+                    <p class="text-gray-500 text-xl mb-4">Nenhuma propriedade aprovada ainda.</p>
+                    <p class="text-gray-400 mb-6">Vá para a Tela 2 (Análise) e aprove propriedades!</p>
+                    <a href="index.html" class="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors no-underline">
+                        ← Voltar ao Dashboard
+                    </a>
+                </div>
+            `;
+        } else {
+            renderCards();
+            updateStats();
+        }
+
+        function renderCards() {
+            const cardsContainer = document.getElementById('cardsContainer');
+            cardsContainer.innerHTML = '';
+
+            approvedProperties.forEach((prop, index) => {
+                const card = createCard(prop, index);
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        function createCard(prop, index) {
+            const card = document.createElement('div');
+            card.className = 'property-card bg-white rounded-lg shadow-md overflow-hidden';
+            
+            const acres = parseFloat(prop.Acres) || 0;
+            const amountDue = parseFloat(prop['Amount Due']?.replace(/[$,]/g, '') || 0);
+
+            card.innerHTML = `
+                <div class="bg-gradient-to-r from-green-500 to-green-600 p-4 text-white">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-sm font-semibold">#${index + 1}</span>
+                        <span class="badge badge-green">✅ APROVADA</span>
+                    </div>
+                    <h3 class="text-lg font-bold truncate">${prop['Parcel #'] || 'N/A'}</h3>
+                </div>
+                
+                <div class="p-4">
+                    <!-- Basic Info -->
+                    <div class="mb-4 pb-4 border-b">
+                        <div class="text-xs text-gray-500 mb-1">Endereço</div>
+                        <div class="text-sm font-semibold text-gray-800">${prop.Address || 'N/A'}</div>
+                        <div class="text-xs text-gray-600">${prop.City || ''}, ${prop.State || ''} ${prop.Zip || ''}</div>
+                        
+                        <div class="grid grid-cols-3 gap-2 mt-3">
+                            <div>
+                                <div class="text-xs text-gray-500">Acres</div>
+                                <div class="text-sm font-bold text-blue-600">${acres.toFixed(2)}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500">Amount Due</div>
+                                <div class="text-sm font-bold text-red-600">$${amountDue.toFixed(2)}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500">Condado</div>
+                                <div class="text-sm font-semibold">${prop.County || 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Financial Analysis -->
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-xs text-gray-700 font-semibold block mb-1">💰 Preço de Mercado</label>
+                            <input type="text" 
+                                   class="input-field" 
+                                   placeholder="Ex: 50000"
+                                   value="${prop.marketPrice}"
+                                   onchange="updateProperty(${index}, 'marketPrice', this.value)">
+                        </div>
+
+                        <div>
+                            <label class="text-xs text-gray-700 font-semibold block mb-1">⚖️ Liens (Gravames)</label>
+                            <input type="text" 
+                                   class="input-field" 
+                                   placeholder="Ex: 5000"
+                                   value="${prop.liens}"
+                                   onchange="updateProperty(${index}, 'liens', this.value)">
+                        </div>
+
+                        <div>
+                            <label class="text-xs text-gray-700 font-semibold block mb-1">💵 Custos Estimados</label>
+                            <input type="text" 
+                                   class="input-field" 
+                                   placeholder="Ex: 2000 (taxas, limpeza, etc)"
+                                   value="${prop.estimatedCosts}"
+                                   onchange="updateProperty(${index}, 'estimatedCosts', this.value)">
+                        </div>
+
+                        <div>
+                            <label class="text-xs text-gray-700 font-semibold block mb-1">🎯 Bid (Lance)</label>
+                            <input type="text" 
+                                   class="input-field" 
+                                   placeholder="Ex: 15000"
+                                   value="${prop.bid}"
+                                   onchange="updateProperty(${index}, 'bid', this.value)">
+                        </div>
+
+                        <!-- ROI Calculation -->
+                        <div class="calc-result">
+                            <div class="text-xs text-gray-600 mb-1">📊 ROI Calculado</div>
+                            <div class="text-2xl font-bold ${prop.roi > 0 ? 'text-green-600' : 'text-red-600'}" id="roi-${index}">
+                                ${prop.roi.toFixed(2)}%
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">
+                                Lucro: <span class="font-semibold" id="profit-${index}">$0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-2 mt-4">
+                        <button onclick="removeProperty(${index})" 
+                                class="flex-1 px-3 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors">
+                            🗑️ Remover
+                        </button>
+                        <button onclick="viewDetails(${index})" 
+                                class="flex-1 px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors">
+                            📊 Detalhes
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            return card;
+        }
+
+        function updateProperty(index, field, value) {
+            approvedProperties[index][field] = value;
+            calculateROI(index);
+            saveToLocalStorage();
+            updateStats();
+        }
+
+        function calculateROI(index) {
+            const prop = approvedProperties[index];
+            
+            const marketPrice = parseFloat(prop.marketPrice) || 0;
+            const liens = parseFloat(prop.liens) || 0;
+            const costs = parseFloat(prop.estimatedCosts) || 0;
+            const bid = parseFloat(prop.bid) || 0;
+            const amountDue = parseFloat(prop['Amount Due']?.replace(/[$,]/g, '') || 0);
+
+            // Total Investment = Bid + Amount Due + Liens + Costs
+            const totalInvestment = bid + amountDue + liens + costs;
+            
+            // Profit = Market Price - Total Investment
+            const profit = marketPrice - totalInvestment;
+            
+            // ROI = (Profit / Total Investment) * 100
+            const roi = totalInvestment > 0 ? (profit / totalInvestment) * 100 : 0;
+
+            prop.roi = roi;
+            prop.profit = profit;
+            prop.totalInvestment = totalInvestment;
+
+            // Update UI
+            const roiElement = document.getElementById(`roi-${index}`);
+            const profitElement = document.getElementById(`profit-${index}`);
+            
+            if (roiElement) {
+                roiElement.textContent = `${roi.toFixed(2)}%`;
+                roiElement.className = `text-2xl font-bold ${roi > 0 ? 'text-green-600' : 'text-red-600'}`;
+            }
+            
+            if (profitElement) {
+                profitElement.textContent = `$${profit.toFixed(2)}`;
+            }
+        }
+
+        function updateStats() {
+            const totalCount = approvedProperties.length;
+            
+            let totalInvested = 0;
+            let totalMarketValue = 0;
+            let totalProfit = 0;
+            let totalROI = 0;
+
+            approvedProperties.forEach(prop => {
+                totalInvested += prop.totalInvestment || 0;
+                totalMarketValue += parseFloat(prop.marketPrice) || 0;
+                totalProfit += prop.profit || 0;
+                totalROI += prop.roi || 0;
+            });
+
+            const avgROI = totalCount > 0 ? totalROI / totalCount : 0;
+
+            document.getElementById('totalCount').textContent = totalCount;
+            document.getElementById('totalInvested').textContent = `$${totalInvested.toFixed(2)}`;
+            document.getElementById('totalMarketValue').textContent = `$${totalMarketValue.toFixed(2)}`;
+            document.getElementById('totalProfit').textContent = `$${totalProfit.toFixed(2)}`;
+            document.getElementById('avgROI').textContent = `${avgROI.toFixed(2)}%`;
+        }
+
+        function removeProperty(index) {
+            if (confirm('Tem certeza que deseja remover esta propriedade?')) {
+                approvedProperties.splice(index, 1);
+                saveToLocalStorage();
+                renderCards();
+                updateStats();
+            }
+        }
+
+        function viewDetails(index) {
+            // Navigate to analysis page with this property
+            localStorage.setItem('currentPropertyIndex', index);
+            localStorage.setItem('selectedProperties', JSON.stringify(approvedProperties));
+            window.location.href = 'analysis.html';
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('approvedProperties', JSON.stringify(approvedProperties));
+        }
+
+        // Export to CSV
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            if (approvedProperties.length === 0) {
+                alert('Nenhuma propriedade para exportar!');
+                return;
+            }
+
+            // Add calculated fields
+            const exportData = approvedProperties.map(prop => ({
+                ...prop,
+                'Total Investment': prop.totalInvestment?.toFixed(2) || '0',
+                'Profit': prop.profit?.toFixed(2) || '0',
+                'ROI (%)': prop.roi?.toFixed(2) || '0'
+            }));
+
+            const headers = Object.keys(exportData[0]);
+            const csvContent = [
+                headers.join(','),
+                ...exportData.map(prop => headers.map(h => {
+                    const value = prop[h] || '';
+                    return `"${value.toString().replace(/"/g, '""')}"`;
+                }).join(','))
+            ].join('\\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `approved_properties_${new Date().getTime()}.csv`;
+            link.click();
+        });
+
+        // Generate Auction Cards (Tela 4)
+        document.getElementById('generateAuctionCardsBtn').addEventListener('click', function() {
+            if (approvedProperties.length === 0) {
+                alert('Nenhuma propriedade aprovada para gerar cards!');
+                return;
+            }
+
+            // Save to localStorage and navigate to Tela 4
+            localStorage.setItem('auctionProperties', JSON.stringify(approvedProperties));
+            window.location.href = 'auction-cards.html';
+        });
+
+        // Calculate ROI for all properties on load
+        approvedProperties.forEach((prop, index) => calculateROI(index));
+        saveToLocalStorage();
+    </script>
+</body>
+</html>

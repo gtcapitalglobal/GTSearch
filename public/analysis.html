@@ -2630,10 +2630,21 @@
             properties[currentIndex].approvedAt = new Date().toISOString();
             localStorage.setItem('selectedProperties', JSON.stringify(properties));
             
+            // Save to approvedProperties (Tela 3)
+            let approvedProperties = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
+            
+            // Check if already approved (avoid duplicates)
+            const alreadyApproved = approvedProperties.some(p => p['Parcel #'] === properties[currentIndex]['Parcel #']);
+            
+            if (!alreadyApproved) {
+                approvedProperties.push(properties[currentIndex]);
+                localStorage.setItem('approvedProperties', JSON.stringify(approvedProperties));
+            }
+            
             // Atualizar contador de aprovadas
             atualizarContadorAprovadas();
             
-            mostrarNotificacao('✅ Propriedade aprovada!', 'success');
+            mostrarNotificacao('✅ Propriedade aprovada e salva!', 'success');
             
             setTimeout(() => {
                 if (currentIndex < properties.length - 1) {
