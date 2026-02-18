@@ -419,6 +419,9 @@
                     <button id="exportSelectedBtn" class="hidden bg-green-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-green-700 transition-colors">
                         📅 Exportar Propriedades Selecionadas
                     </button>
+                    <button id="viewSelectedBtn" class="hidden bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        👁️ Visualizar Selecionadas
+                    </button>
                 </div>
             </div>
             
@@ -1703,6 +1706,37 @@
             // Save for analysis button
             const saveForAnalysisBtn = document.getElementById('saveForAnalysisBtn');
             saveForAnalysisBtn.addEventListener('click', saveSelectedForAnalysis);
+            
+            // View selected button
+            const viewSelectedBtn = document.getElementById('viewSelectedBtn');
+            viewSelectedBtn.addEventListener('click', viewSelectedProperties);
+        }
+        
+        function viewSelectedProperties() {
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+            
+            if (rowCheckboxes.length === 0) {
+                alert('Nenhuma propriedade selecionada!');
+                return;
+            }
+            
+            const selectedProperties = Array.from(rowCheckboxes)
+                .map(cb => {
+                    try {
+                        const propData = cb.getAttribute('data-property');
+                        return JSON.parse(propData.replace(/&apos;/g, "'"));
+                    } catch (e) {
+                        console.error('Erro ao parsear propriedade:', e);
+                        return null;
+                    }
+                })
+                .filter(p => p);
+            
+            // Save to localStorage
+            localStorage.setItem('selectedPropertiesForCards', JSON.stringify(selectedProperties));
+            
+            // Navigate to cards page
+            window.location.href = 'selected-cards.html';
         }
         
         function updateSelectionButtons() {
@@ -1713,17 +1747,20 @@
             const exportSelectedBtn = document.getElementById('exportSelectedBtn');
             
             const saveForAnalysisBtn = document.getElementById('saveForAnalysisBtn');
+            const viewSelectedBtn = document.getElementById('viewSelectedBtn');
             
             if (checkedCount > 0) {
                 analyzeSelectedBtn.classList.remove('hidden');
                 deleteSelectedBtn.classList.remove('hidden');
                 exportSelectedBtn.classList.remove('hidden');
                 saveForAnalysisBtn.classList.remove('hidden');
+                viewSelectedBtn.classList.remove('hidden');
             } else {
                 analyzeSelectedBtn.classList.add('hidden');
                 deleteSelectedBtn.classList.add('hidden');
                 exportSelectedBtn.classList.add('hidden');
                 saveForAnalysisBtn.classList.add('hidden');
+                viewSelectedBtn.classList.add('hidden');
             }
         }
         

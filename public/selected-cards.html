@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTSearch - Propriedades Selecionadas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .property-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .property-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-green {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .badge-yellow {
+            background-color: #fef3c7;
+            color: #78350f;
+        }
+        .badge-red {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow-md mb-6">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <img src="logo.png" alt="GTSearch Logo" class="h-16">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">
+                            👁️ Propriedades Selecionadas
+                        </h1>
+                        <p class="text-gray-600 mt-1">Visualização em Cards</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <a href="index.html" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors flex items-center gap-2 no-underline">
+                        ← Voltar
+                    </a>
+                    <button id="exportBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
+                        📥 Exportar CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats -->
+    <div class="container mx-auto px-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-600 text-sm">Total de Propriedades</div>
+                <div class="text-3xl font-bold text-blue-600" id="totalCount">0</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-600 text-sm">Total de Acres</div>
+                <div class="text-3xl font-bold text-green-600" id="totalAcres">0</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-600 text-sm">Valor Total (Amount Due)</div>
+                <div class="text-3xl font-bold text-purple-600" id="totalValue">$0</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-4">
+                <div class="text-gray-600 text-sm">Média de Acres</div>
+                <div class="text-3xl font-bold text-orange-600" id="avgAcres">0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards Grid -->
+    <div class="container mx-auto px-4 pb-8">
+        <div id="cardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // Load properties from localStorage
+        const properties = JSON.parse(localStorage.getItem('selectedPropertiesForCards') || '[]');
+
+        if (properties.length === 0) {
+            document.getElementById('cardsContainer').innerHTML = `
+                <div class="col-span-full text-center py-12">
+                    <p class="text-gray-500 text-xl">Nenhuma propriedade selecionada.</p>
+                    <a href="index.html" class="mt-4 inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors no-underline">
+                        ← Voltar ao Dashboard
+                    </a>
+                </div>
+            `;
+        } else {
+            // Calculate stats
+            const totalCount = properties.length;
+            const totalAcres = properties.reduce((sum, p) => sum + (parseFloat(p.Acres) || 0), 0);
+            const totalValue = properties.reduce((sum, p) => {
+                const value = parseFloat(p['Amount Due']?.replace(/[$,]/g, '') || 0);
+                return sum + value;
+            }, 0);
+            const avgAcres = totalAcres / totalCount;
+
+            // Update stats
+            document.getElementById('totalCount').textContent = totalCount;
+            document.getElementById('totalAcres').textContent = totalAcres.toFixed(2);
+            document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
+            document.getElementById('avgAcres').textContent = avgAcres.toFixed(2);
+
+            // Render cards
+            const cardsContainer = document.getElementById('cardsContainer');
+            properties.forEach((prop, index) => {
+                const acres = parseFloat(prop.Acres) || 0;
+                let acresBadge = '';
+                if (acres < 0.25) {
+                    acresBadge = '<span class="badge badge-green">🟢 < 0.25 acres</span>';
+                } else if (acres <= 0.5) {
+                    acresBadge = '<span class="badge badge-yellow">🟡 0.25-0.5 acres</span>';
+                } else {
+                    acresBadge = '<span class="badge badge-red">🔴 > 0.5 acres</span>';
+                }
+
+                const undividedBadge = (prop['Legal Description'] || '').toUpperCase().includes('UNDIVIDED')
+                    ? '<span class="badge badge-red">⚠️ UNDIVIDED</span>'
+                    : '';
+
+                const card = document.createElement('div');
+                card.className = 'property-card bg-white rounded-lg shadow-md overflow-hidden';
+                card.innerHTML = `
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4 text-white">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-semibold">#${index + 1}</span>
+                            <span class="text-sm">${prop.Type || 'N/A'}</span>
+                        </div>
+                        <h3 class="text-lg font-bold truncate">${prop['Parcel #'] || 'N/A'}</h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="mb-3">
+                            <div class="text-xs text-gray-500 mb-1">Endereço</div>
+                            <div class="text-sm font-semibold text-gray-800">${prop.Address || 'N/A'}</div>
+                            <div class="text-xs text-gray-600">${prop.City || ''}, ${prop.State || ''} ${prop.Zip || ''}</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <div class="text-xs text-gray-500">Acres</div>
+                                <div class="text-lg font-bold text-blue-600">${acres.toFixed(2)}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-500">Amount Due</div>
+                                <div class="text-lg font-bold text-green-600">${prop['Amount Due'] || 'N/A'}</div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="text-xs text-gray-500 mb-1">Condado</div>
+                            <div class="text-sm font-semibold">${prop.County || 'N/A'}</div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            ${acresBadge}
+                            ${undividedBadge}
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button onclick="viewDetails(${index})" class="flex-1 px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors">
+                                📊 Ver Detalhes
+                            </button>
+                            <button onclick="copyParcel('${prop['Parcel #']}')" class="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300 transition-colors">
+                                📋
+                            </button>
+                        </div>
+                    </div>
+                `;
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        // View details function
+        function viewDetails(index) {
+            // Save current index and navigate to analysis page
+            localStorage.setItem('currentPropertyIndex', index);
+            localStorage.setItem('selectedProperties', JSON.stringify(properties));
+            window.location.href = 'analysis.html';
+        }
+
+        // Copy parcel number
+        function copyParcel(parcelNumber) {
+            navigator.clipboard.writeText(parcelNumber).then(() => {
+                alert(`Parcel # ${parcelNumber} copiado!`);
+            }).catch(err => {
+                console.error('Erro ao copiar:', err);
+            });
+        }
+
+        // Export to CSV
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            if (properties.length === 0) {
+                alert('Nenhuma propriedade para exportar!');
+                return;
+            }
+
+            // Convert to CSV
+            const headers = Object.keys(properties[0]);
+            const csvContent = [
+                headers.join(','),
+                ...properties.map(prop => headers.map(h => {
+                    const value = prop[h] || '';
+                    return `"${value.toString().replace(/"/g, '""')}"`;
+                }).join(','))
+            ].join('\\n');
+
+            // Download
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `selected_properties_${new Date().getTime()}.csv`;
+            link.click();
+        });
+    </script>
+</body>
+</html>
