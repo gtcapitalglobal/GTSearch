@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="florida-counties-api.js"></script>
     <script src="flood-zones-data.js"></script>
+    <script src="property-analysis-widget.js"></script>
     <style>
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         .map-container { height: 450px; width: 100%; }
@@ -477,6 +478,24 @@
             </div>
         </div>
 
+        <!-- Seção 2.5: Análise Automática de Propriedade (NOVO) -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-lg p-4 mb-3 border-2 border-blue-200">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                    <span class="text-2xl mr-2">🔍</span>
+                    Análise Automática de Propriedade
+                    <span class="ml-2 text-xs bg-blue-600 text-white px-2 py-1 rounded-full">NOVO</span>
+                </h2>
+                <button id="analyze-property-btn" onclick="analyzeCurrentProperty()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+                    🔍 Analisar Propriedade
+                </button>
+            </div>
+            <p class="text-sm text-gray-600 mb-4">
+                Análise automática de FEMA Flood Zone, Wetlands, Land Use (Assessor) e Zoning (Planning) para Putnam e Highlands County, FL.
+            </p>
+            <div id="property-analysis-widget"></div>
+        </div>
+
         <!-- Seção 3: Contact Information -->
         <div class="bg-white rounded-lg shadow-lg p-4 mb-3">
             <h2 class="text-lg font-bold text-gray-800 mb-3">📧 Contact Information</h2>
@@ -916,6 +935,9 @@
             
             // Google Maps será inicializado quando o script carregar (callback=initMaps)
             // Se já estiver carregado, initMaps será chamado automaticamente
+            
+            // Initialize Property Analysis Widget
+            initializePropertyAnalysisWidget();
         }
         
         // Call immediately if DOM is ready, otherwise wait
@@ -3498,6 +3520,91 @@
         }
         
         // ===== FIM US CENSUS BUREAU API =====
+        
+        // ===== PROPERTY ANALYSIS WIDGET =====
+        
+        let propertyAnalysisWidget = null;
+        
+        /**
+         * Initialize Property Analysis Widget
+         */
+        function initializePropertyAnalysisWidget() {
+            console.log('🔍 Initializing Property Analysis Widget...');
+            
+            if (typeof PropertyAnalysisWidget === 'undefined') {
+                console.error('❌ PropertyAnalysisWidget not loaded!');
+                return;
+            }
+            
+            propertyAnalysisWidget = new PropertyAnalysisWidget('property-analysis-widget');
+            console.log('✅ Property Analysis Widget initialized');
+        }
+        
+        /**
+         * Analyze current property
+         */
+        async function analyzeCurrentProperty() {
+            console.log('🔍 Analyzing current property...');
+            
+            if (!propertyAnalysisWidget) {
+                console.error('❌ Widget not initialized!');
+                alert('Widget não inicializado. Recarregue a página.');
+                return;
+            }
+            
+            const property = properties[currentIndex];
+            
+            if (!property) {
+                alert('Nenhuma propriedade carregada!');
+                return;
+            }
+            
+            // Extract coordinates
+            let lat, lng;
+            
+            if (property.Latitude && property.Longitude) {
+                lat = parseFloat(property.Latitude);
+                lng = parseFloat(property.Longitude);
+            } else if (property['Lat/Lng']) {
+                const coords = property['Lat/Lng'].split(',').map(c => c.trim());
+                lat = parseFloat(coords[0]);
+                lng = parseFloat(coords[1]);
+            } else {
+                alert('Coordenadas não encontradas para esta propriedade!');
+                return;
+            }
+            
+            // Extract county
+            let county = property.County || property.county || '';
+            
+            // Normalize county name
+            if (county.toLowerCase().includes('putnam')) {
+                county = 'Putnam';
+            } else if (county.toLowerCase().includes('highlands')) {
+                county = 'Highlands';
+            } else {
+                alert(`Condado "${county}" não suportado. Apenas Putnam e Highlands County são suportados atualmente.`);
+                return;
+            }
+            
+            // Extract parcel ID (optional)
+            const parcelId = property['Parcel #'] || property.ParcelNumber || property.parcel_id || null;
+            
+            console.log('Analyzing property:', { lat, lng, county, parcelId });
+            
+            try {
+                const result = await propertyAnalysisWidget.analyzeProperty(lat, lng, county, parcelId);
+                console.log('✅ Analysis complete:', result);
+            } catch (error) {
+                console.error('❌ Analysis error:', error);
+                alert(`Erro na análise: ${error.message}`);
+            }
+        }
+        
+        // Make function globally available
+        window.analyzeCurrentProperty = analyzeCurrentProperty;
+        
+        // ===== FIM PROPERTY ANALYSIS WIDGET =====
     </script>
 </body>
 </html>

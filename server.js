@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { validateMockOutputMiddleware } from './utils/validator.js';
 import { auditLogMiddleware } from './utils/audit.js';
+import { getPropertyDetails } from './api-integrations.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -521,6 +522,57 @@ app.post('/api/landsat', checkAPIAllowed, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// ========================================
+// PROPERTY ANALYSIS ENDPOINTS (NEW)
+// ========================================
+
+/**
+ * Get complete property details (FEMA, Wetlands, Land Use, Zoning)
+ * Works for Putnam and Highlands County, FL
+ */
+app.post('/api/property-details', async (req, res) => {
+  try {
+    const { lat, lng, county, parcelId, parcelGeometry } = req.body;
+    
+    // Validate required parameters
+    if (!lat || !lng || !county) {
+      return res.status(400).json({
+        error: 'Missing required parameters',
+        required: ['lat', 'lng', 'county'],
+        received: { lat, lng, county }
+      });
+    }
+    
+    // Validate county
+    if (county !== 'Putnam' && county !== 'Highlands') {
+      return res.status(400).json({
+        error: 'Invalid county',
+        message: 'Only Putnam and Highlands counties are supported',
+        received: county,
+        supported: ['Putnam', 'Highlands']
+      });
+    }
+    
+    // Get property details from all APIs
+    const result = await getPropertyDetails({
+      lat,
+      lng,
+      county,
+      parcelId,
+      parcelGeometry
+    });
+    
+    res.json(result);
+    
+  } catch (error) {
+    console.error('Error in /api/property-details:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message
+    });
   }
 });
 
