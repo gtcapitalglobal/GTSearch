@@ -3569,6 +3569,10 @@
                 const coords = property['Lat/Lng'].split(',').map(c => c.trim());
                 lat = parseFloat(coords[0]);
                 lng = parseFloat(coords[1]);
+            } else if (property.Coordinates) {
+                const coords = property.Coordinates.split(',').map(c => c.trim());
+                lat = parseFloat(coords[0]);
+                lng = parseFloat(coords[1]);
             } else {
                 alert('Coordenadas não encontradas para esta propriedade!');
                 return;
