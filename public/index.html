@@ -1785,7 +1785,7 @@
             // Salvar no localStorage
             localStorage.setItem('properties', JSON.stringify(selectedProperties));
             
-            alert(`✅ ${selectedProperties.length} propriedades salvas para análise!\n\nVocê pode abrir a página de análise (analysis2.html) para analisá-las.`);
+            alert(`✅ ${selectedProperties.length} propriedades salvas para análise!\n\nVocê pode abrir a página de análise (analysis.html) para analisá-las.`);
             
             console.log(`💾 ${selectedProperties.length} propriedades salvas no localStorage`);
         }
@@ -1830,7 +1830,7 @@
             console.log('Salvo no localStorage:', selectedProperties.length, 'propriedades');
             
             // Redirect to analysis page
-            window.location.href = 'analysis2.html';
+            window.location.href = 'analysis.html';
         }
         
         function deleteSelectedProperties() {
