@@ -3,8 +3,8 @@
  * Automatic integration with FEMA, Wetlands (NWI Geodatabase), Land Use and Zoning APIs
  * For Putnam and Highlands County, FL
  * 
- * WETLANDS: Uses local NWI Geodatabase with GDAL/ogr2ogr for accurate detection
- * - Converts WGS84 → NAD83 Albers for spatial queries
+ * WETLANDS: Uses NWI API (ArcGIS Online) - U.S. Fish & Wildlife Service
+ * - Zero dependencies: no GDAL, no pyproj, no local geodatabase
  * - Progressive search: 50m → 200m → 500m buffer
  * - Risk classification: PFO=HIGH, PSS=MEDIUM-HIGH, PEM=MEDIUM, etc.
  */
@@ -40,7 +40,7 @@ class PropertyAnalysisWidget {
         this.render();
         
         try {
-            const response = await fetch('http://localhost:3000/api/property-details', {
+            const response = await fetch('/api/property-details', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -109,15 +109,15 @@ class PropertyAnalysisWidget {
                     </svg>
                     <span class="text-lg font-semibold text-gray-700">Analisando propriedade...</span>
                 </div>
-                <p class="text-center text-sm text-gray-500 mt-2">Consultando FEMA, Wetlands (NWI Local), Land Use e Zoning</p>
+                <p class="text-center text-sm text-gray-500 mt-2">Consultando FEMA, Wetlands (NWI API), Land Use e Zoning</p>
                 <div class="mt-4 space-y-2">
                     <div class="flex items-center text-sm text-gray-500">
                         <div class="w-4 h-4 mr-2 rounded-full bg-blue-200 animate-pulse"></div>
-                        <span>Convertendo coordenadas WGS84 → NAD83 Albers...</span>
+                        <span>Consultando NWI API (U.S. Fish & Wildlife Service)...</span>
                     </div>
                     <div class="flex items-center text-sm text-gray-500">
                         <div class="w-4 h-4 mr-2 rounded-full bg-green-200 animate-pulse" style="animation-delay: 0.5s"></div>
-                        <span>Consultando NWI Geodatabase (1M+ wetlands)...</span>
+                        <span>Busca progressiva: 50m → 200m → 500m...</span>
                     </div>
                     <div class="flex items-center text-sm text-gray-500">
                         <div class="w-4 h-4 mr-2 rounded-full bg-yellow-200 animate-pulse" style="animation-delay: 1s"></div>
@@ -300,7 +300,7 @@ class PropertyAnalysisWidget {
                 <div class="flex items-center justify-between mb-2">
                     <h4 class="font-bold text-gray-800 flex items-center">
                         <span class="text-xl mr-2">🌿</span>
-                        Wetlands (NWI Geodatabase Local)
+                        Wetlands (NWI)
                     </h4>
                     <span class="text-2xl">${mainIcon}</span>
                 </div>
@@ -310,8 +310,8 @@ class PropertyAnalysisWidget {
                 <!-- Source & Disclaimers -->
                 <div class="mt-3 pt-2 border-t border-gray-200">
                     <p class="text-xs text-gray-500">
-                        Fonte: ${wetlands.source || 'NWI Geodatabase (local)'}
-                        ${wetlands.method === 'local_geodatabase' ? ' | Método: GDAL/ogr2ogr + NAD83 Albers' : ''}
+                        Fonte: ${wetlands.source || 'NWI / U.S. Fish & Wildlife Service'}
+                        
                     </p>
                     ${wetlands.disclaimers ? `
                         <div class="mt-1 space-y-0.5">
@@ -329,16 +329,14 @@ class PropertyAnalysisWidget {
     }
     
     /**
-     * Render wetlands error state (geodatabase missing, GDAL not installed, etc)
+     * Render wetlands error state (API unavailable, timeout, etc)
      */
     renderWetlandsError(wetlands) {
-        const isGdbMissing = wetlands.gdbMissing || (wetlands.error === 'Geodatabase not found');
-        
         return `
             <!-- Error Banner -->
             <div class="bg-red-50 border border-red-300 rounded-lg p-4 mb-3">
                 <div class="flex items-start">
-                    <span class="text-2xl mr-3">${isGdbMissing ? '📂' : '⚠️'}</span>
+                    <span class="text-2xl mr-3">⚠️</span>
                     <div class="flex-1">
                         <p class="font-bold text-red-800 text-sm">${wetlands.status || '❌ ERRO'}</p>
                         <p class="text-xs text-red-700 mt-1">${wetlands.statusDetail || wetlands.error}</p>
@@ -346,41 +344,21 @@ class PropertyAnalysisWidget {
                 </div>
             </div>
             
-            ${isGdbMissing ? `
-                <!-- Setup Instructions -->
-                <div class="bg-yellow-50 border border-yellow-300 rounded-lg p-3">
-                    <p class="text-xs font-bold text-yellow-800 mb-2">COMO CONFIGURAR:</p>
-                    <ol class="text-xs text-yellow-700 space-y-1.5 list-decimal ml-4">
-                        <li>Baixe o geodatabase de Florida em:<br>
-                            <a href="https://www.fws.gov/program/national-wetlands-inventory/download-state-wetlands-data" 
-                               target="_blank" class="text-blue-600 hover:underline font-semibold">FWS.gov - NWI Download</a>
-                        </li>
-                        <li>Extraia o arquivo <code class="bg-white px-1 rounded">FL_geodatabase_wetlands.zip</code></li>
-                        <li>Copie a pasta <code class="bg-white px-1 rounded">FL_geodatabase_wetlands.gdb</code> para:<br>
-                            <code class="bg-white px-1 rounded font-mono">[GTSearch]/data/FL_geodatabase_wetlands.gdb</code>
-                        </li>
-                        <li>Instale GDAL: <code class="bg-white px-1 rounded font-mono">sudo apt install gdal-bin</code></li>
-                        <li>Instale pyproj: <code class="bg-white px-1 rounded font-mono">pip install pyproj</code></li>
-                        <li>Reinicie o servidor GTSearch</li>
-                    </ol>
-                </div>
-                
-                <div class="mt-2 bg-red-100 border border-red-300 rounded-lg p-2">
-                    <p class="text-xs font-bold text-red-800">
-                        ⚠️ ATENÇÃO: Sem o geodatabase, wetlands NÃO está sendo verificado!
-                        <br>Isso pode resultar em compra de propriedade com wetlands não detectados.
-                    </p>
-                </div>
-            ` : `
-                <div class="bg-yellow-50 border border-yellow-300 rounded-lg p-3">
-                    <p class="text-xs font-bold text-yellow-800 mb-1">REQUISITOS:</p>
-                    <ul class="text-xs text-yellow-700 space-y-1">
-                        <li>* GDAL/ogr2ogr instalado no sistema</li>
-                        <li>* pyproj instalado (Python)</li>
-                        <li>* FL_geodatabase_wetlands.gdb na pasta data/</li>
-                    </ul>
-                </div>
-            `}
+            <div class="bg-yellow-50 border border-yellow-300 rounded-lg p-3">
+                <p class="text-xs font-bold text-yellow-800 mb-1">POSSÍVEIS CAUSAS:</p>
+                <ul class="text-xs text-yellow-700 space-y-1">
+                    <li>* Sem conexão com a internet</li>
+                    <li>* API NWI (ArcGIS Online) temporariamente indisponível</li>
+                    <li>* Timeout na requisição (tente novamente)</li>
+                </ul>
+            </div>
+            
+            <div class="mt-2 bg-red-100 border border-red-300 rounded-lg p-2">
+                <p class="text-xs font-bold text-red-800">
+                    ⚠️ ATENÇÃO: Wetlands NÃO foi verificado!
+                    <br>Não tome decisões de investimento sem esta verificação.
+                </p>
+            </div>
         `;
     }
     
