@@ -1,7 +1,12 @@
 /**
  * Property Analysis Widget
- * Automatic integration with FEMA, Wetlands, Land Use and Zoning APIs
+ * Automatic integration with FEMA, Wetlands (NWI Geodatabase), Land Use and Zoning APIs
  * For Putnam and Highlands County, FL
+ * 
+ * WETLANDS: Uses local NWI Geodatabase with GDAL/ogr2ogr for accurate detection
+ * - Converts WGS84 → NAD83 Albers for spatial queries
+ * - Progressive search: 50m → 200m → 500m buffer
+ * - Risk classification: PFO=HIGH, PSS=MEDIUM-HIGH, PEM=MEDIUM, etc.
  */
 
 class PropertyAnalysisWidget {
@@ -95,7 +100,21 @@ class PropertyAnalysisWidget {
                     </svg>
                     <span class="text-lg font-semibold text-gray-700">Analisando propriedade...</span>
                 </div>
-                <p class="text-center text-sm text-gray-500 mt-2">Consultando FEMA, Wetlands, Land Use e Zoning</p>
+                <p class="text-center text-sm text-gray-500 mt-2">Consultando FEMA, Wetlands (NWI Local), Land Use e Zoning</p>
+                <div class="mt-4 space-y-2">
+                    <div class="flex items-center text-sm text-gray-500">
+                        <div class="w-4 h-4 mr-2 rounded-full bg-blue-200 animate-pulse"></div>
+                        <span>Convertendo coordenadas WGS84 → NAD83 Albers...</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <div class="w-4 h-4 mr-2 rounded-full bg-green-200 animate-pulse" style="animation-delay: 0.5s"></div>
+                        <span>Consultando NWI Geodatabase (1M+ wetlands)...</span>
+                    </div>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <div class="w-4 h-4 mr-2 rounded-full bg-yellow-200 animate-pulse" style="animation-delay: 1s"></div>
+                        <span>Verificando FEMA Flood Zones...</span>
+                    </div>
+                </div>
             </div>
         `;
     }
@@ -110,7 +129,7 @@ class PropertyAnalysisWidget {
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <p class="mt-2 text-sm">Clique em "🔍 Analisar Propriedade" para começar</p>
+                    <p class="mt-2 text-sm">Clique em "Analisar Propriedade" para começar</p>
                 </div>
             </div>
         `;
@@ -217,60 +236,234 @@ class PropertyAnalysisWidget {
                 `}
                 
                 <p class="text-xs text-gray-500 mt-2">
-                    📍 Fonte: ${fema.source}
-                    <br>⚠️ Para decisões críticas, consultar FEMA Map Service Center
+                    Fonte: ${fema.source}
+                    <br>Para decisões críticas, consultar FEMA Map Service Center
                 </p>
             </div>
         `;
     }
     
     /**
-     * Render Wetlands section
+     * Render Wetlands section - ENHANCED with local geodatabase data
      */
     renderWetlands(wetlands) {
-        const icon = wetlands.found ? '⚠️' : '✅';
+        // Determine the main icon based on risk
+        let mainIcon = '✅';
+        let headerBg = 'bg-green-50';
+        let headerBorder = 'border-green-500';
+        let headerText = 'text-green-800';
+        
+        if (wetlands.found) {
+            if (wetlands.highestRisk) {
+                const risk = wetlands.highestRisk.risk || '';
+                if (risk === 'high') {
+                    mainIcon = '🔴';
+                    headerBg = 'bg-red-50';
+                    headerBorder = 'border-red-500';
+                    headerText = 'text-red-800';
+                } else if (risk === 'medium-high' || risk === 'medium') {
+                    mainIcon = '🟡';
+                    headerBg = 'bg-yellow-50';
+                    headerBorder = 'border-yellow-500';
+                    headerText = 'text-yellow-800';
+                } else {
+                    mainIcon = '⚠️';
+                    headerBg = 'bg-yellow-50';
+                    headerBorder = 'border-yellow-500';
+                    headerText = 'text-yellow-800';
+                }
+            } else {
+                mainIcon = '⚠️';
+                headerBg = 'bg-yellow-50';
+                headerBorder = 'border-yellow-500';
+                headerText = 'text-yellow-800';
+            }
+        }
         
         return `
-            <div class="border-l-4 ${this.getBorderColor(wetlands.status)} pl-4">
+            <div class="border-l-4 ${headerBorder} pl-4">
+                <!-- Header -->
                 <div class="flex items-center justify-between mb-2">
                     <h4 class="font-bold text-gray-800 flex items-center">
                         <span class="text-xl mr-2">🌿</span>
-                        Wetlands (Áreas Úmidas)
+                        Wetlands (NWI Geodatabase Local)
                     </h4>
-                    <span class="text-2xl">${icon}</span>
+                    <span class="text-2xl">${mainIcon}</span>
                 </div>
                 
-                ${wetlands.found ? `
-                    <div class="space-y-2 text-sm">
-                        <div>
-                            <span class="text-gray-600">Total de Acres:</span>
-                            <span class="font-semibold ml-2">${wetlands.totalAcres} acres</span>
+                ${wetlands.found ? this.renderWetlandsFound(wetlands, headerBg, headerText) : this.renderWetlandsNotFound(wetlands)}
+                
+                <!-- Source & Disclaimers -->
+                <div class="mt-3 pt-2 border-t border-gray-200">
+                    <p class="text-xs text-gray-500">
+                        Fonte: ${wetlands.source || 'NWI Geodatabase (local)'}
+                        ${wetlands.method === 'local_geodatabase' ? ' | Método: GDAL/ogr2ogr + NAD83 Albers' : ''}
+                    </p>
+                    ${wetlands.disclaimers ? `
+                        <div class="mt-1 space-y-0.5">
+                            ${wetlands.disclaimers.map(d => `
+                                <p class="text-xs text-gray-400">* ${d}</p>
+                            `).join('')}
                         </div>
-                        <div>
-                            <span class="text-gray-600">Wetlands Encontrados:</span>
-                            <ul class="mt-1 ml-4 space-y-1">
-                                ${wetlands.wetlands.map(w => `
-                                    <li class="text-xs">
-                                        <span class="font-mono bg-gray-100 px-2 py-1 rounded">${w.code}</span>
-                                        ${w.type} (${w.acres} acres)
-                                    </li>
-                                `).join('')}
-                            </ul>
-                        </div>
+                    ` : `
+                        <p class="text-xs text-gray-400">* NWI é screening biológico, NÃO define limites regulatórios</p>
+                        <p class="text-xs text-gray-400">* Para compliance, consultar USACE</p>
+                    `}
+                </div>
+            </div>
+        `;
+    }
+    
+    /**
+     * Render wetlands found (detailed view)
+     */
+    renderWetlandsFound(wetlands, headerBg, headerText) {
+        const proximity = wetlands.proximity || 'UNKNOWN';
+        const proximityLabel = wetlands.proximityLabel || '';
+        const highestRisk = wetlands.highestRisk || {};
+        
+        return `
+            <!-- Status Banner -->
+            <div class="${headerBg} rounded-lg p-3 mb-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-bold ${headerText} text-sm">${wetlands.status}</p>
+                        <p class="text-xs ${headerText} opacity-80 mt-0.5">${wetlands.statusDetail || ''}</p>
                     </div>
-                    ${wetlands.warning ? `
-                        <div class="mt-2 bg-yellow-50 border border-yellow-200 rounded p-2">
-                            <p class="text-xs text-yellow-800">⚠️ ${wetlands.warning}</p>
+                    ${proximityLabel ? `
+                        <div class="text-right">
+                            <span class="inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                                proximity === 'ON_PROPERTY' ? 'bg-red-200 text-red-800' :
+                                proximity === 'NEARBY' ? 'bg-yellow-200 text-yellow-800' :
+                                'bg-green-200 text-green-800'
+                            }">
+                                ${proximityLabel}
+                            </span>
                         </div>
                     ` : ''}
-                ` : `
-                    <p class="text-sm text-gray-600">${wetlands.status}</p>
-                `}
-                
-                <p class="text-xs text-gray-500 mt-2">
-                    📍 Fonte: ${wetlands.source}
-                    <br>⚠️ NWI é screening biológico, NÃO define limites regulatórios
-                    <br>⚠️ Para compliance, consultar US Army Corps of Engineers (USACE)
+                </div>
+            </div>
+            
+            <!-- Summary Stats -->
+            <div class="grid grid-cols-3 gap-3 mb-3">
+                <div class="bg-gray-50 rounded-lg p-2 text-center">
+                    <p class="text-xs text-gray-500">Wetlands</p>
+                    <p class="text-lg font-bold text-gray-800">${wetlands.count || wetlands.wetlands.length}</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2 text-center">
+                    <p class="text-xs text-gray-500">Total Acres</p>
+                    <p class="text-lg font-bold text-gray-800">${wetlands.totalAcres}</p>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-2 text-center">
+                    <p class="text-xs text-gray-500">Buffer</p>
+                    <p class="text-lg font-bold text-gray-800">${wetlands.bufferMeters || '?'}m</p>
+                </div>
+            </div>
+            
+            <!-- Highest Risk Alert -->
+            ${highestRisk.code ? `
+                <div class="${
+                    highestRisk.risk === 'high' ? 'bg-red-50 border-red-300' :
+                    highestRisk.risk === 'medium-high' ? 'bg-orange-50 border-orange-300' :
+                    'bg-yellow-50 border-yellow-300'
+                } border rounded-lg p-3 mb-3">
+                    <div class="flex items-start">
+                        <span class="text-2xl mr-2">${highestRisk.riskColor || '⚠️'}</span>
+                        <div class="flex-1">
+                            <p class="font-bold text-sm ${
+                                highestRisk.risk === 'high' ? 'text-red-800' :
+                                highestRisk.risk === 'medium-high' ? 'text-orange-800' :
+                                'text-yellow-800'
+                            }">
+                                ${highestRisk.riskLevel || 'AVALIAR'}
+                            </p>
+                            <p class="text-xs mt-1 text-gray-700">
+                                <strong>Tipo:</strong> ${highestRisk.type || 'N/A'}
+                            </p>
+                            <p class="text-xs text-gray-700">
+                                <strong>Código NWI:</strong> <span class="font-mono bg-white px-1.5 py-0.5 rounded border">${highestRisk.code}</span>
+                            </p>
+                            <p class="text-xs mt-1 text-gray-600">
+                                <strong>Buildability:</strong> ${highestRisk.buildability || 'Consultar USACE'}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            ` : ''}
+            
+            <!-- Wetlands List -->
+            <div class="space-y-2">
+                <p class="text-xs font-semibold text-gray-600 uppercase tracking-wider">Wetlands Detectados:</p>
+                ${wetlands.wetlands.map((w, i) => `
+                    <div class="bg-white border rounded-lg p-2.5 hover:shadow-sm transition-shadow">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="text-sm">${w.riskColor || '⚠️'}</span>
+                                    <span class="font-mono text-xs bg-gray-100 px-2 py-0.5 rounded font-bold">${w.code}</span>
+                                    <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${
+                                        w.risk === 'high' ? 'bg-red-100 text-red-700' :
+                                        w.risk === 'medium-high' ? 'bg-orange-100 text-orange-700' :
+                                        w.risk === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                                        'bg-green-100 text-green-700'
+                                    }">${w.riskLevel || w.risk}</span>
+                                </div>
+                                <p class="text-xs text-gray-700">${w.type}</p>
+                                ${w.decoded ? `<p class="text-xs text-gray-500 mt-0.5">${w.decoded}</p>` : ''}
+                            </div>
+                            <div class="text-right ml-3">
+                                <p class="text-sm font-bold text-gray-800">${typeof w.acres === 'number' ? w.acres.toFixed(2) : w.acres}</p>
+                                <p class="text-xs text-gray-500">acres</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            
+            <!-- Investment Impact -->
+            <div class="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                <p class="text-xs font-bold text-blue-800 mb-1">IMPACTO NO INVESTIMENTO:</p>
+                <ul class="text-xs text-blue-700 space-y-1">
+                    ${highestRisk.risk === 'high' ? `
+                        <li>* Custo de mitigação estimado: $20,000 - $100,000+</li>
+                        <li>* Permit USACE obrigatório (Section 404 Clean Water Act)</li>
+                        <li>* Tempo de aprovação: 6-18 meses</li>
+                        <li>* RECOMENDAÇÃO: Considerar REJEITAR ou reduzir BID significativamente</li>
+                    ` : highestRisk.risk === 'medium-high' || highestRisk.risk === 'medium' ? `
+                        <li>* Possível necessidade de permit USACE</li>
+                        <li>* Consultar engenheiro ambiental antes de prosseguir</li>
+                        <li>* RECOMENDAÇÃO: Avaliar custo-benefício e ajustar BID</li>
+                    ` : `
+                        <li>* Risco ambiental baixo, mas verificar setbacks</li>
+                        <li>* RECOMENDAÇÃO: Prosseguir com cautela normal</li>
+                    `}
+                </ul>
+            </div>
+        `;
+    }
+    
+    /**
+     * Render wetlands not found
+     */
+    renderWetlandsNotFound(wetlands) {
+        return `
+            <div class="bg-green-50 rounded-lg p-3">
+                <div class="flex items-center">
+                    <span class="text-2xl mr-2">✅</span>
+                    <div>
+                        <p class="font-bold text-green-800 text-sm">${wetlands.status || 'SEM WETLANDS'}</p>
+                        <p class="text-xs text-green-700 mt-0.5">${wetlands.statusDetail || 'Nenhum wetland encontrado num raio de 500m'}</p>
+                        ${wetlands.proximityLabel ? `
+                            <p class="text-xs text-green-600 mt-1 font-semibold">${wetlands.proximityLabel}</p>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-2 bg-green-50 border border-green-200 rounded-lg p-2">
+                <p class="text-xs text-green-700">
+                    <strong>IMPACTO NO INVESTIMENTO:</strong> Sem restrições ambientais de wetlands detectadas.
+                    Propriedade aprovada neste critério.
                 </p>
             </div>
         `;
@@ -320,8 +513,8 @@ class PropertyAnalysisWidget {
                 `}
                 
                 <p class="text-xs text-gray-500 mt-2">
-                    📍 Fonte: ${landUse.source}
-                    <br>⚠️ ${landUse.note || 'NÃO é zoning legal'}
+                    Fonte: ${landUse.source}
+                    <br>${landUse.note || 'NÃO é zoning legal'}
                 </p>
             </div>
         `;
@@ -368,8 +561,8 @@ class PropertyAnalysisWidget {
                 `}
                 
                 <p class="text-xs text-gray-500 mt-2">
-                    📍 Fonte: ${zoning.source}
-                    <br>⚠️ ${zoning.note || 'Confirmar com Planning Dept para decisões finais'}
+                    Fonte: ${zoning.source}
+                    <br>${zoning.note || 'Confirmar com Planning Dept para decisões finais'}
                 </p>
             </div>
         `;

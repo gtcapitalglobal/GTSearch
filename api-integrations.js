@@ -5,6 +5,7 @@
  */
 
 import axios from 'axios';
+import { getWetlandsProgressive, checkGeoDatabase } from './wetlands-local.js';
 
 // ============================================================================
 // FEMA FLOOD ZONE (Statewide - Florida)
@@ -544,7 +545,7 @@ export async function getPropertyDetails({ lat, lng, county, parcelId = null, pa
         // Run all queries in parallel for speed
         const [fema, wetlands, landUse, zoning] = await Promise.all([
             getFEMAFloodZone(lat, lng),
-            getWetlands(lat, lng, parcelGeometry),
+            getWetlandsProgressive(lat, lng),
             county === 'Putnam' 
                 ? getPutnamLandUse(parcelId, lat, lng)
                 : getHighlandsLandUse(parcelId, lat, lng),
