@@ -491,7 +491,7 @@
                 </button>
             </div>
             <p class="text-sm text-gray-600 mb-4">
-                Análise automática de FEMA Flood Zone, Wetlands, Land Use (Assessor) e Zoning (Planning) para Putnam e Highlands County, FL.
+                Análise automática de FEMA Flood Zone, Wetlands, Land Use (Assessor) e Zoning (Planning) para qualquer condado da Florida.
             </p>
             <div id="property-analysis-widget"></div>
         </div>
@@ -3587,13 +3587,14 @@
             // Extract county
             let county = property.County || property.county || '';
             
-            // Normalize county name
-            if (county.toLowerCase().includes('putnam')) {
-                county = 'Putnam';
-            } else if (county.toLowerCase().includes('highlands')) {
-                county = 'Highlands';
-            } else {
-                alert(`Condado "${county}" não suportado. Apenas Putnam e Highlands County são suportados atualmente.`);
+            // Normalize county name - capitalize first letter of each word
+            county = county.trim().split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+            // Handle special cases (St. Johns, Miami-Dade, etc.)
+            if (county.toLowerCase().startsWith('st ') || county.toLowerCase().startsWith('saint ')) {
+                county = 'St. ' + county.replace(/^(st\.?|saint)\s+/i, '');
+            }
+            if (!county) {
+                alert('Condado não identificado para esta propriedade.');
                 return;
             }
             

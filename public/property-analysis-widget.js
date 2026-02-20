@@ -1,7 +1,7 @@
 /**
  * Property Analysis Widget
  * Automatic integration with FEMA, Wetlands (NWI), Land Use and Zoning APIs
- * For Putnam and Highlands County, FL
+ * For any Florida county. Zoning availability depends on registry.
  * 
  * WETLANDS: Uses Official NWI MapServer (FWS/USGS)
  * - Zero dependencies: no GDAL, no pyproj, no local geodatabase

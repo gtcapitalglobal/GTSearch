@@ -1,8 +1,9 @@
 {
-  "version": "1.0",
-  "description": "Zoning & Land Use service registry per jurisdiction in Florida",
-  "updated": "2026-02-19",
-  
+  "version": "2.0",
+  "description": "Zoning & Land Use service registry per jurisdiction in Florida. Supports dynamic county routing.",
+  "updated": "2026-02-20",
+  "supported_counties": ["Alachua", "Citrus", "Duval", "Hernando", "Highlands", "Lake", "Levy", "Marion", "Okeechobee", "Pasco", "Polk", "Putnam", "Seminole", "St. Johns", "Volusia"],
+
   "statewide": {
     "land_use": {
       "name": "Florida Statewide Cadastral (FDOR)",
@@ -29,13 +30,124 @@
   },
 
   "counties": {
+    "Alachua": {
+      "fips": "001",
+      "co_no": 1,
+      "zoning": {
+        "name": "Alachua County Zoning",
+        "base_url": "https://services1.arcgis.com/MiBZ4u97DWldovjI/arcgis/rest/services/zoning6/FeatureServer",
+        "type": "ArcGIS Online hosted",
+        "reliability": "stable",
+        "timeout_ms": 10000,
+        "retries": 1,
+        "layers": {
+          "county_zoning": {
+            "id": 0,
+            "name": "County Zoning",
+            "fields": {
+              "zoning_code": "ZONECODE"
+            }
+          },
+          "alachua_city": { "id": 2, "name": "City of Alachua Zoning", "fields": { "zoning_code": "ZONECODE" } },
+          "archer": { "id": 3, "name": "Archer Zoning", "fields": { "zoning_code": "ZONECODE" } },
+          "gainesville": { "id": 4, "name": "Gainesville Zoning", "fields": { "zoning_code": "ZONECODE" } },
+          "hawthorne": { "id": 5, "name": "Hawthorne Zoning", "fields": { "zoning_code": "ZONECODE" } },
+          "high_springs": { "id": 6, "name": "High Springs Zoning", "fields": { "zoning_code": "ZONECODE" } },
+          "lacrosse": { "id": 7, "name": "LaCrosse Zoning", "fields": { "zoning_code": "ZONECODE" } },
+          "micanopy": { "id": 8, "name": "Micanopy Zoning", "fields": { "zoning_code": "ZONECODE" } },
+          "newberry": { "id": 9, "name": "Newberry Zoning", "fields": { "zoning_code": "ZONECODE" } },
+          "waldo": { "id": 10, "name": "Waldo Zoning", "fields": { "zoning_code": "ZONECODE" } }
+        },
+        "manual_link": "https://growth-management.alachuacounty.us/",
+        "notes": "11 layers: county + 10 municipal jurisdictions. All use ZONECODE field."
+      }
+    },
+
+    "Citrus": {
+      "fips": "017",
+      "co_no": 9,
+      "zoning": null,
+      "manual_link": "https://www.citrusbocc.com/commdev/planning/",
+      "notes": "No ArcGIS zoning service found via discovery. Check county GIS portal manually."
+    },
+
+    "Duval": {
+      "fips": "031",
+      "co_no": 16,
+      "zoning": null,
+      "manual_link": "https://www.coj.net/departments/planning-and-development",
+      "notes": "No ArcGIS zoning service found via discovery. Jacksonville/Duval uses consolidated city-county government."
+    },
+
+    "Hernando": {
+      "fips": "053",
+      "co_no": 27,
+      "zoning": {
+        "name": "Hernando County Zoning & FLU",
+        "base_url": "https://services2.arcgis.com/x5zvhhxfUuRDntRe/arcgis/rest/services/Zoning_Flu/FeatureServer",
+        "type": "ArcGIS Online hosted",
+        "reliability": "stable",
+        "timeout_ms": 10000,
+        "retries": 1,
+        "layers": {
+          "county_zoning": {
+            "id": 75,
+            "name": "County Zoning",
+            "fields": {
+              "zoning_code": "ZONING",
+              "description": "ZONEDESC"
+            }
+          },
+          "county_zoning_alt": {
+            "id": 74,
+            "name": "County Zoning (alt)",
+            "fields": {
+              "zoning_code": "ZONING"
+            }
+          },
+          "county_flu": {
+            "id": 0,
+            "name": "Future Land Use",
+            "fields": {
+              "land_use": "FLU",
+              "description": "LABEL"
+            }
+          },
+          "county_flu_alt1": {
+            "id": 2,
+            "name": "Future Land Use (alt 1)",
+            "fields": {
+              "land_use": "FLU"
+            }
+          },
+          "county_flu_alt2": {
+            "id": 3,
+            "name": "Future Land Use (alt 2)",
+            "fields": {
+              "land_use": "FLU"
+            }
+          },
+          "county_flu_alt3": {
+            "id": 4,
+            "name": "Future Land Use (alt 3)",
+            "fields": {
+              "land_use": "FLU"
+            }
+          }
+        },
+        "manual_link": "https://www.hernandocounty.us/departments/departments-a-g/development-services/planning",
+        "notes": "Single service with zoning (layers 74-75) and FLU (layers 0-4). Use layer 75 for primary zoning, layer 0 for primary FLU."
+      }
+    },
+
     "Highlands": {
       "fips": "055",
       "co_no": 55,
       "zoning": {
         "name": "Highlands County Zoning",
         "url": "https://gis.highlandsfl.gov/server/rest/services/Layers/Zoning/MapServer/0/query",
-        "type": "self-hosted ArcGIS Server",
+        "agol_url": "https://services2.arcgis.com/xEhz4K4uxbjGXOPE/arcgis/rest/services/Zoning/FeatureServer/0/query",
+        "type": "self-hosted ArcGIS Server + AGOL mirror",
         "reliability": "best-effort",
         "timeout_ms": 8000,
         "retries": 2,
@@ -43,9 +155,14 @@
           "zoning_code": "ZON",
           "future_land_use": "FLUM"
         },
-        "fallback_url": null,
+        "flu_service": {
+          "url": "https://services2.arcgis.com/xEhz4K4uxbjGXOPE/arcgis/rest/services/FLUMService/FeatureServer/0/query",
+          "fields": {
+            "future_land_use": "FLUM"
+          }
+        },
         "manual_link": "https://www.highlandsfl.gov/departments/building-zoning",
-        "notes": "Self-hosted server. May have SSL issues from some environments. Works from local Windows machines."
+        "notes": "Self-hosted server may have SSL issues. AGOL mirror available as fallback. ZON field for zoning, FLUM for future land use."
       },
       "jurisdiction": {
         "name": "Highlands Municipal Boundary",
@@ -55,6 +172,54 @@
           "type": "MUNI_TYPE"
         }
       }
+    },
+
+    "Lake": {
+      "fips": "069",
+      "co_no": 35,
+      "zoning": null,
+      "manual_link": "https://www.lakecountyfl.gov/offices/planning_and_zoning/",
+      "notes": "No ArcGIS zoning service found via discovery."
+    },
+
+    "Levy": {
+      "fips": "075",
+      "co_no": 38,
+      "zoning": null,
+      "manual_link": "https://www.levycounty.org/",
+      "notes": "No ArcGIS zoning service found via discovery."
+    },
+
+    "Marion": {
+      "fips": "083",
+      "co_no": 42,
+      "zoning": null,
+      "manual_link": "https://www.marioncountyfl.org/departments-agencies/growth-services",
+      "notes": "Self-hosted server at gis.marionfl.org exists but has SSL issues. No AGOL mirror found."
+    },
+
+    "Okeechobee": {
+      "fips": "093",
+      "co_no": 47,
+      "zoning": null,
+      "manual_link": "https://www.co.okeechobee.fl.us/",
+      "notes": "No ArcGIS zoning service found via discovery."
+    },
+
+    "Pasco": {
+      "fips": "101",
+      "co_no": 51,
+      "zoning": null,
+      "manual_link": "https://www.pascocountyfl.net/149/Planning-Development",
+      "notes": "No ArcGIS zoning service found via discovery."
+    },
+
+    "Polk": {
+      "fips": "105",
+      "co_no": 53,
+      "zoning": null,
+      "manual_link": "https://www.polk-county.net/land-development",
+      "notes": "No ArcGIS zoning service found via discovery. Polk uses a different GIS system."
     },
 
     "Putnam": {
@@ -114,6 +279,62 @@
         },
         "notes": "Layer 1 of Planning_ReferenceMap. If property is NOT within any municipal boundary, it's Unincorporated."
       }
+    },
+
+    "Seminole": {
+      "fips": "117",
+      "co_no": 59,
+      "zoning": {
+        "name": "Seminole County Zoning",
+        "base_url": "https://services5.arcgis.com/hbtBppF7t3PpouVf/arcgis/rest/services/EnerGov_WFL1/FeatureServer",
+        "type": "ArcGIS Online hosted",
+        "reliability": "stable",
+        "timeout_ms": 10000,
+        "retries": 1,
+        "layers": {
+          "county_zoning": {
+            "id": 3,
+            "name": "County Zoning",
+            "fields": {
+              "zoning_code": "District"
+            }
+          }
+        },
+        "manual_link": "https://www.seminolecountyfl.gov/departments-services/development-services/planning-development/",
+        "notes": "Zoning field is 'District'. No FLU layer found via discovery."
+      }
+    },
+
+    "St. Johns": {
+      "fips": "109",
+      "co_no": 55,
+      "zoning": {
+        "name": "St. Johns County Zoning",
+        "base_url": "https://services1.arcgis.com/t2yugAJW83eUIFui/arcgis/rest/services/Zoning/FeatureServer",
+        "type": "ArcGIS Online hosted",
+        "reliability": "stable",
+        "timeout_ms": 10000,
+        "retries": 1,
+        "layers": {
+          "county_zoning": {
+            "id": 0,
+            "name": "County Zoning",
+            "fields": {
+              "zoning_code": "ZONING"
+            }
+          }
+        },
+        "manual_link": "https://www.sjcfl.us/PlanningZoning",
+        "notes": "Single zoning layer. No FLU layer found via discovery."
+      }
+    },
+
+    "Volusia": {
+      "fips": "127",
+      "co_no": 64,
+      "zoning": null,
+      "manual_link": "https://www.volusia.org/services/growth-and-resource-management/planning-and-development/",
+      "notes": "No ArcGIS zoning service found via discovery."
     }
   },
 

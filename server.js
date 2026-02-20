@@ -531,7 +531,7 @@ app.post('/api/landsat', checkAPIAllowed, async (req, res) => {
 
 /**
  * Get complete property details (FEMA, Wetlands, Land Use, Zoning)
- * Works for Putnam and Highlands County, FL
+ * Works for any Florida county. Zoning availability depends on registry.
  */
 app.post('/api/property-details', async (req, res) => {
   try {
@@ -546,15 +546,7 @@ app.post('/api/property-details', async (req, res) => {
       });
     }
     
-    // Validate county
-    if (county !== 'Putnam' && county !== 'Highlands') {
-      return res.status(400).json({
-        error: 'Invalid county',
-        message: 'Only Putnam and Highlands counties are supported',
-        received: county,
-        supported: ['Putnam', 'Highlands']
-      });
-    }
+    // County is accepted dynamically - zoning availability depends on registry
     
     // Get property details from all APIs
     const result = await getPropertyDetails({

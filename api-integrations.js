@@ -4,7 +4,7 @@
  * for property analysis in Florida
  * 
  * LAND USE: Florida Statewide Cadastral (FDOR) - covers all 67 counties
- * ZONING: Per-county registry (Putnam via ArcGIS Online, Highlands via self-hosted)
+ * ZONING: Per-county registry (dynamic - supports any county in zoning_registry.json)
  * WETLANDS: NWI Official MapServer (FWS/USGS)
  * FEMA: NFHL MapServer (official)
  */
@@ -55,8 +55,8 @@ async function safeArcGISQuery(url, params, { timeout = 10000, retries = 1, labe
             const response = await axios.get(url, { 
                 params, 
                 timeout,
-                // Allow self-signed certs for county servers
-                httpsAgent: url.includes('gis.highlandsfl.gov') || url.includes('mgrcmaps.org')
+                // Allow self-signed certs for known self-hosted county servers
+                httpsAgent: (url.includes('gis.highlandsfl.gov') || url.includes('mgrcmaps.org') || url.includes('gis.marionfl.org') || url.includes('gis.sumtercountyfl.gov'))
                     ? new (await import('https')).Agent({ rejectUnauthorized: false })
                     : undefined
             });
@@ -442,22 +442,163 @@ export async function getHighlandsZoning(lat, lng) {
 }
 
 // ============================================================================
-// ZONING ROUTER - Routes to correct county provider
+// ZONING ROUTER - Dynamic registry-based routing for any Florida county
 // ============================================================================
 
 function getZoningForCounty(county, lat, lng) {
     const countyLower = (county || '').toLowerCase();
     
+    // Legacy direct routes for Putnam and Highlands (optimized, keep for backward compat)
     if (countyLower === 'putnam') return getPutnamZoning(lat, lng);
     if (countyLower === 'highlands') return getHighlandsZoning(lat, lng);
     
-    // Unknown county - return NO_DATA
+    // Dynamic registry lookup for all other counties
+    const countyConfig = REGISTRY.counties?.[county];
+    if (countyConfig?.zoning) {
+        return getGenericRegistryZoning(county, countyConfig.zoning, lat, lng);
+    }
+    
+    // County in registry but no zoning data
+    const manualLink = countyConfig?.manual_link || null;
     return Promise.resolve({
         found: false,
-        status: '⚠️ CONDADO NÃO SUPORTADO',
-        source: `${county} County (não configurado)`,
-        note: 'Zoning não disponível para este condado. Consulte o Planning Department local.'
+        status: '⚠️ ZONING NÃO DISPONÍVEL',
+        source: `${county} County`,
+        note: manualLink 
+            ? `Dados de zoning não disponíveis via API. Consulte: ${manualLink}`
+            : 'Dados de zoning não disponíveis via API. Consulte o Planning Department local.',
+        manualLink
     });
+}
+
+// ============================================================================
+// GENERIC REGISTRY ZONING - Queries any county based on registry config
+// ============================================================================
+
+async function getGenericRegistryZoning(county, config, lat, lng) {
+    const cacheKey = `zoning_${county.toLowerCase().replace(/\s+/g, '_')}_${Number(lat).toFixed(6)}_${Number(lng).toFixed(6)}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+    
+    try {
+        const baseUrl = config.base_url || config.url;
+        const timeout = config.timeout_ms || 10000;
+        const retries = config.retries || 1;
+        
+        const pointParams = {
+            geometry: `${lng},${lat}`,
+            geometryType: 'esriGeometryPoint',
+            inSR: 4326,
+            spatialRel: 'esriSpatialRelIntersects',
+            outFields: '*',
+            returnGeometry: false,
+            f: 'json'
+        };
+        
+        // If config has layers, query them in parallel
+        if (config.layers) {
+            const layerEntries = Object.entries(config.layers);
+            const queries = layerEntries.map(([key, layer]) => {
+                const url = `${baseUrl}/${layer.id}/query`;
+                return safeArcGISQuery(url, pointParams, { 
+                    label: `${county} ${layer.name || key}`, 
+                    timeout, 
+                    retries 
+                }).catch(err => ({ error: err.message }));
+            });
+            
+            const results = await Promise.allSettled(queries);
+            
+            // Find first zoning result and first FLU result
+            let zoningCode = null, zoningDesc = null, fluCode = null, fluDesc = null;
+            let isMunicipal = false;
+            
+            for (let i = 0; i < results.length; i++) {
+                const [key, layerConfig] = layerEntries[i];
+                const res = results[i];
+                if (res.status !== 'fulfilled' || !res.value?.features?.length) continue;
+                
+                const attrs = res.value.features[0].attributes;
+                const fields = layerConfig.fields;
+                
+                // Check if this is a zoning layer
+                if (fields.zoning_code && !zoningCode) {
+                    zoningCode = attrs[fields.zoning_code] || null;
+                    zoningDesc = fields.description ? (attrs[fields.description] || zoningCode) : zoningCode;
+                    if (key.includes('municipal') || key.includes('muni')) isMunicipal = true;
+                }
+                
+                // Check if this is a FLU layer
+                if (fields.land_use && !fluCode) {
+                    fluCode = attrs[fields.land_use] || null;
+                    fluDesc = fields.description ? (attrs[fields.description] || fluCode) : fluCode;
+                }
+            }
+            
+            if (zoningCode || fluCode) {
+                const result = {
+                    found: true,
+                    code: zoningCode,
+                    description: zoningDesc || 'N/A',
+                    futureLandUse: fluCode,
+                    futureLandUseDesc: fluDesc || 'N/A',
+                    jurisdiction: isMunicipal ? `Municipal (${county} County)` : `Unincorporated ${county} County`,
+                    isMunicipal,
+                    status: '✅ DISPONÍVEL',
+                    source: `${county} County Planning & Zoning (ArcGIS)`,
+                    note: 'Consultar Planning Department para decisões finais',
+                    manualLink: config.manual_link || null
+                };
+                setCache(cacheKey, result);
+                return result;
+            }
+        } else {
+            // Single URL query (like Highlands self-hosted)
+            const url = config.url || `${baseUrl}/0/query`;
+            const data = await safeArcGISQuery(url, pointParams, { label: `${county} Zoning`, timeout, retries });
+            
+            if (data.features?.length > 0) {
+                const attrs = data.features[0].attributes;
+                const fields = config.fields || {};
+                const zoningCode = attrs[fields.zoning_code] || null;
+                const fluCode = attrs[fields.future_land_use] || null;
+                
+                const result = {
+                    found: true,
+                    code: zoningCode,
+                    description: zoningCode || 'N/A',
+                    futureLandUse: fluCode,
+                    futureLandUseDesc: fluCode || 'N/A',
+                    jurisdiction: `${county} County`,
+                    status: '✅ DISPONÍVEL',
+                    source: `${county} County Planning & Zoning`,
+                    note: 'Consultar Planning Department para decisões finais',
+                    manualLink: config.manual_link || null
+                };
+                setCache(cacheKey, result);
+                return result;
+            }
+        }
+        
+        return {
+            found: false,
+            jurisdiction: `${county} County`,
+            status: '⚠️ DADOS NÃO DISPONÍVEIS',
+            source: `${county} County Planning & Zoning`,
+            note: 'Ponto não retornou dados. Pode estar fora da área de cobertura.',
+            manualLink: config.manual_link || null
+        };
+        
+    } catch (error) {
+        console.error(`[${county} Zoning] Error:`, error.message);
+        return {
+            found: false,
+            error: error.message,
+            status: '⚠️ ERRO NA CONSULTA',
+            source: `${county} County Planning & Zoning`,
+            manualLink: config?.manual_link || null
+        };
+    }
 }
 
 // ============================================================================
