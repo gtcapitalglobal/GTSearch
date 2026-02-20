@@ -2702,21 +2702,10 @@
         function aprovarPropriedade() {
             const prop = properties[currentIndex];
             
-            // Verificar se análise foi feita (Zoning, FEMA, Wetlands)
-            const analysisData = prop.analysisData || {};
-            const hasZoning = analysisData.zoning?.code || prop['Zoning'] || prop['zoning'];
-            const hasFEMA = analysisData.fema?.zone || prop['FEMA Zone'] || prop['femaZone'];
-            const hasWetlands = analysisData.wetlands !== undefined || prop['Wetlands'] !== undefined;
-            
-            const missing = [];
-            if (!hasZoning) missing.push('Zoning');
-            if (!hasFEMA) missing.push('FEMA');
-            if (!hasWetlands) missing.push('Wetlands');
-            
-            if (missing.length > 0) {
-                const msg = `⚠️ Não é possível aprovar sem pesquisar: ${missing.join(', ')}.\n\nClique nos botões de análise para carregar esses dados antes de aprovar.`;
-                alert(msg);
-                mostrarNotificacao(`❌ Faltam: ${missing.join(', ')}`, 'error');
+            // Verificar se Análise Automática foi executada
+            if (!prop.analysisData) {
+                alert('⚠️ Clique em "Análise Automática de Propriedade" antes de aprovar.');
+                mostrarNotificacao('❌ Execute a Análise Automática primeiro', 'error');
                 return;
             }
             
