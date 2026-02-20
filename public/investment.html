@@ -531,7 +531,7 @@
                 const femaZone = analysisData.fema?.zone || getFieldValue(prop, 'FEMA Zone', 'femaZone');
                 const wetlandsInfo = analysisData.wetlands?.found ? 
                     `${analysisData.wetlands.proximity} (${analysisData.wetlands.count} áreas)` : 
-                    getFieldValue(prop, 'Wetlands');
+                    (analysisData.wetlands && !analysisData.wetlands.found ? 'SEM WETLANDS' : getFieldValue(prop, 'Wetlands'));
                 const zoningFromAnalysis = analysisData.zoning?.code ? 
                     `${analysisData.zoning.code} - ${analysisData.zoning.description || ''}` : zoning;
                 const landUseFromAnalysis = analysisData.landUse?.code ?
@@ -1075,7 +1075,7 @@
                 const csvZoning = ad.zoning?.code ? ad.zoning.code + (ad.zoning.description ? ' - ' + ad.zoning.description : '') : getFieldValue(prop, 'Zoning', 'zoning');
                 const csvLandUse = ad.landUse?.code ? ad.landUse.code + (ad.landUse.description ? ' - ' + ad.landUse.description : '') : getFieldValue(prop, 'Land Use', 'landUse', 'Parcel Type');
                 const csvFema = ad.fema?.zone || getFieldValue(prop, 'FEMA Zone', 'femaZone');
-                const csvWetlands = ad.wetlands?.found ? ad.wetlands.proximity + ' (' + ad.wetlands.count + ' areas)' : getFieldValue(prop, 'Wetlands');
+                const csvWetlands = ad.wetlands?.found ? ad.wetlands.proximity + ' (' + ad.wetlands.count + ' areas)' : (ad.wetlands && !ad.wetlands.found ? 'SEM WETLANDS' : getFieldValue(prop, 'Wetlands'));
                 
                 return [
                     parcelId,
@@ -1203,7 +1203,7 @@
                 // Wetlands info for PDF
                 const wetlandsInfoPdf = analysisData.wetlands?.found ? 
                     `${analysisData.wetlands.proximity} (${analysisData.wetlands.count} areas)` : 
-                    getFieldValue(prop, 'Wetlands');
+                    (analysisData.wetlands && !analysisData.wetlands.found ? 'SEM WETLANDS' : getFieldValue(prop, 'Wetlands'));
                 
                 const pricePerAcre = mv > 0 && parseFloat(acres) > 0 ? formatCurrency(Math.round(mv / parseFloat(acres))) : '-';
                 
@@ -1363,6 +1363,7 @@
                 // Use analysis data
                 const ad = prop.analysisData || {};
                 const gsZoning = ad.zoning?.code ? ad.zoning.code + (ad.zoning.description ? ' - ' + ad.zoning.description : '') : getFieldValue(prop, 'Zoning', 'zoning');
+                const gsWetlands = ad.wetlands?.found ? ad.wetlands.proximity + ' (' + ad.wetlands.count + ' areas)' : (ad.wetlands && !ad.wetlands.found ? 'SEM WETLANDS' : getFieldValue(prop, 'Wetlands'));
                 
                 return {
                     parcel: parcelId,
@@ -1387,7 +1388,8 @@
                     profit3: calc3 ? calc3.profit : 0,
                     viability3: calc3 ? getViability(calc3.maxBid, amountDue).label : '',
                     notes: invData.notes || '',
-                    riskLevel: prop.riskLevel || '-'
+                    riskLevel: prop.riskLevel || '-',
+                    wetlands: gsWetlands
                 };
             });
             
