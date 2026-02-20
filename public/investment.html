@@ -69,6 +69,34 @@
             border-color: #fca5a5;
         }
         
+        /* Semáforo de Viabilidade */
+        .calc-result.viable {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-color: #22c55e;
+        }
+        .calc-result.marginal {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-color: #f59e0b;
+        }
+        .calc-result.inviable {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-color: #ef4444;
+        }
+        
+        .viability-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 900;
+        }
+        .viability-icon.green { background: #dcfce7; color: #16a34a; }
+        .viability-icon.yellow { background: #fef3c7; color: #d97706; }
+        .viability-icon.red { background: #fee2e2; color: #dc2626; }
+        
         .max-bid-value {
             font-size: 22px;
             font-weight: 800;
@@ -76,6 +104,9 @@
         }
         .max-bid-value.negative {
             color: #dc2626;
+        }
+        .max-bid-value.marginal-text {
+            color: #d97706;
         }
         
         .roi-badge {
@@ -119,9 +150,86 @@
             margin: 12px 0;
         }
         
+        .price-ref {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .price-ref-item {
+            flex: 1;
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            border-radius: 8px;
+            padding: 6px 10px;
+            text-align: center;
+        }
+        .price-ref-item .ref-label {
+            font-size: 9px;
+            color: #6366f1;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .price-ref-item .ref-value {
+            font-size: 15px;
+            font-weight: 800;
+            color: #4338ca;
+        }
+        
+        /* History Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+        }
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+        }
+        .history-item:hover {
+            background: #f8fafc;
+        }
+        
         @media print {
             .no-print { display: none !important; }
             .investment-card { break-inside: avoid; page-break-inside: avoid; }
+            body { background: white; }
+        }
+        
+        /* PDF-specific styles */
+        .pdf-header {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 3px solid #4338ca;
+            margin-bottom: 20px;
+        }
+        .pdf-footer {
+            text-align: center;
+            padding: 10px;
+            border-top: 2px solid #e2e8f0;
+            margin-top: 20px;
+            font-size: 11px;
+            color: #64748b;
         }
     </style>
 </head>
@@ -147,10 +255,19 @@
                         🔄 Recalcular Todos
                     </button>
                     <button onclick="exportInvestmentCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
-                        📥 Exportar CSV
+                        📥 CSV
                     </button>
-                    <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                        🖨️ Imprimir
+                    <button onclick="generatePDF()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm">
+                        📄 PDF Leilão
+                    </button>
+                    <button onclick="sendToGoogleSheets()" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors text-sm">
+                        📊 Google Sheets
+                    </button>
+                    <button onclick="showHistoryModal()" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm">
+                        📚 Histórico
+                    </button>
+                    <button onclick="saveCurrentBatch()" class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors text-sm">
+                        💾 Salvar Batch
                     </button>
                 </div>
             </div>
@@ -225,6 +342,9 @@
             <!-- Cards will be inserted here -->
         </div>
     </div>
+    
+    <!-- History Modal (hidden by default) -->
+    <div id="historyModal" style="display:none;"></div>
 
     <script>
         // ========================================
@@ -296,6 +416,23 @@
         }
         
         // ========================================
+        // VIABILITY CHECK (Semáforo)
+        // Compares Max Bid vs Amount Due
+        // GREEN: Max Bid >= Amount Due (deal viável)
+        // YELLOW: Max Bid entre 70%-99% do Amount Due (marginal)
+        // RED: Max Bid < 70% do Amount Due ou negativo (inviável)
+        // ========================================
+        function getViability(maxBid, amountDue) {
+            if (maxBid <= 0) return { status: 'inviable', icon: '🔴', css: 'inviable', textCss: 'negative', label: 'INVIÁVEL' };
+            if (amountDue <= 0) return { status: 'viable', icon: '🟢', css: 'viable', textCss: '', label: 'SEM DÍVIDA' };
+            
+            const ratio = maxBid / amountDue;
+            if (ratio >= 1) return { status: 'viable', icon: '🟢', css: 'viable', textCss: '', label: 'VIÁVEL' };
+            if (ratio >= 0.7) return { status: 'marginal', icon: '🟡', css: 'marginal', textCss: 'marginal-text', label: 'MARGINAL' };
+            return { status: 'inviable', icon: '🔴', css: 'inviable', textCss: 'negative', label: 'INVIÁVEL' };
+        }
+        
+        // ========================================
         // RENDER CARDS
         // ========================================
         function renderCards() {
@@ -337,7 +474,7 @@
                 const city = getFieldValue(prop, 'City', 'city');
                 const county = getFieldValue(prop, 'County', 'county');
                 const acres = parseFloat(prop['Acres'] || prop.Acres || 0).toFixed(2);
-                const sqft = prop['Square Feet'] || '-';
+                const sqft = prop['Square Feet'] || prop['SqFt'] || '-';
                 const zoning = getFieldValue(prop, 'Zoning', 'zoning');
                 const landUse = getFieldValue(prop, 'Land Use', 'landUse', 'Parcel Type');
                 const amountDue = getFieldValue(prop, 'Amount Due');
@@ -383,10 +520,11 @@
                                 <h3 class="text-lg font-bold">${parcelId}</h3>
                                 <p class="text-indigo-200 text-sm">${address !== '-' ? address + ', ' + city : county}</p>
                             </div>
-                            <div class="text-right">
+                            <div class="text-right flex items-center gap-2">
                                 <span class="inline-block px-3 py-1 rounded-full text-xs font-bold" style="background: ${riskBg}; color: ${riskColor};">
                                     ${riskLevel !== '-' ? riskLevel + ' (' + riskScore + ')' : 'N/A'}
                                 </span>
+                                <span class="viability-badge text-xs font-bold px-2 py-1 rounded-full" id="viability-badge-${index}" style="display:none;"></span>
                             </div>
                         </div>
                     </div>
@@ -426,7 +564,7 @@
                                 </div>
                                 <div class="field-item">
                                     <div class="label">Amount Due</div>
-                                    <div class="value">${amountDue}</div>
+                                    <div class="value amount-due-val" data-raw="${parseCurrency(amountDue)}">${amountDue}</div>
                                 </div>
                             </div>
                         </div>
@@ -466,6 +604,22 @@
                                            oninput="recalculateCard(${index})">
                                 </div>
                             </div>
+                            
+                            <!-- $/Acre and $/SqFt Reference -->
+                            <div class="price-ref" id="priceRef-${index}">
+                                <div class="price-ref-item">
+                                    <div class="ref-label">$/Acre (MV)</div>
+                                    <div class="ref-value" id="pricePerAcre-${index}">-</div>
+                                </div>
+                                <div class="price-ref-item">
+                                    <div class="ref-label">$/SqFt (MV)</div>
+                                    <div class="ref-value" id="pricePerSqft-${index}">-</div>
+                                </div>
+                                <div class="price-ref-item">
+                                    <div class="ref-label">$/Acre (Bid 1)</div>
+                                    <div class="ref-value" id="bidPerAcre-${index}">-</div>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="section-divider"></div>
@@ -494,9 +648,12 @@
                                                 <span class="text-xs text-gray-500 font-bold">%</span>
                                             </div>
                                         </div>
-                                        <div class="text-right">
-                                            <div class="text-xs text-gray-400">Max Bid</div>
-                                            <div class="max-bid-value" id="maxBid1-${index}">-</div>
+                                        <div class="text-right flex items-center gap-2">
+                                            <span class="viability-icon" id="viability1-${index}" style="display:none;"></span>
+                                            <div>
+                                                <div class="text-xs text-gray-400">Max Bid</div>
+                                                <div class="max-bid-value" id="maxBid1-${index}">-</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -513,9 +670,12 @@
                                                 <span class="text-xs text-gray-500 font-bold">%</span>
                                             </div>
                                         </div>
-                                        <div class="text-right">
-                                            <div class="text-xs text-gray-400">Max Bid</div>
-                                            <div class="max-bid-value" id="maxBid2-${index}">-</div>
+                                        <div class="text-right flex items-center gap-2">
+                                            <span class="viability-icon" id="viability2-${index}" style="display:none;"></span>
+                                            <div>
+                                                <div class="text-xs text-gray-400">Max Bid</div>
+                                                <div class="max-bid-value" id="maxBid2-${index}">-</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -532,9 +692,12 @@
                                                 <span class="text-xs text-gray-500 font-bold">%</span>
                                             </div>
                                         </div>
-                                        <div class="text-right">
-                                            <div class="text-xs text-gray-400">Max Bid</div>
-                                            <div class="max-bid-value" id="maxBid3-${index}">-</div>
+                                        <div class="text-right flex items-center gap-2">
+                                            <span class="viability-icon" id="viability3-${index}" style="display:none;"></span>
+                                            <div>
+                                                <div class="text-xs text-gray-400">Max Bid</div>
+                                                <div class="max-bid-value" id="maxBid3-${index}">-</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -591,6 +754,11 @@
             const card = document.getElementById(`card-${index}`);
             if (!card) return;
             
+            const prop = approvedProperties[index];
+            const acres = parseFloat(prop['Acres'] || prop.Acres || 0);
+            const sqftRaw = prop['Square Feet'] || prop['SqFt'] || '';
+            const sqft = parseFloat(String(sqftRaw).replace(/[,\s]/g, '')) || (acres * 43560);
+            
             const marketValue = parseFloat(card.querySelector('.market-value').value) || 0;
             const reforma = parseFloat(card.querySelector('.reforma-cost').value) || 0;
             const liens = parseFloat(card.querySelector('.liens-cost').value) || 0;
@@ -604,11 +772,36 @@
             const roi2 = parseFloat(card.querySelector('.roi2-input')?.value) || parseFloat(document.getElementById('globalROI2').value) || DEFAULTS.defaultROI2;
             const roi3 = parseFloat(card.querySelector('.roi3-input')?.value) || parseFloat(document.getElementById('globalROI3').value) || DEFAULTS.defaultROI3;
             
+            // Amount Due for viability check
+            const amountDueEl = card.querySelector('.amount-due-val');
+            const amountDue = amountDueEl ? parseFloat(amountDueEl.dataset.raw) || 0 : 0;
+            
+            // $/Acre and $/SqFt references
+            const pricePerAcreEl = document.getElementById(`pricePerAcre-${index}`);
+            const pricePerSqftEl = document.getElementById(`pricePerSqft-${index}`);
+            const bidPerAcreEl = document.getElementById(`bidPerAcre-${index}`);
+            
+            if (marketValue > 0 && acres > 0) {
+                pricePerAcreEl.textContent = formatCurrency(Math.round(marketValue / acres));
+                pricePerSqftEl.textContent = '$' + (marketValue / sqft).toFixed(2);
+            } else {
+                pricePerAcreEl.textContent = '-';
+                pricePerSqftEl.textContent = '-';
+            }
+            
             if (marketValue <= 0) {
                 document.getElementById(`closingCost-${index}`).textContent = '-';
                 document.getElementById(`maxBid1-${index}`).textContent = '-';
                 document.getElementById(`maxBid2-${index}`).textContent = '-';
                 document.getElementById(`maxBid3-${index}`).textContent = '-';
+                bidPerAcreEl.textContent = '-';
+                // Hide viability badges
+                for (let i = 1; i <= 3; i++) {
+                    const vEl = document.getElementById(`viability${i}-${index}`);
+                    if (vEl) vEl.style.display = 'none';
+                }
+                const headerBadge = document.getElementById(`viability-badge-${index}`);
+                if (headerBadge) headerBadge.style.display = 'none';
                 return;
             }
             
@@ -616,31 +809,58 @@
             const closingCost = Math.round(marketValue * (closingPct / 100));
             document.getElementById(`closingCost-${index}`).textContent = formatCurrency(closingCost);
             
-            // Calculate 3 Max Bids
+            // Calculate 3 Max Bids with viability
             const scenarios = [
-                { roi: roi1, elementId: `maxBid1-${index}`, resultId: `roi1-result-${index}` },
-                { roi: roi2, elementId: `maxBid2-${index}`, resultId: `roi2-result-${index}` },
-                { roi: roi3, elementId: `maxBid3-${index}`, resultId: `roi3-result-${index}` }
+                { roi: roi1, elementId: `maxBid1-${index}`, resultId: `roi1-result-${index}`, viabilityId: `viability1-${index}` },
+                { roi: roi2, elementId: `maxBid2-${index}`, resultId: `roi2-result-${index}`, viabilityId: `viability2-${index}` },
+                { roi: roi3, elementId: `maxBid3-${index}`, resultId: `roi3-result-${index}`, viabilityId: `viability3-${index}` }
             ];
             
-            scenarios.forEach(scenario => {
+            let firstMaxBid = 0;
+            
+            scenarios.forEach((scenario, i) => {
                 const result = calculateMaxBid(marketValue, closingPct, scenario.roi, reforma, cleanTitle, otherCosts, liens);
                 const el = document.getElementById(scenario.elementId);
                 const resultEl = document.getElementById(scenario.resultId);
+                const viabilityEl = document.getElementById(scenario.viabilityId);
                 
                 if (result) {
+                    if (i === 0) firstMaxBid = result.maxBid;
+                    
                     el.textContent = formatCurrency(result.maxBid);
-                    if (result.maxBid < 0) {
-                        el.className = 'max-bid-value negative';
-                        resultEl.className = 'calc-result negative';
-                    } else {
-                        el.className = 'max-bid-value';
-                        resultEl.className = 'calc-result';
-                    }
+                    
+                    // Viability semaphore
+                    const viability = getViability(result.maxBid, amountDue);
+                    resultEl.className = `calc-result ${viability.css}`;
+                    el.className = `max-bid-value ${viability.textCss}`;
+                    
+                    // Show viability icon
+                    viabilityEl.style.display = 'inline-flex';
+                    viabilityEl.textContent = viability.icon;
+                    viabilityEl.className = `viability-icon ${viability.status === 'viable' ? 'green' : viability.status === 'marginal' ? 'yellow' : 'red'}`;
+                    viabilityEl.title = viability.label + (amountDue > 0 ? ` (Amount Due: ${formatCurrency(amountDue)})` : '');
                 } else {
                     el.textContent = '-';
+                    viabilityEl.style.display = 'none';
                 }
             });
+            
+            // $/Acre for first Max Bid
+            if (firstMaxBid > 0 && acres > 0) {
+                bidPerAcreEl.textContent = formatCurrency(Math.round(firstMaxBid / acres));
+            } else {
+                bidPerAcreEl.textContent = '-';
+            }
+            
+            // Update header viability badge (based on ROI 1 - most conservative)
+            const headerBadge = document.getElementById(`viability-badge-${index}`);
+            if (headerBadge && firstMaxBid !== 0) {
+                const v = getViability(firstMaxBid, amountDue);
+                headerBadge.style.display = 'inline-block';
+                headerBadge.textContent = v.icon + ' ' + v.label;
+                headerBadge.style.background = v.status === 'viable' ? '#dcfce7' : v.status === 'marginal' ? '#fef3c7' : '#fee2e2';
+                headerBadge.style.color = v.status === 'viable' ? '#16a34a' : v.status === 'marginal' ? '#d97706' : '#dc2626';
+            }
             
             // Save data
             saveCardData(index);
@@ -738,9 +958,11 @@
             const headers = [
                 'Parcel #', 'Address', 'County', 'Acres', 'Zoning', 'Land Use',
                 'FEMA Zone', 'Assessed Value', 'Amount Due', 'Risk Level',
-                'Market Value', 'Closing Cost %', 'Closing Cost $', 'Reforma', 
+                'Market Value', '$/Acre', '$/SqFt', 'Closing Cost %', 'Closing Cost $', 'Reforma', 
                 'Clean Title', 'Liens', 'Other Costs',
-                'ROI 1 %', 'Max Bid (ROI 1)', 'ROI 2 %', 'Max Bid (ROI 2)', 'ROI 3 %', 'Max Bid (ROI 3)',
+                'ROI 1 %', 'Max Bid (ROI 1)', 'Viability 1',
+                'ROI 2 %', 'Max Bid (ROI 2)', 'Viability 2',
+                'ROI 3 %', 'Max Bid (ROI 3)', 'Viability 3',
                 'Notes'
             ];
             
@@ -751,6 +973,9 @@
                 const reforma = data.reforma || 0;
                 const liens = data.liens || 0;
                 const otherCosts = data.otherCosts || 0;
+                const acres = parseFloat(prop['Acres'] || prop.Acres || 0);
+                const sqft = acres * 43560;
+                const amountDue = parseCurrency(getFieldValue(prop, 'Amount Due'));
                 
                 const r1 = data.roi1 || globalRoi1;
                 const r2 = data.roi2 || globalRoi2;
@@ -759,11 +984,15 @@
                 const calc2 = mv > 0 ? calculateMaxBid(mv, closingPct, r2, reforma, cleanTitle, otherCosts, liens) : null;
                 const calc3 = mv > 0 ? calculateMaxBid(mv, closingPct, r3, reforma, cleanTitle, otherCosts, liens) : null;
                 
+                const v1 = calc1 ? getViability(calc1.maxBid, amountDue).label : '';
+                const v2 = calc2 ? getViability(calc2.maxBid, amountDue).label : '';
+                const v3 = calc3 ? getViability(calc3.maxBid, amountDue).label : '';
+                
                 return [
                     parcelId,
                     getFieldValue(prop, 'Address', 'address'),
                     getFieldValue(prop, 'County', 'county'),
-                    parseFloat(prop['Acres'] || prop.Acres || 0).toFixed(2),
+                    acres.toFixed(2),
                     getFieldValue(prop, 'Zoning', 'zoning'),
                     getFieldValue(prop, 'Land Use', 'landUse', 'Parcel Type'),
                     getFieldValue(prop, 'FEMA Zone', 'femaZone'),
@@ -771,6 +1000,8 @@
                     getFieldValue(prop, 'Amount Due'),
                     prop.riskLevel || '-',
                     mv || '',
+                    mv > 0 && acres > 0 ? Math.round(mv / acres) : '',
+                    mv > 0 && sqft > 0 ? (mv / sqft).toFixed(2) : '',
                     closingPct + '%',
                     calc1 ? calc1.closingCost : '',
                     reforma || '',
@@ -779,10 +1010,13 @@
                     otherCosts || '',
                     r1 + '%',
                     calc1 ? calc1.maxBid : '',
+                    v1,
                     r2 + '%',
                     calc2 ? calc2.maxBid : '',
+                    v2,
                     r3 + '%',
                     calc3 ? calc3.maxBid : '',
+                    v3,
                     (data.notes || '').replace(/[\n\r]/g, ' ')
                 ];
             });
@@ -800,17 +1034,407 @@
         }
         
         // ========================================
+        // GENERATE PDF FOR AUCTION
+        // ========================================
+        function generatePDF() {
+            if (approvedProperties.length === 0) {
+                alert('Nenhuma propriedade para gerar PDF!');
+                return;
+            }
+            
+            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
+            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
+            
+            // Build HTML for PDF
+            let html = `
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <title>GT Lands - Bid Sheet</title>
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #1a1a1a; }
+                    .page { page-break-after: always; padding: 20px 30px; }
+                    .page:last-child { page-break-after: auto; }
+                    .header { text-align: center; border-bottom: 3px solid #4338ca; padding-bottom: 10px; margin-bottom: 15px; }
+                    .header h1 { font-size: 18px; color: #4338ca; }
+                    .header p { font-size: 11px; color: #666; }
+                    .prop-title { background: #4338ca; color: white; padding: 8px 12px; border-radius: 6px; margin-bottom: 10px; }
+                    .prop-title h2 { font-size: 14px; margin: 0; }
+                    .prop-title span { font-size: 10px; opacity: 0.8; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+                    th, td { padding: 5px 8px; border: 1px solid #ddd; text-align: left; font-size: 10px; }
+                    th { background: #f0f0f0; font-weight: 700; }
+                    .bid-table th { background: #4338ca; color: white; }
+                    .bid-table td { font-size: 12px; font-weight: 700; }
+                    .viable { color: #16a34a; font-weight: 900; }
+                    .marginal { color: #d97706; font-weight: 900; }
+                    .inviable { color: #dc2626; font-weight: 900; }
+                    .notes { background: #f8f8f8; padding: 6px 10px; border-radius: 4px; font-style: italic; margin-top: 5px; font-size: 10px; }
+                    .write-line { border-bottom: 1px solid #999; height: 25px; margin: 3px 0; }
+                    .write-label { font-size: 9px; color: #666; font-weight: 700; text-transform: uppercase; }
+                    .footer { text-align: center; font-size: 9px; color: #999; border-top: 1px solid #ddd; padding-top: 8px; margin-top: 15px; }
+                </style>
+            </head>
+            <body>`;
+            
+            approvedProperties.forEach((prop, index) => {
+                const parcelId = getFieldValue(prop, 'Parcel #', 'Parcel Number', 'parcel_id');
+                const data = savedInvestmentData[parcelId] || {};
+                const address = getFieldValue(prop, 'Address', 'address');
+                const city = getFieldValue(prop, 'City', 'city');
+                const county = getFieldValue(prop, 'County', 'county');
+                const acres = parseFloat(prop['Acres'] || prop.Acres || 0).toFixed(2);
+                const amountDueStr = getFieldValue(prop, 'Amount Due');
+                const amountDue = parseCurrency(amountDueStr);
+                const totalValue = getFieldValue(prop, 'Total Value');
+                const mv = data.marketValue || 0;
+                const reforma = data.reforma || 0;
+                const liens = data.liens || 0;
+                const otherCosts = data.otherCosts || 0;
+                const r1 = data.roi1 || DEFAULTS.defaultROI1;
+                const r2 = data.roi2 || DEFAULTS.defaultROI2;
+                const r3 = data.roi3 || DEFAULTS.defaultROI3;
+                
+                const calc1 = mv > 0 ? calculateMaxBid(mv, closingPct, r1, reforma, cleanTitle, otherCosts, liens) : null;
+                const calc2 = mv > 0 ? calculateMaxBid(mv, closingPct, r2, reforma, cleanTitle, otherCosts, liens) : null;
+                const calc3 = mv > 0 ? calculateMaxBid(mv, closingPct, r3, reforma, cleanTitle, otherCosts, liens) : null;
+                
+                const v1 = calc1 ? getViability(calc1.maxBid, amountDue) : null;
+                const v2 = calc2 ? getViability(calc2.maxBid, amountDue) : null;
+                const v3 = calc3 ? getViability(calc3.maxBid, amountDue) : null;
+                
+                const pricePerAcre = mv > 0 && parseFloat(acres) > 0 ? formatCurrency(Math.round(mv / parseFloat(acres))) : '-';
+                
+                html += `
+                <div class="page">
+                    <div class="header">
+                        <h1>GT CAPITAL - BID SHEET</h1>
+                        <p>Propriedade ${index + 1} de ${approvedProperties.length} | Gerado em ${new Date().toLocaleDateString('pt-BR')}</p>
+                    </div>
+                    
+                    <div class="prop-title">
+                        <h2>${parcelId}</h2>
+                        <span>${address !== '-' ? address + ', ' + city + ', FL' : county + ', FL'}</span>
+                    </div>
+                    
+                    <table>
+                        <tr>
+                            <th>Condado</th><td>${county}</td>
+                            <th>Acres</th><td>${acres}</td>
+                        </tr>
+                        <tr>
+                            <th>Zoning</th><td>${getFieldValue(prop, 'Zoning', 'zoning')}</td>
+                            <th>Land Use</th><td>${getFieldValue(prop, 'Land Use', 'landUse')}</td>
+                        </tr>
+                        <tr>
+                            <th>FEMA Zone</th><td>${getFieldValue(prop, 'FEMA Zone', 'femaZone')}</td>
+                            <th>Risk Level</th><td>${prop.riskLevel || '-'}</td>
+                        </tr>
+                        <tr>
+                            <th>Assessed Value</th><td>${totalValue}</td>
+                            <th>Amount Due</th><td style="font-weight:700;color:#dc2626;">${amountDueStr}</td>
+                        </tr>
+                        <tr>
+                            <th>Market Value</th><td style="font-weight:700;">${mv > 0 ? formatCurrency(mv) : '-'}</td>
+                            <th>$/Acre</th><td>${pricePerAcre}</td>
+                        </tr>
+                    </table>
+                    
+                    <table class="bid-table">
+                        <tr>
+                            <th>Cenário</th>
+                            <th>ROI %</th>
+                            <th>Max Bid</th>
+                            <th>Viabilidade</th>
+                        </tr>
+                        <tr>
+                            <td>ROI 1 (Conservador)</td>
+                            <td>${r1}%</td>
+                            <td>${calc1 ? formatCurrency(calc1.maxBid) : '-'}</td>
+                            <td class="${v1 ? v1.status : ''}">${v1 ? v1.icon + ' ' + v1.label : '-'}</td>
+                        </tr>
+                        <tr>
+                            <td>ROI 2 (Moderado)</td>
+                            <td>${r2}%</td>
+                            <td>${calc2 ? formatCurrency(calc2.maxBid) : '-'}</td>
+                            <td class="${v2 ? v2.status : ''}">${v2 ? v2.icon + ' ' + v2.label : '-'}</td>
+                        </tr>
+                        <tr>
+                            <td>ROI 3 (Agressivo)</td>
+                            <td>${r3}%</td>
+                            <td>${calc3 ? formatCurrency(calc3.maxBid) : '-'}</td>
+                            <td class="${v3 ? v3.status : ''}">${v3 ? v3.icon + ' ' + v3.label : '-'}</td>
+                        </tr>
+                    </table>
+                    
+                    <table>
+                        <tr>
+                            <th>Closing Cost (${closingPct}%)</th><td>${calc1 ? formatCurrency(calc1.closingCost) : '-'}</td>
+                            <th>Clean Title</th><td>${formatCurrency(cleanTitle)}</td>
+                        </tr>
+                        <tr>
+                            <th>Reforma</th><td>${formatCurrency(reforma)}</td>
+                            <th>Liens</th><td>${formatCurrency(liens)}</td>
+                        </tr>
+                        <tr>
+                            <th>Outros Custos</th><td>${formatCurrency(otherCosts)}</td>
+                            <th></th><td></td>
+                        </tr>
+                    </table>
+                    
+                    ${data.notes ? `<div class="notes">📝 ${data.notes}</div>` : ''}
+                    
+                    <div style="margin-top: 15px;">
+                        <div class="write-label">Bid Final no Leilão:</div>
+                        <div class="write-line"></div>
+                        <div class="write-label" style="margin-top:8px;">Observações do Leilão:</div>
+                        <div class="write-line"></div>
+                        <div class="write-line"></div>
+                    </div>
+                    
+                    <div class="footer">
+                        GT Capital | Confidencial | ${new Date().toLocaleDateString('pt-BR')} | Página ${index + 1}/${approvedProperties.length}
+                    </div>
+                </div>`;
+            });
+            
+            html += '</body></html>';
+            
+            // Open in new window for printing as PDF
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(html);
+            printWindow.document.close();
+            
+            // Auto-trigger print dialog
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+        }
+        
+        // ========================================
+        // SEND TO GOOGLE SHEETS
+        // ========================================
+        function sendToGoogleSheets() {
+            const webAppUrl = localStorage.getItem('googleSheetsWebAppUrl');
+            const password = localStorage.getItem('googleSheetsPassword');
+            
+            if (!webAppUrl) {
+                alert('Configure a URL do Google Sheets Web App nas Configurações primeiro!');
+                window.location.href = 'settings.html';
+                return;
+            }
+            
+            if (approvedProperties.length === 0) {
+                alert('Nenhuma propriedade para enviar!');
+                return;
+            }
+            
+            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
+            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
+            
+            const data = approvedProperties.map((prop, index) => {
+                const parcelId = getFieldValue(prop, 'Parcel #', 'Parcel Number', 'parcel_id');
+                const invData = savedInvestmentData[parcelId] || {};
+                const mv = invData.marketValue || 0;
+                const acres = parseFloat(prop['Acres'] || prop.Acres || 0);
+                const amountDue = parseCurrency(getFieldValue(prop, 'Amount Due'));
+                const r1 = invData.roi1 || DEFAULTS.defaultROI1;
+                const r2 = invData.roi2 || DEFAULTS.defaultROI2;
+                const r3 = invData.roi3 || DEFAULTS.defaultROI3;
+                const calc1 = mv > 0 ? calculateMaxBid(mv, closingPct, r1, invData.reforma || 0, cleanTitle, invData.otherCosts || 0, invData.liens || 0) : null;
+                const calc2 = mv > 0 ? calculateMaxBid(mv, closingPct, r2, invData.reforma || 0, cleanTitle, invData.otherCosts || 0, invData.liens || 0) : null;
+                const calc3 = mv > 0 ? calculateMaxBid(mv, closingPct, r3, invData.reforma || 0, cleanTitle, invData.otherCosts || 0, invData.liens || 0) : null;
+                
+                return {
+                    parcel: parcelId,
+                    address: getFieldValue(prop, 'Address', 'address'),
+                    county: getFieldValue(prop, 'County', 'county'),
+                    acres: acres.toFixed(2),
+                    zoning: getFieldValue(prop, 'Zoning', 'zoning'),
+                    amountDue: getFieldValue(prop, 'Amount Due'),
+                    assessedValue: getFieldValue(prop, 'Total Value'),
+                    marketValue: mv,
+                    pricePerAcre: mv > 0 && acres > 0 ? Math.round(mv / acres) : 0,
+                    roi1: r1,
+                    maxBid1: calc1 ? calc1.maxBid : 0,
+                    viability1: calc1 ? getViability(calc1.maxBid, amountDue).label : '',
+                    roi2: r2,
+                    maxBid2: calc2 ? calc2.maxBid : 0,
+                    viability2: calc2 ? getViability(calc2.maxBid, amountDue).label : '',
+                    roi3: r3,
+                    maxBid3: calc3 ? calc3.maxBid : 0,
+                    viability3: calc3 ? getViability(calc3.maxBid, amountDue).label : '',
+                    notes: invData.notes || '',
+                    riskLevel: prop.riskLevel || '-'
+                };
+            });
+            
+            const payload = {
+                action: 'saveInvestmentAnalysis',
+                password: password || '',
+                data: data,
+                timestamp: new Date().toISOString()
+            };
+            
+            fetch(webAppUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                alert('Dados enviados para o Google Sheets! Verifique a aba "Investment Analysis".');
+            }).catch(err => {
+                alert('Erro ao enviar: ' + err.message);
+            });
+        }
+        
+        // ========================================
+        // HISTORY - SAVE/LOAD BATCHES
+        // ========================================
+        function saveCurrentBatch() {
+            if (approvedProperties.length === 0) {
+                alert('Nenhuma propriedade para salvar!');
+                return;
+            }
+            
+            const batchName = prompt('Nome para este batch (ex: "Leilão Orange County Jan 2026"):');
+            if (!batchName) return;
+            
+            const history = JSON.parse(localStorage.getItem('investmentHistory') || '[]');
+            
+            const batch = {
+                id: Date.now(),
+                name: batchName,
+                date: new Date().toISOString(),
+                propertyCount: approvedProperties.length,
+                properties: JSON.parse(JSON.stringify(approvedProperties)),
+                investmentData: JSON.parse(JSON.stringify(savedInvestmentData)),
+                settings: {
+                    closingPct: parseFloat(document.getElementById('globalClosingPct').value),
+                    cleanTitle: parseFloat(document.getElementById('globalCleanTitle').value),
+                    roi1: parseFloat(document.getElementById('globalROI1').value),
+                    roi2: parseFloat(document.getElementById('globalROI2').value),
+                    roi3: parseFloat(document.getElementById('globalROI3').value)
+                }
+            };
+            
+            history.unshift(batch);
+            
+            // Keep max 50 batches
+            if (history.length > 50) history.pop();
+            
+            try {
+                localStorage.setItem('investmentHistory', JSON.stringify(history));
+                alert(`Batch "${batchName}" salvo com ${approvedProperties.length} propriedades!`);
+            } catch (e) {
+                alert('Erro: localStorage cheio. Tente apagar batches antigos.');
+            }
+        }
+        
+        function showHistoryModal() {
+            const history = JSON.parse(localStorage.getItem('investmentHistory') || '[]');
+            const modal = document.getElementById('historyModal');
+            
+            if (history.length === 0) {
+                modal.innerHTML = `
+                    <div class="modal-overlay" onclick="closeHistoryModal(event)">
+                        <div class="modal-content">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-xl font-bold text-gray-800">📚 Histórico de Análises</h2>
+                                <button onclick="document.getElementById('historyModal').style.display='none'" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                            </div>
+                            <p class="text-gray-500 text-center py-8">Nenhum batch salvo ainda. Use "💾 Salvar Batch" para guardar a análise atual.</p>
+                        </div>
+                    </div>
+                `;
+                modal.style.display = 'block';
+                return;
+            }
+            
+            let itemsHtml = history.map((batch, i) => {
+                const date = new Date(batch.date).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                return `
+                    <div class="history-item">
+                        <div>
+                            <div class="font-bold text-gray-800">${batch.name}</div>
+                            <div class="text-xs text-gray-500">${date} | ${batch.propertyCount} propriedades</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="loadBatch(${i})" class="px-3 py-1 bg-indigo-600 text-white text-xs rounded-lg hover:bg-indigo-700">📂 Carregar</button>
+                            <button onclick="deleteBatch(${i})" class="px-3 py-1 bg-red-500 text-white text-xs rounded-lg hover:bg-red-600">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            modal.innerHTML = `
+                <div class="modal-overlay" onclick="closeHistoryModal(event)">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-bold text-gray-800">📚 Histórico de Análises</h2>
+                            <button onclick="document.getElementById('historyModal').style.display='none'" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                        </div>
+                        <div class="text-xs text-gray-500 mb-3">${history.length} batch(es) salvos</div>
+                        ${itemsHtml}
+                    </div>
+                </div>
+            `;
+            modal.style.display = 'block';
+        }
+        
+        function closeHistoryModal(event) {
+            if (event.target.classList.contains('modal-overlay')) {
+                document.getElementById('historyModal').style.display = 'none';
+            }
+        }
+        
+        function loadBatch(index) {
+            const history = JSON.parse(localStorage.getItem('investmentHistory') || '[]');
+            const batch = history[index];
+            if (!batch) return;
+            
+            if (!confirm(`Carregar batch "${batch.name}"? Isso substituirá os dados atuais.`)) return;
+            
+            // Restore data
+            localStorage.setItem('approvedProperties', JSON.stringify(batch.properties));
+            localStorage.setItem('investmentData', JSON.stringify(batch.investmentData));
+            
+            // Restore settings
+            if (batch.settings) {
+                document.getElementById('globalClosingPct').value = batch.settings.closingPct;
+                document.getElementById('globalCleanTitle').value = batch.settings.cleanTitle;
+                document.getElementById('globalROI1').value = batch.settings.roi1;
+                document.getElementById('globalROI2').value = batch.settings.roi2;
+                document.getElementById('globalROI3').value = batch.settings.roi3;
+            }
+            
+            // Reload page
+            location.reload();
+        }
+        
+        function deleteBatch(index) {
+            const history = JSON.parse(localStorage.getItem('investmentHistory') || '[]');
+            const batch = history[index];
+            if (!batch) return;
+            
+            if (!confirm(`Apagar batch "${batch.name}"? Esta ação não pode ser desfeita.`)) return;
+            
+            history.splice(index, 1);
+            localStorage.setItem('investmentHistory', JSON.stringify(history));
+            showHistoryModal(); // Refresh modal
+        }
+        
+        // ========================================
         // ZILLOW URL BUILDER
         // ========================================
         function buildZillowUrl(address, city, prop) {
-            // Try to build a good Zillow search URL
             let searchTerm = '';
             if (address && address !== '-') {
                 searchTerm = address;
                 if (city && city !== '-') searchTerm += ', ' + city;
                 searchTerm += ', FL';
             } else {
-                // Fallback to parcel number
                 searchTerm = (prop['Parcel #'] || prop['Parcel Number'] || '') + ' FL';
             }
             return 'https://www.zillow.com/homes/' + encodeURIComponent(searchTerm) + '_rb/';
