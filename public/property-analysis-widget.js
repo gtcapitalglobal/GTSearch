@@ -73,6 +73,28 @@ class PropertyAnalysisWidget {
     }
     
     /**
+     * Analyze property silently (no UI update) - for batch processing
+     */
+    async analyzePropertySilent(lat, lng, county, parcelId = null) {
+        try {
+            const response = await fetch('/api/property-details', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ lat, lng, county, parcelId })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API error: ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Error analyzing property (silent):', error);
+            throw error;
+        }
+    }
+    
+    /**
      * Render widget HTML
      */
     render() {
@@ -168,6 +190,7 @@ class PropertyAnalysisWidget {
      */
     renderData(data) {
         const statusColor = this.getStatusColor(data.overallStatus);
+        const riskAssessment = this.calculateRiskAssessment(data);
         
         return `
             <div class="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -184,6 +207,9 @@ class PropertyAnalysisWidget {
                         </div>
                     </div>
                 </div>
+                
+                <!-- Risk Alert Semaphore -->
+                ${this.renderRiskSemaphore(riskAssessment, data)}
                 
                 <!-- Data Grid -->
                 <div class="p-6 space-y-6">
@@ -707,6 +733,149 @@ class PropertyAnalysisWidget {
             'unknown': 'Desconhecido'
         };
         return translations[risk] || risk;
+    }
+    
+    /**
+     * Calculate risk assessment from all data sources
+     * Returns: { level: 'green'|'yellow'|'red', score: 0-100, factors: [] }
+     */
+    calculateRiskAssessment(data) {
+        const factors = [];
+        let score = 0; // 0 = no risk, 100 = max risk
+        
+        // === FEMA FLOOD ZONE ===
+        if (data.fema) {
+            if (data.fema.found) {
+                const zone = (data.fema.zone || '').toUpperCase();
+                if (zone.startsWith('A') || zone.startsWith('V') || zone === 'VE' || zone === 'AE' || zone === 'AO' || zone === 'AH') {
+                    score += 40;
+                    factors.push({ icon: '🌊', label: 'Flood Zone ' + zone + ' (Alto Risco)', severity: 'red' });
+                } else if (zone === 'X' || zone === 'C' || zone === 'AREA OF MINIMAL FLOOD HAZARD') {
+                    factors.push({ icon: '🌊', label: 'Flood Zone ' + zone + ' (Risco Mínimo)', severity: 'green' });
+                } else if (zone === 'B' || zone === 'X500' || zone.includes('MODERATE')) {
+                    score += 15;
+                    factors.push({ icon: '🌊', label: 'Flood Zone ' + zone + ' (Risco Moderado)', severity: 'yellow' });
+                } else {
+                    score += 10;
+                    factors.push({ icon: '🌊', label: 'Flood Zone ' + zone, severity: 'yellow' });
+                }
+            } else if (!data.fema.error) {
+                factors.push({ icon: '🌊', label: 'Sem Flood Zone detectada', severity: 'green' });
+            } else {
+                score += 5;
+                factors.push({ icon: '🌊', label: 'FEMA não consultado (erro)', severity: 'yellow' });
+            }
+        }
+        
+        // === WETLANDS ===
+        if (data.wetlands) {
+            if (data.wetlands.found) {
+                const proximity = data.wetlands.proximity || '';
+                const risk = data.wetlands.highestRisk?.risk || 'unknown';
+                
+                if (proximity === 'ON_PROPERTY' && risk === 'high') {
+                    score += 40;
+                    factors.push({ icon: '🌿', label: 'Wetland ALTO RISCO no terreno', severity: 'red' });
+                } else if (proximity === 'ON_PROPERTY') {
+                    score += 25;
+                    factors.push({ icon: '🌿', label: 'Wetland no terreno (' + risk + ')', severity: 'red' });
+                } else if (risk === 'high') {
+                    score += 20;
+                    factors.push({ icon: '🌿', label: 'Wetland alto risco próximo', severity: 'yellow' });
+                } else {
+                    score += 10;
+                    factors.push({ icon: '🌿', label: 'Wetland próximo (risco ' + risk + ')', severity: 'yellow' });
+                }
+            } else if (!data.wetlands.error) {
+                factors.push({ icon: '🌿', label: 'Sem Wetlands detectados', severity: 'green' });
+            } else {
+                score += 5;
+                factors.push({ icon: '🌿', label: 'Wetlands não consultado (erro)', severity: 'yellow' });
+            }
+        }
+        
+        // === LEGAL DESCRIPTION (UNDIVIDED check) ===
+        if (data.landUse?.legalDescription) {
+            if (data.landUse.legalDescription.toUpperCase().includes('UNDIVIDED')) {
+                score += 20;
+                factors.push({ icon: '⚠️', label: 'UNDIVIDED na Legal Description (risco)', severity: 'red' });
+            }
+        }
+        
+        // === LAND USE ===
+        if (data.landUse?.found) {
+            if (data.landUse.buildable === false) {
+                score += 10;
+                factors.push({ icon: '📋', label: 'Land Use: Non-Buildable (' + data.landUse.code + ')', severity: 'yellow' });
+            } else {
+                factors.push({ icon: '📋', label: 'Land Use: ' + (data.landUse.code || 'OK'), severity: 'green' });
+            }
+        }
+        
+        // === ZONING ===
+        if (data.zoning?.found) {
+            factors.push({ icon: '🏗️', label: 'Zoning: ' + (data.zoning.code || 'Encontrado'), severity: 'green' });
+        } else if (data.zoning && !data.zoning.error) {
+            factors.push({ icon: '🏗️', label: 'Zoning não disponível', severity: 'yellow' });
+        }
+        
+        // Determine level
+        let level = 'green';
+        if (score >= 35) level = 'red';
+        else if (score >= 15) level = 'yellow';
+        
+        return { level, score: Math.min(score, 100), factors };
+    }
+    
+    /**
+     * Render Risk Semaphore - visual traffic light with risk breakdown
+     */
+    renderRiskSemaphore(risk, data) {
+        const colors = {
+            green:  { bg: 'bg-green-50', border: 'border-green-400', text: 'text-green-800', label: 'BAIXO RISCO', desc: 'Propriedade aprovada nos critérios automáticos' },
+            yellow: { bg: 'bg-yellow-50', border: 'border-yellow-400', text: 'text-yellow-800', label: 'AVALIAR', desc: 'Existem fatores que requerem análise manual' },
+            red:    { bg: 'bg-red-50', border: 'border-red-400', text: 'text-red-800', label: 'ALTO RISCO', desc: 'Fatores críticos detectados — avaliar com cuidado' }
+        };
+        const c = colors[risk.level];
+        
+        // Semaphore lights
+        const lightOn = (color) => color === risk.level;
+        
+        return `
+            <div class="${c.bg} border-t-4 ${c.border} px-6 py-4">
+                <div class="flex items-center gap-4">
+                    <!-- Traffic Light -->
+                    <div class="flex flex-col items-center gap-1 p-2 bg-gray-800 rounded-lg" style="min-width:36px">
+                        <div class="w-5 h-5 rounded-full ${lightOn('red') ? 'bg-red-500 shadow-lg shadow-red-500/50' : 'bg-gray-600'}" title="Alto Risco"></div>
+                        <div class="w-5 h-5 rounded-full ${lightOn('yellow') ? 'bg-yellow-400 shadow-lg shadow-yellow-400/50' : 'bg-gray-600'}" title="Avaliar"></div>
+                        <div class="w-5 h-5 rounded-full ${lightOn('green') ? 'bg-green-500 shadow-lg shadow-green-500/50' : 'bg-gray-600'}" title="Baixo Risco"></div>
+                    </div>
+                    
+                    <!-- Risk Summary -->
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-lg ${c.text}">${c.label}</span>
+                            <span class="text-xs ${c.text} opacity-75">(Score: ${risk.score}/100)</span>
+                        </div>
+                        <p class="text-xs ${c.text} opacity-80 mb-2">${c.desc}</p>
+                        
+                        <!-- Risk Factors -->
+                        <div class="flex flex-wrap gap-2">
+                            ${risk.factors.map(f => {
+                                const pillColors = {
+                                    green: 'bg-green-100 text-green-700 border-green-200',
+                                    yellow: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+                                    red: 'bg-red-100 text-red-700 border-red-200'
+                                };
+                                return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${pillColors[f.severity]}">
+                                    ${f.icon} ${f.label}
+                                </span>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
     }
 }
 

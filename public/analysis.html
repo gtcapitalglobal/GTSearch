@@ -486,14 +486,25 @@
                     Análise Automática de Propriedade
                     <span class="ml-2 text-xs bg-blue-600 text-white px-2 py-1 rounded-full">NOVO</span>
                 </h2>
-                <button id="analyze-property-btn" onclick="analyzeCurrentProperty()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
-                    🔍 Analisar Propriedade
-                </button>
+                <div class="flex gap-2">
+                    <button id="analyze-property-btn" onclick="analyzeCurrentProperty()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+                        🔍 Analisar Propriedade
+                    </button>
+                    <button id="batch-analyze-btn" onclick="batchAnalyzeAll()" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+                        📦 Analisar Todas
+                    </button>
+                </div>
             </div>
             <p class="text-sm text-gray-600 mb-4">
                 Análise automática de FEMA Flood Zone, Wetlands, Land Use (Assessor) e Zoning (Planning) para qualquer condado da Florida.
             </p>
             <div id="property-analysis-widget"></div>
+        </div>
+
+        <!-- Seção: Histórico de Análises -->
+        <div class="bg-white rounded-lg shadow-lg p-4 mb-3">
+            <h2 class="text-lg font-bold text-gray-800 mb-3">📊 Histórico de Análises</h2>
+            <div id="history-panel"></div>
         </div>
 
         <!-- Seção 3: Contact Information -->
@@ -2530,34 +2541,66 @@
             }
         }
 
+        // === COPY HELPERS ===
+        function showCopyFeedback(msg) {
+            // Create a floating toast notification
+            let toast = document.getElementById('copy-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'copy-toast';
+                toast.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#10b981;color:white;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:opacity 0.3s;';
+                document.body.appendChild(toast);
+            }
+            toast.textContent = '✅ ' + msg;
+            toast.style.opacity = '1';
+            toast.style.display = 'block';
+            clearTimeout(window._copyToastTimer);
+            window._copyToastTimer = setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => { toast.style.display = 'none'; }, 300);
+            }, 2000);
+        }
+        
+        function fallbackCopy(text, msg) {
+            // Fallback for non-HTTPS or older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.cssText = 'position:fixed;left:-9999px;';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showCopyFeedback(msg);
+            } catch (e) {
+                alert('Erro ao copiar. Copie manualmente: ' + text);
+            }
+            document.body.removeChild(textarea);
+        }
+
         function copyParcelNumber() {
-            const parcelNumber = document.getElementById('prop-parcel').textContent;
+            const parcelNumber = document.getElementById('prop-parcel-1')?.textContent;
             if (parcelNumber && parcelNumber !== '-') {
-                navigator.clipboard.writeText(parcelNumber)
+                navigator.clipboard.writeText(parcelNumber.trim())
                     .then(() => {
-                        const feedback = document.getElementById('copy-feedback');
-                        feedback.style.display = 'inline';
-                        setTimeout(() => {
-                            feedback.style.display = 'none';
-                        }, 2000);
+                        showCopyFeedback('Parcel # copiado!');
                     })
                     .catch(err => {
                         console.error('Failed to copy:', err);
-                        alert('Erro ao copiar. Tente novamente.');
+                        fallbackCopy(parcelNumber.trim(), 'Parcel # copiado!');
                     });
             }
         }
         
         function copyAddress() {
-            const address = document.getElementById('prop-address-full-1').textContent;
+            const address = document.getElementById('prop-address-full-1')?.textContent;
             if (address && address !== '-') {
-                navigator.clipboard.writeText(address)
+                navigator.clipboard.writeText(address.trim())
                     .then(() => {
-                        alert('✅ Endereço copiado!');
+                        showCopyFeedback('Endereço copiado!');
                     })
                     .catch(err => {
                         console.error('Failed to copy:', err);
-                        alert('Erro ao copiar. Tente novamente.');
+                        fallbackCopy(address.trim(), 'Endereço copiado!');
                     });
             }
         }
@@ -2569,29 +2612,29 @@
         }
         
         function copyCoordinates() {
-            const coordinates = window.currentCoordinates || document.getElementById('prop-coordinates-1').textContent;
+            const coordinates = window.currentCoordinates || document.getElementById('prop-coordinates-1')?.textContent;
             if (coordinates && coordinates !== '-') {
-                navigator.clipboard.writeText(coordinates)
+                navigator.clipboard.writeText(coordinates.trim())
                     .then(() => {
-                        alert('✅ Coordenadas copiadas!');
+                        showCopyFeedback('Coordenadas copiadas!');
                     })
                     .catch(err => {
                         console.error('Failed to copy:', err);
-                        alert('Erro ao copiar. Tente novamente.');
+                        fallbackCopy(coordinates.trim(), 'Coordenadas copiadas!');
                     });
             }
         }
         
         function copyLegalDescription() {
-            const legalDesc = window.currentLegalDescription || document.getElementById('prop-legal-1').textContent;
+            const legalDesc = window.currentLegalDescription || document.getElementById('prop-legal-1')?.textContent;
             if (legalDesc && legalDesc !== '-') {
-                navigator.clipboard.writeText(legalDesc)
+                navigator.clipboard.writeText(legalDesc.trim())
                     .then(() => {
-                        alert('✅ Legal Description copiada!');
+                        showCopyFeedback('Legal Description copiada!');
                     })
                     .catch(err => {
                         console.error('Failed to copy:', err);
-                        alert('Erro ao copiar. Tente novamente.');
+                        fallbackCopy(legalDesc.trim(), 'Legal Description copiada!');
                     });
             }
         }
@@ -3606,6 +3649,21 @@
             try {
                 const result = await propertyAnalysisWidget.analyzeProperty(lat, lng, county, parcelId);
                 console.log('✅ Analysis complete:', result);
+                
+                // Save to analysis history
+                saveAnalysisHistory({
+                    parcelId: parcelId || 'N/A',
+                    county: county,
+                    lat: lat,
+                    lng: lng,
+                    address: property['Address'] || property.address || 'N/A',
+                    overallStatus: result?.overallStatus || 'N/A',
+                    riskScore: result ? propertyAnalysisWidget.calculateRiskAssessment(result)?.score : null,
+                    riskLevel: result ? propertyAnalysisWidget.calculateRiskAssessment(result)?.level : null,
+                    timestamp: new Date().toISOString(),
+                    data: result
+                });
+                renderHistoryPanel();
             } catch (error) {
                 console.error('❌ Analysis error:', error);
                 alert(`Erro na análise: ${error.message}`);
@@ -3614,6 +3672,328 @@
         
         // Make function globally available
         window.analyzeCurrentProperty = analyzeCurrentProperty;
+        
+        // ===== BATCH ANALYSIS =====
+        async function batchAnalyzeAll() {
+            if (!propertyAnalysisWidget) {
+                alert('Widget não inicializado. Recarregue a página.');
+                return;
+            }
+            
+            if (!properties || properties.length === 0) {
+                alert('Nenhuma propriedade carregada!');
+                return;
+            }
+            
+            const total = properties.length;
+            if (!confirm(`Analisar ${total} propriedade(s)? Isso pode levar ${Math.ceil(total * 3 / 60)} minuto(s).`)) {
+                return;
+            }
+            
+            const btn = document.getElementById('batch-analyze-btn');
+            const singleBtn = document.getElementById('analyze-property-btn');
+            btn.disabled = true;
+            singleBtn.disabled = true;
+            
+            // Show progress bar
+            const widgetContainer = document.getElementById('property-analysis-widget');
+            widgetContainer.innerHTML = `
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="font-bold text-gray-700">Batch Analysis em andamento...</span>
+                        <span id="batch-counter" class="text-sm text-gray-500">0 / ${total}</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3 mb-3">
+                        <div id="batch-progress" class="bg-purple-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <div id="batch-current" class="text-xs text-gray-500">Preparando...</div>
+                    <div id="batch-results-summary" class="mt-4 space-y-1"></div>
+                </div>`;
+            
+            const results = [];
+            let completed = 0;
+            let failed = 0;
+            
+            for (let i = 0; i < total; i++) {
+                const property = properties[i];
+                const parcelId = property['Parcel #'] || property.ParcelNumber || property.parcel_id || 'N/A';
+                
+                // Update progress
+                document.getElementById('batch-counter').textContent = `${i + 1} / ${total}`;
+                document.getElementById('batch-progress').style.width = `${((i + 1) / total) * 100}%`;
+                document.getElementById('batch-current').textContent = `Analisando: ${parcelId} (${property.County || 'N/A'} County)`;
+                
+                // Extract coordinates
+                let lat, lng;
+                if (property.Latitude && property.Longitude) {
+                    lat = parseFloat(property.Latitude);
+                    lng = parseFloat(property.Longitude);
+                } else if (property['Lat/Lng']) {
+                    const coords = property['Lat/Lng'].split(',').map(c => c.trim());
+                    lat = parseFloat(coords[0]);
+                    lng = parseFloat(coords[1]);
+                } else if (property.Coordinates) {
+                    const coords = property.Coordinates.split(',').map(c => c.trim());
+                    lat = parseFloat(coords[0]);
+                    lng = parseFloat(coords[1]);
+                }
+                
+                let county = property.County || property.county || '';
+                county = county.trim().split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+                if (county.toLowerCase().startsWith('st ') || county.toLowerCase().startsWith('saint ')) {
+                    county = 'St. ' + county.replace(/^(st\.?|saint)\s+/i, '');
+                }
+                
+                if (!lat || !lng || !county) {
+                    results.push({ index: i, parcelId, county, status: 'ERRO', error: 'Dados incompletos' });
+                    failed++;
+                    continue;
+                }
+                
+                try {
+                    const result = await propertyAnalysisWidget.analyzePropertySilent(lat, lng, county, parcelId);
+                    const risk = propertyAnalysisWidget.calculateRiskAssessment(result);
+                    
+                    results.push({ index: i, parcelId, county, status: result?.overallStatus || 'N/A', riskLevel: risk?.level, riskScore: risk?.score });
+                    completed++;
+                    
+                    // Save to history
+                    saveAnalysisHistory({
+                        parcelId: parcelId,
+                        county: county,
+                        lat: lat,
+                        lng: lng,
+                        address: property['Address'] || property.address || 'N/A',
+                        overallStatus: result?.overallStatus || 'N/A',
+                        riskScore: risk?.score,
+                        riskLevel: risk?.level,
+                        timestamp: new Date().toISOString(),
+                        data: result
+                    });
+                } catch (err) {
+                    results.push({ index: i, parcelId, county, status: 'ERRO', error: err.message });
+                    failed++;
+                }
+                
+                // Update summary
+                const summaryEl = document.getElementById('batch-results-summary');
+                const last = results[results.length - 1];
+                const statusIcon = last.status.includes('APROVADO') ? '✅' : last.status.includes('REJEITAR') || last.status.includes('ALTO RISCO') ? '🔴' : last.status === 'ERRO' ? '❌' : '⚠️';
+                summaryEl.innerHTML += `<div class="text-xs">${statusIcon} ${last.parcelId} (${last.county}) - ${last.riskLevel === 'green' ? 'Baixo' : last.riskLevel === 'red' ? 'Alto' : last.riskLevel === 'yellow' ? 'Médio' : last.status}</div>`;
+                
+                // Small delay between requests
+                if (i < total - 1) {
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+            }
+            
+            // Final summary
+            const riskBadge = (level) => {
+                const map = { green: 'bg-green-100 text-green-700', yellow: 'bg-yellow-100 text-yellow-700', red: 'bg-red-100 text-red-700' };
+                return map[level] || 'bg-gray-100 text-gray-700';
+            };
+            
+            widgetContainer.innerHTML = `
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-lg text-gray-800">📦 Batch Analysis Completo</h3>
+                        <button onclick="exportBatchCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-semibold">📄 Exportar CSV</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <div class="bg-green-50 rounded-lg p-3 text-center">
+                            <div class="text-2xl font-bold text-green-700">${completed}</div>
+                            <div class="text-xs text-green-600">Analisadas</div>
+                        </div>
+                        <div class="bg-red-50 rounded-lg p-3 text-center">
+                            <div class="text-2xl font-bold text-red-700">${failed}</div>
+                            <div class="text-xs text-red-600">Falhas</div>
+                        </div>
+                        <div class="bg-blue-50 rounded-lg p-3 text-center">
+                            <div class="text-2xl font-bold text-blue-700">${total}</div>
+                            <div class="text-xs text-blue-600">Total</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2 max-h-80 overflow-y-auto">
+                        ${results.map(r => `
+                            <div class="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
+                                <span class="font-mono text-sm font-semibold">${r.parcelId}</span>
+                                <span class="text-xs text-gray-500">${r.county}</span>
+                                <span class="ml-auto px-2 py-0.5 rounded-full text-xs font-bold ${r.riskLevel ? riskBadge(r.riskLevel) : 'bg-gray-100 text-gray-700'}">
+                                    ${r.riskLevel === 'green' ? 'BAIXO' : r.riskLevel === 'red' ? 'ALTO' : r.riskLevel === 'yellow' ? 'MÉDIO' : r.error || 'N/A'}
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>`;
+            
+            // Store batch results for export
+            window._lastBatchResults = results;
+            
+            btn.disabled = false;
+            singleBtn.disabled = false;
+            btn.textContent = '📦 Analisar Todas';
+            
+            renderHistoryPanel();
+        }
+        
+        function exportBatchCSV() {
+            const results = window._lastBatchResults;
+            if (!results || results.length === 0) { alert('Nenhum resultado para exportar.'); return; }
+            
+            const headers = ['Index', 'Parcel #', 'County', 'Status', 'Risk Level', 'Risk Score', 'Error'];
+            const rows = results.map(r => [
+                r.index,
+                r.parcelId,
+                r.county,
+                r.status?.replace(/[^\w\s]/g, '').trim() || 'N/A',
+                r.riskLevel || 'N/A',
+                r.riskScore ?? 'N/A',
+                r.error || ''
+            ]);
+            
+            const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `gt_batch_analysis_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+        }
+        
+        window.batchAnalyzeAll = batchAnalyzeAll;
+        window.exportBatchCSV = exportBatchCSV;
+        
+        // ===== ANALYSIS HISTORY =====
+        const HISTORY_KEY = 'gt_analysis_history';
+        const MAX_HISTORY = 100;
+        
+        function getAnalysisHistory() {
+            try {
+                return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+            } catch { return []; }
+        }
+        
+        function saveAnalysisHistory(entry) {
+            const history = getAnalysisHistory();
+            // Avoid duplicates (same parcel + county within 1 minute)
+            const isDuplicate = history.some(h => 
+                h.parcelId === entry.parcelId && 
+                h.county === entry.county && 
+                Math.abs(new Date(h.timestamp) - new Date(entry.timestamp)) < 60000
+            );
+            if (!isDuplicate) {
+                history.unshift(entry); // newest first
+                if (history.length > MAX_HISTORY) history.pop();
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+            }
+        }
+        
+        function clearAnalysisHistory() {
+            if (confirm('Tem certeza que deseja limpar todo o histórico de análises?')) {
+                localStorage.removeItem(HISTORY_KEY);
+                renderHistoryPanel();
+            }
+        }
+        
+        function exportHistoryCSV() {
+            const history = getAnalysisHistory();
+            if (history.length === 0) { alert('Histórico vazio.'); return; }
+            
+            const headers = ['Data', 'Parcel #', 'County', 'Address', 'Status', 'Risk Score', 'Risk Level', 'Lat', 'Lng'];
+            const rows = history.map(h => [
+                new Date(h.timestamp).toLocaleString('pt-BR'),
+                h.parcelId,
+                h.county,
+                h.address,
+                h.overallStatus?.replace(/[^\w\s]/g, '').trim() || 'N/A',
+                h.riskScore ?? 'N/A',
+                h.riskLevel || 'N/A',
+                h.lat,
+                h.lng
+            ]);
+            
+            const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `gt_analysis_history_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+        }
+        
+        function renderHistoryPanel() {
+            const container = document.getElementById('history-panel');
+            if (!container) return;
+            
+            const history = getAnalysisHistory();
+            
+            if (history.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-400">
+                        <p class="text-lg">Nenhuma análise realizada ainda</p>
+                        <p class="text-sm mt-1">As análises aparecerão aqui automaticamente</p>
+                    </div>`;
+                return;
+            }
+            
+            const riskBadge = (level) => {
+                const map = {
+                    green: '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">BAIXO</span>',
+                    yellow: '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">MÉDIO</span>',
+                    red: '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">ALTO</span>'
+                };
+                return map[level] || '<span class="px-2 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-700">N/A</span>';
+            };
+            
+            container.innerHTML = `
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-sm text-gray-500">${history.length} análise(s)</span>
+                    <div class="flex gap-2">
+                        <button onclick="exportHistoryCSV()" class="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 font-semibold">Exportar CSV</button>
+                        <button onclick="clearAnalysisHistory()" class="px-3 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-semibold">Limpar</button>
+                    </div>
+                </div>
+                <div class="space-y-2 max-h-96 overflow-y-auto">
+                    ${history.map((h, i) => `
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" onclick="loadHistoryEntry(${i})">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-semibold text-sm truncate">${h.parcelId}</span>
+                                    ${riskBadge(h.riskLevel)}
+                                </div>
+                                <p class="text-xs text-gray-500 truncate">${h.county} County • ${h.address}</p>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <p class="text-xs text-gray-400">${new Date(h.timestamp).toLocaleDateString('pt-BR')}</p>
+                                <p class="text-xs text-gray-400">${new Date(h.timestamp).toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'})}</p>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>`;
+        }
+        
+        function loadHistoryEntry(index) {
+            const history = getAnalysisHistory();
+            const entry = history[index];
+            if (!entry || !entry.data) { alert('Dados da análise não disponíveis.'); return; }
+            
+            // Re-render the analysis widget with saved data
+            const container = document.getElementById(propertyAnalysisWidget.containerId);
+            if (container) {
+                container.innerHTML = propertyAnalysisWidget.renderData(entry.data);
+            }
+            
+            // Scroll to the analysis result
+            container?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        // Initialize history panel on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            renderHistoryPanel();
+        });
+        
+        // Make functions globally available
+        window.clearAnalysisHistory = clearAnalysisHistory;
+        window.exportHistoryCSV = exportHistoryCSV;
+        window.loadHistoryEntry = loadHistoryEntry;
         
         // ===== FIM PROPERTY ANALYSIS WIDGET =====
     </script>

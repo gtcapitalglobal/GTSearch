@@ -568,6 +568,59 @@ app.post('/api/property-details', async (req, res) => {
   }
 });
 
+/**
+ * Batch property analysis - analyze multiple properties sequentially
+ * Accepts array of properties with lat, lng, county
+ * Processes with 500ms delay between each to avoid rate limiting
+ */
+app.post('/api/property-details/batch', async (req, res) => {
+  try {
+    const { properties } = req.body;
+    
+    if (!Array.isArray(properties) || properties.length === 0) {
+      return res.status(400).json({ error: 'properties must be a non-empty array' });
+    }
+    
+    if (properties.length > 50) {
+      return res.status(400).json({ error: 'Maximum 50 properties per batch' });
+    }
+    
+    const results = [];
+    for (let i = 0; i < properties.length; i++) {
+      const { lat, lng, county, parcelId, parcelGeometry } = properties[i];
+      
+      if (!lat || !lng || !county) {
+        results.push({ success: false, error: 'Missing lat, lng, or county', index: i });
+        continue;
+      }
+      
+      try {
+        const result = await getPropertyDetails({ lat, lng, county, parcelId, parcelGeometry });
+        results.push({ ...result, index: i });
+      } catch (err) {
+        results.push({ success: false, error: err.message, index: i });
+      }
+      
+      // Rate limit: 500ms between requests
+      if (i < properties.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+    }
+    
+    res.json({
+      success: true,
+      total: properties.length,
+      completed: results.filter(r => r.success).length,
+      failed: results.filter(r => !r.success).length,
+      results
+    });
+    
+  } catch (error) {
+    console.error('Error in /api/property-details/batch:', error);
+    res.status(500).json({ error: 'Internal server error', message: error.message });
+  }
+});
+
 // ========================================
 // START SERVER
 // ========================================
