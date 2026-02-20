@@ -672,6 +672,54 @@
                     ✅ Configurações de alertas salvas com sucesso!
                 </div>
             </div>
+
+            <!-- Investment Calculation Settings -->
+            <div class="settings-card">
+                <h2>💰 Configurações de Investimento</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Configure os parâmetros padrão para o cálculo de Max Bid e ROI na Tela de Avaliação.
+                </p>
+
+                <div class="input-group">
+                    <label for="closingCostPercent">Closing Cost (%)</label>
+                    <input type="number" id="closingCostPercent" value="9" min="0" max="100" step="0.5">
+                    <small>Percentual sobre o Valor de Mercado para custos de fechamento. Padrão: 9%</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="cleanTitleCost">Clean Title ($)</label>
+                    <input type="number" id="cleanTitleCost" value="2500" min="0" step="100">
+                    <small>Custo fixo para limpeza de título. Padrão: $2,500</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="defaultROI1">ROI 1 - Padrão (%)</label>
+                    <input type="number" id="defaultROI1" value="30" min="0" max="500" step="1">
+                    <small>Primeiro cenário de ROI desejado. Padrão: 30%</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="defaultROI2">ROI 2 - Padrão (%)</label>
+                    <input type="number" id="defaultROI2" value="50" min="0" max="500" step="1">
+                    <small>Segundo cenário de ROI desejado. Padrão: 50%</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="defaultROI3">ROI 3 - Padrão (%)</label>
+                    <input type="number" id="defaultROI3" value="100" min="0" max="500" step="1">
+                    <small>Terceiro cenário de ROI desejado. Padrão: 100%</small>
+                </div>
+
+                <div class="button-group" style="margin-top: 20px;">
+                    <button class="btn btn-success" onclick="saveInvestmentSettings()">💾 Salvar Configurações</button>
+                    <button class="btn btn-secondary" onclick="resetInvestmentSettings()">🔄 Resetar para Padrão</button>
+                </div>
+
+                <div class="saved-indicator" id="savedIndicatorInvestment">
+                    ✅ Configurações de investimento salvas com sucesso!
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -1805,6 +1853,52 @@
         
         // Load alert keywords on page load
         loadAlertKeywords();
+
+        // ========================================
+        // INVESTMENT SETTINGS FUNCTIONS
+        // ========================================
+        
+        function loadInvestmentSettings() {
+            const settings = JSON.parse(localStorage.getItem('investmentSettings') || '{}');
+            document.getElementById('closingCostPercent').value = settings.closingCostPercent ?? 9;
+            document.getElementById('cleanTitleCost').value = settings.cleanTitleCost ?? 2500;
+            document.getElementById('defaultROI1').value = settings.defaultROI1 ?? 30;
+            document.getElementById('defaultROI2').value = settings.defaultROI2 ?? 50;
+            document.getElementById('defaultROI3').value = settings.defaultROI3 ?? 100;
+        }
+        
+        function saveInvestmentSettings() {
+            const settings = {
+                closingCostPercent: parseFloat(document.getElementById('closingCostPercent').value) || 9,
+                cleanTitleCost: parseFloat(document.getElementById('cleanTitleCost').value) || 2500,
+                defaultROI1: parseFloat(document.getElementById('defaultROI1').value) || 30,
+                defaultROI2: parseFloat(document.getElementById('defaultROI2').value) || 50,
+                defaultROI3: parseFloat(document.getElementById('defaultROI3').value) || 100
+            };
+            localStorage.setItem('investmentSettings', JSON.stringify(settings));
+            showSavedIndicator('savedIndicatorInvestment');
+            alert('\u2705 Configura\u00e7\u00f5es de investimento salvas com sucesso!');
+        }
+        
+        function resetInvestmentSettings() {
+            if (!confirm('Resetar configura\u00e7\u00f5es de investimento para o padr\u00e3o?')) {
+                return;
+            }
+            const defaults = {
+                closingCostPercent: 9,
+                cleanTitleCost: 2500,
+                defaultROI1: 30,
+                defaultROI2: 50,
+                defaultROI3: 100
+            };
+            localStorage.setItem('investmentSettings', JSON.stringify(defaults));
+            loadInvestmentSettings();
+            alert('\u2705 Configura\u00e7\u00f5es de investimento resetadas para o padr\u00e3o!');
+        }
+        
+        // Load investment settings on page load
+        loadInvestmentSettings();
+
     </script>
 </body>
 </html>

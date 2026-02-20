@@ -55,6 +55,9 @@
                     <button id="exportBtn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
                         📥 Exportar CSV
                     </button>
+                    <button id="viewApprovedBtn" onclick="viewApproved()" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        💰 Visualizar Aprovadas (<span id="approvedCount">0</span>)
+                    </button>
                 </div>
             </div>
         </div>
@@ -173,12 +176,20 @@
                             ${undividedBadge}
                         </div>
 
-                        <div class="flex gap-2">
+                        <div class="flex gap-2 mb-2">
                             <button onclick="viewDetails(${index})" class="flex-1 px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors">
                                 📊 Ver Detalhes
                             </button>
                             <button onclick="copyParcel('${prop['Parcel #']}')" class="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300 transition-colors">
                                 📋
+                            </button>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="approveBtn-${index}" onclick="toggleApproval(${index}, true)" class="flex-1 px-3 py-2 bg-emerald-100 text-emerald-700 text-sm rounded hover:bg-emerald-200 transition-colors border border-emerald-300">
+                                ✅ Aprovar
+                            </button>
+                            <button id="rejectBtn-${index}" onclick="toggleApproval(${index}, false)" class="flex-1 px-3 py-2 bg-red-100 text-red-700 text-sm rounded hover:bg-red-200 transition-colors border border-red-300">
+                                ❌ Rejeitar
                             </button>
                         </div>
                     </div>
@@ -228,6 +239,103 @@
             link.download = `selected_properties_${new Date().getTime()}.csv`;
             link.click();
         });
+
+        // ========================================
+        // APPROVAL SYSTEM
+        // ========================================
+        const approvalState = {};
+        
+        function toggleApproval(index, approved) {
+            const prop = properties[index];
+            const parcelId = prop['Parcel #'] || index;
+            
+            if (approved) {
+                // If already approved, un-approve
+                if (approvalState[index] === true) {
+                    delete approvalState[index];
+                    updateApprovalUI(index, null);
+                } else {
+                    approvalState[index] = true;
+                    updateApprovalUI(index, true);
+                }
+            } else {
+                // If already rejected, un-reject
+                if (approvalState[index] === false) {
+                    delete approvalState[index];
+                    updateApprovalUI(index, null);
+                } else {
+                    approvalState[index] = false;
+                    updateApprovalUI(index, false);
+                }
+            }
+            
+            updateApprovedCount();
+        }
+        
+        function updateApprovalUI(index, state) {
+            const approveBtn = document.getElementById(`approveBtn-${index}`);
+            const rejectBtn = document.getElementById(`rejectBtn-${index}`);
+            const card = approveBtn?.closest('.property-card');
+            
+            if (!approveBtn || !rejectBtn) return;
+            
+            // Reset styles
+            approveBtn.className = 'flex-1 px-3 py-2 text-sm rounded transition-colors border';
+            rejectBtn.className = 'flex-1 px-3 py-2 text-sm rounded transition-colors border';
+            
+            if (state === true) {
+                approveBtn.className = 'flex-1 px-3 py-2 bg-emerald-600 text-white text-sm rounded transition-colors border border-emerald-700 font-bold';
+                rejectBtn.className = 'flex-1 px-3 py-2 bg-red-100 text-red-700 text-sm rounded hover:bg-red-200 transition-colors border border-red-300';
+                approveBtn.textContent = '✅ Aprovada';
+                rejectBtn.textContent = '❌ Rejeitar';
+                if (card) card.style.borderLeft = '4px solid #059669';
+            } else if (state === false) {
+                approveBtn.className = 'flex-1 px-3 py-2 bg-emerald-100 text-emerald-700 text-sm rounded hover:bg-emerald-200 transition-colors border border-emerald-300';
+                rejectBtn.className = 'flex-1 px-3 py-2 bg-red-600 text-white text-sm rounded transition-colors border border-red-700 font-bold';
+                approveBtn.textContent = '✅ Aprovar';
+                rejectBtn.textContent = '❌ Rejeitada';
+                if (card) {
+                    card.style.borderLeft = '4px solid #dc2626';
+                    card.style.opacity = '0.6';
+                }
+            } else {
+                approveBtn.className = 'flex-1 px-3 py-2 bg-emerald-100 text-emerald-700 text-sm rounded hover:bg-emerald-200 transition-colors border border-emerald-300';
+                rejectBtn.className = 'flex-1 px-3 py-2 bg-red-100 text-red-700 text-sm rounded hover:bg-red-200 transition-colors border border-red-300';
+                approveBtn.textContent = '✅ Aprovar';
+                rejectBtn.textContent = '❌ Rejeitar';
+                if (card) {
+                    card.style.borderLeft = 'none';
+                    card.style.opacity = '1';
+                }
+            }
+        }
+        
+        function updateApprovedCount() {
+            const count = Object.values(approvalState).filter(v => v === true).length;
+            document.getElementById('approvedCount').textContent = count;
+            const btn = document.getElementById('viewApprovedBtn');
+            if (btn) {
+                btn.disabled = count === 0;
+            }
+        }
+        
+        function viewApproved() {
+            const approvedProperties = [];
+            for (const [index, approved] of Object.entries(approvalState)) {
+                if (approved === true) {
+                    approvedProperties.push(properties[parseInt(index)]);
+                }
+            }
+            
+            if (approvedProperties.length === 0) {
+                alert('Nenhuma propriedade aprovada!');
+                return;
+            }
+            
+            // Save approved properties to localStorage
+            localStorage.setItem('approvedProperties', JSON.stringify(approvedProperties));
+            window.location.href = 'investment.html';
+        }
     </script>
 </body>
 </html>

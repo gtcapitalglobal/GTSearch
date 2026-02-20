@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTSearch - Avaliação de Investimento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        
+        .investment-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            border-left: 4px solid #6366f1;
+        }
+        .investment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+        
+        .field-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        
+        .field-item {
+            padding: 6px 10px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+        .field-item .label {
+            font-size: 10px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .field-item .value {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+            word-break: break-all;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            background: white;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .calc-result {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 2px solid #86efac;
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .calc-result.negative {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-color: #fca5a5;
+        }
+        
+        .max-bid-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: #16a34a;
+        }
+        .max-bid-value.negative {
+            color: #dc2626;
+        }
+        
+        .roi-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .roi-badge-1 { background: #dbeafe; color: #1d4ed8; }
+        .roi-badge-2 { background: #fef3c7; color: #92400e; }
+        .roi-badge-3 { background: #ede9fe; color: #6d28d9; }
+        
+        .summary-bar {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .notes-field {
+            width: 100%;
+            min-height: 60px;
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        .notes-field:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+        
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+            margin: 12px 0;
+        }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .investment-card { break-inside: avoid; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white shadow-md mb-6 no-print">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center gap-4">
+                    <img src="logo.png" alt="GTSearch Logo" class="h-14">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">
+                            💰 Avaliação de Investimento
+                        </h1>
+                        <p class="text-gray-500 text-sm mt-1">Cálculo de Max Bid e ROI</p>
+                    </div>
+                </div>
+                <div class="flex gap-2 flex-wrap">
+                    <button onclick="window.history.back()" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm">
+                        ← Voltar
+                    </button>
+                    <button onclick="recalculateAll()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm">
+                        🔄 Recalcular Todos
+                    </button>
+                    <button onclick="exportInvestmentCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
+                        📥 Exportar CSV
+                    </button>
+                    <button onclick="window.print()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                        🖨️ Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Summary Bar -->
+    <div class="container mx-auto px-4 mb-6 no-print">
+        <div class="summary-bar">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+                <div>
+                    <div class="text-indigo-300 text-xs uppercase tracking-wider">Propriedades</div>
+                    <div class="text-2xl font-bold" id="summaryCount">0</div>
+                </div>
+                <div>
+                    <div class="text-indigo-300 text-xs uppercase tracking-wider">Total Acres</div>
+                    <div class="text-2xl font-bold" id="summaryAcres">0</div>
+                </div>
+                <div>
+                    <div class="text-indigo-300 text-xs uppercase tracking-wider">Closing Cost %</div>
+                    <div class="text-2xl font-bold" id="summaryClosingPct">9%</div>
+                </div>
+                <div>
+                    <div class="text-indigo-300 text-xs uppercase tracking-wider">Clean Title</div>
+                    <div class="text-2xl font-bold" id="summaryCleanTitle">$2,500</div>
+                </div>
+                <div>
+                    <div class="text-indigo-300 text-xs uppercase tracking-wider">Preenchidas</div>
+                    <div class="text-2xl font-bold" id="summaryFilled">0/0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global ROI Settings (editable inline) -->
+    <div class="container mx-auto px-4 mb-6 no-print">
+        <div class="bg-white rounded-xl shadow-sm p-4 border border-indigo-100">
+            <div class="flex items-center justify-between flex-wrap gap-3">
+                <h3 class="text-sm font-bold text-gray-700">⚙️ Configurações Globais (aplica a todos os cards)</h3>
+                <div class="flex items-center gap-4 flex-wrap">
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-gray-500 font-semibold">Closing Cost %:</label>
+                        <input type="number" id="globalClosingPct" class="input-field w-20 text-center" step="0.5" min="0" max="100" onchange="updateGlobalSettings()">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-gray-500 font-semibold">Clean Title $:</label>
+                        <input type="number" id="globalCleanTitle" class="input-field w-28 text-center" step="100" min="0" onchange="updateGlobalSettings()">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-gray-500 font-semibold">ROI 1:</label>
+                        <input type="number" id="globalROI1" class="input-field w-20 text-center" step="1" min="0" max="500" onchange="updateGlobalSettings()">
+                        <span class="text-xs text-gray-400">%</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-gray-500 font-semibold">ROI 2:</label>
+                        <input type="number" id="globalROI2" class="input-field w-20 text-center" step="1" min="0" max="500" onchange="updateGlobalSettings()">
+                        <span class="text-xs text-gray-400">%</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-xs text-gray-500 font-semibold">ROI 3:</label>
+                        <input type="number" id="globalROI3" class="input-field w-20 text-center" step="1" min="0" max="500" onchange="updateGlobalSettings()">
+                        <span class="text-xs text-gray-400">%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards Container -->
+    <div class="container mx-auto px-4 pb-8">
+        <div id="cardsContainer" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <!-- Cards will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // LOAD DATA & SETTINGS
+        // ========================================
+        const approvedProperties = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
+        
+        // Load investment settings from Settings page
+        const investmentSettings = JSON.parse(localStorage.getItem('investmentSettings') || '{}');
+        const DEFAULTS = {
+            closingCostPercent: investmentSettings.closingCostPercent ?? 9,
+            cleanTitleCost: investmentSettings.cleanTitleCost ?? 2500,
+            defaultROI1: investmentSettings.defaultROI1 ?? 30,
+            defaultROI2: investmentSettings.defaultROI2 ?? 50,
+            defaultROI3: investmentSettings.defaultROI3 ?? 100
+        };
+        
+        // Load previously saved investment data (if user already filled in values)
+        let savedInvestmentData = JSON.parse(localStorage.getItem('investmentData') || '{}');
+        
+        // Set global inputs
+        document.getElementById('globalClosingPct').value = DEFAULTS.closingCostPercent;
+        document.getElementById('globalCleanTitle').value = DEFAULTS.cleanTitleCost;
+        document.getElementById('globalROI1').value = DEFAULTS.defaultROI1;
+        document.getElementById('globalROI2').value = DEFAULTS.defaultROI2;
+        document.getElementById('globalROI3').value = DEFAULTS.defaultROI3;
+        
+        // ========================================
+        // FORMAT HELPERS
+        // ========================================
+        function formatCurrency(value) {
+            if (value === null || value === undefined || isNaN(value)) return '-';
+            const isNeg = value < 0;
+            const formatted = Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            return isNeg ? `-$${formatted}` : `$${formatted}`;
+        }
+        
+        function parseCurrency(str) {
+            if (!str) return 0;
+            return parseFloat(String(str).replace(/[$,\s]/g, '')) || 0;
+        }
+        
+        function getFieldValue(prop, ...keys) {
+            for (const key of keys) {
+                if (prop[key] !== undefined && prop[key] !== null && prop[key] !== '' && prop[key] !== '-') {
+                    return prop[key];
+                }
+            }
+            return '-';
+        }
+        
+        // ========================================
+        // MAX BID CALCULATION
+        // Formula: Max Bid = (Market Value - Closing Cost) / (1 + ROI%) - Reforma - Clean Title - Other Costs - Liens
+        // Where: Closing Cost = Market Value × Closing Cost %
+        // ========================================
+        function calculateMaxBid(marketValue, closingCostPct, roiPct, reforma, cleanTitle, otherCosts, liens) {
+            if (!marketValue || marketValue <= 0) return null;
+            
+            const closingCost = marketValue * (closingCostPct / 100);
+            const roiDecimal = roiPct / 100;
+            
+            const maxBid = ((marketValue - closingCost) / (1 + roiDecimal)) - reforma - cleanTitle - otherCosts - liens;
+            
+            return {
+                maxBid: Math.round(maxBid),
+                closingCost: Math.round(closingCost)
+            };
+        }
+        
+        // ========================================
+        // RENDER CARDS
+        // ========================================
+        function renderCards() {
+            const container = document.getElementById('cardsContainer');
+            
+            if (approvedProperties.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-16">
+                        <div class="text-6xl mb-4">📋</div>
+                        <p class="text-gray-500 text-xl mb-2">Nenhuma propriedade aprovada.</p>
+                        <p class="text-gray-400 text-sm mb-6">Aprove propriedades na Tela 2 (Cards) ou na Análise Automática.</p>
+                        <a href="selected-cards.html" class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors no-underline">
+                            ← Voltar aos Cards
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Update summary
+            document.getElementById('summaryCount').textContent = approvedProperties.length;
+            const totalAcres = approvedProperties.reduce((sum, p) => sum + (parseFloat(p['Acres'] || p.Acres || 0)), 0);
+            document.getElementById('summaryAcres').textContent = totalAcres.toFixed(2);
+            document.getElementById('summaryClosingPct').textContent = DEFAULTS.closingCostPercent + '%';
+            document.getElementById('summaryCleanTitle').textContent = formatCurrency(DEFAULTS.cleanTitleCost);
+            
+            container.innerHTML = '';
+            
+            approvedProperties.forEach((prop, index) => {
+                const parcelId = getFieldValue(prop, 'Parcel #', 'Parcel Number', 'parcel_id');
+                const savedData = savedInvestmentData[parcelId] || {};
+                
+                const card = document.createElement('div');
+                card.className = 'investment-card bg-white rounded-xl shadow-sm overflow-hidden';
+                card.id = `card-${index}`;
+                
+                // Extract property info
+                const address = getFieldValue(prop, 'Address', 'address');
+                const city = getFieldValue(prop, 'City', 'city');
+                const county = getFieldValue(prop, 'County', 'county');
+                const acres = parseFloat(prop['Acres'] || prop.Acres || 0).toFixed(2);
+                const sqft = prop['Square Feet'] || '-';
+                const zoning = getFieldValue(prop, 'Zoning', 'zoning');
+                const landUse = getFieldValue(prop, 'Land Use', 'landUse', 'Parcel Type');
+                const amountDue = getFieldValue(prop, 'Amount Due');
+                const totalValue = getFieldValue(prop, 'Total Value');
+                const landValue = getFieldValue(prop, 'Land');
+                const improvements = getFieldValue(prop, 'Improvements');
+                const legalDesc = getFieldValue(prop, 'Legal Description');
+                
+                // Get analysis data if available
+                const analysisData = prop.analysisData || {};
+                const femaZone = analysisData.fema?.zone || getFieldValue(prop, 'FEMA Zone', 'femaZone');
+                const wetlandsInfo = analysisData.wetlands?.found ? 
+                    `${analysisData.wetlands.proximity} (${analysisData.wetlands.count} áreas)` : 
+                    getFieldValue(prop, 'Wetlands');
+                const zoningFromAnalysis = analysisData.zoning?.code ? 
+                    `${analysisData.zoning.code} - ${analysisData.zoning.description || ''}` : zoning;
+                const landUseFromAnalysis = analysisData.landUse?.code ?
+                    `${analysisData.landUse.code} - ${analysisData.landUse.description || ''}` : landUse;
+                
+                // Risk semaphore
+                const riskLevel = prop.riskLevel || analysisData.riskLevel || '-';
+                const riskScore = prop.riskScore ?? analysisData.riskScore ?? '-';
+                let riskColor = '#6b7280';
+                let riskBg = '#f3f4f6';
+                if (riskLevel === 'GREEN' || riskLevel === 'green') { riskColor = '#059669'; riskBg = '#d1fae5'; }
+                else if (riskLevel === 'YELLOW' || riskLevel === 'yellow') { riskColor = '#d97706'; riskBg = '#fef3c7'; }
+                else if (riskLevel === 'RED' || riskLevel === 'red') { riskColor = '#dc2626'; riskBg = '#fee2e2'; }
+                else if (riskLevel === 'CRITICAL' || riskLevel === 'critical') { riskColor = '#7f1d1d'; riskBg = '#fecaca'; }
+                
+                // Default values from saved or settings
+                const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
+                const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
+                const roi1 = parseFloat(document.getElementById('globalROI1').value) || DEFAULTS.defaultROI1;
+                const roi2 = parseFloat(document.getElementById('globalROI2').value) || DEFAULTS.defaultROI2;
+                const roi3 = parseFloat(document.getElementById('globalROI3').value) || DEFAULTS.defaultROI3;
+                
+                card.innerHTML = `
+                    <!-- Card Header -->
+                    <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 p-4 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-indigo-200 text-xs uppercase tracking-wider">#${index + 1} de ${approvedProperties.length}</div>
+                                <h3 class="text-lg font-bold">${parcelId}</h3>
+                                <p class="text-indigo-200 text-sm">${address !== '-' ? address + ', ' + city : county}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold" style="background: ${riskBg}; color: ${riskColor};">
+                                    ${riskLevel !== '-' ? riskLevel + ' (' + riskScore + ')' : 'N/A'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4">
+                        <!-- Property Info (auto-populated) -->
+                        <div class="mb-3">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">📋 Dados da Propriedade</h4>
+                            <div class="field-group">
+                                <div class="field-item">
+                                    <div class="label">Condado</div>
+                                    <div class="value">${county}</div>
+                                </div>
+                                <div class="field-item">
+                                    <div class="label">Acres</div>
+                                    <div class="value">${acres}</div>
+                                </div>
+                                <div class="field-item">
+                                    <div class="label">Zoning</div>
+                                    <div class="value" title="${zoningFromAnalysis}">${zoningFromAnalysis}</div>
+                                </div>
+                                <div class="field-item">
+                                    <div class="label">Land Use</div>
+                                    <div class="value" title="${landUseFromAnalysis}">${landUseFromAnalysis}</div>
+                                </div>
+                                <div class="field-item">
+                                    <div class="label">FEMA Zone</div>
+                                    <div class="value">${femaZone}</div>
+                                </div>
+                                <div class="field-item">
+                                    <div class="label">Wetlands</div>
+                                    <div class="value">${wetlandsInfo}</div>
+                                </div>
+                                <div class="field-item">
+                                    <div class="label">Assessed Value</div>
+                                    <div class="value">${totalValue}</div>
+                                </div>
+                                <div class="field-item">
+                                    <div class="label">Amount Due</div>
+                                    <div class="value">${amountDue}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
+                        <!-- User Input Fields -->
+                        <div class="mb-3">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">✏️ Dados do Investidor</h4>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-xs text-gray-500 font-semibold block mb-1">Valor de Mercado ($) *</label>
+                                    <input type="number" class="input-field market-value" data-index="${index}" 
+                                           value="${savedData.marketValue || ''}" 
+                                           placeholder="Ex: 50000" 
+                                           oninput="recalculateCard(${index})">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-500 font-semibold block mb-1">Reforma ($)</label>
+                                    <input type="number" class="input-field reforma-cost" data-index="${index}" 
+                                           value="${savedData.reforma || 0}" 
+                                           placeholder="0" 
+                                           oninput="recalculateCard(${index})">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-500 font-semibold block mb-1">Liens ($)</label>
+                                    <input type="number" class="input-field liens-cost" data-index="${index}" 
+                                           value="${savedData.liens || 0}" 
+                                           placeholder="0" 
+                                           oninput="recalculateCard(${index})">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-500 font-semibold block mb-1">Outros Custos ($)</label>
+                                    <input type="number" class="input-field other-costs" data-index="${index}" 
+                                           value="${savedData.otherCosts || 0}" 
+                                           placeholder="0" 
+                                           oninput="recalculateCard(${index})">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
+                        <!-- Calculated Results -->
+                        <div class="mb-3">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">📊 Cálculos de Max Bid</h4>
+                            
+                            <!-- Closing Cost (auto-calculated) -->
+                            <div class="flex items-center justify-between bg-gray-50 rounded-lg p-2 mb-3 border border-gray-200">
+                                <span class="text-xs text-gray-500 font-semibold">Closing Cost (${closingPct}% do MV):</span>
+                                <span class="text-sm font-bold text-gray-700" id="closingCost-${index}">-</span>
+                            </div>
+                            
+                            <!-- 3 ROI Scenarios -->
+                            <div class="grid grid-cols-1 gap-2" id="roiResults-${index}">
+                                <div class="calc-result" id="roi1-result-${index}">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <span class="roi-badge roi-badge-1">ROI ${roi1}%</span>
+                                            <div class="text-xs text-gray-500 mt-1">Cenário Conservador</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-xs text-gray-400">Max Bid</div>
+                                            <div class="max-bid-value" id="maxBid1-${index}">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="calc-result" id="roi2-result-${index}">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <span class="roi-badge roi-badge-2">ROI ${roi2}%</span>
+                                            <div class="text-xs text-gray-500 mt-1">Cenário Moderado</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-xs text-gray-400">Max Bid</div>
+                                            <div class="max-bid-value" id="maxBid2-${index}">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="calc-result" id="roi3-result-${index}">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <span class="roi-badge roi-badge-3">ROI ${roi3}%</span>
+                                            <div class="text-xs text-gray-500 mt-1">Cenário Agressivo</div>
+                                        </div>
+                                        <div class="text-right">
+                                            <div class="text-xs text-gray-400">Max Bid</div>
+                                            <div class="max-bid-value" id="maxBid3-${index}">-</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
+                        <!-- Notes -->
+                        <div>
+                            <label class="text-xs text-gray-500 font-semibold block mb-1">📝 Notas</label>
+                            <textarea class="notes-field" data-index="${index}" 
+                                      placeholder="Observações sobre esta propriedade..."
+                                      oninput="saveCardData(${index})">${savedData.notes || ''}</textarea>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+                
+                // Recalculate if there's saved data
+                if (savedData.marketValue) {
+                    recalculateCard(index);
+                }
+            });
+            
+            updateFilledCount();
+        }
+        
+        // ========================================
+        // RECALCULATE CARD
+        // ========================================
+        function recalculateCard(index) {
+            const card = document.getElementById(`card-${index}`);
+            if (!card) return;
+            
+            const marketValue = parseFloat(card.querySelector('.market-value').value) || 0;
+            const reforma = parseFloat(card.querySelector('.reforma-cost').value) || 0;
+            const liens = parseFloat(card.querySelector('.liens-cost').value) || 0;
+            const otherCosts = parseFloat(card.querySelector('.other-costs').value) || 0;
+            
+            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
+            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
+            const roi1 = parseFloat(document.getElementById('globalROI1').value) || DEFAULTS.defaultROI1;
+            const roi2 = parseFloat(document.getElementById('globalROI2').value) || DEFAULTS.defaultROI2;
+            const roi3 = parseFloat(document.getElementById('globalROI3').value) || DEFAULTS.defaultROI3;
+            
+            if (marketValue <= 0) {
+                document.getElementById(`closingCost-${index}`).textContent = '-';
+                document.getElementById(`maxBid1-${index}`).textContent = '-';
+                document.getElementById(`maxBid2-${index}`).textContent = '-';
+                document.getElementById(`maxBid3-${index}`).textContent = '-';
+                return;
+            }
+            
+            // Calculate Closing Cost
+            const closingCost = Math.round(marketValue * (closingPct / 100));
+            document.getElementById(`closingCost-${index}`).textContent = formatCurrency(closingCost);
+            
+            // Calculate 3 Max Bids
+            const scenarios = [
+                { roi: roi1, elementId: `maxBid1-${index}`, resultId: `roi1-result-${index}` },
+                { roi: roi2, elementId: `maxBid2-${index}`, resultId: `roi2-result-${index}` },
+                { roi: roi3, elementId: `maxBid3-${index}`, resultId: `roi3-result-${index}` }
+            ];
+            
+            scenarios.forEach(scenario => {
+                const result = calculateMaxBid(marketValue, closingPct, scenario.roi, reforma, cleanTitle, otherCosts, liens);
+                const el = document.getElementById(scenario.elementId);
+                const resultEl = document.getElementById(scenario.resultId);
+                
+                if (result) {
+                    el.textContent = formatCurrency(result.maxBid);
+                    if (result.maxBid < 0) {
+                        el.className = 'max-bid-value negative';
+                        resultEl.className = 'calc-result negative';
+                    } else {
+                        el.className = 'max-bid-value';
+                        resultEl.className = 'calc-result';
+                    }
+                } else {
+                    el.textContent = '-';
+                }
+            });
+            
+            // Save data
+            saveCardData(index);
+            updateFilledCount();
+        }
+        
+        // ========================================
+        // SAVE CARD DATA
+        // ========================================
+        function saveCardData(index) {
+            const card = document.getElementById(`card-${index}`);
+            if (!card) return;
+            
+            const prop = approvedProperties[index];
+            const parcelId = getFieldValue(prop, 'Parcel #', 'Parcel Number', 'parcel_id');
+            
+            const data = {
+                marketValue: parseFloat(card.querySelector('.market-value').value) || 0,
+                reforma: parseFloat(card.querySelector('.reforma-cost').value) || 0,
+                liens: parseFloat(card.querySelector('.liens-cost').value) || 0,
+                otherCosts: parseFloat(card.querySelector('.other-costs').value) || 0,
+                notes: card.querySelector('.notes-field').value || ''
+            };
+            
+            savedInvestmentData[parcelId] = data;
+            
+            try {
+                localStorage.setItem('investmentData', JSON.stringify(savedInvestmentData));
+            } catch (e) {
+                console.warn('localStorage full, clearing old data');
+            }
+        }
+        
+        // ========================================
+        // GLOBAL SETTINGS UPDATE
+        // ========================================
+        function updateGlobalSettings() {
+            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
+            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
+            
+            document.getElementById('summaryClosingPct').textContent = closingPct + '%';
+            document.getElementById('summaryCleanTitle').textContent = formatCurrency(cleanTitle);
+            
+            // Recalculate all cards
+            recalculateAll();
+        }
+        
+        function recalculateAll() {
+            approvedProperties.forEach((_, index) => {
+                recalculateCard(index);
+            });
+            
+            // Re-render to update ROI labels
+            renderCards();
+        }
+        
+        // ========================================
+        // FILLED COUNT
+        // ========================================
+        function updateFilledCount() {
+            let filled = 0;
+            approvedProperties.forEach((prop, index) => {
+                const card = document.getElementById(`card-${index}`);
+                if (card) {
+                    const mv = parseFloat(card.querySelector('.market-value').value) || 0;
+                    if (mv > 0) filled++;
+                }
+            });
+            document.getElementById('summaryFilled').textContent = `${filled}/${approvedProperties.length}`;
+        }
+        
+        // ========================================
+        // EXPORT CSV
+        // ========================================
+        function exportInvestmentCSV() {
+            if (approvedProperties.length === 0) {
+                alert('Nenhuma propriedade para exportar!');
+                return;
+            }
+            
+            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
+            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
+            const roi1 = parseFloat(document.getElementById('globalROI1').value) || DEFAULTS.defaultROI1;
+            const roi2 = parseFloat(document.getElementById('globalROI2').value) || DEFAULTS.defaultROI2;
+            const roi3 = parseFloat(document.getElementById('globalROI3').value) || DEFAULTS.defaultROI3;
+            
+            const headers = [
+                'Parcel #', 'Address', 'County', 'Acres', 'Zoning', 'Land Use',
+                'FEMA Zone', 'Assessed Value', 'Amount Due', 'Risk Level',
+                'Market Value', 'Closing Cost %', 'Closing Cost $', 'Reforma', 
+                'Clean Title', 'Liens', 'Other Costs',
+                `Max Bid (ROI ${roi1}%)`, `Max Bid (ROI ${roi2}%)`, `Max Bid (ROI ${roi3}%)`,
+                'Notes'
+            ];
+            
+            const rows = approvedProperties.map((prop, index) => {
+                const parcelId = getFieldValue(prop, 'Parcel #', 'Parcel Number', 'parcel_id');
+                const data = savedInvestmentData[parcelId] || {};
+                const mv = data.marketValue || 0;
+                const reforma = data.reforma || 0;
+                const liens = data.liens || 0;
+                const otherCosts = data.otherCosts || 0;
+                
+                const calc1 = mv > 0 ? calculateMaxBid(mv, closingPct, roi1, reforma, cleanTitle, otherCosts, liens) : null;
+                const calc2 = mv > 0 ? calculateMaxBid(mv, closingPct, roi2, reforma, cleanTitle, otherCosts, liens) : null;
+                const calc3 = mv > 0 ? calculateMaxBid(mv, closingPct, roi3, reforma, cleanTitle, otherCosts, liens) : null;
+                
+                return [
+                    parcelId,
+                    getFieldValue(prop, 'Address', 'address'),
+                    getFieldValue(prop, 'County', 'county'),
+                    parseFloat(prop['Acres'] || prop.Acres || 0).toFixed(2),
+                    getFieldValue(prop, 'Zoning', 'zoning'),
+                    getFieldValue(prop, 'Land Use', 'landUse', 'Parcel Type'),
+                    getFieldValue(prop, 'FEMA Zone', 'femaZone'),
+                    getFieldValue(prop, 'Total Value'),
+                    getFieldValue(prop, 'Amount Due'),
+                    prop.riskLevel || '-',
+                    mv || '',
+                    closingPct + '%',
+                    calc1 ? calc1.closingCost : '',
+                    reforma || '',
+                    cleanTitle,
+                    liens || '',
+                    otherCosts || '',
+                    calc1 ? calc1.maxBid : '',
+                    calc2 ? calc2.maxBid : '',
+                    calc3 ? calc3.maxBid : '',
+                    (data.notes || '').replace(/[\n\r]/g, ' ')
+                ];
+            });
+            
+            const csvContent = [
+                headers.join(','),
+                ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+            ].join('\n');
+            
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `investment_analysis_${new Date().toISOString().slice(0,10)}.csv`;
+            link.click();
+        }
+        
+        // ========================================
+        // INITIALIZE
+        // ========================================
+        renderCards();
+    </script>
+</body>
+</html>
