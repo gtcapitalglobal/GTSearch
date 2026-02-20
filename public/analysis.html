@@ -3672,7 +3672,15 @@
                 
                 // Salvar analysisData no objeto da propriedade (usado pela validação de aprovação)
                 properties[currentIndex].analysisData = result;
-                console.log('💾 analysisData salvo na propriedade', currentIndex);
+                
+                // Salvar riskLevel e riskScore diretamente no objeto da propriedade
+                const riskCalc = propertyAnalysisWidget.calculateRiskAssessment(result);
+                properties[currentIndex].riskLevel = riskCalc?.level || '-';
+                properties[currentIndex].riskScore = riskCalc?.score ?? '-';
+                console.log('💾 analysisData + risk salvos na propriedade', currentIndex, 'risk:', riskCalc?.level, riskCalc?.score);
+                
+                // Persist to localStorage immediately
+                localStorage.setItem('selectedProperties', JSON.stringify(properties));
                 
                 // Save to analysis history
                 saveAnalysisHistory({
@@ -3682,8 +3690,8 @@
                     lng: lng,
                     address: property['Address'] || property.address || 'N/A',
                     overallStatus: result?.overallStatus || 'N/A',
-                    riskScore: result ? propertyAnalysisWidget.calculateRiskAssessment(result)?.score : null,
-                    riskLevel: result ? propertyAnalysisWidget.calculateRiskAssessment(result)?.level : null,
+                    riskScore: riskCalc?.score ?? null,
+                    riskLevel: riskCalc?.level || null,
                     timestamp: new Date().toISOString(),
                     data: result
                 });
@@ -3811,6 +3819,10 @@
                     // Salvar analysisData no objeto da propriedade (usado pela validação de aprovação)
                     properties[i].analysisData = result;
                     
+                    // Salvar riskLevel e riskScore diretamente no objeto da propriedade
+                    properties[i].riskLevel = risk?.level || '-';
+                    properties[i].riskScore = risk?.score ?? '-';
+                    
                     results.push({ index: i, parcelId, county, status: result?.overallStatus || 'N/A', riskLevel: risk?.level, riskScore: risk?.score });
                     completed++;
                     
@@ -3886,6 +3898,9 @@
                         `).join('')}
                     </div>
                 </div>`;
+            
+            // Persist all properties with analysisData + risk to localStorage
+            localStorage.setItem('selectedProperties', JSON.stringify(properties));
             
             // Store batch results for export
             window._lastBatchResults = results;

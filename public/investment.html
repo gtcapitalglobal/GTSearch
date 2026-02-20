@@ -447,10 +447,14 @@
                 maxBid = Math.round(amountDue);
             }
             
+            // Profit = Market Value - Closing Cost - Max Bid - Reforma - Clean Title - Other Costs - Liens
+            const profit = Math.round((marketValue - closingCost) - maxBid - reforma - cleanTitle - otherCosts - liens);
+            
             return {
                 maxBid: maxBid,
                 closingCost: Math.round(closingCost),
-                floorApplied: floorApplied
+                floorApplied: floorApplied,
+                profit: profit
             };
         }
         
@@ -572,7 +576,7 @@
                         <!-- Image Placeholder -->
                         <div class="mb-3">
                             <div class="property-image-placeholder" id="image-${index}" 
-                                 style="width: 100%; height: 200px; background: #f3f4f6; border: 2px dashed #d1d5db; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                                 style="width: 100%; aspect-ratio: 1/1; max-height: 250px; background: #f3f4f6; border: 2px dashed #d1d5db; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; cursor: pointer; transition: all 0.2s;"
                                  onmouseover="this.style.borderColor='#818cf8'; this.style.background='#eef2ff';"
                                  onmouseout="this.style.borderColor='#d1d5db'; this.style.background='#f3f4f6';">
                                 <span style="font-size: 32px;">🖼️</span>
@@ -699,11 +703,15 @@
                                                 <span class="text-xs text-gray-500 font-bold">%</span>
                                             </div>
                                         </div>
-                                        <div class="text-right flex items-center gap-2">
+                                        <div class="text-right flex items-center gap-3">
                                             <span class="viability-icon" id="viability1-${index}" style="display:none;"></span>
                                             <div>
                                                 <div class="text-xs text-gray-400">Max Bid</div>
                                                 <div class="max-bid-value" id="maxBid1-${index}">-</div>
+                                            </div>
+                                            <div style="border-left: 2px solid #e2e8f0; padding-left: 10px;">
+                                                <div class="text-xs text-gray-400">Profit</div>
+                                                <div class="text-base font-bold" id="profit1-${index}" style="color: #059669;">-</div>
                                             </div>
                                         </div>
                                     </div>
@@ -721,11 +729,15 @@
                                                 <span class="text-xs text-gray-500 font-bold">%</span>
                                             </div>
                                         </div>
-                                        <div class="text-right flex items-center gap-2">
+                                        <div class="text-right flex items-center gap-3">
                                             <span class="viability-icon" id="viability2-${index}" style="display:none;"></span>
                                             <div>
                                                 <div class="text-xs text-gray-400">Max Bid</div>
                                                 <div class="max-bid-value" id="maxBid2-${index}">-</div>
+                                            </div>
+                                            <div style="border-left: 2px solid #e2e8f0; padding-left: 10px;">
+                                                <div class="text-xs text-gray-400">Profit</div>
+                                                <div class="text-base font-bold" id="profit2-${index}" style="color: #059669;">-</div>
                                             </div>
                                         </div>
                                     </div>
@@ -743,11 +755,15 @@
                                                 <span class="text-xs text-gray-500 font-bold">%</span>
                                             </div>
                                         </div>
-                                        <div class="text-right flex items-center gap-2">
+                                        <div class="text-right flex items-center gap-3">
                                             <span class="viability-icon" id="viability3-${index}" style="display:none;"></span>
                                             <div>
                                                 <div class="text-xs text-gray-400">Max Bid</div>
                                                 <div class="max-bid-value" id="maxBid3-${index}">-</div>
+                                            </div>
+                                            <div style="border-left: 2px solid #e2e8f0; padding-left: 10px;">
+                                                <div class="text-xs text-gray-400">Profit</div>
+                                                <div class="text-base font-bold" id="profit3-${index}" style="color: #059669;">-</div>
                                             </div>
                                         </div>
                                     </div>
@@ -875,6 +891,9 @@
                 const resultEl = document.getElementById(scenario.resultId);
                 const viabilityEl = document.getElementById(scenario.viabilityId);
                 
+                // Profit element
+                const profitEl = document.getElementById(`profit${i + 1}-${index}`);
+                
                 if (result) {
                     if (i === 0) firstMaxBid = result.maxBid;
                     
@@ -883,6 +902,12 @@
                         el.textContent = formatCurrency(result.maxBid) + ' (= Amount Due)';
                     } else {
                         el.textContent = formatCurrency(result.maxBid);
+                    }
+                    
+                    // Display Profit
+                    if (profitEl) {
+                        profitEl.textContent = formatCurrency(result.profit);
+                        profitEl.style.color = result.profit >= 0 ? '#059669' : '#dc2626';
                     }
                     
                     // Viability semaphore
@@ -897,6 +922,7 @@
                     viabilityEl.title = viability.label + (amountDue > 0 ? ` (Amount Due: ${formatCurrency(amountDue)})` : '');
                 } else {
                     el.textContent = '-';
+                    if (profitEl) profitEl.textContent = '-';
                     viabilityEl.style.display = 'none';
                 }
             });
@@ -1013,12 +1039,12 @@
             
             const headers = [
                 'Parcel #', 'Address', 'County', 'Acres', 'Zoning', 'Land Use',
-                'FEMA Zone', 'Assessed Value', 'Amount Due', 'Risk Level',
+                'FEMA Zone', 'Wetlands', 'Assessed Value', 'Amount Due', 'Risk Level',
                 'Market Value', '$/Acre', '$/SqFt', 'Closing Cost %', 'Closing Cost $', 'Reforma', 
                 'Clean Title', 'Liens', 'Other Costs',
-                'ROI 1 %', 'Max Bid (ROI 1)', 'Viability 1',
-                'ROI 2 %', 'Max Bid (ROI 2)', 'Viability 2',
-                'ROI 3 %', 'Max Bid (ROI 3)', 'Viability 3',
+                'ROI 1 %', 'Max Bid (ROI 1)', 'Profit (ROI 1)', 'Viability 1',
+                'ROI 2 %', 'Max Bid (ROI 2)', 'Profit (ROI 2)', 'Viability 2',
+                'ROI 3 %', 'Max Bid (ROI 3)', 'Profit (ROI 3)', 'Viability 3',
                 'Notes'
             ];
             
@@ -1044,14 +1070,22 @@
                 const v2 = calc2 ? getViability(calc2.maxBid, amountDue).label : '';
                 const v3 = calc3 ? getViability(calc3.maxBid, amountDue).label : '';
                 
+                // Use analysis data for CSV export
+                const ad = prop.analysisData || {};
+                const csvZoning = ad.zoning?.code ? ad.zoning.code + (ad.zoning.description ? ' - ' + ad.zoning.description : '') : getFieldValue(prop, 'Zoning', 'zoning');
+                const csvLandUse = ad.landUse?.code ? ad.landUse.code + (ad.landUse.description ? ' - ' + ad.landUse.description : '') : getFieldValue(prop, 'Land Use', 'landUse', 'Parcel Type');
+                const csvFema = ad.fema?.zone || getFieldValue(prop, 'FEMA Zone', 'femaZone');
+                const csvWetlands = ad.wetlands?.found ? ad.wetlands.proximity + ' (' + ad.wetlands.count + ' areas)' : getFieldValue(prop, 'Wetlands');
+                
                 return [
                     parcelId,
                     getFieldValue(prop, 'Address', 'address'),
                     getFieldValue(prop, 'County', 'county'),
                     acres.toFixed(2),
-                    getFieldValue(prop, 'Zoning', 'zoning'),
-                    getFieldValue(prop, 'Land Use', 'landUse', 'Parcel Type'),
-                    getFieldValue(prop, 'FEMA Zone', 'femaZone'),
+                    csvZoning,
+                    csvLandUse,
+                    csvFema,
+                    csvWetlands,
                     getFieldValue(prop, 'Total Value'),
                     getFieldValue(prop, 'Amount Due'),
                     prop.riskLevel || '-',
@@ -1066,12 +1100,15 @@
                     otherCosts || '',
                     r1 + '%',
                     calc1 ? calc1.maxBid : '',
+                    calc1 ? calc1.profit : '',
                     v1,
                     r2 + '%',
                     calc2 ? calc2.maxBid : '',
+                    calc2 ? calc2.profit : '',
                     v2,
                     r3 + '%',
                     calc3 ? calc3.maxBid : '',
+                    calc3 ? calc3.profit : '',
                     v3,
                     (data.notes || '').replace(/[\n\r]/g, ' ')
                 ];
@@ -1106,7 +1143,7 @@
             <html>
             <head>
                 <meta charset="UTF-8">
-                <title>GT Capital - Bid Sheet</title>
+                <title>GT Lands - Bid Sheet</title>
                 <style>
                     * { margin: 0; padding: 0; box-sizing: border-box; }
                     body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #1a1a1a; }
@@ -1160,12 +1197,20 @@
                 const v2 = calc2 ? getViability(calc2.maxBid, amountDue) : null;
                 const v3 = calc3 ? getViability(calc3.maxBid, amountDue) : null;
                 
+                // Get analysis data for PDF
+                const analysisData = prop.analysisData || {};
+                
+                // Wetlands info for PDF
+                const wetlandsInfoPdf = analysisData.wetlands?.found ? 
+                    `${analysisData.wetlands.proximity} (${analysisData.wetlands.count} areas)` : 
+                    getFieldValue(prop, 'Wetlands');
+                
                 const pricePerAcre = mv > 0 && parseFloat(acres) > 0 ? formatCurrency(Math.round(mv / parseFloat(acres))) : '-';
                 
                 html += `
                 <div class="page">
                     <div class="header">
-                        <h1>GT CAPITAL - BID SHEET</h1>
+                        <h1>GT LANDS - BID SHEET</h1>
                         <p>Propriedade ${index + 1} de ${approvedProperties.length} | Gerado em ${new Date().toLocaleDateString('pt-BR')}</p>
                     </div>
                     
@@ -1174,9 +1219,9 @@
                         <span>${address !== '-' ? address + ', ' + city + ', FL' : county + ', FL'}</span>
                     </div>
                     
-                    <!-- Image Placeholder -->
-                    <div style="width: 100%; height: 150px; background: #f8f8f8; border: 2px dashed #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; color: #999; font-size: 12px;">
-                        🖼️ Imagem da Propriedade (Em breve)
+                    <!-- Image Placeholder (Square) -->
+                    <div style="width: 200px; height: 200px; background: #f8f8f8; border: 2px dashed #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; color: #999; font-size: 12px; float: right; margin-left: 15px;">
+                        🖼️ Imagem
                     </div>
                     
                     <table>
@@ -1185,20 +1230,24 @@
                             <th>Acres</th><td>${acres}</td>
                         </tr>
                         <tr>
-                            <th>Zoning</th><td>${getFieldValue(prop, 'Zoning', 'zoning')}</td>
-                            <th>Land Use</th><td>${getFieldValue(prop, 'Land Use', 'landUse')}</td>
+                            <th>Zoning</th><td>${analysisData.zoning?.code ? analysisData.zoning.code + (analysisData.zoning.description ? ' - ' + analysisData.zoning.description : '') : getFieldValue(prop, 'Zoning', 'zoning')}</td>
+                            <th>Land Use</th><td>${analysisData.landUse?.code ? analysisData.landUse.code + (analysisData.landUse.description ? ' - ' + analysisData.landUse.description : '') : getFieldValue(prop, 'Land Use', 'landUse')}</td>
                         </tr>
                         <tr>
-                            <th>FEMA Zone</th><td>${getFieldValue(prop, 'FEMA Zone', 'femaZone')}</td>
-                            <th>Risk Level</th><td>${prop.riskLevel || '-'}</td>
+                            <th>FEMA Zone</th><td>${analysisData.fema?.zone || getFieldValue(prop, 'FEMA Zone', 'femaZone')}</td>
+                            <th>Risk Level</th><td style="font-weight:700;color:${(prop.riskLevel === 'green' ? '#059669' : prop.riskLevel === 'yellow' ? '#d97706' : prop.riskLevel === 'red' || prop.riskLevel === 'critical' ? '#dc2626' : '#6b7280')};">${prop.riskLevel ? prop.riskLevel.toUpperCase() + (prop.riskScore !== undefined && prop.riskScore !== '-' ? ' (' + prop.riskScore + ')' : '') : '-'}</td>
                         </tr>
                         <tr>
+                            <th>Wetlands</th><td>${wetlandsInfoPdf}</td>
                             <th>Assessed Value</th><td>${totalValue}</td>
-                            <th>Amount Due</th><td style="font-weight:700;color:#dc2626;">${amountDueStr}</td>
                         </tr>
                         <tr>
+                            <th>Amount Due</th><td style="font-weight:700;color:#dc2626;">${amountDueStr}</td>
                             <th>Market Value</th><td style="font-weight:700;">${mv > 0 ? formatCurrency(mv) : '-'}</td>
+                        </tr>
+                        <tr>
                             <th>$/Acre</th><td>${pricePerAcre}</td>
+                            <th></th><td></td>
                         </tr>
                     </table>
                     
@@ -1207,25 +1256,29 @@
                             <th>Cenário</th>
                             <th>ROI %</th>
                             <th>Max Bid</th>
-                            <th>Viabilidade</th>
+                            <th>Profit</th>
+                            <th style="background:#1e1b4b;">Bid no Leilão</th>
                         </tr>
                         <tr>
                             <td>ROI 1 (Conservador)</td>
                             <td>${r1}%</td>
                             <td>${calc1 ? formatCurrency(calc1.maxBid) : '-'}</td>
-                            <td class="${v1 ? v1.status : ''}">${v1 ? v1.icon + ' ' + v1.label : '-'}</td>
+                            <td style="color:${calc1 && calc1.profit >= 0 ? '#059669' : '#dc2626'};">${calc1 ? formatCurrency(calc1.profit) : '-'}</td>
+                            <td style="border-bottom: 1px solid #999; min-width: 100px;"></td>
                         </tr>
                         <tr>
                             <td>ROI 2 (Moderado)</td>
                             <td>${r2}%</td>
                             <td>${calc2 ? formatCurrency(calc2.maxBid) : '-'}</td>
-                            <td class="${v2 ? v2.status : ''}">${v2 ? v2.icon + ' ' + v2.label : '-'}</td>
+                            <td style="color:${calc2 && calc2.profit >= 0 ? '#059669' : '#dc2626'};">${calc2 ? formatCurrency(calc2.profit) : '-'}</td>
+                            <td style="border-bottom: 1px solid #999; min-width: 100px;"></td>
                         </tr>
                         <tr>
                             <td>ROI 3 (Agressivo)</td>
                             <td>${r3}%</td>
                             <td>${calc3 ? formatCurrency(calc3.maxBid) : '-'}</td>
-                            <td class="${v3 ? v3.status : ''}">${v3 ? v3.icon + ' ' + v3.label : '-'}</td>
+                            <td style="color:${calc3 && calc3.profit >= 0 ? '#059669' : '#dc2626'};">${calc3 ? formatCurrency(calc3.profit) : '-'}</td>
+                            <td style="border-bottom: 1px solid #999; min-width: 100px;"></td>
                         </tr>
                     </table>
                     
@@ -1255,7 +1308,7 @@
                     </div>
                     
                     <div class="footer">
-                        GT Capital | Confidencial | ${new Date().toLocaleDateString('pt-BR')} | Página ${index + 1}/${approvedProperties.length}
+                        GT Lands | Confidencial | ${new Date().toLocaleDateString('pt-BR')} | Página ${index + 1}/${approvedProperties.length}
                     </div>
                 </div>`;
             });
@@ -1303,28 +1356,35 @@
                 const r1 = invData.roi1 || DEFAULTS.defaultROI1;
                 const r2 = invData.roi2 || DEFAULTS.defaultROI2;
                 const r3 = invData.roi3 || DEFAULTS.defaultROI3;
-                const calc1 = mv > 0 ? calculateMaxBid(mv, closingPct, r1, invData.reforma || 0, cleanTitle, invData.otherCosts || 0, invData.liens || 0) : null;
-                const calc2 = mv > 0 ? calculateMaxBid(mv, closingPct, r2, invData.reforma || 0, cleanTitle, invData.otherCosts || 0, invData.liens || 0) : null;
-                const calc3 = mv > 0 ? calculateMaxBid(mv, closingPct, r3, invData.reforma || 0, cleanTitle, invData.otherCosts || 0, invData.liens || 0) : null;
+                const calc1 = mv > 0 ? calculateMaxBid(mv, closingPct, r1, invData.reforma || 0, cleanTitle, invData.otherCosts || 0, invData.liens || 0, amountDue) : null;
+                const calc2 = mv > 0 ? calculateMaxBid(mv, closingPct, r2, invData.reforma || 0, cleanTitle, invData.otherCosts || 0, invData.liens || 0, amountDue) : null;
+                const calc3 = mv > 0 ? calculateMaxBid(mv, closingPct, r3, invData.reforma || 0, cleanTitle, invData.otherCosts || 0, invData.liens || 0, amountDue) : null;
+                
+                // Use analysis data
+                const ad = prop.analysisData || {};
+                const gsZoning = ad.zoning?.code ? ad.zoning.code + (ad.zoning.description ? ' - ' + ad.zoning.description : '') : getFieldValue(prop, 'Zoning', 'zoning');
                 
                 return {
                     parcel: parcelId,
                     address: getFieldValue(prop, 'Address', 'address'),
                     county: getFieldValue(prop, 'County', 'county'),
                     acres: acres.toFixed(2),
-                    zoning: getFieldValue(prop, 'Zoning', 'zoning'),
+                    zoning: gsZoning,
                     amountDue: getFieldValue(prop, 'Amount Due'),
                     assessedValue: getFieldValue(prop, 'Total Value'),
                     marketValue: mv,
                     pricePerAcre: mv > 0 && acres > 0 ? Math.round(mv / acres) : 0,
                     roi1: r1,
                     maxBid1: calc1 ? calc1.maxBid : 0,
+                    profit1: calc1 ? calc1.profit : 0,
                     viability1: calc1 ? getViability(calc1.maxBid, amountDue).label : '',
                     roi2: r2,
                     maxBid2: calc2 ? calc2.maxBid : 0,
+                    profit2: calc2 ? calc2.profit : 0,
                     viability2: calc2 ? getViability(calc2.maxBid, amountDue).label : '',
                     roi3: r3,
                     maxBid3: calc3 ? calc3.maxBid : 0,
+                    profit3: calc3 ? calc3.profit : 0,
                     viability3: calc3 ? getViability(calc3.maxBid, amountDue).label : '',
                     notes: invData.notes || '',
                     riskLevel: prop.riskLevel || '-'
