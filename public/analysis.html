@@ -3670,6 +3670,10 @@
                 const result = await propertyAnalysisWidget.analyzeProperty(lat, lng, county, parcelId);
                 console.log('✅ Analysis complete:', result);
                 
+                // Salvar analysisData no objeto da propriedade (usado pela validação de aprovação)
+                properties[currentIndex].analysisData = result;
+                console.log('💾 analysisData salvo na propriedade', currentIndex);
+                
                 // Save to analysis history
                 saveAnalysisHistory({
                     parcelId: parcelId || 'N/A',
@@ -3803,6 +3807,9 @@
                 try {
                     const result = await propertyAnalysisWidget.analyzePropertySilent(lat, lng, county, parcelId);
                     const risk = propertyAnalysisWidget.calculateRiskAssessment(result);
+                    
+                    // Salvar analysisData no objeto da propriedade (usado pela validação de aprovação)
+                    properties[i].analysisData = result;
                     
                     results.push({ index: i, parcelId, county, status: result?.overallStatus || 'N/A', riskLevel: risk?.level, riskScore: risk?.score });
                     completed++;
