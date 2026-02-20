@@ -116,8 +116,8 @@ export async function getFEMAFloodZone(lat, lng) {
                 risk = 'high';
                 status = '🔴 REJEITAR';
             } else if (zone.startsWith('A')) {
-                risk = 'moderate';
-                status = '⚠️ AVALIAR';
+                risk = 'high';
+                status = '🔴 ALTO RISCO';
             }
             
             return {
@@ -181,8 +181,8 @@ export async function getStateLandUse(lat, lng, parcelId = null) {
                 owner: attrs.OWN_NAME,
                 landValue: attrs.LND_VAL,
                 justValue: attrs.JV,
-                lastSalePrice: attrs.SALE_PRC1,
-                lastSaleDate: attrs.SALE_YR1 ? `${attrs.SALE_MO1 || ''}/${attrs.SALE_YR1}` : null,
+                lastSalePrice: attrs.SALE_PRC1 && attrs.SALE_PRC1 > 0 ? attrs.SALE_PRC1 : null,
+                lastSaleDate: attrs.SALE_YR1 ? (attrs.SALE_MO1 ? `${attrs.SALE_MO1}/${attrs.SALE_YR1}` : `${attrs.SALE_YR1}`) : null,
                 legalDesc: attrs.S_LEGAL,
                 countyCode: attrs.CO_NO,
                 sqfoot: attrs.LND_SQFOOT,
@@ -268,9 +268,9 @@ export async function getPutnamZoning(lat, lng) {
         const fluData = mflu || cflu;
         
         if (zoningData || fluData) {
-            const zoningCode = zoningData?.ZONECLASS || zoningData?.ZONING || zoningData?.Zoning || null;
+            const zoningCode = zoningData?.ZONECLASS || null;
             const zoningDesc = zoningData?.ZONEDESC || zoningCode || null;
-            const fluCode = fluData?.LANDUSECODE || fluData?.FLU || fluData?.Flu || null;
+            const fluCode = fluData?.LANDUSECODE || null;
             const fluDesc = fluData?.LANDUSEDESC || fluCode || null;
             
             const result = {
@@ -321,6 +321,32 @@ export async function getPutnamZoning(lat, lng) {
  * Uses self-hosted ArcGIS Server (may have SSL issues from some environments)
  * Fields: ZON (zoning code), FLUM (future land use)
  */
+// Highlands County Zoning Code Lookup
+const HIGHLANDS_ZONING_CODES = {
+    'R-1': 'Single Family Residential (Low Density)',
+    'R-2': 'Single Family Residential (Medium Density)',
+    'R-3': 'Multi-Family Residential',
+    'R-4': 'Mobile Home Residential',
+    'RR': 'Rural Residential',
+    'C-1': 'Neighborhood Commercial',
+    'C-2': 'General Commercial',
+    'C-3': 'Highway Commercial',
+    'C-4': 'Tourist Commercial',
+    'I-1': 'Light Industrial',
+    'I-2': 'Heavy Industrial',
+    'AG': 'Agricultural',
+    'AG-3': 'Agricultural (3-acre minimum)',
+    'AG-5': 'Agricultural (5-acre minimum)',
+    'AG-10': 'Agricultural (10-acre minimum)',
+    'PUD': 'Planned Unit Development',
+    'MXD': 'Mixed Use Development',
+    'CON': 'Conservation',
+    'P': 'Public/Institutional',
+    'OS': 'Open Space',
+    'RE': 'Rural Estate',
+    'RM': 'Residential Mixed'
+};
+
 export async function getHighlandsZoning(lat, lng) {
     const cacheKey = `zoning_highlands_${lat}_${lng}`;
     const cached = getCached(cacheKey);
@@ -354,7 +380,7 @@ export async function getHighlandsZoning(lat, lng) {
             const result = {
                 found: true,
                 code: zoningCode,
-                description: zoningCode || 'N/A',
+                description: HIGHLANDS_ZONING_CODES[zoningCode] || zoningCode || 'N/A',
                 futureLandUse: flum,
                 futureLandUseDesc: flum || 'N/A',
                 jurisdiction: 'Highlands County',
@@ -433,11 +459,11 @@ export async function getPropertyDetails({ lat, lng, county, parcelId = null, pa
         // Determine overall status
         let overallStatus = '✅ APROVADO';
         
-        if (fema.status === '🔴 REJEITAR') {
+        if (fema.status === '🔴 REJEITAR' || fema.status === '🔴 ALTO RISCO') {
             overallStatus = '🔴 REJEITAR';
         } else if (wetlands.error) {
             overallStatus = '⚠️ INCOMPLETO (Wetlands não verificado)';
-        } else if (wetlands.found || fema.risk === 'moderate') {
+        } else if (wetlands.found) {
             overallStatus = '⚠️ AVALIAR';
         }
         
