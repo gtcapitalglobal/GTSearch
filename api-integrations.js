@@ -5,7 +5,7 @@
  */
 
 import axios from 'axios';
-import { getWetlandsProgressive, checkGeoDatabase } from './wetlands-local.js';
+import { getWetlandsProgressive } from './wetlands-local.js';
 
 // ============================================================================
 // FEMA FLOOD ZONE (Statewide - Florida)
