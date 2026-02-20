@@ -262,7 +262,12 @@ class PropertyAnalysisWidget {
         let headerBorder = 'border-green-500';
         let headerText = 'text-green-800';
         
-        if (wetlands.found) {
+        if (wetlands.error) {
+            mainIcon = '❌';
+            headerBg = 'bg-red-50';
+            headerBorder = 'border-red-500';
+            headerText = 'text-red-800';
+        } else if (wetlands.found) {
             if (wetlands.highestRisk) {
                 const risk = wetlands.highestRisk.risk || '';
                 if (risk === 'high') {
@@ -300,7 +305,7 @@ class PropertyAnalysisWidget {
                     <span class="text-2xl">${mainIcon}</span>
                 </div>
                 
-                ${wetlands.found ? this.renderWetlandsFound(wetlands, headerBg, headerText) : this.renderWetlandsNotFound(wetlands)}
+                ${wetlands.error ? this.renderWetlandsError(wetlands) : wetlands.found ? this.renderWetlandsFound(wetlands, headerBg, headerText) : this.renderWetlandsNotFound(wetlands)}
                 
                 <!-- Source & Disclaimers -->
                 <div class="mt-3 pt-2 border-t border-gray-200">
@@ -320,6 +325,62 @@ class PropertyAnalysisWidget {
                     `}
                 </div>
             </div>
+        `;
+    }
+    
+    /**
+     * Render wetlands error state (geodatabase missing, GDAL not installed, etc)
+     */
+    renderWetlandsError(wetlands) {
+        const isGdbMissing = wetlands.gdbMissing || (wetlands.error === 'Geodatabase not found');
+        
+        return `
+            <!-- Error Banner -->
+            <div class="bg-red-50 border border-red-300 rounded-lg p-4 mb-3">
+                <div class="flex items-start">
+                    <span class="text-2xl mr-3">${isGdbMissing ? '📂' : '⚠️'}</span>
+                    <div class="flex-1">
+                        <p class="font-bold text-red-800 text-sm">${wetlands.status || '❌ ERRO'}</p>
+                        <p class="text-xs text-red-700 mt-1">${wetlands.statusDetail || wetlands.error}</p>
+                    </div>
+                </div>
+            </div>
+            
+            ${isGdbMissing ? `
+                <!-- Setup Instructions -->
+                <div class="bg-yellow-50 border border-yellow-300 rounded-lg p-3">
+                    <p class="text-xs font-bold text-yellow-800 mb-2">COMO CONFIGURAR:</p>
+                    <ol class="text-xs text-yellow-700 space-y-1.5 list-decimal ml-4">
+                        <li>Baixe o geodatabase de Florida em:<br>
+                            <a href="https://www.fws.gov/program/national-wetlands-inventory/download-state-wetlands-data" 
+                               target="_blank" class="text-blue-600 hover:underline font-semibold">FWS.gov - NWI Download</a>
+                        </li>
+                        <li>Extraia o arquivo <code class="bg-white px-1 rounded">FL_geodatabase_wetlands.zip</code></li>
+                        <li>Copie a pasta <code class="bg-white px-1 rounded">FL_geodatabase_wetlands.gdb</code> para:<br>
+                            <code class="bg-white px-1 rounded font-mono">[GTSearch]/data/FL_geodatabase_wetlands.gdb</code>
+                        </li>
+                        <li>Instale GDAL: <code class="bg-white px-1 rounded font-mono">sudo apt install gdal-bin</code></li>
+                        <li>Instale pyproj: <code class="bg-white px-1 rounded font-mono">pip install pyproj</code></li>
+                        <li>Reinicie o servidor GTSearch</li>
+                    </ol>
+                </div>
+                
+                <div class="mt-2 bg-red-100 border border-red-300 rounded-lg p-2">
+                    <p class="text-xs font-bold text-red-800">
+                        ⚠️ ATENÇÃO: Sem o geodatabase, wetlands NÃO está sendo verificado!
+                        <br>Isso pode resultar em compra de propriedade com wetlands não detectados.
+                    </p>
+                </div>
+            ` : `
+                <div class="bg-yellow-50 border border-yellow-300 rounded-lg p-3">
+                    <p class="text-xs font-bold text-yellow-800 mb-1">REQUISITOS:</p>
+                    <ul class="text-xs text-yellow-700 space-y-1">
+                        <li>* GDAL/ogr2ogr instalado no sistema</li>
+                        <li>* pyproj instalado (Python)</li>
+                        <li>* FL_geodatabase_wetlands.gdb na pasta data/</li>
+                    </ul>
+                </div>
+            `}
         `;
     }
     

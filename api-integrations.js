@@ -559,6 +559,9 @@ export async function getPropertyDetails({ lat, lng, county, parcelId = null, pa
         
         if (fema.status === '🔴 REJEITAR') {
             overallStatus = '🔴 REJEITAR';
+        } else if (wetlands.error) {
+            // If wetlands can't be checked, mark as INCOMPLETE - never show APROVADO
+            overallStatus = '⚠️ INCOMPLETO (Wetlands não verificado)';
         } else if (wetlands.found || fema.risk === 'moderate') {
             overallStatus = '⚠️ AVALIAR';
         }

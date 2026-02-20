@@ -415,6 +415,52 @@ export async function getWetlandsLocal(lat, lng, bufferMeters = 50) {
 export async function getWetlandsProgressive(lat, lng) {
     // Level 1: Directly on property (50m buffer)
     const onProperty = await getWetlandsLocal(lat, lng, 50);
+    
+    // CRITICAL: If geodatabase is missing, propagate the error immediately
+    // Do NOT silently return "SEM WETLANDS" - that gives false confidence
+    if (onProperty.error === 'Geodatabase not found') {
+        console.error('❌ GEODATABASE NÃO ENCONTRADO - Wetlands NÃO pode ser verificado!');
+        return {
+            found: false,
+            method: 'local_geodatabase',
+            error: 'Geodatabase not found',
+            proximity: 'UNKNOWN',
+            proximityLabel: '❌ DADOS INDISPONÍVEIS',
+            status: '❌ GEODATABASE NÃO ENCONTRADO',
+            statusDetail: onProperty.message || 'Arquivo FL_geodatabase_wetlands.gdb não encontrado na pasta data/',
+            source: 'NWI Geodatabase (local)',
+            wetlands: [],
+            totalAcres: 0,
+            gdbMissing: true,
+            disclaimers: [
+                'O arquivo FL_geodatabase_wetlands.gdb precisa estar na pasta data/ do projeto',
+                'Baixe em: https://www.fws.gov/program/national-wetlands-inventory/download-state-wetlands-data',
+                'SEM ESTE ARQUIVO, WETLANDS NÃO PODE SER VERIFICADO'
+            ]
+        };
+    }
+    
+    // If geodatabase error (GDAL/pyproj not installed, etc), propagate
+    if (onProperty.error) {
+        console.error('❌ Erro na consulta de wetlands:', onProperty.error);
+        return {
+            found: false,
+            method: 'local_geodatabase',
+            error: onProperty.error,
+            proximity: 'UNKNOWN',
+            proximityLabel: '❌ ERRO NA CONSULTA',
+            status: '❌ ERRO NA CONSULTA DE WETLANDS',
+            statusDetail: `Erro: ${onProperty.error}. Verifique se GDAL (ogr2ogr) e pyproj estão instalados.`,
+            source: 'NWI Geodatabase (local)',
+            wetlands: [],
+            totalAcres: 0,
+            disclaimers: [
+                'Requisitos: GDAL/ogr2ogr e pyproj instalados no sistema',
+                'Instalar: sudo apt install gdal-bin && pip install pyproj'
+            ]
+        };
+    }
+    
     if (onProperty.found) {
         onProperty.proximity = 'ON_PROPERTY';
         onProperty.proximityLabel = '🔴 NO TERRENO';
