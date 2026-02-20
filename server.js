@@ -572,6 +572,8 @@ app.post('/api/property-details', async (req, res) => {
  * Batch property analysis - analyze multiple properties sequentially
  * Accepts array of properties with lat, lng, county
  * Processes with 500ms delay between each to avoid rate limiting
+ * Note: Frontend currently uses individual calls with client-side delay.
+ * This endpoint is available for API consumers or future optimization.
  */
 app.post('/api/property-details/batch', async (req, res) => {
   try {
@@ -596,7 +598,7 @@ app.post('/api/property-details/batch', async (req, res) => {
       
       try {
         const result = await getPropertyDetails({ lat, lng, county, parcelId, parcelGeometry });
-        results.push({ ...result, index: i });
+        results.push({ ...result, success: true, index: i });
       } catch (err) {
         results.push({ success: false, error: err.message, index: i });
       }
@@ -610,8 +612,8 @@ app.post('/api/property-details/batch', async (req, res) => {
     res.json({
       success: true,
       total: properties.length,
-      completed: results.filter(r => r.success).length,
-      failed: results.filter(r => !r.success).length,
+      completed: results.filter(r => r.success === true).length,
+      failed: results.filter(r => r.success === false).length,
       results
     });
     

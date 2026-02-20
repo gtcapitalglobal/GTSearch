@@ -802,26 +802,74 @@ class PropertyAnalysisWidget {
             }
         }
         
-        // === LAND USE ===
+        // === LAND USE (Fix #4: category-based scoring) ===
         if (data.landUse?.found) {
-            if (data.landUse.buildable === false) {
+            const luCode = parseInt(data.landUse.code) || 0;
+            // DOR codes: 00-09 Residential, 10-19 Commercial, 20-29 Industrial,
+            // 30-39 Agricultural, 40-49 Institutional, 50-59 Government,
+            // 60-69 Misc, 70-79 Misc, 80-89 Government, 90-99 Non-agricultural acreage
+            if (luCode >= 50 && luCode <= 59 || luCode >= 80 && luCode <= 89) {
+                // Government-owned land — very hard to develop
+                score += 25;
+                factors.push({ icon: '📋', label: 'Land Use: Governamental (' + data.landUse.code + ')', severity: 'red' });
+            } else if (luCode >= 40 && luCode <= 49) {
+                // Institutional (churches, schools, hospitals)
+                score += 15;
+                factors.push({ icon: '📋', label: 'Land Use: Institucional (' + data.landUse.code + ')', severity: 'yellow' });
+            } else if (luCode >= 20 && luCode <= 29) {
+                // Industrial
+                score += 10;
+                factors.push({ icon: '📋', label: 'Land Use: Industrial (' + data.landUse.code + ')', severity: 'yellow' });
+            } else if (data.landUse.buildable === false) {
                 score += 10;
                 factors.push({ icon: '📋', label: 'Land Use: Non-Buildable (' + data.landUse.code + ')', severity: 'yellow' });
+            } else if (luCode >= 10 && luCode <= 19) {
+                // Commercial
+                factors.push({ icon: '📋', label: 'Land Use: Comercial (' + data.landUse.code + ')', severity: 'green' });
             } else {
-                factors.push({ icon: '📋', label: 'Land Use: ' + (data.landUse.code || 'OK'), severity: 'green' });
+                // Residential (00-09), Agricultural (30-39), or other
+                factors.push({ icon: '📋', label: 'Land Use: ' + (data.landUse.description || data.landUse.code || 'OK'), severity: 'green' });
             }
         }
         
-        // === ZONING ===
+        // === ZONING (Fix #3: classification-based scoring) ===
         if (data.zoning?.found) {
-            factors.push({ icon: '🏗️', label: 'Zoning: ' + (data.zoning.code || 'Encontrado'), severity: 'green' });
+            const zCode = (data.zoning.code || '').toUpperCase();
+            // Conservation / Preservation zones — restricted development
+            if (zCode.match(/^(CON|CONS|PRES|P|ENV|EC|RPC)/)) {
+                score += 25;
+                factors.push({ icon: '🏗️', label: 'Zoning: Conservação (' + data.zoning.code + ')', severity: 'red' });
+            // Industrial zones
+            } else if (zCode.match(/^(I|IND|M|M-1|M-2|I-1|I-2|HI|LI)/)) {
+                score += 10;
+                factors.push({ icon: '🏗️', label: 'Zoning: Industrial (' + data.zoning.code + ')', severity: 'yellow' });
+            // PUD / Mixed use — needs review
+            } else if (zCode.match(/^(PUD|PD|MU|MXD|MPUD)/)) {
+                score += 5;
+                factors.push({ icon: '🏗️', label: 'Zoning: PUD/Misto (' + data.zoning.code + ') — avaliar', severity: 'yellow' });
+            // Agricultural — generally good for land investment
+            } else if (zCode.match(/^(AG|A-1|A-2|AR|RR|AGRI)/)) {
+                factors.push({ icon: '🏗️', label: 'Zoning: Agrícola (' + data.zoning.code + ')', severity: 'green' });
+            // Residential — good
+            } else if (zCode.match(/^(R|RS|RM|RMF|RSF|RE|R-1|R-2|R-3|SF|MF)/)) {
+                factors.push({ icon: '🏗️', label: 'Zoning: Residencial (' + data.zoning.code + ')', severity: 'green' });
+            // Commercial — neutral
+            } else if (zCode.match(/^(C|B|CB|CC|CN|CG|C-1|C-2|B-1|B-2|GC)/)) {
+                factors.push({ icon: '🏗️', label: 'Zoning: Comercial (' + data.zoning.code + ')', severity: 'green' });
+            } else {
+                // Unknown zoning code — flag for review
+                score += 5;
+                factors.push({ icon: '🏗️', label: 'Zoning: ' + data.zoning.code + ' (verificar)', severity: 'yellow' });
+            }
         } else if (data.zoning && !data.zoning.error) {
+            score += 5;
             factors.push({ icon: '🏗️', label: 'Zoning não disponível', severity: 'yellow' });
         }
         
-        // Determine level
+        // Determine level (Fix #5: add 'critical' tier)
         let level = 'green';
-        if (score >= 35) level = 'red';
+        if (score >= 60) level = 'critical';
+        else if (score >= 35) level = 'red';
         else if (score >= 15) level = 'yellow';
         
         return { level, score: Math.min(score, 100), factors };
@@ -832,23 +880,25 @@ class PropertyAnalysisWidget {
      */
     renderRiskSemaphore(risk, data) {
         const colors = {
-            green:  { bg: 'bg-green-50', border: 'border-green-400', text: 'text-green-800', label: 'BAIXO RISCO', desc: 'Propriedade aprovada nos critérios automáticos' },
-            yellow: { bg: 'bg-yellow-50', border: 'border-yellow-400', text: 'text-yellow-800', label: 'AVALIAR', desc: 'Existem fatores que requerem análise manual' },
-            red:    { bg: 'bg-red-50', border: 'border-red-400', text: 'text-red-800', label: 'ALTO RISCO', desc: 'Fatores críticos detectados — avaliar com cuidado' }
+            green:    { bg: 'bg-green-50', border: 'border-green-400', text: 'text-green-800', label: 'BAIXO RISCO', desc: 'Propriedade aprovada nos critérios automáticos' },
+            yellow:   { bg: 'bg-yellow-50', border: 'border-yellow-400', text: 'text-yellow-800', label: 'AVALIAR', desc: 'Existem fatores que requerem análise manual' },
+            red:      { bg: 'bg-red-50', border: 'border-red-400', text: 'text-red-800', label: 'ALTO RISCO', desc: 'Fatores críticos detectados — avaliar com cuidado' },
+            critical: { bg: 'bg-red-100', border: 'border-red-600', text: 'text-red-900', label: 'RISCO CRÍTICO', desc: 'Múltiplos fatores graves — recomenda-se NÃO prosseguir' }
         };
-        const c = colors[risk.level];
+        const c = colors[risk.level] || colors.red;
         
-        // Semaphore lights
-        const lightOn = (color) => color === risk.level;
+        // Semaphore lights — critical lights up red with animation
+        const isRed = risk.level === 'red' || risk.level === 'critical';
+        const redClass = isRed ? (risk.level === 'critical' ? 'bg-red-500 shadow-lg shadow-red-500/50 animate-pulse' : 'bg-red-500 shadow-lg shadow-red-500/50') : 'bg-gray-600';
         
         return `
             <div class="${c.bg} border-t-4 ${c.border} px-6 py-4">
                 <div class="flex items-center gap-4">
                     <!-- Traffic Light -->
                     <div class="flex flex-col items-center gap-1 p-2 bg-gray-800 rounded-lg" style="min-width:36px">
-                        <div class="w-5 h-5 rounded-full ${lightOn('red') ? 'bg-red-500 shadow-lg shadow-red-500/50' : 'bg-gray-600'}" title="Alto Risco"></div>
-                        <div class="w-5 h-5 rounded-full ${lightOn('yellow') ? 'bg-yellow-400 shadow-lg shadow-yellow-400/50' : 'bg-gray-600'}" title="Avaliar"></div>
-                        <div class="w-5 h-5 rounded-full ${lightOn('green') ? 'bg-green-500 shadow-lg shadow-green-500/50' : 'bg-gray-600'}" title="Baixo Risco"></div>
+                        <div class="w-5 h-5 rounded-full ${redClass}" title="Alto Risco"></div>
+                        <div class="w-5 h-5 rounded-full ${risk.level === 'yellow' ? 'bg-yellow-400 shadow-lg shadow-yellow-400/50' : 'bg-gray-600'}" title="Avaliar"></div>
+                        <div class="w-5 h-5 rounded-full ${risk.level === 'green' ? 'bg-green-500 shadow-lg shadow-green-500/50' : 'bg-gray-600'}" title="Baixo Risco"></div>
                     </div>
                     
                     <!-- Risk Summary -->
