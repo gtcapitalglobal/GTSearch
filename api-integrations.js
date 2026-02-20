@@ -182,7 +182,7 @@ export async function getStateLandUse(lat, lng, parcelId = null) {
                 landValue: attrs.LND_VAL,
                 justValue: attrs.JV,
                 lastSalePrice: attrs.SALE_PRC1 && attrs.SALE_PRC1 > 0 ? attrs.SALE_PRC1 : null,
-                lastSaleDate: attrs.SALE_YR1 ? (attrs.SALE_MO1 ? `${attrs.SALE_MO1}/${attrs.SALE_YR1}` : `${attrs.SALE_YR1}`) : null,
+                lastSaleDate: attrs.SALE_YR1 ? (attrs.SALE_MO1 && attrs.SALE_MO1 > 0 ? `${String(attrs.SALE_MO1).padStart(2, '0')}/${attrs.SALE_YR1}` : `${attrs.SALE_YR1}`) : null,
                 legalDesc: attrs.S_LEGAL,
                 countyCode: attrs.CO_NO,
                 sqfoot: attrs.LND_SQFOOT,
@@ -226,7 +226,7 @@ export async function getStateLandUse(lat, lng, parcelId = null) {
  * Layer 4: County Proposed Land Use, Layer 5: Municipal Future Land Use
  */
 export async function getPutnamZoning(lat, lng) {
-    const cacheKey = `zoning_putnam_${lat}_${lng}`;
+    const cacheKey = `zoning_putnam_${Number(lat).toFixed(6)}_${Number(lng).toFixed(6)}`;
     const cached = getCached(cacheKey);
     if (cached) return cached;
     
@@ -321,6 +321,30 @@ export async function getPutnamZoning(lat, lng) {
  * Uses self-hosted ArcGIS Server (may have SSL issues from some environments)
  * Fields: ZON (zoning code), FLUM (future land use)
  */
+// Highlands County Future Land Use (FLUM) Code Lookup
+const HIGHLANDS_FLUM_CODES = {
+    'RES-LOW': 'Residential (Low Density)',
+    'RES-MED': 'Residential (Medium Density)',
+    'RES-HIGH': 'Residential (High Density)',
+    'COM': 'Commercial',
+    'IND': 'Industrial',
+    'AG': 'Agriculture',
+    'CON': 'Conservation',
+    'PUB': 'Public/Institutional',
+    'REC': 'Recreation',
+    'MXD': 'Mixed Use',
+    'RUR': 'Rural',
+    'RL': 'Residential Low',
+    'RM': 'Residential Medium',
+    'RH': 'Residential High',
+    'C': 'Commercial',
+    'I': 'Industrial',
+    'A': 'Agriculture',
+    'P': 'Public Facilities',
+    'R': 'Recreation',
+    'M': 'Mixed Use'
+};
+
 // Highlands County Zoning Code Lookup
 const HIGHLANDS_ZONING_CODES = {
     'R-1': 'Single Family Residential (Low Density)',
@@ -348,7 +372,7 @@ const HIGHLANDS_ZONING_CODES = {
 };
 
 export async function getHighlandsZoning(lat, lng) {
-    const cacheKey = `zoning_highlands_${lat}_${lng}`;
+    const cacheKey = `zoning_highlands_${Number(lat).toFixed(6)}_${Number(lng).toFixed(6)}`;
     const cached = getCached(cacheKey);
     if (cached) return cached;
     
@@ -374,15 +398,15 @@ export async function getHighlandsZoning(lat, lng) {
             const attrs = data.features[0].attributes;
             
             // Use correct field names: ZON for zoning, FLUM for future land use
-            const zoningCode = attrs.ZON || attrs.ZONE_CODE || attrs.ZONING || null;
-            const flum = attrs.FLUM || attrs.FUTURE_LAND_USE || null;
+            const zoningCode = attrs.ZON || null;
+            const flum = attrs.FLUM || null;
             
             const result = {
                 found: true,
                 code: zoningCode,
                 description: HIGHLANDS_ZONING_CODES[zoningCode] || zoningCode || 'N/A',
                 futureLandUse: flum,
-                futureLandUseDesc: flum || 'N/A',
+                futureLandUseDesc: HIGHLANDS_FLUM_CODES[flum] || flum || 'N/A',
                 jurisdiction: 'Highlands County',
                 status: '✅ DISPONÍVEL',
                 source: 'Highlands County Planning & Zoning',
@@ -463,6 +487,10 @@ export async function getPropertyDetails({ lat, lng, county, parcelId = null, pa
             overallStatus = '🔴 REJEITAR';
         } else if (wetlands.error) {
             overallStatus = '⚠️ INCOMPLETO (Wetlands não verificado)';
+        } else if (wetlands.found && wetlands.highestRisk?.risk === 'high' && wetlands.proximity === 'ON_PROPERTY') {
+            overallStatus = '🔴 ALTO RISCO (Wetland no terreno)';
+        } else if (wetlands.found && wetlands.highestRisk?.risk === 'high') {
+            overallStatus = '⚠️ AVALIAR (Wetland alto risco próximo)';
         } else if (wetlands.found) {
             overallStatus = '⚠️ AVALIAR';
         }

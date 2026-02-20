@@ -585,6 +585,18 @@ class PropertyAnalysisWidget {
                                     <span class="font-semibold ml-1">${landUse.lastSaleDate}</span>
                                 </div>
                             ` : ''}
+                            ${landUse.sqfoot ? `
+                                <div>
+                                    <span class="text-gray-600">Lot Size:</span>
+                                    <span class="font-semibold ml-1">${Number(landUse.sqfoot).toLocaleString()} sqft</span>
+                                </div>
+                            ` : ''}
+                            ${landUse.buildings !== null && landUse.buildings !== undefined ? `
+                                <div>
+                                    <span class="text-gray-600">Buildings:</span>
+                                    <span class="font-semibold ml-1">${landUse.buildings}</span>
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
                 ` : `

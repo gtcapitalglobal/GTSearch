@@ -204,6 +204,6 @@
     "096": { "description": "Sewage Disposal/Waste Lands", "category": "utility", "buildable": false },
     "097": { "description": "Outdoor Recreation/Parks", "category": "recreation", "buildable": false },
     "098": { "description": "Centrally Assessed", "category": "utility", "buildable": false },
-    "099": { "description": "Non-Agricultural Acreage", "category": "other", "buildable": true }
+    "099": { "description": "Non-Agricultural Acreage", "category": "other", "buildable": true, "_note": "Buildable is indicative only — actual buildability depends on zoning and permits" }
   }
 }
