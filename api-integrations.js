@@ -56,7 +56,7 @@ async function safeArcGISQuery(url, params, { timeout = 10000, retries = 1, labe
                 params, 
                 timeout,
                 // Allow self-signed certs for known self-hosted county servers
-                httpsAgent: (url.includes('gis.highlandsfl.gov') || url.includes('mgrcmaps.org') || url.includes('gis.marionfl.org') || url.includes('gis.sumtercountyfl.gov'))
+                httpsAgent: (url.includes('gis.highlandsfl.gov') || url.includes('mgrcmaps.org') || url.includes('gis.marionfl.org') || url.includes('gis.sumtercountyfl.gov') || url.includes('pascogis.pascocountyfl.net') || url.includes('mapping.pascopa.com') || url.includes('gis.polk-county.net'))
                     ? new (await import('https')).Agent({ rejectUnauthorized: false })
                     : undefined
             });
@@ -445,7 +445,7 @@ export async function getHighlandsZoning(lat, lng) {
 // ZONING ROUTER - Dynamic registry-based routing for any Florida county
 // ============================================================================
 
-function getZoningForCounty(county, lat, lng) {
+async function getZoningForCounty(county, lat, lng) {
     const countyLower = (county || '').toLowerCase();
     
     // Legacy direct routes for Putnam and Highlands (optimized, keep for backward compat)
@@ -455,12 +455,44 @@ function getZoningForCounty(county, lat, lng) {
     // Dynamic registry lookup for all other counties
     const countyConfig = REGISTRY.counties?.[county];
     if (countyConfig?.zoning) {
-        return getGenericRegistryZoning(county, countyConfig.zoning, lat, lng);
+        const zoningResult = await getGenericRegistryZoning(county, countyConfig.zoning, lat, lng);
+        
+        // If zoning config has a separate FLU service and we didn't get FLU from the main query
+        if (!zoningResult.futureLandUse && countyConfig.zoning.flu) {
+            const fluResult = await queryFLUService(county, countyConfig.zoning.flu, lat, lng);
+            if (fluResult) {
+                zoningResult.futureLandUse = fluResult.code;
+                zoningResult.futureLandUseDesc = fluResult.description;
+            }
+        }
+        return zoningResult;
+    }
+    
+    // County has FLU but no zoning (e.g., Polk)
+    if (countyConfig?.flu) {
+        const fluResult = await queryFLUService(county, countyConfig.flu, lat, lng);
+        const manualLink = countyConfig?.manual_link || null;
+        if (fluResult) {
+            return {
+                found: true,
+                code: null,
+                description: '⚠️ Zoning não disponível via API',
+                futureLandUse: fluResult.code,
+                futureLandUseDesc: fluResult.description,
+                jurisdiction: `${county} County`,
+                status: '⚠️ PARCIAL (apenas FLU)',
+                source: `${county} County Planning (FLU only)`,
+                note: manualLink 
+                    ? `Zoning não disponível via API. FLU disponível. Consulte: ${manualLink}`
+                    : 'Zoning não disponível via API. Apenas FLU disponível.',
+                manualLink
+            };
+        }
     }
     
     // County in registry but no zoning data
     const manualLink = countyConfig?.manual_link || null;
-    return Promise.resolve({
+    return {
         found: false,
         status: '⚠️ ZONING NÃO DISPONÍVEL',
         source: `${county} County`,
@@ -468,7 +500,60 @@ function getZoningForCounty(county, lat, lng) {
             ? `Dados de zoning não disponíveis via API. Consulte: ${manualLink}`
             : 'Dados de zoning não disponíveis via API. Consulte o Planning Department local.',
         manualLink
-    });
+    };
+}
+
+// ============================================================================
+// FLU SERVICE QUERY - Queries a separate FLU service from registry config
+// ============================================================================
+
+async function queryFLUService(county, fluConfig, lat, lng) {
+    try {
+        const baseUrl = fluConfig.base_url;
+        if (!baseUrl || !fluConfig.layers) return null;
+        
+        const pointParams = {
+            geometry: `${lng},${lat}`,
+            geometryType: 'esriGeometryPoint',
+            inSR: 4326,
+            spatialRel: 'esriSpatialRelIntersects',
+            outFields: '*',
+            returnGeometry: false,
+            f: 'json'
+        };
+        
+        const layerEntries = Object.entries(fluConfig.layers);
+        const queries = layerEntries.map(([key, layer]) => {
+            const url = `${baseUrl}/${layer.id}/query`;
+            return safeArcGISQuery(url, pointParams, { 
+                label: `${county} FLU ${layer.name || key}`, 
+                timeout: 10000, 
+                retries: 2 
+            }).catch(err => ({ error: err.message }));
+        });
+        
+        const results = await Promise.allSettled(queries);
+        
+        for (let i = 0; i < results.length; i++) {
+            const [key, layerConfig] = layerEntries[i];
+            const res = results[i];
+            if (res.status !== 'fulfilled' || !res.value?.features?.length) continue;
+            
+            const attrs = res.value.features[0].attributes;
+            const fields = layerConfig.fields;
+            const code = attrs[fields.land_use] || null;
+            const desc = fields.description ? (attrs[fields.description] || code) : code;
+            
+            if (code && code.trim() && code.trim().toUpperCase() !== 'CITY') {
+                return { code, description: desc };
+            }
+        }
+        
+        return null;
+    } catch (error) {
+        console.error(`[${county} FLU] Error:`, error.message);
+        return null;
+    }
 }
 
 // ============================================================================

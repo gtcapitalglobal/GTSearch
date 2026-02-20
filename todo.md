@@ -1378,27 +1378,27 @@ Integrar ArcGIS Landsat Image Server para fornecer imagens históricas REAIS (19
 ## 🧹 Prioridade 1: Limpeza + Expansão Zoning — 20/02/2026
 
 ### Limpeza de Arquivos Órfãos
-- [ ] Remover analysis2.html (3.389 linhas, não referenciado)
-- [ ] Remover analysis-backup-20251112-082321.html
-- [ ] Remover analysis.html.backup
-- [ ] Remover index.html.backup-20251112-153811
-- [ ] Remover index.html.backup-new
-- [ ] Remover settings.html.bak
-- [ ] Remover analysis_extracted.js
-- [ ] Remover test-analyze-button.html
-- [ ] Remover test-button-simple.html
-- [ ] Remover test.html
-- [ ] Remover screen2-prototype.html
-- [ ] Remover comps-bid-prototype.html
-- [ ] Remover server.js.backup
-- [ ] Remover kml-backup-20260109-181443/
+- [x] Remover analysis2.html (3.389 linhas, não referenciado)
+- [x] Remover analysis-backup-20251112-082321.html
+- [x] Remover analysis.html.backup
+- [x] Remover index.html.backup-20251112-153811
+- [x] Remover index.html.backup-new
+- [x] Remover settings.html.bak
+- [x] Remover analysis_extracted.js
+- [x] Remover test-analyze-button.html
+- [x] Remover test-button-simple.html
+- [x] Remover test.html
+- [x] Remover screen2-prototype.html
+- [x] Remover comps-bid-prototype.html
+- [x] Remover server.js.backup
+- [x] Remover kml-backup-20260109-181443/
 
 ### Expansão Zoning Discovery
-- [ ] Rodar florida-zoning-discovery para Orange County
-- [ ] Rodar florida-zoning-discovery para Hillsborough County
-- [ ] Rodar florida-zoning-discovery para Pasco County (re-check)
-- [ ] Rodar florida-zoning-discovery para Polk County (re-check)
-- [ ] Rodar florida-zoning-discovery para Marion County (re-check)
-- [ ] Atualizar zoning_registry.json com resultados
-- [ ] Testar queries de zoning para condados atualizados
-- [ ] Commit e push para GitHub
+- [x] Rodar florida-zoning-discovery para Orange County (FOUND: Zoning + FLU via MapServer)
+- [x] Rodar florida-zoning-discovery para Hillsborough County (FOUND: Zoning + FLU via ArcGIS Online)
+- [x] Rodar florida-zoning-discovery para Pasco County (FOUND: Zoning via self-hosted MapServer)
+- [x] Rodar florida-zoning-discovery para Polk County (FLU only via self-hosted FeatureServer)
+- [x] Rodar florida-zoning-discovery para Marion County (NO public API found)
+- [x] Atualizar zoning_registry.json com resultados
+- [x] Testar queries de zoning para condados atualizados
+- [x] Commit e push para GitHub

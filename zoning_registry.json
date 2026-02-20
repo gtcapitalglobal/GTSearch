@@ -2,7 +2,7 @@
   "version": "2.0",
   "description": "Zoning & Land Use service registry per jurisdiction in Florida. Supports dynamic county routing.",
   "updated": "2026-02-20",
-  "supported_counties": ["Alachua", "Citrus", "Duval", "Hernando", "Highlands", "Lake", "Levy", "Marion", "Okeechobee", "Pasco", "Polk", "Putnam", "Seminole", "St. Johns", "Volusia"],
+  "supported_counties": ["Alachua", "Citrus", "Duval", "Hernando", "Highlands", "Hillsborough", "Lake", "Levy", "Marion", "Okeechobee", "Orange", "Pasco", "Polk", "Putnam", "Seminole", "St. Johns", "Volusia"],
 
   "statewide": {
     "land_use": {
@@ -77,6 +77,40 @@
       "zoning": null,
       "manual_link": "https://www.coj.net/departments/planning-and-development",
       "notes": "No ArcGIS zoning service found via discovery. Jacksonville/Duval uses consolidated city-county government."
+    },
+
+    "Hillsborough": {
+      "fips": "057",
+      "co_no": 29,
+      "zoning": {
+        "name": "Hillsborough County Zoning",
+        "base_url": "https://services.arcgis.com/apTfC6SUmnNfnxuF/arcgis/rest/services/Zoning/FeatureServer",
+        "type": "ArcGIS Online hosted",
+        "reliability": "stable",
+        "timeout_ms": 10000,
+        "retries": 1,
+        "layers": {
+          "county_zoning": {
+            "id": 0,
+            "name": "County Zoning",
+            "fields": {
+              "zoning_code": "NZONE",
+              "description": "NZONE_DESC"
+            }
+          }
+        },
+        "flu": {
+          "base_url": "https://services.arcgis.com/apTfC6SUmnNfnxuF/arcgis/rest/services/Future_Land_Use_Element/FeatureServer",
+          "layers": {
+            "plant_city": { "id": 0, "name": "Plant City FLU", "fields": { "land_use": "FLUE", "description": "FLU_DESC" } },
+            "tampa": { "id": 1, "name": "Tampa FLU", "fields": { "land_use": "FLUE", "description": "FLU_DESC" } },
+            "temple_terrace": { "id": 2, "name": "Temple Terrace FLU", "fields": { "land_use": "FLUE", "description": "FLU_DESC" } },
+            "unincorporated": { "id": 3, "name": "Unincorporated Hillsborough FLU", "fields": { "land_use": "FLUE", "description": "FLU_DESC" } }
+          }
+        },
+        "manual_link": "https://www.hillsboroughcounty.org/en/residents/property-owners-and-renters/planning-and-zoning",
+        "notes": "Zoning has single layer. FLU has 4 layers by jurisdiction. NZONE for code, NZONE_DESC for description."
+      }
     },
 
     "Hernando": {
@@ -198,6 +232,39 @@
       "notes": "Self-hosted server at gis.marionfl.org exists but has SSL issues. No AGOL mirror found."
     },
 
+    "Orange": {
+      "fips": "095",
+      "co_no": 48,
+      "zoning": {
+        "name": "Orange County Zoning",
+        "base_url": "https://ocgis4.ocfl.net/arcgis/rest/services/AGOL_Open_Data/MapServer",
+        "type": "self-hosted MapServer",
+        "reliability": "stable",
+        "timeout_ms": 10000,
+        "retries": 2,
+        "layers": {
+          "county_zoning": {
+            "id": 51,
+            "name": "Zoning",
+            "fields": {
+              "zoning_code": "ZONING",
+              "description": "JURISDICTION"
+            }
+          },
+          "county_flu": {
+            "id": 21,
+            "name": "Future Land Use Orange County",
+            "fields": {
+              "land_use": "LAND_USE",
+              "description": "LABEL"
+            }
+          }
+        },
+        "manual_link": "https://www.orangecountyfl.net/PlanningDevelopment/InteractiveMapping.aspx",
+        "notes": "Self-hosted MapServer (not FeatureServer). ZONING field for code, JURISDICTION for area. FLU layer 21 with LAND_USE and LABEL fields."
+      }
+    },
+
     "Okeechobee": {
       "fips": "093",
       "co_no": 47,
@@ -209,17 +276,50 @@
     "Pasco": {
       "fips": "101",
       "co_no": 51,
-      "zoning": null,
-      "manual_link": "https://www.pascocountyfl.net/149/Planning-Development",
-      "notes": "No ArcGIS zoning service found via discovery."
+      "zoning": {
+        "name": "Pasco County Zoning",
+        "base_url": "https://mapping.pascopa.com/arcgis/rest/services/Land_Use/MapServer",
+        "type": "self-hosted MapServer",
+        "reliability": "best-effort",
+        "timeout_ms": 10000,
+        "retries": 2,
+        "ssl_bypass": true,
+        "layers": {
+          "county_zoning": {
+            "id": 1,
+            "name": "BOCC Zoning",
+            "fields": {
+              "zoning_code": "ZN_TYPE"
+            }
+          }
+        },
+        "manual_link": "https://www.pascocountyfl.net/149/Planning-Development",
+        "notes": "Self-hosted MapServer via Property Appraiser. ZN_TYPE field only (no description). SSL bypass may be needed."
+      }
     },
 
     "Polk": {
       "fips": "105",
       "co_no": 53,
       "zoning": null,
+      "flu": {
+        "name": "Polk County Future Land Use 2030",
+        "base_url": "https://gis.polk-county.net/hosting/rest/services/Hosted/polkfuturelanduse2030/FeatureServer",
+        "type": "self-hosted FeatureServer",
+        "ssl_bypass": true,
+        "layers": {
+          "county_flu": {
+            "id": 0,
+            "name": "FLU 2030",
+            "fields": {
+              "land_use": "flu_cp",
+              "description": "dev_area_d"
+            }
+          }
+        }
+      },
       "manual_link": "https://www.polk-county.net/land-development",
-      "notes": "No ArcGIS zoning service found via discovery. Polk uses a different GIS system."
+      "notes": "No public zoning ArcGIS service found. FLU 2030 available via self-hosted server (SSL bypass needed). flu_cp for code, dev_area_d for description."
     },
 
     "Putnam": {
