@@ -1,11 +1,11 @@
 /**
  * Property Analysis Widget
- * Automatic integration with FEMA, Wetlands (NWI Geodatabase), Land Use and Zoning APIs
+ * Automatic integration with FEMA, Wetlands (NWI), Land Use and Zoning APIs
  * For Putnam and Highlands County, FL
  * 
- * WETLANDS: Uses NWI API (ArcGIS Online) - U.S. Fish & Wildlife Service
+ * WETLANDS: Uses Official NWI MapServer (FWS/USGS)
  * - Zero dependencies: no GDAL, no pyproj, no local geodatabase
- * - Progressive search: 50m → 200m → 500m buffer
+ * - Progressive search: 20m → 50m → 100m buffer (optimized for ~0.23 acre lots)
  * - Risk classification: PFO=HIGH, PSS=MEDIUM-HIGH, PEM=MEDIUM, etc.
  */
 
@@ -113,11 +113,11 @@ class PropertyAnalysisWidget {
                 <div class="mt-4 space-y-2">
                     <div class="flex items-center text-sm text-gray-500">
                         <div class="w-4 h-4 mr-2 rounded-full bg-blue-200 animate-pulse"></div>
-                        <span>Consultando NWI API (U.S. Fish & Wildlife Service)...</span>
+                        <span>Consultando NWI Official MapServer (FWS/USGS)...</span>
                     </div>
                     <div class="flex items-center text-sm text-gray-500">
                         <div class="w-4 h-4 mr-2 rounded-full bg-green-200 animate-pulse" style="animation-delay: 0.5s"></div>
-                        <span>Busca progressiva: 50m → 200m → 500m...</span>
+                        <span>Busca progressiva: 20m → 50m → 100m...</span>
                     </div>
                     <div class="flex items-center text-sm text-gray-500">
                         <div class="w-4 h-4 mr-2 rounded-full bg-yellow-200 animate-pulse" style="animation-delay: 1s"></div>
@@ -253,7 +253,7 @@ class PropertyAnalysisWidget {
     }
     
     /**
-     * Render Wetlands section - ENHANCED with local geodatabase data
+     * Render Wetlands section - ENHANCED with NWI Official MapServer data
      */
     renderWetlands(wetlands) {
         // Determine the main icon based on risk
@@ -500,7 +500,7 @@ class PropertyAnalysisWidget {
                     <span class="text-2xl mr-2">✅</span>
                     <div>
                         <p class="font-bold text-green-800 text-sm">${wetlands.status || 'SEM WETLANDS'}</p>
-                        <p class="text-xs text-green-700 mt-0.5">${wetlands.statusDetail || 'Nenhum wetland encontrado num raio de 500m'}</p>
+                        <p class="text-xs text-green-700 mt-0.5">${wetlands.statusDetail || 'Nenhum wetland encontrado num raio de 100m'}</p>
                         ${wetlands.proximityLabel ? `
                             <p class="text-xs text-green-600 mt-1 font-semibold">${wetlands.proximityLabel}</p>
                         ` : ''}

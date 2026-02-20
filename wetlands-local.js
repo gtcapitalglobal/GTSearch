@@ -1,16 +1,23 @@
 /**
- * Wetlands Detection Module - NWI API (ArcGIS Online)
+ * Wetlands Detection Module - Official NWI MapServer (FWS/USGS)
  * 
- * Uses the FREE U.S. Fish & Wildlife Service NWI dataset hosted on ArcGIS Online
+ * Uses the OFFICIAL U.S. Fish & Wildlife Service NWI MapServer
  * No GDAL, no pyproj, no local geodatabase needed - just internet access
  * 
- * API: https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Wetlands/FeatureServer/0
+ * API: https://fwspublicservices.wim.usgs.gov/wetlandsmapservice/rest/services/Wetlands/MapServer/0
  * Source: National Wetlands Inventory (NWI) - U.S. Fish & Wildlife Service
- * Cost: FREE (public ArcGIS Online feature service)
+ * Cost: FREE (official government MapServer)
  * Coverage: All 50 US states
+ * Max Records: 1500 per query
+ * 
+ * Fields returned (via JOIN with NWI_Wetland_Codes table):
+ *   Wetlands.ATTRIBUTE - NWI code (e.g., PSS1C, PFO1Fd)
+ *   Wetlands.WETLAND_TYPE - Type description (e.g., Freshwater Forested/Shrub Wetland)
+ *   Wetlands.ACRES - Official acreage (accurate, not derived from Shape__Area)
+ *   NWI_Wetland_Codes.SYSTEM_NAME, CLASS_NAME, SUBCLASS_NAME, WATER_REGIME_NAME, MODIFIER1_NAME, etc.
  */
 
-const NWI_API_URL = 'https://services.arcgis.com/P3ePLMYs2RVChkJx/ArcGIS/rest/services/USA_Wetlands/FeatureServer/0/query';
+const NWI_API_URL = 'https://fwspublicservices.wim.usgs.gov/wetlandsmapservice/rest/services/Wetlands/MapServer/0/query';
 
 /**
  * Risk classification based on NWI wetland codes
@@ -38,45 +45,61 @@ function classifyRisk(code, wetlandType) {
 
 /**
  * Build decoded description from API attributes
+ * The official MapServer returns fields with table prefix (e.g., "NWI_Wetland_Codes.SYSTEM_NAME")
  */
 function buildDecodedDescription(attrs) {
     const parts = [];
     
-    if (attrs.SYSTEM_NAME) parts.push(`${attrs.SYSTEM_NAME} (${attrs.SYSTEM || ''})`);
-    if (attrs.CLASS_NAME) parts.push(attrs.CLASS_NAME);
-    if (attrs.SUBCLASS_NAME) parts.push(attrs.SUBCLASS_NAME);
-    if (attrs.WATER_REGIME_NAME) parts.push(attrs.WATER_REGIME_NAME);
-    if (attrs.MODIFIER1_NAME) parts.push(attrs.MODIFIER1_NAME);
-    if (attrs.MODIFIER2_NAME) parts.push(attrs.MODIFIER2_NAME);
+    // Try both prefixed and non-prefixed field names
+    const get = (field) => attrs[`NWI_Wetland_Codes.${field}`] || attrs[field] || '';
+    
+    const systemName = get('SYSTEM_NAME');
+    const system = get('SYSTEM');
+    if (systemName) parts.push(`${systemName}${system ? ` (${system})` : ''}`);
+    if (get('CLASS_NAME')) parts.push(get('CLASS_NAME'));
+    if (get('SUBCLASS_NAME')) parts.push(get('SUBCLASS_NAME'));
+    if (get('WATER_REGIME_NAME')) parts.push(get('WATER_REGIME_NAME'));
+    if (get('MODIFIER1_NAME')) parts.push(get('MODIFIER1_NAME'));
+    if (get('MODIFIER2_NAME')) parts.push(get('MODIFIER2_NAME'));
     
     return parts.join(' | ');
 }
 
 /**
- * Query NWI API for wetlands at a specific location with buffer
+ * Query NWI Official MapServer for wetlands at a specific location with buffer
  * 
  * @param {number} lat - Latitude (WGS84)
  * @param {number} lng - Longitude (WGS84)
  * @param {number} bufferMeters - Search radius in meters
  * @returns {Object} Wetlands data
  */
-async function getWetlandsFromAPI(lat, lng, bufferMeters = 50) {
+async function getWetlandsFromAPI(lat, lng, bufferMeters = 20) {
     try {
         const params = new URLSearchParams({
             where: '1=1',
-            geometry: `${lng},${lat}`,
+            geometry: JSON.stringify({ x: lng, y: lat, spatialReference: { wkid: 4326 } }),
             geometryType: 'esriGeometryPoint',
-            inSR: '4326',
             spatialRel: 'esriSpatialRelIntersects',
             distance: bufferMeters.toString(),
             units: 'esriSRUnit_Meter',
-            outFields: '*',
+            outFields: [
+                'Wetlands.ATTRIBUTE',
+                'Wetlands.WETLAND_TYPE',
+                'Wetlands.ACRES',
+                'NWI_Wetland_Codes.SYSTEM',
+                'NWI_Wetland_Codes.SYSTEM_NAME',
+                'NWI_Wetland_Codes.CLASS_NAME',
+                'NWI_Wetland_Codes.SUBCLASS_NAME',
+                'NWI_Wetland_Codes.WATER_REGIME_NAME',
+                'NWI_Wetland_Codes.MODIFIER1_NAME',
+                'NWI_Wetland_Codes.MODIFIER2_NAME'
+            ].join(','),
             returnGeometry: 'false',
             f: 'json'
         });
         
         const url = `${NWI_API_URL}?${params.toString()}`;
-        console.log(`Querying NWI API with buffer ${bufferMeters}m...`);
+        console.log(`Querying NWI Official MapServer with buffer ${bufferMeters}m...`);
         
         const response = await fetch(url, {
             headers: { 'User-Agent': 'GTSearch/2.0' },
@@ -98,10 +121,10 @@ async function getWetlandsFromAPI(lat, lng, bufferMeters = 50) {
         if (features.length === 0) {
             return {
                 found: false,
-                method: 'nwi_api',
+                method: 'nwi_official_mapserver',
                 status: '✅ SEM WETLANDS',
                 statusDetail: `Nenhum wetland encontrado num raio de ${bufferMeters}m`,
-                source: 'NWI / U.S. Fish & Wildlife Service (ArcGIS Online)',
+                source: 'NWI Official MapServer (FWS/USGS)',
                 wetlands: [],
                 totalAcres: 0,
                 bufferMeters
@@ -111,29 +134,32 @@ async function getWetlandsFromAPI(lat, lng, bufferMeters = 50) {
         // Process wetlands found
         const wetlands = features.map(f => {
             const attrs = f.attributes;
-            const code = attrs.ATTRIBUTE || '';
-            const wetlandType = attrs.WETLAND_TYPE || '';
-            const areaM2 = attrs.Shape__Area || 0;
-            const acres = areaM2 / 4046.86; // Convert m² to acres
+            // Handle both prefixed and non-prefixed field names
+            const code = attrs['Wetlands.ATTRIBUTE'] || attrs.ATTRIBUTE || '';
+            const wetlandType = attrs['Wetlands.WETLAND_TYPE'] || attrs.WETLAND_TYPE || '';
+            const acres = attrs['Wetlands.ACRES'] || attrs.ACRES || 0;
             const riskInfo = classifyRisk(code, wetlandType);
             const decoded = buildDecodedDescription(attrs);
+            
+            // Extract decoded fields
+            const get = (field) => attrs[`NWI_Wetland_Codes.${field}`] || attrs[field] || '';
             
             return {
                 code,
                 type: wetlandType,
-                acres: parseFloat(acres.toFixed(2)),
+                acres: parseFloat(parseFloat(acres).toFixed(2)),
                 decoded,
                 risk: riskInfo.risk,
                 riskLevel: riskInfo.level,
                 riskColor: riskInfo.color,
                 buildability: riskInfo.buildability,
                 // Extra details from API
-                system: attrs.SYSTEM_NAME || '',
-                class: attrs.CLASS_NAME || '',
-                subclass: attrs.SUBCLASS_NAME || '',
-                waterRegime: attrs.WATER_REGIME_NAME || '',
-                modifier1: attrs.MODIFIER1_NAME || '',
-                modifier2: attrs.MODIFIER2_NAME || ''
+                system: get('SYSTEM_NAME'),
+                class: get('CLASS_NAME'),
+                subclass: get('SUBCLASS_NAME'),
+                waterRegime: get('WATER_REGIME_NAME'),
+                modifier1: get('MODIFIER1_NAME'),
+                modifier2: get('MODIFIER2_NAME')
             };
         });
         
@@ -162,7 +188,7 @@ async function getWetlandsFromAPI(lat, lng, bufferMeters = 50) {
         
         return {
             found: true,
-            method: 'nwi_api',
+            method: 'nwi_official_mapserver',
             status,
             statusDetail: `${wetlands.length} wetland(s) encontrado(s) - ${typeSummary}`,
             wetlands,
@@ -177,7 +203,7 @@ async function getWetlandsFromAPI(lat, lng, bufferMeters = 50) {
             },
             count: wetlands.length,
             bufferMeters,
-            source: 'NWI / U.S. Fish & Wildlife Service (ArcGIS Online)',
+            source: 'NWI Official MapServer (FWS/USGS)',
             disclaimers: [
                 'NWI é screening biológico, NÃO define limites regulatórios legais',
                 'Para compliance, consultar US Army Corps of Engineers (USACE)',
@@ -189,11 +215,11 @@ async function getWetlandsFromAPI(lat, lng, bufferMeters = 50) {
         console.error(`NWI API error (buffer ${bufferMeters}m):`, error.message);
         return {
             found: false,
-            method: 'nwi_api',
+            method: 'nwi_official_mapserver',
             error: error.message,
             status: '❌ ERRO NA CONSULTA DE WETLANDS',
             statusDetail: `Erro ao consultar NWI API: ${error.message}`,
-            source: 'NWI / U.S. Fish & Wildlife Service (ArcGIS Online)',
+            source: 'NWI Official MapServer (FWS/USGS)',
             wetlands: [],
             totalAcres: 0,
             bufferMeters
@@ -202,29 +228,34 @@ async function getWetlandsFromAPI(lat, lng, bufferMeters = 50) {
 }
 
 /**
- * Progressive wetlands search - checks 50m, 200m, then 500m
+ * Progressive wetlands search - checks 20m, 50m, then 100m
  * Returns as soon as wetlands are found at any level
+ * 
+ * Buffer distances optimized for typical land lots (~0.23 acres / ~930m²):
+ *   20m = within the lot boundary (ON PROPERTY)
+ *   50m = immediate neighbors (~1.5x lot size)
+ *   100m = 2-3 lots away (area screening)
  * 
  * @param {number} lat - Latitude (WGS84)
  * @param {number} lng - Longitude (WGS84)
  * @returns {Object} Wetlands analysis with proximity info
  */
 export async function getWetlandsProgressive(lat, lng) {
-    // Level 1: Directly on property (50m buffer)
-    const onProperty = await getWetlandsFromAPI(lat, lng, 50);
+    // Level 1: Directly on property (20m buffer)
+    const onProperty = await getWetlandsFromAPI(lat, lng, 20);
     
     // If API error, propagate immediately
     if (onProperty.error) {
         console.error('❌ Erro na consulta de wetlands:', onProperty.error);
         return {
             found: false,
-            method: 'nwi_api',
+            method: 'nwi_official_mapserver',
             error: onProperty.error,
             proximity: 'UNKNOWN',
             proximityLabel: '❌ ERRO NA CONSULTA',
             status: '❌ ERRO NA CONSULTA DE WETLANDS',
             statusDetail: `Erro: ${onProperty.error}. Verifique sua conexão com a internet.`,
-            source: 'NWI / U.S. Fish & Wildlife Service (ArcGIS Online)',
+            source: 'NWI Official MapServer (FWS/USGS)',
             wetlands: [],
             totalAcres: 0,
             disclaimers: [
@@ -240,31 +271,31 @@ export async function getWetlandsProgressive(lat, lng) {
         return onProperty;
     }
     
-    // Level 2: Very close (200m buffer)
-    const nearby = await getWetlandsFromAPI(lat, lng, 200);
+    // Level 2: Very close (50m buffer)
+    const nearby = await getWetlandsFromAPI(lat, lng, 50);
     if (nearby.found) {
         nearby.proximity = 'NEARBY';
-        nearby.proximityLabel = '🟡 PRÓXIMO (até 200m)';
+        nearby.proximityLabel = '🟡 PRÓXIMO (até 50m)';
         return nearby;
     }
     
-    // Level 3: In the area (500m buffer)
-    const area = await getWetlandsFromAPI(lat, lng, 500);
+    // Level 3: In the area (100m buffer)
+    const area = await getWetlandsFromAPI(lat, lng, 100);
     if (area.found) {
         area.proximity = 'IN_AREA';
-        area.proximityLabel = '🟢 NA ÁREA (até 500m)';
+        area.proximityLabel = '🟠 NA ÁREA (até 100m)';
         return area;
     }
     
-    // No wetlands found within 500m
+    // No wetlands found within 100m
     return {
         found: false,
-        method: 'nwi_api',
+        method: 'nwi_official_mapserver',
         proximity: 'NONE',
-        proximityLabel: '✅ SEM WETLANDS (500m)',
+        proximityLabel: '✅ SEM WETLANDS (100m)',
         status: '✅ SEM WETLANDS',
-        statusDetail: 'Nenhum wetland encontrado num raio de 500m',
-        source: 'NWI / U.S. Fish & Wildlife Service (ArcGIS Online)',
+        statusDetail: 'Nenhum wetland encontrado num raio de 100m',
+        source: 'NWI Official MapServer (FWS/USGS)',
         wetlands: [],
         totalAcres: 0,
         disclaimers: [
