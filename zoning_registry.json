@@ -142,7 +142,7 @@
 
     "Highlands": {
       "fips": "055",
-      "co_no": 55,
+      "co_no": 28,
       "zoning": {
         "name": "Highlands County Zoning",
         "url": "https://gis.highlandsfl.gov/server/rest/services/Layers/Zoning/MapServer/0/query",
@@ -224,7 +224,7 @@
 
     "Putnam": {
       "fips": "107",
-      "co_no": 64,
+      "co_no": 54,
       "zoning": {
         "name": "Putnam County Planning Reference Map",
         "base_url": "https://services1.arcgis.com/YZc1OyqL6jbIOeOv/arcgis/rest/services/Planning_ReferenceMap/FeatureServer",
