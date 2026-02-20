@@ -2700,7 +2700,10 @@
         }
         
         function aprovarPropriedade() {
-            console.log('🟢 APROVAR CLICADO - Index:', currentIndex, 'Parcel:', properties[currentIndex]?.['Parcel #']);
+            // Get unique identifier - try multiple field names
+            const prop = properties[currentIndex];
+            const parcelId = prop['Parcel Number'] || prop['Parcel Id'] || prop['Parcel #'] || prop['Parcel'] || prop['parcel_number'] || '';
+            console.log('🟢 APROVAR CLICADO - Index:', currentIndex, 'Parcel:', parcelId, 'Keys:', Object.keys(prop).slice(0, 10));
             
             properties[currentIndex].status = 'Approved';
             properties[currentIndex].approvedAt = new Date().toISOString();
@@ -2708,11 +2711,11 @@
             
             // Save to approvedProperties (Tela 3)
             let approvedProperties = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
-            console.log('📦 approvedProperties ANTES:', approvedProperties.length, approvedProperties.map(p => p['Parcel #']));
+            console.log('📦 approvedProperties ANTES:', approvedProperties.length);
             
-            // Check if already approved (avoid duplicates)
-            const parcelId = properties[currentIndex]['Parcel #'];
-            const alreadyApproved = approvedProperties.some(p => p['Parcel #'] === parcelId);
+            // Check if already approved (avoid duplicates) - use robust matching
+            const getParcelKey = (p) => p['Parcel Number'] || p['Parcel Id'] || p['Parcel #'] || p['Parcel'] || p['parcel_number'] || '';
+            const alreadyApproved = parcelId && approvedProperties.some(p => getParcelKey(p) === parcelId);
             
             if (!alreadyApproved) {
                 approvedProperties.push(properties[currentIndex]);
