@@ -1373,3 +1373,32 @@ Integrar ArcGIS Landsat Image Server para fornecer imagens históricas REAIS (19
 - package.json (MODIFIED - added smoke script)
 - public/analysis2.html (MODIFIED - added mode banner)
 - /mock/*.sample.json (MODIFIED - added _meta fields)
+
+
+## 🧹 Prioridade 1: Limpeza + Expansão Zoning — 20/02/2026
+
+### Limpeza de Arquivos Órfãos
+- [ ] Remover analysis2.html (3.389 linhas, não referenciado)
+- [ ] Remover analysis-backup-20251112-082321.html
+- [ ] Remover analysis.html.backup
+- [ ] Remover index.html.backup-20251112-153811
+- [ ] Remover index.html.backup-new
+- [ ] Remover settings.html.bak
+- [ ] Remover analysis_extracted.js
+- [ ] Remover test-analyze-button.html
+- [ ] Remover test-button-simple.html
+- [ ] Remover test.html
+- [ ] Remover screen2-prototype.html
+- [ ] Remover comps-bid-prototype.html
+- [ ] Remover server.js.backup
+- [ ] Remover kml-backup-20260109-181443/
+
+### Expansão Zoning Discovery
+- [ ] Rodar florida-zoning-discovery para Orange County
+- [ ] Rodar florida-zoning-discovery para Hillsborough County
+- [ ] Rodar florida-zoning-discovery para Pasco County (re-check)
+- [ ] Rodar florida-zoning-discovery para Polk County (re-check)
+- [ ] Rodar florida-zoning-discovery para Marion County (re-check)
+- [ ] Atualizar zoning_registry.json com resultados
+- [ ] Testar queries de zoning para condados atualizados
+- [ ] Commit e push para GitHub
