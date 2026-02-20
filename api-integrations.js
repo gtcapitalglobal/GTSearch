@@ -1,42 +1,111 @@
 /**
  * API Integrations Module
- * Integrates with FEMA, Wetlands (NWI), and County GIS services
+ * Integrates with FEMA, Wetlands (NWI), Land Use (FDOR Statewide), and County Zoning
  * for property analysis in Florida
+ * 
+ * LAND USE: Florida Statewide Cadastral (FDOR) - covers all 67 counties
+ * ZONING: Per-county registry (Putnam via ArcGIS Online, Highlands via self-hosted)
+ * WETLANDS: NWI Official MapServer (FWS/USGS)
+ * FEMA: NFHL MapServer (official)
  */
 
 import axios from 'axios';
 import { getWetlandsProgressive } from './wetlands-local.js';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load zoning registry
+let REGISTRY = {};
+try {
+    const registryPath = join(__dirname, 'zoning_registry.json');
+    REGISTRY = JSON.parse(readFileSync(registryPath, 'utf-8'));
+    console.log('[Registry] Loaded zoning_registry.json');
+} catch (err) {
+    console.error('[Registry] Failed to load zoning_registry.json:', err.message);
+}
+
+// Simple in-memory cache (parcel_id -> result)
+const cache = new Map();
+const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+
+function getCached(key) {
+    const entry = cache.get(key);
+    if (entry && Date.now() - entry.ts < CACHE_TTL) return entry.data;
+    cache.delete(key);
+    return null;
+}
+
+function setCache(key, data) {
+    cache.set(key, { data, ts: Date.now() });
+}
+
+// ============================================================================
+// HELPER: Safe ArcGIS query with timeout + retries
+// ============================================================================
+
+async function safeArcGISQuery(url, params, { timeout = 10000, retries = 1, label = 'ArcGIS' } = {}) {
+    let lastError = null;
+    
+    for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+            const response = await axios.get(url, { 
+                params, 
+                timeout,
+                // Allow self-signed certs for county servers
+                httpsAgent: url.includes('gis.highlandsfl.gov') || url.includes('mgrcmaps.org')
+                    ? new (await import('https')).Agent({ rejectUnauthorized: false })
+                    : undefined
+            });
+            
+            if (response.data && response.data.features) {
+                return response.data;
+            }
+            
+            // ArcGIS error response
+            if (response.data && response.data.error) {
+                throw new Error(`ArcGIS error: ${response.data.error.message || JSON.stringify(response.data.error)}`);
+            }
+            
+            return response.data;
+            
+        } catch (error) {
+            lastError = error;
+            console.warn(`[${label}] Attempt ${attempt + 1}/${retries + 1} failed: ${error.message}`);
+            
+            if (attempt < retries) {
+                await new Promise(r => setTimeout(r, 1000 * (attempt + 1))); // backoff
+            }
+        }
+    }
+    
+    throw lastError;
+}
 
 // ============================================================================
 // FEMA FLOOD ZONE (Statewide - Florida)
 // ============================================================================
 
-/**
- * Get FEMA Flood Zone for a property
- * @param {number} lat - Latitude
- * @param {number} lng - Longitude
- * @returns {Promise<Object>} Flood zone data
- */
 export async function getFEMAFloodZone(lat, lng) {
     try {
         const url = 'https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28/query';
         
-        const params = {
+        const data = await safeArcGISQuery(url, {
             geometry: `${lng},${lat}`,
             geometryType: 'esriGeometryPoint',
             spatialRel: 'esriSpatialRelIntersects',
             outFields: 'FLD_ZONE,ZONE_SUBTY,STATIC_BFE',
             returnGeometry: false,
             f: 'json'
-        };
-
-        const response = await axios.get(url, { params, timeout: 10000 });
+        }, { label: 'FEMA', timeout: 10000, retries: 1 });
         
-        if (response.data.features && response.data.features.length > 0) {
-            const attrs = response.data.features[0].attributes;
+        if (data.features && data.features.length > 0) {
+            const attrs = data.features[0].attributes;
             const zone = attrs.FLD_ZONE || 'Unknown';
             
-            // Determine risk level
             let risk = 'unknown';
             let status = '⚠️ AVALIAR';
             
@@ -53,475 +122,292 @@ export async function getFEMAFloodZone(lat, lng) {
             
             return {
                 found: true,
-                zone: zone,
-                subtype: attrs.ZONE_SUBTY || null,
+                zone, subtype: attrs.ZONE_SUBTY || null,
                 bfe: attrs.STATIC_BFE || null,
-                risk: risk,
-                status: status,
+                risk, status,
                 source: 'FEMA NFHL (official)'
             };
         }
         
-        return {
-            found: false,
-            zone: null,
-            risk: 'unknown',
-            status: '⚠️ DADOS NÃO DISPONÍVEIS',
-            source: 'FEMA NFHL'
-        };
+        return { found: false, zone: null, risk: 'unknown', status: '⚠️ DADOS NÃO DISPONÍVEIS', source: 'FEMA NFHL' };
         
     } catch (error) {
-        console.error('Error fetching FEMA data:', error.message);
-        return {
-            found: false,
-            error: error.message,
-            status: '⚠️ ERRO NA CONSULTA',
-            source: 'FEMA NFHL'
-        };
+        console.error('[FEMA] Error:', error.message);
+        return { found: false, error: error.message, status: '⚠️ ERRO NA CONSULTA', source: 'FEMA NFHL' };
     }
 }
 
 // ============================================================================
-// WETLANDS (Statewide - Florida)
+// LAND USE - STATEWIDE (Florida Dept of Revenue)
 // ============================================================================
 
 /**
- * Get Wetlands data for a property
- * @param {number} lat - Latitude
- * @param {number} lng - Longitude
- * @param {Object} parcelGeometry - Optional parcel polygon geometry
- * @returns {Promise<Object>} Wetlands data
+ * Get Land Use via Florida Statewide Cadastral (covers ALL 67 FL counties)
+ * Uses DOR_UC (Dept of Revenue Use Code) for classification
  */
-export async function getWetlands(lat, lng, parcelGeometry = null) {
+export async function getStateLandUse(lat, lng, parcelId = null) {
+    const cacheKey = `landuse_${parcelId || `${lat}_${lng}`}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+    
     try {
-        const url = 'https://fwspublicservices.wim.usgs.gov/wetlandsmapservice/rest/services/Wetlands/MapServer/0/query';
-        
-        let params;
-        
-        if (parcelGeometry && parcelGeometry.rings) {
-            // Use polygon if available (more accurate)
-            params = {
-                geometry: JSON.stringify(parcelGeometry),
-                geometryType: 'esriGeometryPolygon',
-                spatialRel: 'esriSpatialRelIntersects',
-                outFields: 'ATTRIBUTE,WETLAND_TYPE,ACRES',
-                returnGeometry: false,
-                f: 'json'
-            };
-        } else {
-            // Use point with buffer as fallback
-            params = {
-                geometry: `${lng},${lat}`,
-                geometryType: 'esriGeometryPoint',
-                spatialRel: 'esriSpatialRelIntersects',
-                distance: 50, // 50 meters buffer
-                units: 'esriSRUnit_Meter',
-                outFields: 'ATTRIBUTE,WETLAND_TYPE,ACRES',
-                returnGeometry: false,
-                f: 'json'
-            };
-        }
-
-        const response = await axios.get(url, { params, timeout: 10000 });
-        
-        if (response.data.features && response.data.features.length > 0) {
-            const wetlands = response.data.features.map(f => ({
-                code: f.attributes.ATTRIBUTE,
-                type: f.attributes.WETLAND_TYPE,
-                acres: f.attributes.ACRES
-            }));
-            
-            const totalAcres = wetlands.reduce((sum, w) => sum + (w.acres || 0), 0);
-            
-            return {
-                found: true,
-                wetlands: wetlands,
-                totalAcres: totalAcres.toFixed(2),
-                status: '⚠️ POSSÍVEL WETLAND',
-                warning: 'Consultar USACE para confirmação regulatória',
-                source: 'NWI (screening biológico)'
-            };
-        }
-        
-        return {
-            found: false,
-            wetlands: [],
-            totalAcres: 0,
-            status: '✅ SEM WETLANDS',
-            source: 'NWI (screening biológico)'
-        };
-        
-    } catch (error) {
-        console.error('Error fetching Wetlands data:', error.message);
-        return {
-            found: false,
-            error: error.message,
-            status: '⚠️ ERRO NA CONSULTA',
-            source: 'NWI'
-        };
-    }
-}
-
-// ============================================================================
-// PUTNAM COUNTY, FL
-// ============================================================================
-
-/**
- * Get Land Use (Assessor) for Putnam County
- * @param {string} parcelId - Parcel ID
- * @param {number} lat - Latitude (fallback)
- * @param {number} lng - Longitude (fallback)
- * @returns {Promise<Object>} Land use data
- */
-export async function getPutnamLandUse(parcelId, lat, lng) {
-    try {
-        const url = 'https://pamap.putnam-fl.gov/server/rest/services/CadastralData/FeatureServer/2/query';
-        
-        let params;
-        
-        if (parcelId) {
-            params = {
-                where: `PARCELNO='${parcelId}'`,
-                outFields: 'PARCELNO,SITEADDR,USECD,USEDSCRP,OWNER,ACRES',
-                returnGeometry: false,
-                f: 'json'
-            };
-        } else {
-            params = {
-                geometry: `${lng},${lat}`,
-                geometryType: 'esriGeometryPoint',
-                spatialRel: 'esriSpatialRelIntersects',
-                outFields: 'PARCELNO,SITEADDR,USECD,USEDSCRP,OWNER,ACRES',
-                returnGeometry: false,
-                f: 'json'
-            };
-        }
-
-        const response = await axios.get(url, { params, timeout: 10000 });
-        
-        if (response.data.features && response.data.features.length > 0) {
-            const attrs = response.data.features[0].attributes;
-            
-            return {
-                found: true,
-                parcelId: attrs.PARCELNO,
-                address: attrs.SITEADDR,
-                code: attrs.USECD,
-                description: attrs.USEDSCRP,
-                owner: attrs.OWNER,
-                acres: attrs.ACRES,
-                status: '✅ DISPONÍVEL',
-                source: 'Property Appraiser (fiscal classification)',
-                note: 'NÃO é zoning legal'
-            };
-        }
-        
-        return {
-            found: false,
-            status: '⚠️ DADOS NÃO DISPONÍVEIS',
-            source: 'Putnam County Property Appraiser'
-        };
-        
-    } catch (error) {
-        console.error('Error fetching Putnam Land Use:', error.message);
-        return {
-            found: false,
-            error: error.message,
-            status: '⚠️ ERRO NA CONSULTA',
-            source: 'Putnam County Property Appraiser'
-        };
-    }
-}
-
-/**
- * Detect if property is in municipal or unincorporated area (Putnam County)
- * @param {number} lat - Latitude
- * @param {number} lng - Longitude
- * @returns {Promise<Object>} Jurisdiction data
- */
-export async function getPutnamJurisdiction(lat, lng) {
-    try {
-        // Note: Actual endpoint needs to be confirmed from Putnam County GIS Hub
-        // This is a placeholder structure
-        const url = 'https://services.arcgis.com/putnam/MunicipalBoundaries/FeatureServer/0/query';
+        const config = REGISTRY.statewide?.land_use;
+        const url = config?.url || 'https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query';
         
         const params = {
             geometry: `${lng},${lat}`,
             geometryType: 'esriGeometryPoint',
-            spatialRel: 'esriSpatialRelWithin',
-            outFields: 'CITY_NAME,MUNI_TYPE',
-            returnGeometry: false,
-            f: 'json'
-        };
-
-        const response = await axios.get(url, { params, timeout: 10000 });
-        
-        if (response.data.features && response.data.features.length > 0) {
-            const attrs = response.data.features[0].attributes;
-            return {
-                isMunicipal: true,
-                cityName: attrs.CITY_NAME,
-                type: attrs.MUNI_TYPE
-            };
-        }
-        
-        return {
-            isMunicipal: false,
-            cityName: null,
-            type: 'Unincorporated'
-        };
-        
-    } catch (error) {
-        console.error('Error detecting Putnam jurisdiction:', error.message);
-        // Default to unincorporated if error
-        return {
-            isMunicipal: false,
-            cityName: null,
-            type: 'Unincorporated',
-            error: error.message
-        };
-    }
-}
-
-/**
- * Get Zoning (Planning) for Putnam County
- * @param {number} lat - Latitude
- * @param {number} lng - Longitude
- * @returns {Promise<Object>} Zoning data
- */
-export async function getPutnamZoning(lat, lng) {
-    try {
-        // First detect jurisdiction
-        const jurisdiction = await getPutnamJurisdiction(lat, lng);
-        
-        // Note: Actual endpoint needs to be confirmed from Putnam County GIS Hub
-        // This is a placeholder structure
-        let url;
-        if (jurisdiction.isMunicipal) {
-            // Municipal zoning (if available)
-            url = `https://services.arcgis.com/putnam/Zoning_${jurisdiction.cityName}/FeatureServer/0/query`;
-        } else {
-            // Unincorporated zoning
-            url = 'https://services.arcgis.com/putnam/Zoning_Unincorporated/FeatureServer/0/query';
-        }
-        
-        const params = {
-            geometry: `${lng},${lat}`,
-            geometryType: 'esriGeometryPoint',
+            inSR: 4326,
             spatialRel: 'esriSpatialRelIntersects',
-            outFields: 'ZONE_CODE,ZONE_DESC',
+            outFields: 'PARCEL_ID,DOR_UC,OWN_NAME,LND_VAL,JV,SALE_PRC1,SALE_YR1,SALE_MO1,S_LEGAL,CO_NO,LND_SQFOOT,NO_BULDNG,PHY_ADDR1,PHY_CITY',
             returnGeometry: false,
             f: 'json'
         };
 
-        const response = await axios.get(url, { params, timeout: 10000 });
+        const data = await safeArcGISQuery(url, params, { label: 'FDOR LandUse', timeout: 10000, retries: 1 });
         
-        if (response.data.features && response.data.features.length > 0) {
-            const attrs = response.data.features[0].attributes;
+        if (data.features && data.features.length > 0) {
+            const attrs = data.features[0].attributes;
+            const dorCode = String(attrs.DOR_UC || '').padStart(3, '0');
+            const dorInfo = REGISTRY.dor_use_codes?.[dorCode] || null;
             
-            return {
-                found: true,
-                code: attrs.ZONE_CODE,
-                description: attrs.ZONE_DESC,
-                jurisdiction: jurisdiction.isMunicipal ? `Municipal (${jurisdiction.cityName})` : 'Unincorporated Putnam County',
-                status: '✅ DISPONÍVEL',
-                source: 'Planning & Zoning (legal)',
-                note: 'Confirmar com Planning Dept para decisões finais'
-            };
-        }
-        
-        return {
-            found: false,
-            jurisdiction: jurisdiction.isMunicipal ? `Municipal (${jurisdiction.cityName})` : 'Unincorporated',
-            status: jurisdiction.isMunicipal ? '⚠️ Not available (municipal)' : '⚠️ DADOS NÃO DISPONÍVEIS',
-            source: 'Putnam County Planning & Zoning',
-            note: 'Consultar Planning Department'
-        };
-        
-    } catch (error) {
-        console.error('Error fetching Putnam Zoning:', error.message);
-        return {
-            found: false,
-            error: error.message,
-            status: '⚠️ ERRO NA CONSULTA',
-            source: 'Putnam County Planning & Zoning'
-        };
-    }
-}
-
-// ============================================================================
-// HIGHLANDS COUNTY, FL
-// ============================================================================
-
-/**
- * Get Land Use (Assessor) for Highlands County
- * @param {string} parcelId - Parcel ID
- * @param {number} lat - Latitude (fallback)
- * @param {number} lng - Longitude (fallback)
- * @returns {Promise<Object>} Land use data
- */
-export async function getHighlandsLandUse(parcelId, lat, lng) {
-    try {
-        const url = 'https://gis.highlandsfl.gov/server/rest/services/Layers/Tax_Parcels__HCPAO_/FeatureServer/0/query';
-        
-        let params;
-        
-        if (parcelId) {
-            params = {
-                where: `PARCEL_ID='${parcelId}'`,
-                outFields: 'PARCEL_ID,SITE_ADDR,DOR_UC,LANDUSE_DESC,OWNER_NAME,ACREAGE',
-                returnGeometry: false,
-                f: 'json'
-            };
-        } else {
-            params = {
-                geometry: `${lng},${lat}`,
-                geometryType: 'esriGeometryPoint',
-                spatialRel: 'esriSpatialRelIntersects',
-                outFields: 'PARCEL_ID,SITE_ADDR,DOR_UC,LANDUSE_DESC,OWNER_NAME,ACREAGE',
-                returnGeometry: false,
-                f: 'json'
-            };
-        }
-
-        const response = await axios.get(url, { params, timeout: 10000 });
-        
-        if (response.data.features && response.data.features.length > 0) {
-            const attrs = response.data.features[0].attributes;
-            
-            return {
+            const result = {
                 found: true,
                 parcelId: attrs.PARCEL_ID,
-                address: attrs.SITE_ADDR,
-                code: attrs.DOR_UC,
-                description: attrs.LANDUSE_DESC,
-                owner: attrs.OWNER_NAME,
-                acres: attrs.ACREAGE,
+                code: dorCode,
+                description: dorInfo?.description || `DOR Code ${dorCode}`,
+                category: dorInfo?.category || 'unknown',
+                buildable: dorInfo?.buildable ?? null,
+                owner: attrs.OWN_NAME,
+                landValue: attrs.LND_VAL,
+                justValue: attrs.JV,
+                lastSalePrice: attrs.SALE_PRC1,
+                lastSaleDate: attrs.SALE_YR1 ? `${attrs.SALE_MO1 || ''}/${attrs.SALE_YR1}` : null,
+                legalDesc: attrs.S_LEGAL,
+                countyCode: attrs.CO_NO,
+                sqfoot: attrs.LND_SQFOOT,
+                buildings: attrs.NO_BULDNG,
+                address: attrs.PHY_ADDR1,
+                city: attrs.PHY_CITY,
                 status: '✅ DISPONÍVEL',
-                source: 'Property Appraiser (fiscal classification)',
-                note: 'NÃO é zoning legal'
+                source: 'FL Dept of Revenue (Statewide Cadastral)',
+                note: 'Classificação fiscal (DOR Use Code) — NÃO é zoning legal'
             };
+            
+            setCache(cacheKey, result);
+            return result;
         }
         
         return {
             found: false,
             status: '⚠️ DADOS NÃO DISPONÍVEIS',
-            source: 'Highlands County Property Appraiser'
+            source: 'FL Dept of Revenue (Statewide Cadastral)',
+            note: 'Parcel não encontrado na base estadual'
         };
         
     } catch (error) {
-        console.error('Error fetching Highlands Land Use:', error.message);
+        console.error('[LandUse] Error:', error.message);
         return {
             found: false,
             error: error.message,
             status: '⚠️ ERRO NA CONSULTA',
-            source: 'Highlands County Property Appraiser'
+            source: 'FL Dept of Revenue (Statewide Cadastral)'
         };
     }
 }
 
+// ============================================================================
+// ZONING - PUTNAM COUNTY (ArcGIS Online - stable)
+// ============================================================================
+
 /**
- * Detect if property is in municipal or unincorporated area (Highlands County)
- * @param {number} lat - Latitude
- * @param {number} lng - Longitude
- * @returns {Promise<Object>} Jurisdiction data
+ * Get Zoning for Putnam County using Planning_ReferenceMap layers
+ * Layer 2: County Zoning, Layer 3: Municipal Zoning
+ * Layer 4: County Proposed Land Use, Layer 5: Municipal Future Land Use
  */
-export async function getHighlandsJurisdiction(lat, lng) {
+export async function getPutnamZoning(lat, lng) {
+    const cacheKey = `zoning_putnam_${lat}_${lng}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+    
     try {
-        const url = 'https://gis.highlandsfl.gov/server/rest/services/Layers/Municipal_Boundary/FeatureServer/0/query';
+        const config = REGISTRY.counties?.Putnam?.zoning;
+        const baseUrl = config?.base_url || 'https://services1.arcgis.com/YZc1OyqL6jbIOeOv/arcgis/rest/services/Planning_ReferenceMap/FeatureServer';
         
-        const params = {
+        const pointParams = {
             geometry: `${lng},${lat}`,
             geometryType: 'esriGeometryPoint',
-            spatialRel: 'esriSpatialRelWithin',
-            outFields: 'MUNI_NAME,MUNI_TYPE',
+            inSR: 4326,
+            spatialRel: 'esriSpatialRelIntersects',
+            outFields: '*',
             returnGeometry: false,
             f: 'json'
         };
-
-        const response = await axios.get(url, { params, timeout: 10000 });
         
-        if (response.data.features && response.data.features.length > 0) {
-            const attrs = response.data.features[0].attributes;
-            return {
-                isMunicipal: true,
-                cityName: attrs.MUNI_NAME,
-                type: attrs.MUNI_TYPE
+        // Query all 4 layers in parallel
+        const [countyZoning, muniZoning, countyFLU, muniFLU] = await Promise.allSettled([
+            safeArcGISQuery(`${baseUrl}/2/query`, pointParams, { label: 'Putnam County Zoning', timeout: 10000 }),
+            safeArcGISQuery(`${baseUrl}/3/query`, pointParams, { label: 'Putnam Municipal Zoning', timeout: 10000 }),
+            safeArcGISQuery(`${baseUrl}/4/query`, pointParams, { label: 'Putnam County FLU', timeout: 10000 }),
+            safeArcGISQuery(`${baseUrl}/5/query`, pointParams, { label: 'Putnam Municipal FLU', timeout: 10000 })
+        ]);
+        
+        // Extract results
+        const cz = countyZoning.status === 'fulfilled' && countyZoning.value?.features?.length > 0
+            ? countyZoning.value.features[0].attributes : null;
+        const mz = muniZoning.status === 'fulfilled' && muniZoning.value?.features?.length > 0
+            ? muniZoning.value.features[0].attributes : null;
+        const cflu = countyFLU.status === 'fulfilled' && countyFLU.value?.features?.length > 0
+            ? countyFLU.value.features[0].attributes : null;
+        const mflu = muniFLU.status === 'fulfilled' && muniFLU.value?.features?.length > 0
+            ? muniFLU.value.features[0].attributes : null;
+        
+        // Determine jurisdiction: if municipal zoning found, it's municipal
+        const isMunicipal = !!mz;
+        const zoningData = mz || cz;
+        const fluData = mflu || cflu;
+        
+        if (zoningData || fluData) {
+            const zoningCode = zoningData?.ZONECLASS || zoningData?.ZONING || zoningData?.Zoning || null;
+            const zoningDesc = zoningData?.ZONEDESC || zoningCode || null;
+            const fluCode = fluData?.LANDUSECODE || fluData?.FLU || fluData?.Flu || null;
+            const fluDesc = fluData?.LANDUSEDESC || fluCode || null;
+            
+            const result = {
+                found: true,
+                code: zoningCode,
+                description: zoningDesc || 'N/A',
+                futureLandUse: fluCode,
+                futureLandUseDesc: fluDesc || 'N/A',
+                jurisdiction: isMunicipal ? 'Municipal (Putnam County)' : 'Unincorporated Putnam County',
+                isMunicipal,
+                status: '✅ DISPONÍVEL',
+                source: 'Putnam County Planning & Zoning (ArcGIS Online)',
+                note: 'Consultar Planning Department para decisões finais',
+                manualLink: config?.manual_link || 'https://www.putnam-fl.com/planning-zoning/'
             };
+            
+            setCache(cacheKey, result);
+            return result;
         }
         
         return {
-            isMunicipal: false,
-            cityName: null,
-            type: 'Unincorporated'
+            found: false,
+            jurisdiction: 'Unincorporated Putnam County',
+            status: '⚠️ DADOS NÃO DISPONÍVEIS',
+            source: 'Putnam County Planning & Zoning',
+            note: 'Consultar Planning Department',
+            manualLink: config?.manual_link || 'https://www.putnam-fl.com/planning-zoning/'
         };
         
     } catch (error) {
-        console.error('Error detecting Highlands jurisdiction:', error.message);
+        console.error('[Putnam Zoning] Error:', error.message);
         return {
-            isMunicipal: false,
-            cityName: null,
-            type: 'Unincorporated',
-            error: error.message
+            found: false,
+            error: error.message,
+            status: '⚠️ ERRO NA CONSULTA',
+            source: 'Putnam County Planning & Zoning',
+            manualLink: 'https://www.putnam-fl.com/planning-zoning/'
         };
     }
 }
 
+// ============================================================================
+// ZONING - HIGHLANDS COUNTY (Self-hosted - best effort)
+// ============================================================================
+
 /**
- * Get Zoning (Planning) for Highlands County
- * @param {number} lat - Latitude
- * @param {number} lng - Longitude
- * @returns {Promise<Object>} Zoning data
+ * Get Zoning for Highlands County
+ * Uses self-hosted ArcGIS Server (may have SSL issues from some environments)
+ * Fields: ZON (zoning code), FLUM (future land use)
  */
 export async function getHighlandsZoning(lat, lng) {
+    const cacheKey = `zoning_highlands_${lat}_${lng}`;
+    const cached = getCached(cacheKey);
+    if (cached) return cached;
+    
     try {
-        // First detect jurisdiction
-        const jurisdiction = await getHighlandsJurisdiction(lat, lng);
-        
-        const url = 'https://gis.highlandsfl.gov/server/rest/services/Layers/Zoning/FeatureServer/0/query';
+        const config = REGISTRY.counties?.Highlands?.zoning;
+        const url = config?.url || 'https://gis.highlandsfl.gov/server/rest/services/Layers/Zoning/MapServer/0/query';
+        const timeout = config?.timeout_ms || 8000;
+        const retries = config?.retries || 2;
         
         const params = {
             geometry: `${lng},${lat}`,
             geometryType: 'esriGeometryPoint',
+            inSR: 4326,
             spatialRel: 'esriSpatialRelIntersects',
-            outFields: 'ZONE_CODE,ZONE_NAME,JURISDICTION',
+            outFields: '*',
             returnGeometry: false,
             f: 'json'
         };
 
-        const response = await axios.get(url, { params, timeout: 10000 });
+        const data = await safeArcGISQuery(url, params, { label: 'Highlands Zoning', timeout, retries });
         
-        if (response.data.features && response.data.features.length > 0) {
-            const attrs = response.data.features[0].attributes;
+        if (data.features && data.features.length > 0) {
+            const attrs = data.features[0].attributes;
             
-            return {
+            // Use correct field names: ZON for zoning, FLUM for future land use
+            const zoningCode = attrs.ZON || attrs.ZONE_CODE || attrs.ZONING || null;
+            const flum = attrs.FLUM || attrs.FUTURE_LAND_USE || null;
+            
+            const result = {
                 found: true,
-                code: attrs.ZONE_CODE,
-                description: attrs.ZONE_NAME,
-                jurisdiction: jurisdiction.isMunicipal ? `Municipal (${jurisdiction.cityName})` : 'Unincorporated Highlands County',
+                code: zoningCode,
+                description: zoningCode || 'N/A',
+                futureLandUse: flum,
+                futureLandUseDesc: flum || 'N/A',
+                jurisdiction: 'Highlands County',
                 status: '✅ DISPONÍVEL',
-                source: 'Planning & Zoning (legal)',
-                note: 'Confirmar com Planning Dept para decisões finais'
+                source: 'Highlands County Planning & Zoning',
+                note: 'Confirmar com Planning Dept para decisões finais',
+                manualLink: config?.manual_link || 'https://www.highlandsfl.gov/departments/building-zoning'
             };
+            
+            setCache(cacheKey, result);
+            return result;
         }
         
         return {
             found: false,
-            jurisdiction: jurisdiction.isMunicipal ? `Municipal (${jurisdiction.cityName})` : 'Unincorporated',
-            status: jurisdiction.isMunicipal ? '⚠️ Not available (municipal)' : '⚠️ DADOS NÃO DISPONÍVEIS',
+            jurisdiction: 'Highlands County',
+            status: '⚠️ DADOS NÃO DISPONÍVEIS',
             source: 'Highlands County Planning & Zoning',
-            note: 'Consultar Planning Department'
+            note: 'Consultar Planning Department',
+            manualLink: config?.manual_link || 'https://www.highlandsfl.gov/departments/building-zoning'
         };
         
     } catch (error) {
-        console.error('Error fetching Highlands Zoning:', error.message);
+        console.error('[Highlands Zoning] Error:', error.message);
+        // Best-effort: return NO_DATA with manual link instead of crashing
         return {
             found: false,
             error: error.message,
             status: '⚠️ ERRO NA CONSULTA',
-            source: 'Highlands County Planning & Zoning'
+            source: 'Highlands County Planning & Zoning',
+            note: 'Servidor do condado indisponível. Consulte manualmente.',
+            manualLink: REGISTRY.counties?.Highlands?.zoning?.manual_link || 'https://www.highlandsfl.gov/departments/building-zoning'
         };
     }
+}
+
+// ============================================================================
+// ZONING ROUTER - Routes to correct county provider
+// ============================================================================
+
+function getZoningForCounty(county, lat, lng) {
+    const countyLower = (county || '').toLowerCase();
+    
+    if (countyLower === 'putnam') return getPutnamZoning(lat, lng);
+    if (countyLower === 'highlands') return getHighlandsZoning(lat, lng);
+    
+    // Unknown county - return NO_DATA
+    return Promise.resolve({
+        found: false,
+        status: '⚠️ CONDADO NÃO SUPORTADO',
+        source: `${county} County (não configurado)`,
+        note: 'Zoning não disponível para este condado. Consulte o Planning Department local.'
+    });
 }
 
 // ============================================================================
@@ -530,28 +416,18 @@ export async function getHighlandsZoning(lat, lng) {
 
 /**
  * Get complete property details for a given location
- * @param {Object} params - Property parameters
- * @param {number} params.lat - Latitude
- * @param {number} params.lng - Longitude
- * @param {string} params.county - County name (Putnam or Highlands)
- * @param {string} params.parcelId - Optional parcel ID
- * @param {Object} params.parcelGeometry - Optional parcel polygon geometry
- * @returns {Promise<Object>} Complete property analysis
+ * Runs all queries in parallel. Never fails the whole pipeline if one service fails.
  */
 export async function getPropertyDetails({ lat, lng, county, parcelId = null, parcelGeometry = null }) {
-    console.log(`Analyzing property: ${county} County, FL (${lat}, ${lng})`);
+    console.log(`[Analysis] Starting: ${county} County, FL (${lat}, ${lng}) parcel=${parcelId || 'N/A'}`);
     
     try {
-        // Run all queries in parallel for speed
+        // Run ALL queries in parallel - each one handles its own errors
         const [fema, wetlands, landUse, zoning] = await Promise.all([
-            getFEMAFloodZone(lat, lng),
-            getWetlandsProgressive(lat, lng),
-            county === 'Putnam' 
-                ? getPutnamLandUse(parcelId, lat, lng)
-                : getHighlandsLandUse(parcelId, lat, lng),
-            county === 'Putnam'
-                ? getPutnamZoning(lat, lng)
-                : getHighlandsZoning(lat, lng)
+            getFEMAFloodZone(lat, lng).catch(err => ({ found: false, error: err.message, status: '⚠️ ERRO NA CONSULTA', source: 'FEMA NFHL' })),
+            getWetlandsProgressive(lat, lng).catch(err => ({ found: false, error: err.message, status: '⚠️ ERRO NA CONSULTA', source: 'NWI' })),
+            getStateLandUse(lat, lng, parcelId).catch(err => ({ found: false, error: err.message, status: '⚠️ ERRO NA CONSULTA', source: 'FDOR' })),
+            getZoningForCounty(county, lat, lng).catch(err => ({ found: false, error: err.message, status: '⚠️ ERRO NA CONSULTA', source: 'Zoning' }))
         ]);
         
         // Determine overall status
@@ -560,7 +436,6 @@ export async function getPropertyDetails({ lat, lng, county, parcelId = null, pa
         if (fema.status === '🔴 REJEITAR') {
             overallStatus = '🔴 REJEITAR';
         } else if (wetlands.error) {
-            // If wetlands API fails, mark as INCOMPLETE - never show APROVADO without verification
             overallStatus = '⚠️ INCOMPLETO (Wetlands não verificado)';
         } else if (wetlands.found || fema.risk === 'moderate') {
             overallStatus = '⚠️ AVALIAR';
@@ -568,22 +443,22 @@ export async function getPropertyDetails({ lat, lng, county, parcelId = null, pa
         
         return {
             success: true,
-            county: county,
+            county,
             coordinates: { lat, lng },
-            fema: fema,
-            wetlands: wetlands,
-            landUse: landUse,
-            zoning: zoning,
-            overallStatus: overallStatus,
+            fema,
+            wetlands,
+            landUse,
+            zoning,
+            overallStatus,
             timestamp: new Date().toISOString()
         };
         
     } catch (error) {
-        console.error('Error in getPropertyDetails:', error);
+        console.error('[Analysis] Critical error:', error);
         return {
             success: false,
             error: error.message,
-            county: county,
+            county,
             coordinates: { lat, lng }
         };
     }

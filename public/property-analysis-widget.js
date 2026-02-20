@@ -518,7 +518,7 @@ class PropertyAnalysisWidget {
     }
     
     /**
-     * Render Land Use section
+     * Render Land Use section (FDOR Statewide)
      */
     renderLandUse(landUse) {
         const icon = landUse.found ? '✅' : '⚠️';
@@ -528,33 +528,64 @@ class PropertyAnalysisWidget {
                 <div class="flex items-center justify-between mb-2">
                     <h4 class="font-bold text-gray-800 flex items-center">
                         <span class="text-xl mr-2">📋</span>
-                        LAND USE (Assessor)
+                        LAND USE (FDOR)
                     </h4>
                     <span class="text-2xl">${icon}</span>
                 </div>
                 
                 ${landUse.found ? `
-                    <div class="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                            <span class="text-gray-600">Código:</span>
-                            <span class="font-semibold ml-2">${landUse.code}</span>
-                        </div>
-                        <div>
-                            <span class="text-gray-600">Descrição:</span>
-                            <span class="font-semibold ml-2">${landUse.description}</span>
-                        </div>
-                        ${landUse.parcelId ? `
-                            <div class="col-span-2">
-                                <span class="text-gray-600">Parcel ID:</span>
-                                <span class="font-mono text-xs ml-2">${landUse.parcelId}</span>
+                    <div class="space-y-2">
+                        <!-- DOR Code + Description -->
+                        <div class="bg-gray-50 rounded-lg p-3">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="font-mono text-sm bg-white px-2 py-0.5 rounded border font-bold">${landUse.code}</span>
+                                    <span class="font-semibold text-sm ml-2">${landUse.description}</span>
+                                </div>
+                                ${landUse.buildable !== null ? `
+                                    <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${landUse.buildable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                                        ${landUse.buildable ? 'Buildable' : 'Non-Buildable'}
+                                    </span>
+                                ` : ''}
                             </div>
-                        ` : ''}
-                        ${landUse.acres ? `
-                            <div>
-                                <span class="text-gray-600">Acres:</span>
-                                <span class="font-semibold ml-2">${landUse.acres}</span>
-                            </div>
-                        ` : ''}
+                            ${landUse.category ? `
+                                <p class="text-xs text-gray-500 mt-1">Categoria: ${landUse.category}</p>
+                            ` : ''}
+                        </div>
+                        
+                        <!-- Property Details Grid -->
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            ${landUse.owner ? `
+                                <div class="col-span-2">
+                                    <span class="text-gray-600">Owner:</span>
+                                    <span class="font-semibold ml-1">${landUse.owner}</span>
+                                </div>
+                            ` : ''}
+                            ${landUse.justValue ? `
+                                <div>
+                                    <span class="text-gray-600">Just Value:</span>
+                                    <span class="font-semibold ml-1">$${Number(landUse.justValue).toLocaleString()}</span>
+                                </div>
+                            ` : ''}
+                            ${landUse.landValue ? `
+                                <div>
+                                    <span class="text-gray-600">Land Value:</span>
+                                    <span class="font-semibold ml-1">$${Number(landUse.landValue).toLocaleString()}</span>
+                                </div>
+                            ` : ''}
+                            ${landUse.lastSalePrice ? `
+                                <div>
+                                    <span class="text-gray-600">Last Sale:</span>
+                                    <span class="font-semibold ml-1">$${Number(landUse.lastSalePrice).toLocaleString()}</span>
+                                </div>
+                            ` : ''}
+                            ${landUse.lastSaleDate ? `
+                                <div>
+                                    <span class="text-gray-600">Sale Date:</span>
+                                    <span class="font-semibold ml-1">${landUse.lastSaleDate}</span>
+                                </div>
+                            ` : ''}
+                        </div>
                     </div>
                 ` : `
                     <p class="text-sm text-gray-600">${landUse.status}</p>
@@ -562,14 +593,14 @@ class PropertyAnalysisWidget {
                 
                 <p class="text-xs text-gray-500 mt-2">
                     Fonte: ${landUse.source}
-                    <br>${landUse.note || 'NÃO é zoning legal'}
+                    <br>${landUse.note || 'Classificação fiscal (DOR) — NÃO é zoning legal'}
                 </p>
             </div>
         `;
     }
     
     /**
-     * Render Zoning section
+     * Render Zoning section (County-specific)
      */
     renderZoning(zoning) {
         const icon = zoning.found ? '✅' : '⚠️';
@@ -585,32 +616,51 @@ class PropertyAnalysisWidget {
                 </div>
                 
                 ${zoning.found ? `
-                    <div class="grid grid-cols-2 gap-3 text-sm">
-                        <div>
-                            <span class="text-gray-600">Código:</span>
-                            <span class="font-semibold ml-2">${zoning.code}</span>
+                    <div class="space-y-2">
+                        <!-- Zoning Code -->
+                        <div class="bg-gray-50 rounded-lg p-3">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="font-mono text-sm bg-white px-2 py-0.5 rounded border font-bold">${zoning.code || 'N/A'}</span>
+                                    <span class="font-semibold text-sm ml-2">${zoning.description || ''}</span>
+                                </div>
+                                ${zoning.isMunicipal !== undefined ? `
+                                    <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${zoning.isMunicipal ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-700'}">
+                                        ${zoning.isMunicipal ? 'Municipal' : 'Unincorporated'}
+                                    </span>
+                                ` : ''}
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-gray-600">Descrição:</span>
-                            <span class="font-semibold ml-2">${zoning.description}</span>
-                        </div>
-                        ${zoning.jurisdiction ? `
-                            <div class="col-span-2">
-                                <span class="text-gray-600">Jurisdição:</span>
-                                <span class="font-semibold ml-2">${zoning.jurisdiction}</span>
+                        
+                        <!-- Future Land Use (if available) -->
+                        ${zoning.futureLandUse ? `
+                            <div class="bg-blue-50 rounded-lg p-2">
+                                <p class="text-xs text-blue-600 font-semibold">Future Land Use (FLUM):</p>
+                                <p class="text-sm font-bold text-blue-800">${zoning.futureLandUse}${zoning.futureLandUseDesc && zoning.futureLandUseDesc !== zoning.futureLandUse ? ' — ' + zoning.futureLandUseDesc : ''}</p>
                             </div>
                         ` : ''}
+                        
+                        <!-- Jurisdiction -->
+                        <div class="text-sm">
+                            <span class="text-gray-600">Jurisdição:</span>
+                            <span class="font-semibold ml-1">${zoning.jurisdiction || 'N/A'}</span>
+                        </div>
                     </div>
                 ` : `
                     <p class="text-sm text-gray-600">${zoning.status}</p>
                     ${zoning.jurisdiction ? `
                         <p class="text-xs text-gray-500 mt-1">Jurisdição: ${zoning.jurisdiction}</p>
                     ` : ''}
+                    ${zoning.manualLink ? `
+                        <p class="text-xs mt-2">
+                            <a href="${zoning.manualLink}" target="_blank" class="text-blue-600 hover:underline">Consultar manualmente</a>
+                        </p>
+                    ` : ''}
                 `}
                 
                 <p class="text-xs text-gray-500 mt-2">
                     Fonte: ${zoning.source}
-                    <br>${zoning.note || 'Confirmar com Planning Dept para decisões finais'}
+                    <br>${zoning.note || 'Consultar Planning Department para decisões finais'}
                 </p>
             </div>
         `;

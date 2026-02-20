@@ -1,0 +1,150 @@
+{
+  "version": "1.0",
+  "description": "Zoning & Land Use service registry per jurisdiction in Florida",
+  "updated": "2026-02-19",
+  
+  "statewide": {
+    "land_use": {
+      "name": "Florida Statewide Cadastral (FDOR)",
+      "url": "https://services9.arcgis.com/Gh9awoU677aKree0/arcgis/rest/services/Florida_Statewide_Cadastral/FeatureServer/0/query",
+      "type": "FeatureServer",
+      "fields": {
+        "parcel_id": "PARCEL_ID",
+        "dor_code": "DOR_UC",
+        "owner": "OWN_NAME",
+        "land_value": "LND_VAL",
+        "just_value": "JV",
+        "sale_price": "SALE_PRC1",
+        "sale_year": "SALE_YR1",
+        "sale_month": "SALE_MO1",
+        "legal": "S_LEGAL",
+        "sqfoot": "LND_SQFOOT",
+        "buildings": "NO_BULDNG",
+        "address": "PHY_ADDR1",
+        "city": "PHY_CITY",
+        "county_code": "CO_NO"
+      },
+      "notes": "Covers all 67 FL counties. DOR_UC is the FL Dept of Revenue Use Code."
+    }
+  },
+
+  "counties": {
+    "Highlands": {
+      "fips": "055",
+      "co_no": 55,
+      "zoning": {
+        "name": "Highlands County Zoning",
+        "url": "https://gis.highlandsfl.gov/server/rest/services/Layers/Zoning/MapServer/0/query",
+        "type": "self-hosted ArcGIS Server",
+        "reliability": "best-effort",
+        "timeout_ms": 8000,
+        "retries": 2,
+        "fields": {
+          "zoning_code": "ZON",
+          "future_land_use": "FLUM"
+        },
+        "fallback_url": null,
+        "manual_link": "https://www.highlandsfl.gov/departments/building-zoning",
+        "notes": "Self-hosted server. May have SSL issues from some environments. Works from local Windows machines."
+      },
+      "jurisdiction": {
+        "name": "Highlands Municipal Boundary",
+        "url": "https://gis.highlandsfl.gov/server/rest/services/Layers/Municipal_Boundary/FeatureServer/0/query",
+        "fields": {
+          "city_name": "MUNI_NAME",
+          "type": "MUNI_TYPE"
+        }
+      }
+    },
+
+    "Putnam": {
+      "fips": "107",
+      "co_no": 64,
+      "zoning": {
+        "name": "Putnam County Planning Reference Map",
+        "base_url": "https://services1.arcgis.com/YZc1OyqL6jbIOeOv/arcgis/rest/services/Planning_ReferenceMap/FeatureServer",
+        "type": "ArcGIS Online hosted",
+        "reliability": "stable",
+        "timeout_ms": 10000,
+        "retries": 1,
+        "layers": {
+          "county_zoning": {
+            "id": 2,
+            "name": "County Zoning",
+            "fields": {
+              "zoning_code": "ZONECLASS",
+              "description": "ZONEDESC",
+              "area_sqft": "Shape__Area"
+            }
+          },
+          "municipal_zoning": {
+            "id": 3,
+            "name": "Municipal Zoning",
+            "fields": {
+              "zoning_code": "ZONECLASS",
+              "description": "ZONEDESC"
+            }
+          },
+          "county_future_land_use": {
+            "id": 4,
+            "name": "County Proposed Land Use",
+            "fields": {
+              "land_use": "LANDUSECODE",
+              "description": "LANDUSEDESC"
+            }
+          },
+          "municipal_future_land_use": {
+            "id": 5,
+            "name": "Municipal Future Land Use",
+            "fields": {
+              "land_use": "LANDUSECODE",
+              "description": "LANDUSEDESC"
+            }
+          }
+        },
+        "manual_link": "https://www.putnam-fl.com/planning-zoning/",
+        "notes": "Hosted on ArcGIS Online. Stable and reliable. County Zoning (layer 2) is the primary source."
+      },
+      "jurisdiction": {
+        "name": "Putnam Municipal Boundaries",
+        "url": "https://services1.arcgis.com/YZc1OyqL6jbIOeOv/arcgis/rest/services/Planning_ReferenceMap/FeatureServer/1",
+        "fields": {
+          "city_name": "NAME",
+          "type": "TYPE"
+        },
+        "notes": "Layer 1 of Planning_ReferenceMap. If property is NOT within any municipal boundary, it's Unincorporated."
+      }
+    }
+  },
+
+  "dor_use_codes": {
+    "000": { "description": "Vacant Residential", "category": "residential", "buildable": true },
+    "001": { "description": "Single Family Residential", "category": "residential", "buildable": true },
+    "002": { "description": "Mobile Home", "category": "residential", "buildable": true },
+    "004": { "description": "Condominium", "category": "residential", "buildable": true },
+    "010": { "description": "Vacant Commercial", "category": "commercial", "buildable": true },
+    "011": { "description": "Store/Retail", "category": "commercial", "buildable": true },
+    "017": { "description": "Office Building", "category": "commercial", "buildable": true },
+    "020": { "description": "Vacant Industrial", "category": "industrial", "buildable": true },
+    "030": { "description": "Vacant Agricultural", "category": "agricultural", "buildable": false },
+    "050": { "description": "Improved Agricultural", "category": "agricultural", "buildable": false },
+    "060": { "description": "Grazing Land (Improved)", "category": "agricultural", "buildable": false },
+    "061": { "description": "Grazing Land (Semi-Improved)", "category": "agricultural", "buildable": false },
+    "062": { "description": "Grazing Land (Native)", "category": "agricultural", "buildable": false },
+    "066": { "description": "Orchard/Groves", "category": "agricultural", "buildable": false },
+    "067": { "description": "Poultry/Bees/Fish/Tropical Fish", "category": "agricultural", "buildable": false },
+    "069": { "description": "Ornamental/Misc. Agriculture", "category": "agricultural", "buildable": false },
+    "070": { "description": "Vacant Institutional", "category": "institutional", "buildable": false },
+    "080": { "description": "Undefined/Transitional", "category": "other", "buildable": false },
+    "086": { "description": "Counties (other than public schools, colleges, hospitals)", "category": "government", "buildable": false },
+    "090": { "description": "Leasehold Interest", "category": "other", "buildable": false },
+    "091": { "description": "Utility/Railroad/Gas Company", "category": "utility", "buildable": false },
+    "092": { "description": "Mining/Petroleum/Gas Lands", "category": "industrial", "buildable": false },
+    "094": { "description": "Right-of-Way/Streets/Roads", "category": "government", "buildable": false },
+    "095": { "description": "Rivers/Lakes/Submerged Lands", "category": "conservation", "buildable": false },
+    "096": { "description": "Sewage Disposal/Waste Lands", "category": "utility", "buildable": false },
+    "097": { "description": "Outdoor Recreation/Parks", "category": "recreation", "buildable": false },
+    "098": { "description": "Centrally Assessed", "category": "utility", "buildable": false },
+    "099": { "description": "Non-Agricultural Acreage", "category": "other", "buildable": true }
+  }
+}
