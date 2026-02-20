@@ -358,8 +358,8 @@
             closingCostPercent: investmentSettings.closingCostPercent ?? 9,
             cleanTitleCost: investmentSettings.cleanTitleCost ?? 2500,
             defaultROI1: investmentSettings.defaultROI1 ?? 30,
-            defaultROI2: investmentSettings.defaultROI2 ?? 50,
-            defaultROI3: investmentSettings.defaultROI3 ?? 100
+            defaultROI2: investmentSettings.defaultROI2 ?? 40,
+            defaultROI3: investmentSettings.defaultROI3 ?? 50
         };
         
         // Load previously saved investment data (if user already filled in values)
@@ -432,17 +432,25 @@
         // Formula: Max Bid = (Market Value - Closing Cost) / (1 + ROI%) - Reforma - Clean Title - Other Costs - Liens
         // Where: Closing Cost = Market Value × Closing Cost %
         // ========================================
-        function calculateMaxBid(marketValue, closingCostPct, roiPct, reforma, cleanTitle, otherCosts, liens) {
+        function calculateMaxBid(marketValue, closingCostPct, roiPct, reforma, cleanTitle, otherCosts, liens, amountDue) {
             if (!marketValue || marketValue <= 0) return null;
             
             const closingCost = marketValue * (closingCostPct / 100);
             const roiDecimal = roiPct / 100;
             
-            const maxBid = ((marketValue - closingCost) / (1 + roiDecimal)) - reforma - cleanTitle - otherCosts - liens;
+            let maxBid = ((marketValue - closingCost) / (1 + roiDecimal)) - reforma - cleanTitle - otherCosts - liens;
+            maxBid = Math.round(maxBid);
+            
+            // Max Bid nunca pode ser menor que Amount Due
+            const floorApplied = (amountDue > 0 && maxBid < amountDue);
+            if (floorApplied) {
+                maxBid = Math.round(amountDue);
+            }
             
             return {
-                maxBid: Math.round(maxBid),
-                closingCost: Math.round(closingCost)
+                maxBid: maxBid,
+                closingCost: Math.round(closingCost),
+                floorApplied: floorApplied
             };
         }
         
@@ -561,6 +569,18 @@
                     </div>
                     
                     <div class="p-4">
+                        <!-- Image Placeholder -->
+                        <div class="mb-3">
+                            <div class="property-image-placeholder" id="image-${index}" 
+                                 style="width: 100%; height: 200px; background: #f3f4f6; border: 2px dashed #d1d5db; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; cursor: pointer; transition: all 0.2s;"
+                                 onmouseover="this.style.borderColor='#818cf8'; this.style.background='#eef2ff';"
+                                 onmouseout="this.style.borderColor='#d1d5db'; this.style.background='#f3f4f6';">
+                                <span style="font-size: 32px;">🖼️</span>
+                                <span style="color: #9ca3af; font-size: 13px; font-weight: 600;">Imagem da Propriedade</span>
+                                <span style="color: #d1d5db; font-size: 11px;">(Em breve)</span>
+                            </div>
+                        </div>
+                        
                         <!-- Property Info (auto-populated) -->
                         <div class="mb-3">
                             <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">📋 Dados da Propriedade</h4>
@@ -850,7 +870,7 @@
             let firstMaxBid = 0;
             
             scenarios.forEach((scenario, i) => {
-                const result = calculateMaxBid(marketValue, closingPct, scenario.roi, reforma, cleanTitle, otherCosts, liens);
+                const result = calculateMaxBid(marketValue, closingPct, scenario.roi, reforma, cleanTitle, otherCosts, liens, amountDue);
                 const el = document.getElementById(scenario.elementId);
                 const resultEl = document.getElementById(scenario.resultId);
                 const viabilityEl = document.getElementById(scenario.viabilityId);
@@ -858,7 +878,12 @@
                 if (result) {
                     if (i === 0) firstMaxBid = result.maxBid;
                     
-                    el.textContent = formatCurrency(result.maxBid);
+                    // Se o piso foi aplicado (Max Bid < Amount Due), mostrar Amount Due
+                    if (result.floorApplied) {
+                        el.textContent = formatCurrency(result.maxBid) + ' (= Amount Due)';
+                    } else {
+                        el.textContent = formatCurrency(result.maxBid);
+                    }
                     
                     // Viability semaphore
                     const viability = getViability(result.maxBid, amountDue);
@@ -1011,9 +1036,9 @@
                 const r1 = data.roi1 || globalRoi1;
                 const r2 = data.roi2 || globalRoi2;
                 const r3 = data.roi3 || globalRoi3;
-                const calc1 = mv > 0 ? calculateMaxBid(mv, closingPct, r1, reforma, cleanTitle, otherCosts, liens) : null;
-                const calc2 = mv > 0 ? calculateMaxBid(mv, closingPct, r2, reforma, cleanTitle, otherCosts, liens) : null;
-                const calc3 = mv > 0 ? calculateMaxBid(mv, closingPct, r3, reforma, cleanTitle, otherCosts, liens) : null;
+                const calc1 = mv > 0 ? calculateMaxBid(mv, closingPct, r1, reforma, cleanTitle, otherCosts, liens, amountDue) : null;
+                const calc2 = mv > 0 ? calculateMaxBid(mv, closingPct, r2, reforma, cleanTitle, otherCosts, liens, amountDue) : null;
+                const calc3 = mv > 0 ? calculateMaxBid(mv, closingPct, r3, reforma, cleanTitle, otherCosts, liens, amountDue) : null;
                 
                 const v1 = calc1 ? getViability(calc1.maxBid, amountDue).label : '';
                 const v2 = calc2 ? getViability(calc2.maxBid, amountDue).label : '';
@@ -1127,9 +1152,9 @@
                 const r2 = data.roi2 || DEFAULTS.defaultROI2;
                 const r3 = data.roi3 || DEFAULTS.defaultROI3;
                 
-                const calc1 = mv > 0 ? calculateMaxBid(mv, closingPct, r1, reforma, cleanTitle, otherCosts, liens) : null;
-                const calc2 = mv > 0 ? calculateMaxBid(mv, closingPct, r2, reforma, cleanTitle, otherCosts, liens) : null;
-                const calc3 = mv > 0 ? calculateMaxBid(mv, closingPct, r3, reforma, cleanTitle, otherCosts, liens) : null;
+                const calc1 = mv > 0 ? calculateMaxBid(mv, closingPct, r1, reforma, cleanTitle, otherCosts, liens, amountDue) : null;
+                const calc2 = mv > 0 ? calculateMaxBid(mv, closingPct, r2, reforma, cleanTitle, otherCosts, liens, amountDue) : null;
+                const calc3 = mv > 0 ? calculateMaxBid(mv, closingPct, r3, reforma, cleanTitle, otherCosts, liens, amountDue) : null;
                 
                 const v1 = calc1 ? getViability(calc1.maxBid, amountDue) : null;
                 const v2 = calc2 ? getViability(calc2.maxBid, amountDue) : null;
@@ -1147,6 +1172,11 @@
                     <div class="prop-title">
                         <h2>${parcelId}</h2>
                         <span>${address !== '-' ? address + ', ' + city + ', FL' : county + ', FL'}</span>
+                    </div>
+                    
+                    <!-- Image Placeholder -->
+                    <div style="width: 100%; height: 150px; background: #f8f8f8; border: 2px dashed #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; color: #999; font-size: 12px;">
+                        🖼️ Imagem da Propriedade (Em breve)
                     </div>
                     
                     <table>

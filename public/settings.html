@@ -700,14 +700,14 @@
 
                 <div class="input-group">
                     <label for="defaultROI2">ROI 2 - Padrão (%)</label>
-                    <input type="number" id="defaultROI2" value="50" min="0" max="500" step="1">
-                    <small>Segundo cenário de ROI desejado. Padrão: 50%</small>
+<input type="number" id="defaultROI2" value="40" min="0" max="500" step="1">
+                     <small>Segundo cenário de ROI desejado. Padrão: 40%</small>
                 </div>
 
                 <div class="input-group">
                     <label for="defaultROI3">ROI 3 - Padrão (%)</label>
-                    <input type="number" id="defaultROI3" value="100" min="0" max="500" step="1">
-                    <small>Terceiro cenário de ROI desejado. Padrão: 100%</small>
+<input type="number" id="defaultROI3" value="50" min="0" max="500" step="1">
+                     <small>Terceiro cenário de ROI desejado. Padrão: 50%</small>
                 </div>
 
                 <div class="button-group" style="margin-top: 20px;">
@@ -1863,8 +1863,8 @@
             document.getElementById('closingCostPercent').value = settings.closingCostPercent ?? 9;
             document.getElementById('cleanTitleCost').value = settings.cleanTitleCost ?? 2500;
             document.getElementById('defaultROI1').value = settings.defaultROI1 ?? 30;
-            document.getElementById('defaultROI2').value = settings.defaultROI2 ?? 50;
-            document.getElementById('defaultROI3').value = settings.defaultROI3 ?? 100;
+document.getElementById('defaultROI2').value = settings.defaultROI2 ?? 40;
+             document.getElementById('defaultROI3').value = settings.defaultROI3 ?? 50;
         }
         
         function saveInvestmentSettings() {
@@ -1872,8 +1872,8 @@
                 closingCostPercent: parseFloat(document.getElementById('closingCostPercent').value) || 9,
                 cleanTitleCost: parseFloat(document.getElementById('cleanTitleCost').value) || 2500,
                 defaultROI1: parseFloat(document.getElementById('defaultROI1').value) || 30,
-                defaultROI2: parseFloat(document.getElementById('defaultROI2').value) || 50,
-                defaultROI3: parseFloat(document.getElementById('defaultROI3').value) || 100
+defaultROI2: parseFloat(document.getElementById('defaultROI2').value) || 40,
+                 defaultROI3: parseFloat(document.getElementById('defaultROI3').value) || 50
             };
             localStorage.setItem('investmentSettings', JSON.stringify(settings));
             showSavedIndicator('savedIndicatorInvestment');
@@ -1888,8 +1888,8 @@
                 closingCostPercent: 9,
                 cleanTitleCost: 2500,
                 defaultROI1: 30,
-                defaultROI2: 50,
-                defaultROI3: 100
+defaultROI2: 40,
+                 defaultROI3: 50
             };
             localStorage.setItem('investmentSettings', JSON.stringify(defaults));
             loadInvestmentSettings();

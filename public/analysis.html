@@ -2700,8 +2700,27 @@
         }
         
         function aprovarPropriedade() {
-            // Get unique identifier - try multiple field names
             const prop = properties[currentIndex];
+            
+            // Verificar se análise foi feita (Zoning, FEMA, Wetlands)
+            const analysisData = prop.analysisData || {};
+            const hasZoning = analysisData.zoning?.code || prop['Zoning'] || prop['zoning'];
+            const hasFEMA = analysisData.fema?.zone || prop['FEMA Zone'] || prop['femaZone'];
+            const hasWetlands = analysisData.wetlands !== undefined || prop['Wetlands'] !== undefined;
+            
+            const missing = [];
+            if (!hasZoning) missing.push('Zoning');
+            if (!hasFEMA) missing.push('FEMA');
+            if (!hasWetlands) missing.push('Wetlands');
+            
+            if (missing.length > 0) {
+                const msg = `⚠️ Não é possível aprovar sem pesquisar: ${missing.join(', ')}.\n\nClique nos botões de análise para carregar esses dados antes de aprovar.`;
+                alert(msg);
+                mostrarNotificacao(`❌ Faltam: ${missing.join(', ')}`, 'error');
+                return;
+            }
+            
+            // Get unique identifier - try multiple field names
             const parcelId = prop['Parcel Number'] || prop['Parcel Id'] || prop['Parcel #'] || prop['Parcel'] || prop['parcel_number'] || '';
             console.log('🟢 APROVAR CLICADO - Index:', currentIndex, 'Parcel:', parcelId, 'Keys:', Object.keys(prop).slice(0, 10));
             
