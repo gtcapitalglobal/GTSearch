@@ -480,13 +480,19 @@
                                 <span class="text-sm font-bold text-gray-700" id="closingCost-${index}">-</span>
                             </div>
                             
-                            <!-- 3 ROI Scenarios -->
+                            <!-- 3 ROI Scenarios with editable inputs -->
                             <div class="grid grid-cols-1 gap-2" id="roiResults-${index}">
                                 <div class="calc-result" id="roi1-result-${index}">
                                     <div class="flex items-center justify-between">
-                                        <div>
-                                            <span class="roi-badge roi-badge-1">ROI ${roi1}%</span>
-                                            <div class="text-xs text-gray-500 mt-1">Cenário Conservador</div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="roi-badge roi-badge-1">ROI 1</span>
+                                            <div class="flex items-center gap-1">
+                                                <input type="number" class="roi-input roi1-input" data-index="${index}" 
+                                                       value="${savedData.roi1 || roi1}" min="0" max="500" step="1"
+                                                       oninput="recalculateCard(${index})"
+                                                       style="width: 60px; padding: 3px 6px; border: 1px solid #93c5fd; border-radius: 6px; font-size: 13px; font-weight: 700; text-align: center; background: white;">
+                                                <span class="text-xs text-gray-500 font-bold">%</span>
+                                            </div>
                                         </div>
                                         <div class="text-right">
                                             <div class="text-xs text-gray-400">Max Bid</div>
@@ -497,9 +503,15 @@
                                 
                                 <div class="calc-result" id="roi2-result-${index}">
                                     <div class="flex items-center justify-between">
-                                        <div>
-                                            <span class="roi-badge roi-badge-2">ROI ${roi2}%</span>
-                                            <div class="text-xs text-gray-500 mt-1">Cenário Moderado</div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="roi-badge roi-badge-2">ROI 2</span>
+                                            <div class="flex items-center gap-1">
+                                                <input type="number" class="roi-input roi2-input" data-index="${index}" 
+                                                       value="${savedData.roi2 || roi2}" min="0" max="500" step="1"
+                                                       oninput="recalculateCard(${index})"
+                                                       style="width: 60px; padding: 3px 6px; border: 1px solid #fbbf24; border-radius: 6px; font-size: 13px; font-weight: 700; text-align: center; background: white;">
+                                                <span class="text-xs text-gray-500 font-bold">%</span>
+                                            </div>
                                         </div>
                                         <div class="text-right">
                                             <div class="text-xs text-gray-400">Max Bid</div>
@@ -510,9 +522,15 @@
                                 
                                 <div class="calc-result" id="roi3-result-${index}">
                                     <div class="flex items-center justify-between">
-                                        <div>
-                                            <span class="roi-badge roi-badge-3">ROI ${roi3}%</span>
-                                            <div class="text-xs text-gray-500 mt-1">Cenário Agressivo</div>
+                                        <div class="flex items-center gap-2">
+                                            <span class="roi-badge roi-badge-3">ROI 3</span>
+                                            <div class="flex items-center gap-1">
+                                                <input type="number" class="roi-input roi3-input" data-index="${index}" 
+                                                       value="${savedData.roi3 || roi3}" min="0" max="500" step="1"
+                                                       oninput="recalculateCard(${index})"
+                                                       style="width: 60px; padding: 3px 6px; border: 1px solid #a78bfa; border-radius: 6px; font-size: 13px; font-weight: 700; text-align: center; background: white;">
+                                                <span class="text-xs text-gray-500 font-bold">%</span>
+                                            </div>
                                         </div>
                                         <div class="text-right">
                                             <div class="text-xs text-gray-400">Max Bid</div>
@@ -526,11 +544,31 @@
                         <div class="section-divider"></div>
                         
                         <!-- Notes -->
-                        <div>
+                        <div class="mb-3">
                             <label class="text-xs text-gray-500 font-semibold block mb-1">📝 Notas</label>
                             <textarea class="notes-field" data-index="${index}" 
                                       placeholder="Observações sobre esta propriedade..."
                                       oninput="saveCardData(${index})">${savedData.notes || ''}</textarea>
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
+                        <!-- Quick Links -->
+                        <div class="flex gap-2 flex-wrap">
+                            <a href="${buildZillowUrl(address, city, prop)}" 
+                               target="_blank" 
+                               class="flex-1 px-3 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition-colors text-center no-underline font-semibold flex items-center justify-center gap-1">
+                                🏠 Zillow
+                            </a>
+                            <a href="https://www.google.com/maps/search/${encodeURIComponent(address !== '-' ? address + ', ' + (city !== '-' ? city : '') + ', FL' : parcelId)}" 
+                               target="_blank" 
+                               class="px-3 py-2 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600 transition-colors text-center no-underline font-semibold flex items-center justify-center gap-1">
+                                📍 Maps
+                            </a>
+                            <button onclick="copyParcel('${parcelId}')" 
+                                    class="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-300 transition-colors font-semibold">
+                                📋 Parcel
+                            </button>
                         </div>
                     </div>
                 `;
@@ -560,9 +598,11 @@
             
             const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
             const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
-            const roi1 = parseFloat(document.getElementById('globalROI1').value) || DEFAULTS.defaultROI1;
-            const roi2 = parseFloat(document.getElementById('globalROI2').value) || DEFAULTS.defaultROI2;
-            const roi3 = parseFloat(document.getElementById('globalROI3').value) || DEFAULTS.defaultROI3;
+            
+            // Read ROI from per-card inputs
+            const roi1 = parseFloat(card.querySelector('.roi1-input')?.value) || parseFloat(document.getElementById('globalROI1').value) || DEFAULTS.defaultROI1;
+            const roi2 = parseFloat(card.querySelector('.roi2-input')?.value) || parseFloat(document.getElementById('globalROI2').value) || DEFAULTS.defaultROI2;
+            const roi3 = parseFloat(card.querySelector('.roi3-input')?.value) || parseFloat(document.getElementById('globalROI3').value) || DEFAULTS.defaultROI3;
             
             if (marketValue <= 0) {
                 document.getElementById(`closingCost-${index}`).textContent = '-';
@@ -622,6 +662,9 @@
                 reforma: parseFloat(card.querySelector('.reforma-cost').value) || 0,
                 liens: parseFloat(card.querySelector('.liens-cost').value) || 0,
                 otherCosts: parseFloat(card.querySelector('.other-costs').value) || 0,
+                roi1: parseFloat(card.querySelector('.roi1-input')?.value) || 0,
+                roi2: parseFloat(card.querySelector('.roi2-input')?.value) || 0,
+                roi3: parseFloat(card.querySelector('.roi3-input')?.value) || 0,
                 notes: card.querySelector('.notes-field').value || ''
             };
             
@@ -640,9 +683,17 @@
         function updateGlobalSettings() {
             const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
             const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
+            const globalROI1 = parseFloat(document.getElementById('globalROI1').value) || DEFAULTS.defaultROI1;
+            const globalROI2 = parseFloat(document.getElementById('globalROI2').value) || DEFAULTS.defaultROI2;
+            const globalROI3 = parseFloat(document.getElementById('globalROI3').value) || DEFAULTS.defaultROI3;
             
             document.getElementById('summaryClosingPct').textContent = closingPct + '%';
             document.getElementById('summaryCleanTitle').textContent = formatCurrency(cleanTitle);
+            
+            // Push global ROI values to all card inputs
+            document.querySelectorAll('.roi1-input').forEach(el => el.value = globalROI1);
+            document.querySelectorAll('.roi2-input').forEach(el => el.value = globalROI2);
+            document.querySelectorAll('.roi3-input').forEach(el => el.value = globalROI3);
             
             // Recalculate all cards
             recalculateAll();
@@ -652,9 +703,6 @@
             approvedProperties.forEach((_, index) => {
                 recalculateCard(index);
             });
-            
-            // Re-render to update ROI labels
-            renderCards();
         }
         
         // ========================================
@@ -683,16 +731,16 @@
             
             const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
             const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
-            const roi1 = parseFloat(document.getElementById('globalROI1').value) || DEFAULTS.defaultROI1;
-            const roi2 = parseFloat(document.getElementById('globalROI2').value) || DEFAULTS.defaultROI2;
-            const roi3 = parseFloat(document.getElementById('globalROI3').value) || DEFAULTS.defaultROI3;
+            const globalRoi1 = parseFloat(document.getElementById('globalROI1').value) || DEFAULTS.defaultROI1;
+            const globalRoi2 = parseFloat(document.getElementById('globalROI2').value) || DEFAULTS.defaultROI2;
+            const globalRoi3 = parseFloat(document.getElementById('globalROI3').value) || DEFAULTS.defaultROI3;
             
             const headers = [
                 'Parcel #', 'Address', 'County', 'Acres', 'Zoning', 'Land Use',
                 'FEMA Zone', 'Assessed Value', 'Amount Due', 'Risk Level',
                 'Market Value', 'Closing Cost %', 'Closing Cost $', 'Reforma', 
                 'Clean Title', 'Liens', 'Other Costs',
-                `Max Bid (ROI ${roi1}%)`, `Max Bid (ROI ${roi2}%)`, `Max Bid (ROI ${roi3}%)`,
+                'ROI 1 %', 'Max Bid (ROI 1)', 'ROI 2 %', 'Max Bid (ROI 2)', 'ROI 3 %', 'Max Bid (ROI 3)',
                 'Notes'
             ];
             
@@ -704,9 +752,12 @@
                 const liens = data.liens || 0;
                 const otherCosts = data.otherCosts || 0;
                 
-                const calc1 = mv > 0 ? calculateMaxBid(mv, closingPct, roi1, reforma, cleanTitle, otherCosts, liens) : null;
-                const calc2 = mv > 0 ? calculateMaxBid(mv, closingPct, roi2, reforma, cleanTitle, otherCosts, liens) : null;
-                const calc3 = mv > 0 ? calculateMaxBid(mv, closingPct, roi3, reforma, cleanTitle, otherCosts, liens) : null;
+                const r1 = data.roi1 || globalRoi1;
+                const r2 = data.roi2 || globalRoi2;
+                const r3 = data.roi3 || globalRoi3;
+                const calc1 = mv > 0 ? calculateMaxBid(mv, closingPct, r1, reforma, cleanTitle, otherCosts, liens) : null;
+                const calc2 = mv > 0 ? calculateMaxBid(mv, closingPct, r2, reforma, cleanTitle, otherCosts, liens) : null;
+                const calc3 = mv > 0 ? calculateMaxBid(mv, closingPct, r3, reforma, cleanTitle, otherCosts, liens) : null;
                 
                 return [
                     parcelId,
@@ -726,8 +777,11 @@
                     cleanTitle,
                     liens || '',
                     otherCosts || '',
+                    r1 + '%',
                     calc1 ? calc1.maxBid : '',
+                    r2 + '%',
                     calc2 ? calc2.maxBid : '',
+                    r3 + '%',
                     calc3 ? calc3.maxBid : '',
                     (data.notes || '').replace(/[\n\r]/g, ' ')
                 ];
@@ -743,6 +797,40 @@
             link.href = URL.createObjectURL(blob);
             link.download = `investment_analysis_${new Date().toISOString().slice(0,10)}.csv`;
             link.click();
+        }
+        
+        // ========================================
+        // ZILLOW URL BUILDER
+        // ========================================
+        function buildZillowUrl(address, city, prop) {
+            // Try to build a good Zillow search URL
+            let searchTerm = '';
+            if (address && address !== '-') {
+                searchTerm = address;
+                if (city && city !== '-') searchTerm += ', ' + city;
+                searchTerm += ', FL';
+            } else {
+                // Fallback to parcel number
+                searchTerm = (prop['Parcel #'] || prop['Parcel Number'] || '') + ' FL';
+            }
+            return 'https://www.zillow.com/homes/' + encodeURIComponent(searchTerm) + '_rb/';
+        }
+        
+        // ========================================
+        // COPY PARCEL
+        // ========================================
+        function copyParcel(parcelNumber) {
+            navigator.clipboard.writeText(parcelNumber).then(() => {
+                alert('Parcel # ' + parcelNumber + ' copiado!');
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = parcelNumber;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                alert('Parcel # ' + parcelNumber + ' copiado!');
+            });
         }
         
         // ========================================
