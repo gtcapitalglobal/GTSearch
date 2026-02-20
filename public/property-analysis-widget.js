@@ -24,6 +24,15 @@ class PropertyAnalysisWidget {
     }
     
     /**
+     * Reset widget to initial empty state (used when navigating between properties)
+     */
+    reset() {
+        this.data = null;
+        this.loading = false;
+        this.render();
+    }
+    
+    /**
      * Analyze property by calling backend API
      */
     async analyzeProperty(lat, lng, county, parcelId = null) {

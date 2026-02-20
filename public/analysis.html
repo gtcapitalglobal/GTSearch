@@ -1074,6 +1074,12 @@
             currentIndex = index;
             window.currentIndex = index;
             
+            // 🔄 RESETAR widget de análise automática ao trocar de propriedade
+            if (propertyAnalysisWidget) {
+                propertyAnalysisWidget.reset();
+                console.log('🔄 Widget de análise resetado para nova propriedade');
+            }
+            
             // ⚠️ Cache será carregado DEPOIS de window.currentLocation ser definida
 
             // Format fields
