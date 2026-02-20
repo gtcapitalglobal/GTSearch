@@ -2700,35 +2700,44 @@
         }
         
         function aprovarPropriedade() {
+            console.log('🟢 APROVAR CLICADO - Index:', currentIndex, 'Parcel:', properties[currentIndex]?.['Parcel #']);
+            
             properties[currentIndex].status = 'Approved';
             properties[currentIndex].approvedAt = new Date().toISOString();
             localStorage.setItem('selectedProperties', JSON.stringify(properties));
             
             // Save to approvedProperties (Tela 3)
             let approvedProperties = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
+            console.log('📦 approvedProperties ANTES:', approvedProperties.length, approvedProperties.map(p => p['Parcel #']));
             
             // Check if already approved (avoid duplicates)
-            const alreadyApproved = approvedProperties.some(p => p['Parcel #'] === properties[currentIndex]['Parcel #']);
+            const parcelId = properties[currentIndex]['Parcel #'];
+            const alreadyApproved = approvedProperties.some(p => p['Parcel #'] === parcelId);
             
             if (!alreadyApproved) {
                 approvedProperties.push(properties[currentIndex]);
                 localStorage.setItem('approvedProperties', JSON.stringify(approvedProperties));
+                console.log('✅ ADICIONADA ao approvedProperties. Total agora:', approvedProperties.length);
+            } else {
+                console.log('⚠️ Já estava aprovada, não duplicou. Total:', approvedProperties.length);
             }
             
             // Atualizar contador de aprovadas
             atualizarContadorAprovadas();
             
-            mostrarNotificacao('✅ Propriedade aprovada e salva!', 'success');
+            mostrarNotificacao(`✅ Aprovada! (${approvedProperties.length} total) - Avançando...`, 'success');
             
+            // Auto-advance to next property
             setTimeout(() => {
                 if (currentIndex < properties.length - 1) {
                     currentIndex++;
                     loadProperty(currentIndex);
+                    console.log('➡️ Avançou para propriedade:', currentIndex);
                 } else {
-                    // ✅ Chegou ao final - não fazer nada (usuário pode clicar "Voltar ao Dashboard" se quiser)
-                    console.log('✅ Última propriedade alcançada');
+                    mostrarNotificacao('🎯 Última propriedade aprovada! Clique em "Ver Aprovadas" para calcular Max Bid.', 'success');
+                    console.log('✅ Última propriedade alcançada. Total aprovadas:', approvedProperties.length);
                 }
-            }, 800);
+            }, 600);
         }
         
         function atualizarContadorAprovadas() {
