@@ -528,12 +528,44 @@
                 
                 // Get analysis data if available
                 const analysisData = prop.analysisData || {};
-                const femaZone = analysisData.fema?.zone || getFieldValue(prop, 'FEMA Zone', 'femaZone');
-                const wetlandsInfo = analysisData.wetlands?.found ? 
-                    `${analysisData.wetlands.proximity} (${analysisData.wetlands.count} áreas)` : 
-                    (analysisData.wetlands && !analysisData.wetlands.found ? 'SEM WETLANDS' : getFieldValue(prop, 'Wetlands'));
-                const zoningFromAnalysis = analysisData.zoning?.code ? 
-                    `${analysisData.zoning.code} - ${analysisData.zoning.description || ''}` : zoning;
+                // FEMA: show zone + subtype + risk
+                let femaDisplay = getFieldValue(prop, 'FEMA Zone', 'femaZone');
+                if (analysisData.fema) {
+                    const f = analysisData.fema;
+                    if (f.found) {
+                        const riskMap = { minimal: 'Mínimo', high: 'Alto', unknown: 'Desconhecido' };
+                        femaDisplay = f.zone || '-';
+                        if (f.subtype) femaDisplay += ` - ${f.subtype}`;
+                        femaDisplay += ` (Risco: ${riskMap[f.risk] || f.risk})`;
+                    } else {
+                        femaDisplay = f.status || 'DADOS NÃO DISPONÍVEIS';
+                    }
+                }
+                
+                // Wetlands: show full detail
+                let wetlandsDisplay = getFieldValue(prop, 'Wetlands');
+                if (analysisData.wetlands) {
+                    const w = analysisData.wetlands;
+                    if (w.found) {
+                        wetlandsDisplay = `${w.proximityLabel || w.proximity} (${w.count} áreas)`;
+                        if (w.highestRisk) wetlandsDisplay += ` - ${w.highestRisk.riskLevel}`;
+                    } else if (w.proximity === 'NONE' || !w.found) {
+                        wetlandsDisplay = w.proximityLabel || w.status || 'SEM WETLANDS';
+                    }
+                }
+                
+                // Zoning: show code + description or status
+                let zoningDisplay = zoning;
+                if (analysisData.zoning) {
+                    const z = analysisData.zoning;
+                    if (z.found && z.code) {
+                        zoningDisplay = z.code + (z.description ? ` - ${z.description}` : '');
+                    } else {
+                        zoningDisplay = z.status || 'ZONING NÃO DISPONÍVEL';
+                    }
+                }
+                
+                // Land Use: code + description (already good)
                 const landUseFromAnalysis = analysisData.landUse?.code ?
                     `${analysisData.landUse.code} - ${analysisData.landUse.description || ''}` : landUse;
                 
@@ -599,19 +631,19 @@
                                 </div>
                                 <div class="field-item">
                                     <div class="label">Zoning</div>
-                                    <div class="value" title="${zoningFromAnalysis}">${zoningFromAnalysis}</div>
+                                    <div class="value" title="${zoningDisplay}" style="font-size: 12px;">${zoningDisplay}</div>
                                 </div>
                                 <div class="field-item">
                                     <div class="label">Land Use</div>
-                                    <div class="value" title="${landUseFromAnalysis}">${landUseFromAnalysis}</div>
+                                    <div class="value" title="${landUseFromAnalysis}" style="font-size: 12px;">${landUseFromAnalysis}</div>
                                 </div>
                                 <div class="field-item">
                                     <div class="label">FEMA Zone</div>
-                                    <div class="value">${femaZone}</div>
+                                    <div class="value" style="font-size: 12px;">${femaDisplay}</div>
                                 </div>
                                 <div class="field-item">
                                     <div class="label">Wetlands</div>
-                                    <div class="value">${wetlandsInfo}</div>
+                                    <div class="value" style="font-size: 12px;">${wetlandsDisplay}</div>
                                 </div>
                                 <div class="field-item">
                                     <div class="label">Assessed Value</div>
@@ -1070,12 +1102,35 @@
                 const v2 = calc2 ? getViability(calc2.maxBid, amountDue).label : '';
                 const v3 = calc3 ? getViability(calc3.maxBid, amountDue).label : '';
                 
-                // Use analysis data for CSV export
+                // Use full analysis data for CSV export
                 const ad = prop.analysisData || {};
-                const csvZoning = ad.zoning?.code ? ad.zoning.code + (ad.zoning.description ? ' - ' + ad.zoning.description : '') : getFieldValue(prop, 'Zoning', 'zoning');
+                // FEMA full
+                let csvFema = getFieldValue(prop, 'FEMA Zone', 'femaZone');
+                if (ad.fema) {
+                    if (ad.fema.found) {
+                        csvFema = ad.fema.zone || '-';
+                        if (ad.fema.subtype) csvFema += ' - ' + ad.fema.subtype;
+                        const rm = { minimal: 'Mínimo', high: 'Alto', unknown: 'Desconhecido' };
+                        csvFema += ' (Risco: ' + (rm[ad.fema.risk] || ad.fema.risk) + ')';
+                    } else { csvFema = ad.fema.status || 'DADOS NÃO DISPONÍVEIS'; }
+                }
+                // Wetlands full
+                let csvWetlands = getFieldValue(prop, 'Wetlands');
+                if (ad.wetlands) {
+                    if (ad.wetlands.found) {
+                        csvWetlands = (ad.wetlands.proximityLabel || ad.wetlands.proximity) + ' (' + ad.wetlands.count + ' áreas)';
+                        if (ad.wetlands.highestRisk) csvWetlands += ' - ' + ad.wetlands.highestRisk.riskLevel;
+                    } else { csvWetlands = ad.wetlands.proximityLabel || ad.wetlands.status || 'SEM WETLANDS'; }
+                }
+                // Zoning full
+                let csvZoning = getFieldValue(prop, 'Zoning', 'zoning');
+                if (ad.zoning) {
+                    if (ad.zoning.found && ad.zoning.code) {
+                        csvZoning = ad.zoning.code + (ad.zoning.description ? ' - ' + ad.zoning.description : '');
+                    } else { csvZoning = ad.zoning.status || 'ZONING NÃO DISPONÍVEL'; }
+                }
+                // Land Use
                 const csvLandUse = ad.landUse?.code ? ad.landUse.code + (ad.landUse.description ? ' - ' + ad.landUse.description : '') : getFieldValue(prop, 'Land Use', 'landUse', 'Parcel Type');
-                const csvFema = ad.fema?.zone || getFieldValue(prop, 'FEMA Zone', 'femaZone');
-                const csvWetlands = ad.wetlands?.found ? ad.wetlands.proximity + ' (' + ad.wetlands.count + ' areas)' : (ad.wetlands && !ad.wetlands.found ? 'SEM WETLANDS' : getFieldValue(prop, 'Wetlands'));
                 
                 return [
                     parcelId,
@@ -1200,10 +1255,46 @@
                 // Get analysis data for PDF
                 const analysisData = prop.analysisData || {};
                 
-                // Wetlands info for PDF
-                const wetlandsInfoPdf = analysisData.wetlands?.found ? 
-                    `${analysisData.wetlands.proximity} (${analysisData.wetlands.count} areas)` : 
-                    (analysisData.wetlands && !analysisData.wetlands.found ? 'SEM WETLANDS' : getFieldValue(prop, 'Wetlands'));
+                // Full FEMA display for PDF
+                let femaPdf = analysisData.fema?.zone || getFieldValue(prop, 'FEMA Zone', 'femaZone');
+                if (analysisData.fema) {
+                    const f = analysisData.fema;
+                    if (f.found) {
+                        const riskMap = { minimal: 'Mínimo', high: 'Alto', unknown: 'Desconhecido' };
+                        femaPdf = f.zone || '-';
+                        if (f.subtype) femaPdf += ` - ${f.subtype}`;
+                        femaPdf += ` (Risco: ${riskMap[f.risk] || f.risk})`;
+                    } else {
+                        femaPdf = f.status || 'DADOS NÃO DISPONÍVEIS';
+                    }
+                }
+                
+                // Full Wetlands display for PDF
+                let wetlandsPdf = getFieldValue(prop, 'Wetlands');
+                if (analysisData.wetlands) {
+                    const w = analysisData.wetlands;
+                    if (w.found) {
+                        wetlandsPdf = `${w.proximityLabel || w.proximity} (${w.count} áreas)`;
+                        if (w.highestRisk) wetlandsPdf += ` - ${w.highestRisk.riskLevel}`;
+                    } else if (w.proximity === 'NONE' || !w.found) {
+                        wetlandsPdf = w.proximityLabel || w.status || 'SEM WETLANDS';
+                    }
+                }
+                
+                // Full Zoning display for PDF
+                let zoningPdf = getFieldValue(prop, 'Zoning', 'zoning');
+                if (analysisData.zoning) {
+                    const z = analysisData.zoning;
+                    if (z.found && z.code) {
+                        zoningPdf = z.code + (z.description ? ` - ${z.description}` : '');
+                    } else {
+                        zoningPdf = z.status || 'ZONING NÃO DISPONÍVEL';
+                    }
+                }
+                
+                // Land Use for PDF
+                const landUsePdf = analysisData.landUse?.code ? 
+                    `${analysisData.landUse.code} - ${analysisData.landUse.description || ''}` : getFieldValue(prop, 'Land Use', 'landUse');
                 
                 const pricePerAcre = mv > 0 && parseFloat(acres) > 0 ? formatCurrency(Math.round(mv / parseFloat(acres))) : '-';
                 
@@ -1230,15 +1321,15 @@
                             <th>Acres</th><td>${acres}</td>
                         </tr>
                         <tr>
-                            <th>Zoning</th><td>${analysisData.zoning?.code ? analysisData.zoning.code + (analysisData.zoning.description ? ' - ' + analysisData.zoning.description : '') : getFieldValue(prop, 'Zoning', 'zoning')}</td>
-                            <th>Land Use</th><td>${analysisData.landUse?.code ? analysisData.landUse.code + (analysisData.landUse.description ? ' - ' + analysisData.landUse.description : '') : getFieldValue(prop, 'Land Use', 'landUse')}</td>
+                            <th>Zoning</th><td>${zoningPdf}</td>
+                            <th>Land Use</th><td>${landUsePdf}</td>
                         </tr>
                         <tr>
-                            <th>FEMA Zone</th><td>${analysisData.fema?.zone || getFieldValue(prop, 'FEMA Zone', 'femaZone')}</td>
+                            <th>FEMA Zone</th><td style="font-size:11px;">${femaPdf}</td>
                             <th>Risk Level</th><td style="font-weight:700;color:${(prop.riskLevel === 'green' ? '#059669' : prop.riskLevel === 'yellow' ? '#d97706' : prop.riskLevel === 'red' || prop.riskLevel === 'critical' ? '#dc2626' : '#6b7280')};">${prop.riskLevel ? prop.riskLevel.toUpperCase() + (prop.riskScore !== undefined && prop.riskScore !== '-' ? ' (' + prop.riskScore + ')' : '') : '-'}</td>
                         </tr>
                         <tr>
-                            <th>Wetlands</th><td>${wetlandsInfoPdf}</td>
+                            <th>Wetlands</th><td style="font-size:11px;">${wetlandsPdf}</td>
                             <th>Assessed Value</th><td>${totalValue}</td>
                         </tr>
                         <tr>
@@ -1360,10 +1451,35 @@
                 const calc2 = mv > 0 ? calculateMaxBid(mv, closingPct, r2, invData.reforma || 0, cleanTitle, invData.otherCosts || 0, invData.liens || 0, amountDue) : null;
                 const calc3 = mv > 0 ? calculateMaxBid(mv, closingPct, r3, invData.reforma || 0, cleanTitle, invData.otherCosts || 0, invData.liens || 0, amountDue) : null;
                 
-                // Use analysis data
+                // Use full analysis data
                 const ad = prop.analysisData || {};
-                const gsZoning = ad.zoning?.code ? ad.zoning.code + (ad.zoning.description ? ' - ' + ad.zoning.description : '') : getFieldValue(prop, 'Zoning', 'zoning');
-                const gsWetlands = ad.wetlands?.found ? ad.wetlands.proximity + ' (' + ad.wetlands.count + ' areas)' : (ad.wetlands && !ad.wetlands.found ? 'SEM WETLANDS' : getFieldValue(prop, 'Wetlands'));
+                // FEMA full
+                let gsFema = getFieldValue(prop, 'FEMA Zone', 'femaZone');
+                if (ad.fema) {
+                    if (ad.fema.found) {
+                        gsFema = ad.fema.zone || '-';
+                        if (ad.fema.subtype) gsFema += ' - ' + ad.fema.subtype;
+                        const rm = { minimal: 'Mínimo', high: 'Alto', unknown: 'Desconhecido' };
+                        gsFema += ' (Risco: ' + (rm[ad.fema.risk] || ad.fema.risk) + ')';
+                    } else { gsFema = ad.fema.status || 'DADOS NÃO DISPONÍVEIS'; }
+                }
+                // Wetlands full
+                let gsWetlands = getFieldValue(prop, 'Wetlands');
+                if (ad.wetlands) {
+                    if (ad.wetlands.found) {
+                        gsWetlands = (ad.wetlands.proximityLabel || ad.wetlands.proximity) + ' (' + ad.wetlands.count + ' áreas)';
+                        if (ad.wetlands.highestRisk) gsWetlands += ' - ' + ad.wetlands.highestRisk.riskLevel;
+                    } else { gsWetlands = ad.wetlands.proximityLabel || ad.wetlands.status || 'SEM WETLANDS'; }
+                }
+                // Zoning full
+                let gsZoning = getFieldValue(prop, 'Zoning', 'zoning');
+                if (ad.zoning) {
+                    if (ad.zoning.found && ad.zoning.code) {
+                        gsZoning = ad.zoning.code + (ad.zoning.description ? ' - ' + ad.zoning.description : '');
+                    } else { gsZoning = ad.zoning.status || 'ZONING NÃO DISPONÍVEL'; }
+                }
+                // Land Use
+                const gsLandUse = ad.landUse?.code ? ad.landUse.code + (ad.landUse.description ? ' - ' + ad.landUse.description : '') : getFieldValue(prop, 'Land Use', 'landUse');
                 
                 return {
                     parcel: parcelId,
@@ -1371,6 +1487,8 @@
                     county: getFieldValue(prop, 'County', 'county'),
                     acres: acres.toFixed(2),
                     zoning: gsZoning,
+                    landUse: gsLandUse,
+                    fema: gsFema,
                     amountDue: getFieldValue(prop, 'Amount Due'),
                     assessedValue: getFieldValue(prop, 'Total Value'),
                     marketValue: mv,
@@ -1389,7 +1507,8 @@
                     viability3: calc3 ? getViability(calc3.maxBid, amountDue).label : '',
                     notes: invData.notes || '',
                     riskLevel: prop.riskLevel || '-',
-                    wetlands: gsWetlands
+                    wetlands: gsWetlands,
+                    femaFull: gsFema
                 };
             });
             
