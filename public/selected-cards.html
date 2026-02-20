@@ -146,7 +146,7 @@
                             <span class="text-sm font-semibold">#${index + 1}</span>
                             <span class="text-sm">${prop.Type || 'N/A'}</span>
                         </div>
-                        <h3 class="text-lg font-bold truncate">${prop['Parcel #'] || 'N/A'}</h3>
+                        <h3 class="text-lg font-bold truncate">${prop['Parcel Number'] || prop['Parcel Id'] || prop['Parcel #'] || 'N/A'}</h3>
                     </div>
                     <div class="p-4">
                         <div class="mb-3">
@@ -180,7 +180,7 @@
                             <button onclick="viewDetails(${index})" class="flex-1 px-3 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors">
                                 📊 Ver Detalhes
                             </button>
-                            <button onclick="copyParcel('${prop['Parcel #']}')" class="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300 transition-colors">
+                            <button onclick="copyParcel('${prop['Parcel Number'] || prop['Parcel Id'] || prop['Parcel #'] || ''}')" class="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300 transition-colors">
                                 📋
                             </button>
                         </div>
@@ -247,7 +247,7 @@
         
         function toggleApproval(index, approved) {
             const prop = properties[index];
-            const parcelId = prop['Parcel #'] || index;
+            const parcelId = prop['Parcel Number'] || prop['Parcel Id'] || prop['Parcel #'] || String(index);
             
             if (approved) {
                 // If already approved, un-approve
@@ -320,20 +320,32 @@
         }
         
         function viewApproved() {
-            const approvedProperties = [];
+            const newApproved = [];
             for (const [index, approved] of Object.entries(approvalState)) {
                 if (approved === true) {
-                    approvedProperties.push(properties[parseInt(index)]);
+                    newApproved.push(properties[parseInt(index)]);
                 }
             }
             
-            if (approvedProperties.length === 0) {
+            if (newApproved.length === 0) {
                 alert('Nenhuma propriedade aprovada!');
                 return;
             }
             
-            // Save approved properties to localStorage
-            localStorage.setItem('approvedProperties', JSON.stringify(approvedProperties));
+            // Merge with existing approvedProperties (don't overwrite)
+            const getParcelKey = (p) => p['Parcel Number'] || p['Parcel Id'] || p['Parcel #'] || p['Parcel'] || p['parcel_number'] || '';
+            let existing = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
+            
+            newApproved.forEach(prop => {
+                const key = getParcelKey(prop);
+                const alreadyExists = key && existing.some(p => getParcelKey(p) === key);
+                if (!alreadyExists) {
+                    existing.push(prop);
+                }
+            });
+            
+            localStorage.setItem('approvedProperties', JSON.stringify(existing));
+            console.log('✅ Total approvedProperties após merge:', existing.length);
             window.location.href = 'investment.html';
         }
     </script>

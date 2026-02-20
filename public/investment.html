@@ -493,7 +493,7 @@
             container.innerHTML = '';
             
             approvedProperties.forEach((prop, index) => {
-                const parcelId = getFieldValue(prop, 'Parcel #', 'Parcel Number', 'parcel_id');
+                const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
                 const savedData = savedInvestmentData[parcelId] || {};
                 
                 const card = document.createElement('div');
@@ -906,7 +906,7 @@
             if (!card) return;
             
             const prop = approvedProperties[index];
-            const parcelId = getFieldValue(prop, 'Parcel #', 'Parcel Number', 'parcel_id');
+            const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
             
             const data = {
                 marketValue: getRawInputValue(card.querySelector('.market-value')),
@@ -998,7 +998,7 @@
             ];
             
             const rows = approvedProperties.map((prop, index) => {
-                const parcelId = getFieldValue(prop, 'Parcel #', 'Parcel Number', 'parcel_id');
+                const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
                 const data = savedInvestmentData[parcelId] || {};
                 const mv = data.marketValue || 0;
                 const reforma = data.reforma || 0;
@@ -1110,7 +1110,7 @@
             <body>`;
             
             approvedProperties.forEach((prop, index) => {
-                const parcelId = getFieldValue(prop, 'Parcel #', 'Parcel Number', 'parcel_id');
+                const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
                 const data = savedInvestmentData[parcelId] || {};
                 const address = getFieldValue(prop, 'Address', 'address');
                 const city = getFieldValue(prop, 'City', 'city');
@@ -1265,7 +1265,7 @@
             const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
             
             const data = approvedProperties.map((prop, index) => {
-                const parcelId = getFieldValue(prop, 'Parcel #', 'Parcel Number', 'parcel_id');
+                const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
                 const invData = savedInvestmentData[parcelId] || {};
                 const mv = invData.marketValue || 0;
                 const acres = parseFloat(prop['Acres'] || prop.Acres || 0);
@@ -1466,7 +1466,7 @@
                 if (city && city !== '-') searchTerm += ', ' + city;
                 searchTerm += ', FL';
             } else {
-                searchTerm = (prop['Parcel #'] || prop['Parcel Number'] || '') + ' FL';
+                searchTerm = (prop['Parcel Number'] || prop['Parcel Id'] || prop['Parcel #'] || '') + ' FL';
             }
             return 'https://www.zillow.com/homes/' + encodeURIComponent(searchTerm) + '_rb/';
         }
