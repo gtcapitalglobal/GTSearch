@@ -387,6 +387,37 @@
             return parseFloat(String(str).replace(/[$,\s]/g, '')) || 0;
         }
         
+        // US Currency format for input fields: auto-format as $XX,XXX
+        function formatInputAsCurrency(input) {
+            const raw = input.value.replace(/[^0-9.]/g, '');
+            const num = parseFloat(raw);
+            if (isNaN(num) || num === 0) {
+                input.dataset.rawValue = '';
+                return;
+            }
+            input.dataset.rawValue = raw;
+            input.value = num.toLocaleString('en-US');
+        }
+        
+        function getRawInputValue(input) {
+            return parseFloat((input.dataset.rawValue || input.value || '0').replace(/[^0-9.]/g, '')) || 0;
+        }
+        
+        function setupCurrencyInput(input, index) {
+            input.type = 'text';
+            input.inputMode = 'numeric';
+            
+            input.addEventListener('focus', function() {
+                const raw = this.dataset.rawValue || this.value.replace(/[^0-9.]/g, '');
+                if (raw && raw !== '0') this.value = raw;
+                else this.value = '';
+            });
+            
+            input.addEventListener('blur', function() {
+                formatInputAsCurrency(this);
+            });
+        }
+        
         function getFieldValue(prop, ...keys) {
             for (const key of keys) {
                 if (prop[key] !== undefined && prop[key] !== null && prop[key] !== '' && prop[key] !== '-') {
@@ -577,31 +608,31 @@
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
                                     <label class="text-xs text-gray-500 font-semibold block mb-1">Valor de Mercado ($) *</label>
-                                    <input type="number" class="input-field market-value" data-index="${index}" 
-                                           value="${savedData.marketValue || ''}" 
-                                           placeholder="Ex: 50000" 
-                                           oninput="recalculateCard(${index})">
+                                    <input type="text" inputmode="numeric" class="input-field market-value currency-input" data-index="${index}" 
+                                           value="${savedData.marketValue ? Number(savedData.marketValue).toLocaleString('en-US') : ''}" 
+                                           placeholder="Ex: 50,000" 
+                                           oninput="this.dataset.rawValue=this.value.replace(/[^0-9.]/g,''); recalculateCard(${index})">
                                 </div>
                                 <div>
                                     <label class="text-xs text-gray-500 font-semibold block mb-1">Reforma ($)</label>
-                                    <input type="number" class="input-field reforma-cost" data-index="${index}" 
-                                           value="${savedData.reforma || 0}" 
+                                    <input type="text" inputmode="numeric" class="input-field reforma-cost currency-input" data-index="${index}" 
+                                           value="${savedData.reforma ? Number(savedData.reforma).toLocaleString('en-US') : '0'}" 
                                            placeholder="0" 
-                                           oninput="recalculateCard(${index})">
+                                           oninput="this.dataset.rawValue=this.value.replace(/[^0-9.]/g,''); recalculateCard(${index})">
                                 </div>
                                 <div>
                                     <label class="text-xs text-gray-500 font-semibold block mb-1">Liens ($)</label>
-                                    <input type="number" class="input-field liens-cost" data-index="${index}" 
-                                           value="${savedData.liens || 0}" 
+                                    <input type="text" inputmode="numeric" class="input-field liens-cost currency-input" data-index="${index}" 
+                                           value="${savedData.liens ? Number(savedData.liens).toLocaleString('en-US') : '0'}" 
                                            placeholder="0" 
-                                           oninput="recalculateCard(${index})">
+                                           oninput="this.dataset.rawValue=this.value.replace(/[^0-9.]/g,''); recalculateCard(${index})">
                                 </div>
                                 <div>
                                     <label class="text-xs text-gray-500 font-semibold block mb-1">Outros Custos ($)</label>
-                                    <input type="number" class="input-field other-costs" data-index="${index}" 
-                                           value="${savedData.otherCosts || 0}" 
+                                    <input type="text" inputmode="numeric" class="input-field other-costs currency-input" data-index="${index}" 
+                                           value="${savedData.otherCosts ? Number(savedData.otherCosts).toLocaleString('en-US') : '0'}" 
                                            placeholder="0" 
-                                           oninput="recalculateCard(${index})">
+                                           oninput="this.dataset.rawValue=this.value.replace(/[^0-9.]/g,''); recalculateCard(${index})">
                                 </div>
                             </div>
                             
@@ -759,10 +790,10 @@
             const sqftRaw = prop['Square Feet'] || prop['SqFt'] || '';
             const sqft = parseFloat(String(sqftRaw).replace(/[,\s]/g, '')) || (acres * 43560);
             
-            const marketValue = parseFloat(card.querySelector('.market-value').value) || 0;
-            const reforma = parseFloat(card.querySelector('.reforma-cost').value) || 0;
-            const liens = parseFloat(card.querySelector('.liens-cost').value) || 0;
-            const otherCosts = parseFloat(card.querySelector('.other-costs').value) || 0;
+            const marketValue = getRawInputValue(card.querySelector('.market-value'));
+            const reforma = getRawInputValue(card.querySelector('.reforma-cost'));
+            const liens = getRawInputValue(card.querySelector('.liens-cost'));
+            const otherCosts = getRawInputValue(card.querySelector('.other-costs'));
             
             const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
             const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
@@ -878,10 +909,10 @@
             const parcelId = getFieldValue(prop, 'Parcel #', 'Parcel Number', 'parcel_id');
             
             const data = {
-                marketValue: parseFloat(card.querySelector('.market-value').value) || 0,
-                reforma: parseFloat(card.querySelector('.reforma-cost').value) || 0,
-                liens: parseFloat(card.querySelector('.liens-cost').value) || 0,
-                otherCosts: parseFloat(card.querySelector('.other-costs').value) || 0,
+                marketValue: getRawInputValue(card.querySelector('.market-value')),
+                reforma: getRawInputValue(card.querySelector('.reforma-cost')),
+                liens: getRawInputValue(card.querySelector('.liens-cost')),
+                otherCosts: getRawInputValue(card.querySelector('.other-costs')),
                 roi1: parseFloat(card.querySelector('.roi1-input')?.value) || 0,
                 roi2: parseFloat(card.querySelector('.roi2-input')?.value) || 0,
                 roi3: parseFloat(card.querySelector('.roi3-input')?.value) || 0,
@@ -933,7 +964,7 @@
             approvedProperties.forEach((prop, index) => {
                 const card = document.getElementById(`card-${index}`);
                 if (card) {
-                    const mv = parseFloat(card.querySelector('.market-value').value) || 0;
+                    const mv = getRawInputValue(card.querySelector('.market-value'));
                     if (mv > 0) filled++;
                 }
             });
@@ -1050,7 +1081,7 @@
             <html>
             <head>
                 <meta charset="UTF-8">
-                <title>GT Lands - Bid Sheet</title>
+                <title>GT Capital - Bid Sheet</title>
                 <style>
                     * { margin: 0; padding: 0; box-sizing: border-box; }
                     body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #1a1a1a; }
@@ -1461,6 +1492,18 @@
         // INITIALIZE
         // ========================================
         renderCards();
+        
+        // Setup currency formatting on all monetary inputs
+        document.querySelectorAll('.currency-input').forEach(input => {
+            input.addEventListener('blur', function() {
+                formatInputAsCurrency(this);
+            });
+            input.addEventListener('focus', function() {
+                const raw = this.dataset.rawValue || this.value.replace(/[^0-9.]/g, '');
+                if (raw && raw !== '0') this.value = raw;
+                else this.value = '';
+            });
+        });
     </script>
 </body>
 </html>

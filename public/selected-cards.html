@@ -118,7 +118,7 @@
             // Update stats
             document.getElementById('totalCount').textContent = totalCount;
             document.getElementById('totalAcres').textContent = totalAcres.toFixed(2);
-            document.getElementById('totalValue').textContent = `$${totalValue.toFixed(2)}`;
+            document.getElementById('totalValue').textContent = '$' + totalValue.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
             document.getElementById('avgAcres').textContent = avgAcres.toFixed(2);
 
             // Render cards
@@ -162,7 +162,7 @@
                             </div>
                             <div>
                                 <div class="text-xs text-gray-500">Amount Due</div>
-                                <div class="text-lg font-bold text-green-600">${prop['Amount Due'] || 'N/A'}</div>
+                                <div class="text-lg font-bold text-green-600">${(() => { const v = parseFloat((prop['Amount Due'] || '0').replace(/[$,]/g, '')); return isNaN(v) ? 'N/A' : '$' + v.toLocaleString('en-US'); })()}</div>
                             </div>
                         </div>
 
