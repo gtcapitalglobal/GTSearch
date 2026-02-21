@@ -213,22 +213,22 @@
 ## TELA 2 — Melhorias de Triagem (ANOTADO, NÃO IMPLEMENTAR SEM PERMISSÃO)
 
 ### Auto-análise ao abrir propriedade (APIs gratuitas)
-- [ ] FEMA Flood Zone — carregar automaticamente ao abrir propriedade (sem clique)
-- [ ] Wetlands — carregar automaticamente ao abrir propriedade (sem clique)
-- [ ] Zoning — carregar automaticamente ao abrir propriedade (sem clique)
-- [ ] Land Use — carregar automaticamente ao abrir propriedade (sem clique)
-- [ ] Remover necessidade de clicar "Analisar" para dados gratuitos
+- [x] FEMA Flood Zone — carregar automaticamente ao abrir propriedade (sem clique) — IMPLEMENTADO v4.6
+- [x] Wetlands — carregar automaticamente ao abrir propriedade (sem clique) — IMPLEMENTADO v4.6
+- [x] Zoning — carregar automaticamente ao abrir propriedade (sem clique) — IMPLEMENTADO v4.6
+- [x] Land Use — carregar automaticamente ao abrir propriedade (sem clique) — IMPLEMENTADO v4.6
+- [x] Remover necessidade de clicar "Analisar" para dados gratuitos — IMPLEMENTADO v4.6 (auto-dispara + restaura cache)
 
 ### Property Intelligence (RentCast) — seção nova na Tela 2
-- [ ] Seção entre Detalhes Adicionais e Análise Automática
-- [ ] Botão manual "Coletar" (1 crédito RentCast)
-- [ ] Contador de uso visível (X/50)
-- [ ] 6 cards de triagem rápida: HOA, Year Built, Zoning (fallback), Owner Occupied, Last Sale, Features
-- [ ] Semáforos visuais (verde=ok, amarelo=atenção, vermelho=deal killer)
-- [ ] Barra "DEAL KILLERS" — resume red flags automaticamente
-- [ ] Tax Assessment breakdown (land vs improvements)
-- [ ] Property Tax anual
-- [ ] Botão "Ver dados brutos (JSON)"
+- [x] Seção entre Detalhes Adicionais e Análise Automática — IMPLEMENTADO v4.6
+- [x] Botão manual "Coletar" (1 crédito RentCast) — IMPLEMENTADO v4.6
+- [x] Contador de uso visível (X/50) — IMPLEMENTADO v4.6
+- [x] 6 cards de triagem rápida: HOA, Year Built, Owner Occupied, Last Sale, Tax Assessment, Features — IMPLEMENTADO v4.6
+- [x] Semáforos visuais (verde=ok, amarelo=atenção, vermelho=deal killer) — IMPLEMENTADO v4.6
+- [x] Barra "DEAL KILLERS" — resume red flags automaticamente — IMPLEMENTADO v4.6
+- [x] Tax Assessment breakdown (land vs improvements) — IMPLEMENTADO v4.6
+- [x] Property Tax anual — IMPLEMENTADO v4.6
+- [x] Botão "Ver dados brutos (JSON)" — IMPLEMENTADO v4.6
 
 ## INFRAESTRUTURA — Anotações (NÃO IMPLEMENTAR SEM PERMISSÃO)
 

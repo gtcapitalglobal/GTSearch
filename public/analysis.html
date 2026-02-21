@@ -484,25 +484,157 @@
             </div>
         </div>
 
+        <!-- Seção 2.4: Property Intelligence (RentCast) -->
+        <div id="property-intelligence-section" class="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-lg shadow-lg p-4 mb-3 border-2 border-emerald-200">
+            <div class="flex items-center justify-between mb-3">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center">
+                    <span class="text-2xl mr-2">🏠</span>
+                    Property Intelligence (RentCast)
+                    <span class="ml-2 text-xs bg-amber-500 text-white px-2 py-1 rounded-full">1 CRÉDITO</span>
+                </h2>
+                <div class="flex items-center gap-3">
+                    <span id="pi-usage-counter" class="text-xs text-gray-500"></span>
+                    <button id="pi-collect-btn" onclick="collectPropertyIntelligence()" class="px-5 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+                        📋 Coletar Dados
+                    </button>
+                </div>
+            </div>
+            <p class="text-sm text-gray-600 mb-3">
+                Coleta 70+ campos da propriedade: HOA, Year Built, Features, Owner, Tax Assessment, Histórico de Vendas. <strong>Gasta 1 crédito RentCast.</strong>
+            </p>
+
+            <!-- Deal Killers Banner -->
+            <div id="pi-deal-killers" class="hidden mb-3 p-3 rounded-lg border-2" style="display:none;">
+                <div class="flex items-center gap-2 font-bold text-sm mb-1">
+                    <span id="pi-dk-icon"></span>
+                    <span id="pi-dk-title"></span>
+                </div>
+                <div id="pi-dk-items" class="text-sm"></div>
+            </div>
+
+            <!-- Loading state -->
+            <div id="pi-loading" class="hidden text-center py-6" style="display:none;">
+                <div class="animate-spin inline-block w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full"></div>
+                <p class="text-sm text-gray-500 mt-2">Coletando dados do RentCast... (1 crédito)</p>
+            </div>
+
+            <!-- Results Grid -->
+            <div id="pi-results" class="hidden" style="display:none;">
+                <div class="grid grid-cols-3 gap-3 mb-3">
+                    <!-- Card 1: HOA -->
+                    <div id="pi-card-hoa" class="bg-white rounded-lg p-3 border shadow-sm">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-bold text-gray-500 uppercase">HOA Fee</span>
+                            <span id="pi-hoa-signal" class="text-lg"></span>
+                        </div>
+                        <div id="pi-hoa-value" class="text-lg font-bold text-gray-800">-</div>
+                        <div id="pi-hoa-detail" class="text-xs text-gray-500"></div>
+                    </div>
+                    <!-- Card 2: Year Built -->
+                    <div id="pi-card-year" class="bg-white rounded-lg p-3 border shadow-sm">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-bold text-gray-500 uppercase">Year Built</span>
+                            <span id="pi-year-signal" class="text-lg"></span>
+                        </div>
+                        <div id="pi-year-value" class="text-lg font-bold text-gray-800">-</div>
+                        <div id="pi-year-detail" class="text-xs text-gray-500"></div>
+                    </div>
+                    <!-- Card 3: Owner Occupied -->
+                    <div id="pi-card-owner" class="bg-white rounded-lg p-3 border shadow-sm">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-bold text-gray-500 uppercase">Owner Occupied</span>
+                            <span id="pi-owner-signal" class="text-lg"></span>
+                        </div>
+                        <div id="pi-owner-value" class="text-lg font-bold text-gray-800">-</div>
+                        <div id="pi-owner-detail" class="text-xs text-gray-500"></div>
+                    </div>
+                    <!-- Card 4: Last Sale -->
+                    <div id="pi-card-sale" class="bg-white rounded-lg p-3 border shadow-sm">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-bold text-gray-500 uppercase">Last Sale</span>
+                            <span id="pi-sale-signal" class="text-lg"></span>
+                        </div>
+                        <div id="pi-sale-value" class="text-lg font-bold text-gray-800">-</div>
+                        <div id="pi-sale-detail" class="text-xs text-gray-500"></div>
+                    </div>
+                    <!-- Card 5: Tax Assessment -->
+                    <div id="pi-card-tax" class="bg-white rounded-lg p-3 border shadow-sm">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-bold text-gray-500 uppercase">Tax Assessment</span>
+                            <span id="pi-tax-signal" class="text-lg"></span>
+                        </div>
+                        <div id="pi-tax-value" class="text-lg font-bold text-gray-800">-</div>
+                        <div id="pi-tax-detail" class="text-xs text-gray-500"></div>
+                    </div>
+                    <!-- Card 6: Features -->
+                    <div id="pi-card-features" class="bg-white rounded-lg p-3 border shadow-sm">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-xs font-bold text-gray-500 uppercase">Features</span>
+                            <span id="pi-features-signal" class="text-lg"></span>
+                        </div>
+                        <div id="pi-features-value" class="text-lg font-bold text-gray-800">-</div>
+                        <div id="pi-features-detail" class="text-xs text-gray-500"></div>
+                    </div>
+                </div>
+
+                <!-- Extra details (collapsible) -->
+                <details class="bg-white rounded-lg border p-3 mb-2">
+                    <summary class="cursor-pointer text-sm font-semibold text-gray-700">Zoning &amp; Legal</summary>
+                    <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
+                        <div><span class="text-gray-500">Zoning:</span> <span id="pi-zoning" class="font-semibold">-</span></div>
+                        <div><span class="text-gray-500">Legal Desc:</span> <span id="pi-legal" class="font-semibold">-</span></div>
+                        <div><span class="text-gray-500">Subdivision:</span> <span id="pi-subdivision" class="font-semibold">-</span></div>
+                        <div><span class="text-gray-500">APN:</span> <span id="pi-apn" class="font-semibold">-</span></div>
+                    </div>
+                </details>
+                <details class="bg-white rounded-lg border p-3 mb-2">
+                    <summary class="cursor-pointer text-sm font-semibold text-gray-700">Owner &amp; Mailing</summary>
+                    <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
+                        <div><span class="text-gray-500">Owner:</span> <span id="pi-owner-name" class="font-semibold">-</span></div>
+                        <div><span class="text-gray-500">Mailing:</span> <span id="pi-owner-mail" class="font-semibold">-</span></div>
+                    </div>
+                </details>
+                <details class="bg-white rounded-lg border p-3 mb-2">
+                    <summary class="cursor-pointer text-sm font-semibold text-gray-700">Sale History</summary>
+                    <div id="pi-sale-history" class="mt-2 text-sm">-</div>
+                </details>
+                <details class="bg-white rounded-lg border p-3 mb-2">
+                    <summary class="cursor-pointer text-sm font-semibold text-gray-700">Property Tax</summary>
+                    <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
+                        <div><span class="text-gray-500">Annual Tax:</span> <span id="pi-prop-tax" class="font-semibold">-</span></div>
+                        <div><span class="text-gray-500">Land Value:</span> <span id="pi-land-val" class="font-semibold">-</span></div>
+                        <div><span class="text-gray-500">Improvements:</span> <span id="pi-improv-val" class="font-semibold">-</span></div>
+                        <div><span class="text-gray-500">Total Assessed:</span> <span id="pi-total-assessed" class="font-semibold">-</span></div>
+                    </div>
+                </details>
+                <button onclick="showPIRawJSON()" class="text-xs text-gray-400 hover:text-gray-600 underline">Ver dados brutos (JSON)</button>
+            </div>
+
+            <!-- Not collected yet -->
+            <div id="pi-empty" class="text-center py-4 text-gray-400 text-sm">
+                Clique em "Coletar Dados" para buscar informações detalhadas desta propriedade.
+            </div>
+        </div>
+
         <!-- Seção 2.5: Análise Automática de Propriedade (NOVO) -->
         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-lg p-4 mb-3 border-2 border-blue-200">
             <div class="flex items-center justify-between mb-3">
                 <h2 class="text-lg font-bold text-gray-800 flex items-center">
                     <span class="text-2xl mr-2">🔍</span>
                     Análise Automática de Propriedade
-                    <span class="ml-2 text-xs bg-blue-600 text-white px-2 py-1 rounded-full">NOVO</span>
+                    <span class="ml-2 text-xs bg-green-600 text-white px-2 py-1 rounded-full">AUTO</span>
                 </h2>
                 <div class="flex gap-2">
-                    <button id="analyze-property-btn" onclick="analyzeCurrentProperty()" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
-                        🔍 Analisar Propriedade
+                    <button id="analyze-property-btn" onclick="analyzeCurrentProperty()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-xs shadow-md hover:shadow-lg">
+                        🔄 Re-analisar
                     </button>
-                    <button id="batch-analyze-btn" onclick="batchAnalyzeAll()" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+                    <button id="batch-analyze-btn" onclick="batchAnalyzeAll()" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold text-xs shadow-md hover:shadow-lg">
                         📦 Analisar Todas
                     </button>
                 </div>
             </div>
-            <p class="text-sm text-gray-600 mb-4">
-                Análise automática de FEMA Flood Zone, Wetlands, Land Use (Assessor) e Zoning (Planning) para qualquer condado da Florida.
+                <p class="text-sm text-gray-600 mb-4">
+                Análise carrega automaticamente ao abrir cada propriedade. FEMA, Wetlands, Land Use e Zoning — APIs gratuitas.
             </p>
             <div id="property-analysis-widget"></div>
         </div>
@@ -1092,13 +1224,39 @@
             window.currentIndex = index;
             
             // 🔄 RESETAR widget de análise automática ao trocar de propriedade
+            // Se já tem analysisData, restaura em vez de resetar (evita flash)
             if (propertyAnalysisWidget) {
-                propertyAnalysisWidget.reset();
-                console.log('🔄 Widget de análise resetado para nova propriedade');
+                const nextProp = properties[index];
+                if (nextProp?.analysisData) {
+                    propertyAnalysisWidget.data = nextProp.analysisData;
+                    propertyAnalysisWidget.render();
+                    console.log('✅ Widget restaurado com dados anteriores para propriedade', index);
+                } else {
+                    propertyAnalysisWidget.reset();
+                    console.log('\ud83d\udd04 Widget resetado para nova propriedade', index);
+                }
             }
             
-            // ⚠️ Cache será carregado DEPOIS de window.currentLocation ser definida
-
+            // \ud83c\udfe0 PROPERTY INTELLIGENCE: Restaurar ou resetar ao trocar de propriedade
+            const nextPropPI = properties[index];
+            if (nextPropPI?._propertyRecord) {
+                renderPIResults(nextPropPI._propertyRecord);
+                console.log('\u2705 Property Intelligence restaurado para propriedade', index);
+            } else {
+                // Reset PI panel
+                const piResults = document.getElementById('pi-results');
+                const piEmpty = document.getElementById('pi-empty');
+                const piDK = document.getElementById('pi-deal-killers');
+                const piLoading = document.getElementById('pi-loading');
+                if (piResults) piResults.style.display = 'none';
+                if (piEmpty) piEmpty.style.display = 'block';
+                if (piDK) piDK.style.display = 'none';
+                if (piLoading) piLoading.style.display = 'none';
+                console.log('\ud83d\udd04 Property Intelligence resetado para propriedade', index);
+            }
+            
+            // \u26a0\ufe0f Cache ser\u00e1 carregado DEPOIS de window.currentLocation ser definida
+            
             // Format fields
             const acres = prop['Acres'] ? `${parseFloat(prop['Acres']).toFixed(2)} acres` : '-';
             const sqft = prop['Square Feet'] ? `${parseInt(prop['Square Feet']).toLocaleString('en-US')} sq ft` : '-';
@@ -1327,9 +1485,23 @@
             // Load OSM building data
             const parcelSqft = parseFloat(prop['Square Feet']?.replace(/,/g, '')) || 0;
             loadOSMData(location.lat(), location.lng(), parcelSqft);
-            
-            // Load Census demographic data
+                        // Load Census demographic data
             loadCensusData(location.lat(), location.lng());
+            
+            // 🔍 AUTO-ANÁLISE: Disparar análise automática (FEMA, Wetlands, Zoning, Land Use)
+            // APIs gratuitas — sem custo de crédito
+            // Só dispara se a propriedade ainda não foi analisada (evita re-análise ao navegar)
+            setTimeout(() => {
+                const alreadyAnalyzed = properties[window.currentIndex]?.analysisData;
+                if (propertyAnalysisWidget && !propertyAnalysisWidget.loading && !alreadyAnalyzed) {
+                    console.log('🔍 Auto-análise disparada para propriedade', window.currentIndex);
+                    analyzeCurrentProperty();
+                } else if (alreadyAnalyzed) {
+                    console.log('✅ Propriedade já analisada, restaurando resultado...');
+                    propertyAnalysisWidget.data = alreadyAnalyzed;
+                    propertyAnalysisWidget.render();
+                }
+            }, 500); // Pequeno delay para garantir que o widget está pronto
             
             // ❌ Fotos desabilitadas - carregar sob demanda
             // loadZillowPhotos(prop);
@@ -3756,6 +3928,270 @@
         
         // Make function globally available
         window.analyzeCurrentProperty = analyzeCurrentProperty;
+        
+        // ===== PROPERTY INTELLIGENCE (RentCast) =====
+        let piRawData = null; // Store raw JSON for "Ver dados brutos"
+        
+        async function collectPropertyIntelligence() {
+            const property = properties[currentIndex];
+            if (!property) { alert('Nenhuma propriedade carregada!'); return; }
+            
+            // Check if already collected for this property
+            if (property._propertyRecord) {
+                console.log('\u2705 Property Record j\u00e1 coletado, restaurando...');
+                renderPIResults(property._propertyRecord);
+                return;
+            }
+            
+            // Build address
+            const address = property['Address'] || property.address || '';
+            if (!address) { alert('Endere\u00e7o n\u00e3o encontrado para esta propriedade!'); return; }
+            
+            // Show loading
+            document.getElementById('pi-empty').style.display = 'none';
+            document.getElementById('pi-loading').style.display = 'block';
+            document.getElementById('pi-results').style.display = 'none';
+            document.getElementById('pi-deal-killers').style.display = 'none';
+            document.getElementById('pi-collect-btn').disabled = true;
+            document.getElementById('pi-collect-btn').textContent = '\u23f3 Coletando...';
+            
+            try {
+                const encodedAddr = encodeURIComponent(address);
+                const resp = await fetch(`/api/property/record?address=${encodedAddr}`);
+                const data = await resp.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Erro ao coletar dados');
+                }
+                
+                // Update usage counter
+                if (data.usage) {
+                    document.getElementById('pi-usage-counter').textContent = `Uso: ${data.usage.used}/${data.usage.limit} este m\u00eas`;
+                }
+                
+                // Store in property object + localStorage
+                properties[currentIndex]._propertyRecord = data;
+                localStorage.setItem('selectedProperties', JSON.stringify(properties));
+                piRawData = data;
+                
+                renderPIResults(data);
+                
+            } catch (error) {
+                console.error('\u274c Property Intelligence error:', error);
+                alert(`Erro: ${error.message}`);
+                document.getElementById('pi-empty').style.display = 'block';
+                document.getElementById('pi-loading').style.display = 'none';
+            } finally {
+                document.getElementById('pi-loading').style.display = 'none';
+                document.getElementById('pi-collect-btn').disabled = false;
+                document.getElementById('pi-collect-btn').textContent = '\ud83d\udccb Coletar Dados';
+            }
+        }
+        
+        function renderPIResults(data) {
+            piRawData = data;
+            const rec = data.propertyRecord || data.data || data;
+            const raw = rec.rawData || rec;
+            
+            document.getElementById('pi-empty').style.display = 'none';
+            document.getElementById('pi-loading').style.display = 'none';
+            document.getElementById('pi-results').style.display = 'block';
+            
+            // Update usage counter
+            if (data.usage) {
+                document.getElementById('pi-usage-counter').textContent = `Uso: ${data.usage.used}/${data.usage.limit} este m\u00eas`;
+            }
+            
+            const fmt = (v) => v != null && v !== '' && v !== 'N/A' ? v : '-';
+            const fmtMoney = (v) => v != null ? `$${Number(v).toLocaleString()}` : '-';
+            
+            // Card 1: HOA
+            const hoaFee = raw.hoa?.fee || raw.hoaFee || null;
+            document.getElementById('pi-hoa-value').textContent = hoaFee ? `$${hoaFee}/m\u00eas` : 'Nenhum';
+            if (hoaFee && hoaFee > 200) {
+                document.getElementById('pi-hoa-signal').textContent = '\ud83d\udd34';
+                document.getElementById('pi-hoa-detail').textContent = 'ALTO \u2014 Deal Killer potencial';
+            } else if (hoaFee && hoaFee > 0) {
+                document.getElementById('pi-hoa-signal').textContent = '\ud83d\udfe1';
+                document.getElementById('pi-hoa-detail').textContent = 'Aten\u00e7\u00e3o \u2014 verificar regras';
+            } else {
+                document.getElementById('pi-hoa-signal').textContent = '\ud83d\udfe2';
+                document.getElementById('pi-hoa-detail').textContent = 'Sem HOA';
+            }
+            
+            // Card 2: Year Built
+            const yearBuilt = raw.yearBuilt || null;
+            document.getElementById('pi-year-value').textContent = yearBuilt || 'N/A (Vacant?)';
+            if (!yearBuilt || yearBuilt === 0) {
+                document.getElementById('pi-year-signal').textContent = '\ud83d\udfe2';
+                document.getElementById('pi-year-detail').textContent = 'Prov\u00e1vel terreno vazio';
+            } else if (yearBuilt < 1970) {
+                document.getElementById('pi-year-signal').textContent = '\ud83d\udfe1';
+                document.getElementById('pi-year-detail').textContent = 'Constru\u00e7\u00e3o antiga \u2014 verificar estado';
+            } else {
+                document.getElementById('pi-year-signal').textContent = '\ud83d\udfe2';
+                document.getElementById('pi-year-detail').textContent = `Constru\u00eddo h\u00e1 ${new Date().getFullYear() - yearBuilt} anos`;
+            }
+            
+            // Card 3: Owner Occupied
+            const ownerOccupied = raw.ownerOccupied ?? raw.owner?.occupied ?? null;
+            document.getElementById('pi-owner-value').textContent = ownerOccupied === true ? 'SIM' : ownerOccupied === false ? 'N\u00c3O' : 'Desconhecido';
+            if (ownerOccupied === true) {
+                document.getElementById('pi-owner-signal').textContent = '\ud83d\udd34';
+                document.getElementById('pi-owner-detail').textContent = 'MORADOR \u2014 complica\u00e7\u00e3o legal no tax deed';
+            } else if (ownerOccupied === false) {
+                document.getElementById('pi-owner-signal').textContent = '\ud83d\udfe2';
+                document.getElementById('pi-owner-detail').textContent = 'N\u00e3o ocupado pelo dono';
+            } else {
+                document.getElementById('pi-owner-signal').textContent = '\ud83d\udfe1';
+                document.getElementById('pi-owner-detail').textContent = 'Informa\u00e7\u00e3o n\u00e3o dispon\u00edvel';
+            }
+            
+            // Card 4: Last Sale
+            const lastSalePrice = raw.lastSalePrice || raw.previousSalePrice || null;
+            const lastSaleDate = raw.lastSaleDate || raw.previousSaleDate || null;
+            document.getElementById('pi-sale-value').textContent = lastSalePrice ? fmtMoney(lastSalePrice) : 'N/A';
+            if (lastSaleDate) {
+                const saleYear = new Date(lastSaleDate).getFullYear();
+                const yearsAgo = new Date().getFullYear() - saleYear;
+                document.getElementById('pi-sale-detail').textContent = `${lastSaleDate} (${yearsAgo} anos atr\u00e1s)`;
+                document.getElementById('pi-sale-signal').textContent = yearsAgo > 10 ? '\ud83d\udfe1' : '\ud83d\udfe2';
+            } else {
+                document.getElementById('pi-sale-detail').textContent = 'Sem hist\u00f3rico';
+                document.getElementById('pi-sale-signal').textContent = '\ud83d\udfe1';
+            }
+            
+            // Card 5: Tax Assessment
+            const landValue = raw.assessorLandValue || raw.taxAssessment?.land || raw.landValue || null;
+            const improvValue = raw.assessorImprovementValue || raw.taxAssessment?.improvements || raw.improvementValue || null;
+            const totalAssessed = (landValue || 0) + (improvValue || 0);
+            document.getElementById('pi-tax-value').textContent = totalAssessed > 0 ? fmtMoney(totalAssessed) : 'N/A';
+            if (improvValue && improvValue > 0) {
+                document.getElementById('pi-tax-signal').textContent = '\ud83d\udfe1';
+                document.getElementById('pi-tax-detail').textContent = `Land: ${fmtMoney(landValue)} | Improv: ${fmtMoney(improvValue)}`;
+            } else {
+                document.getElementById('pi-tax-signal').textContent = '\ud83d\udfe2';
+                document.getElementById('pi-tax-detail').textContent = `Land: ${fmtMoney(landValue)} | Sem melhorias`;
+            }
+            
+            // Card 6: Features
+            const features = raw.features || {};
+            const featureList = [];
+            if (features.pool || raw.pool) featureList.push('Pool');
+            if (features.garage || raw.garage) featureList.push('Garage');
+            if (features.fireplace || raw.fireplace) featureList.push('Fireplace');
+            if (features.basement || raw.basement) featureList.push('Basement');
+            if (raw.stories && raw.stories > 1) featureList.push(`${raw.stories} Stories`);
+            if (raw.roofType) featureList.push(raw.roofType);
+            if (raw.foundationType) featureList.push(raw.foundationType);
+            
+            if (featureList.length > 0) {
+                document.getElementById('pi-features-value').textContent = featureList.length + ' encontradas';
+                document.getElementById('pi-features-detail').textContent = featureList.join(', ');
+                document.getElementById('pi-features-signal').textContent = '\ud83d\udfe1';
+            } else {
+                document.getElementById('pi-features-value').textContent = 'Nenhuma';
+                document.getElementById('pi-features-detail').textContent = 'Prov\u00e1vel terreno vazio';
+                document.getElementById('pi-features-signal').textContent = '\ud83d\udfe2';
+            }
+            
+            // Extra details
+            document.getElementById('pi-zoning').textContent = fmt(raw.zoning || raw.zoningCode);
+            document.getElementById('pi-legal').textContent = fmt(raw.legalDescription);
+            document.getElementById('pi-subdivision').textContent = fmt(raw.subdivision);
+            document.getElementById('pi-apn').textContent = fmt(raw.apn || raw.assessorParcelNumber);
+            document.getElementById('pi-owner-name').textContent = fmt(raw.ownerName || raw.owner?.name);
+            const mailAddr = raw.ownerMailingAddress || raw.owner?.mailingAddress || {};
+            document.getElementById('pi-owner-mail').textContent = typeof mailAddr === 'string' ? fmt(mailAddr) : fmt([mailAddr.street, mailAddr.city, mailAddr.state, mailAddr.zip].filter(Boolean).join(', '));
+            
+            // Property Tax
+            document.getElementById('pi-prop-tax').textContent = raw.propertyTax ? fmtMoney(raw.propertyTax) + '/ano' : '-';
+            document.getElementById('pi-land-val').textContent = fmtMoney(landValue);
+            document.getElementById('pi-improv-val').textContent = fmtMoney(improvValue);
+            document.getElementById('pi-total-assessed').textContent = totalAssessed > 0 ? fmtMoney(totalAssessed) : '-';
+            
+            // Sale History
+            const saleHistory = raw.saleHistory || raw.previousSales || [];
+            if (Array.isArray(saleHistory) && saleHistory.length > 0) {
+                document.getElementById('pi-sale-history').innerHTML = saleHistory.map(s => 
+                    `<div class="flex justify-between py-1 border-b border-gray-100">
+                        <span>${s.date || s.saleDate || '-'}</span>
+                        <span class="font-semibold">${s.price || s.salePrice ? fmtMoney(s.price || s.salePrice) : '-'}</span>
+                    </div>`
+                ).join('');
+            } else {
+                document.getElementById('pi-sale-history').textContent = 'Sem hist\u00f3rico dispon\u00edvel';
+            }
+            
+            // DEAL KILLERS evaluation
+            evaluateDealKillers(raw);
+        }
+        
+        function evaluateDealKillers(raw) {
+            const killers = [];
+            const warnings = [];
+            
+            // HOA > $200/m\u00eas
+            const hoaFee = raw.hoa?.fee || raw.hoaFee || 0;
+            if (hoaFee > 200) killers.push(`HOA $${hoaFee}/m\u00eas \u2014 muito alto para flip`);
+            else if (hoaFee > 0) warnings.push(`HOA $${hoaFee}/m\u00eas`);
+            
+            // Owner Occupied
+            const ownerOccupied = raw.ownerOccupied ?? raw.owner?.occupied ?? null;
+            if (ownerOccupied === true) killers.push('Owner Occupied \u2014 complica\u00e7\u00e3o legal no tax deed');
+            
+            // Features indicam estrutura complexa
+            const features = raw.features || {};
+            const hasStructure = features.pool || raw.pool || features.basement || raw.basement || (raw.stories && raw.stories > 2);
+            if (hasStructure) warnings.push('Estrutura complexa (pool/basement/multi-story)');
+            
+            // Improvements value alto
+            const improvValue = raw.assessorImprovementValue || raw.taxAssessment?.improvements || raw.improvementValue || 0;
+            if (improvValue > 50000) warnings.push(`Improvements: $${Number(improvValue).toLocaleString()} \u2014 n\u00e3o \u00e9 land puro`);
+            
+            // Year Built muito antigo
+            const yearBuilt = raw.yearBuilt || 0;
+            if (yearBuilt > 0 && yearBuilt < 1960) warnings.push(`Constru\u00e7\u00e3o de ${yearBuilt} \u2014 verificar estado`);
+            
+            const dkDiv = document.getElementById('pi-deal-killers');
+            const dkIcon = document.getElementById('pi-dk-icon');
+            const dkTitle = document.getElementById('pi-dk-title');
+            const dkItems = document.getElementById('pi-dk-items');
+            
+            if (killers.length > 0) {
+                dkDiv.style.display = 'block';
+                dkDiv.className = 'mb-3 p-3 rounded-lg border-2 border-red-400 bg-red-50';
+                dkIcon.textContent = '\ud83d\udd34';
+                dkTitle.textContent = `DEAL KILLERS ENCONTRADOS (${killers.length})`;
+                dkTitle.className = 'text-red-700';
+                dkItems.innerHTML = killers.map(k => `<div class="text-red-600">\u2022 ${k}</div>`).join('') + 
+                    warnings.map(w => `<div class="text-amber-600">\u26a0\ufe0f ${w}</div>`).join('');
+            } else if (warnings.length > 0) {
+                dkDiv.style.display = 'block';
+                dkDiv.className = 'mb-3 p-3 rounded-lg border-2 border-amber-400 bg-amber-50';
+                dkIcon.textContent = '\ud83d\udfe1';
+                dkTitle.textContent = `ATEN\u00c7\u00c3O (${warnings.length} avisos)`;
+                dkTitle.className = 'text-amber-700';
+                dkItems.innerHTML = warnings.map(w => `<div class="text-amber-600">\u26a0\ufe0f ${w}</div>`).join('');
+            } else {
+                dkDiv.style.display = 'block';
+                dkDiv.className = 'mb-3 p-3 rounded-lg border-2 border-green-400 bg-green-50';
+                dkIcon.textContent = '\ud83d\udfe2';
+                dkTitle.textContent = 'NENHUM DEAL KILLER \u2014 Propriedade limpa';
+                dkTitle.className = 'text-green-700';
+                dkItems.innerHTML = '<div class="text-green-600">\u2705 Sem HOA, sem morador, sem estrutura complexa</div>';
+            }
+        }
+        
+        function showPIRawJSON() {
+            if (!piRawData) { alert('Nenhum dado coletado ainda.'); return; }
+            const w = window.open('', '_blank', 'width=800,height=600');
+            w.document.write(`<html><head><title>Property Record - Raw JSON</title></head><body><pre style="font-size:12px;">${JSON.stringify(piRawData, null, 2)}</pre></body></html>`);
+        }
+        
+        // Make PI functions globally available
+        window.collectPropertyIntelligence = collectPropertyIntelligence;
+        window.showPIRawJSON = showPIRawJSON;
         
         // ===== BATCH ANALYSIS =====
         // Fix #11: Global abort flag for batch cancel
