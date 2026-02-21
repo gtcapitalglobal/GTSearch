@@ -181,3 +181,31 @@
 - [x] Botão "Aceitar FMV" para preencher Market Value com 1 clique
 - [x] Contador de uso visível (X/50)
 - [x] Alterar default de dias dos comps de 90 para 180 (6 meses) — melhor para terrenos
+- [ ] Adicionar yearBuilt (ano de construção) ao SSOT mapper do provider e exibir no card da Tela 3 e na tabela de comps
+
+## RENTCAST — Melhorias Futuras (anotado, NÃO implementar sem permissão)
+
+### Phase 1: Enriquecer resposta AVM atual (sem crédito extra)
+- [ ] Extrair yearBuilt dos comps e subjectProperty e exibir no card
+- [ ] Extrair correlation score (similaridade 0-1) dos comps
+- [ ] Extrair daysOnMarket dos comps
+- [ ] Extrair listingType (Standard, Auction, Foreclosure) dos comps
+- [ ] Extrair squareFootage dos comps
+- [ ] Extrair lastSaleDate e lastSalePrice do subjectProperty
+
+### Phase 2: Property Records Integration (1 crédito extra por propriedade)
+- [ ] Novo provider: getPropertyRecord({ address }) → /v1/properties
+- [ ] Novo endpoint: GET /api/property/record?address=...
+- [ ] Zoning fallback: se ArcGIS retorna NO_DATA, usar zoning do RentCast (1 crédito)
+- [ ] Extrair e exibir: HOA fee
+- [ ] Extrair e exibir: features (pool, garagem, lareira, telhado, fundação, andares)
+- [ ] Extrair e exibir: owner name + mailing address
+- [ ] Extrair e exibir: tax assessments (land vs improvements)
+- [ ] Extrair e exibir: property tax anual
+- [ ] Extrair e exibir: histórico de vendas
+- [ ] Contador de uso compartilhado (mesmo pool 50/mês para todos endpoints)
+
+### Phase 3: Market Intelligence (1 crédito por ZIP)
+- [ ] Market Statistics por ZIP code (tendências de preço)
+- [ ] Sale Listings ativos na região
+- [ ] Rent Estimate para potencial de renda
