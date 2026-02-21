@@ -355,3 +355,6 @@
 - [x] Mostrar progresso (ex: "Analisando 3/5...") — IMPLEMENTADO v5.1 (barra de progresso + tempo estimado)
 - [x] Manter botão "Re-analisar" para forçar nova consulta manual — IMPLEMENTADO v5.1
 - [x] Resultados aparecem prontos para revisar (Aprovar/Rejeitar) — IMPLEMENTADO v5.1
+- [x] Persistir resultados do batch analysis por propriedade (em memória/objeto) — IMPLEMENTADO v5.1
+- [x] Ao navegar (Anterior/Próxima), restaurar resultados detalhados no widget (FEMA, Wetlands, Zoning, Land Use com semáforos) — IMPLEMENTADO v5.1
+- [x] Não chamar API de novo se já tem resultado salvo do batch — IMPLEMENTADO v5.1

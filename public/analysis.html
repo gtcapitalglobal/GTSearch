@@ -638,6 +638,7 @@
                 Análise carrega automaticamente ao abrir cada propriedade. FEMA, Wetlands, Land Use e Zoning — APIs gratuitas.
             </p>
             <div id="property-analysis-widget"></div>
+            <div id="batch-summary-container" style="display:none;"></div>
         </div>
 
         <!-- Seção: Histórico de Análises -->
@@ -1272,6 +1273,10 @@
                     console.log('\ud83d\udd04 Widget resetado para nova propriedade', index);
                 }
             }
+            
+            // v5.1: Hide batch summary when navigating between properties
+            const batchSummary = document.getElementById('batch-summary-container');
+            if (batchSummary) batchSummary.style.display = 'none';
             
             // \ud83c\udfe0 PROPERTY INTELLIGENCE: Restaurar ou resetar ao trocar de propriedade
             const nextPropPI = properties[index];
@@ -4391,38 +4396,54 @@
                 return map[level] || 'bg-gray-100 text-gray-700';
             };
             
-            widgetContainer.innerHTML = `
-                <div class="p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold text-lg text-gray-800">📦 Batch Analysis ${wasCancelled ? 'Cancelado' : 'Completo'}</h3>
-                        <button onclick="exportBatchCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-semibold">📄 Exportar CSV</button>
-                    </div>
-                    <div class="grid grid-cols-3 gap-3 mb-4">
-                        <div class="bg-green-50 rounded-lg p-3 text-center">
-                            <div class="text-2xl font-bold text-green-700">${completed}</div>
-                            <div class="text-xs text-green-600">Analisadas</div>
-                        </div>
-                        <div class="bg-red-50 rounded-lg p-3 text-center">
-                            <div class="text-2xl font-bold text-red-700">${failed}</div>
-                            <div class="text-xs text-red-600">Falhas</div>
-                        </div>
-                        <div class="bg-blue-50 rounded-lg p-3 text-center">
-                            <div class="text-2xl font-bold text-blue-700">${total}</div>
-                            <div class="text-xs text-blue-600">Total</div>
-                        </div>
-                    </div>
-                    <div class="space-y-2 max-h-80 overflow-y-auto">
-                        ${results.map(r => `
-                            <div class="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
-                                <span class="font-mono text-sm font-semibold">${r.parcelId}</span>
-                                <span class="text-xs text-gray-500">${r.county}</span>
-                                <span class="ml-auto px-2 py-0.5 rounded-full text-xs font-bold ${r.riskLevel ? riskBadge(r.riskLevel) : 'bg-gray-100 text-gray-700'}">
-                                    ${r.riskLevel === 'green' ? 'BAIXO' : r.riskLevel === 'critical' ? 'CRÍTICO' : r.riskLevel === 'red' ? 'ALTO' : r.riskLevel === 'yellow' ? 'MÉDIO' : r.error || 'N/A'}
-                                </span>
+            // v5.1: Show batch summary in SEPARATE container (don't destroy widget)
+            const batchSummaryContainer = document.getElementById('batch-summary-container');
+            if (batchSummaryContainer) {
+                batchSummaryContainer.style.display = 'block';
+                batchSummaryContainer.innerHTML = `
+                    <div class="p-4 mt-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-base text-gray-800">📦 Batch Analysis ${wasCancelled ? 'Cancelado' : 'Completo'}</h3>
+                            <div class="flex gap-2">
+                                <button onclick="exportBatchCSV()" class="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 text-xs font-semibold">📄 Exportar CSV</button>
+                                <button onclick="document.getElementById('batch-summary-container').style.display='none'" class="px-3 py-1 bg-gray-400 text-white rounded-lg hover:bg-gray-500 text-xs font-semibold">✕ Fechar</button>
                             </div>
-                        `).join('')}
-                    </div>
-                </div>`;
+                        </div>
+                        <div class="grid grid-cols-3 gap-3 mb-3">
+                            <div class="bg-green-50 rounded-lg p-2 text-center">
+                                <div class="text-xl font-bold text-green-700">${completed}</div>
+                                <div class="text-xs text-green-600">Analisadas</div>
+                            </div>
+                            <div class="bg-red-50 rounded-lg p-2 text-center">
+                                <div class="text-xl font-bold text-red-700">${failed}</div>
+                                <div class="text-xs text-red-600">Falhas</div>
+                            </div>
+                            <div class="bg-blue-50 rounded-lg p-2 text-center">
+                                <div class="text-xl font-bold text-blue-700">${total}</div>
+                                <div class="text-xs text-blue-600">Total</div>
+                            </div>
+                        </div>
+                        <div class="space-y-1 max-h-60 overflow-y-auto">
+                            ${results.map(r => `
+                                <div class="flex items-center gap-3 p-1.5 bg-white/70 rounded-lg">
+                                    <span class="font-mono text-xs font-semibold">${r.parcelId}</span>
+                                    <span class="text-xs text-gray-500">${r.county}</span>
+                                    <span class="ml-auto px-2 py-0.5 rounded-full text-xs font-bold ${r.riskLevel ? riskBadge(r.riskLevel) : 'bg-gray-100 text-gray-700'}">
+                                        ${r.riskLevel === 'green' ? 'BAIXO' : r.riskLevel === 'critical' ? 'CRÍTICO' : r.riskLevel === 'red' ? 'ALTO' : r.riskLevel === 'yellow' ? 'MÉDIO' : r.error || 'N/A'}
+                                    </span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>`;
+            }
+            
+            // v5.1: Restore widget with current property's detailed analysis data
+            const currentProp = properties[currentIndex];
+            if (currentProp?.analysisData && propertyAnalysisWidget) {
+                propertyAnalysisWidget.data = currentProp.analysisData;
+                propertyAnalysisWidget.render();
+                console.log('✅ Widget restaurado com dados detalhados da propriedade', currentIndex);
+            }
             
             // Persist all properties with analysisData + risk to localStorage
             localStorage.setItem('selectedProperties', JSON.stringify(properties));
