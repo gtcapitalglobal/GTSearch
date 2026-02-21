@@ -642,9 +642,14 @@
         </div>
 
         <!-- Seção: Histórico de Análises -->
-        <div class="bg-white rounded-lg shadow-lg p-4 mb-3">
-            <h2 class="text-lg font-bold text-gray-800 mb-3">📊 Histórico de Análises</h2>
-            <div id="history-panel"></div>
+        <div class="bg-white rounded-lg shadow-lg p-4 mb-3" id="section-history">
+            <div class="flex items-center justify-between cursor-pointer" onclick="toggleSection('history')">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center">📊 Histórico de Análises</h2>
+                <span id="toggle-history" class="text-gray-400 text-xl transition-transform">▼</span>
+            </div>
+            <div id="content-history" class="mt-3" style="display:none;">
+                <div id="history-panel"></div>
+            </div>
         </div>
 
         <!-- Seção 3: Contact Information -->
@@ -700,13 +705,7 @@
                         <span class="text-xs text-gray-400">-</span>
                     </div>
                 </div>
-                <!-- Research Comparables -->
-                <div class="mb-3">
-                    <h3 class="text-sm font-bold text-green-700 mb-2">📊 Research Comparables</h3>
-                    <div id="research-comps-buttons" class="flex flex-wrap gap-2">
-                        <span class="text-xs text-gray-400">-</span>
-                    </div>
-                </div>
+
                 <!-- Refresh button -->
                 <div class="text-right mt-2">
                     <button onclick="refreshCountyLinks()" class="text-xs text-gray-400 hover:text-blue-600 underline">🔄 Atualizar links do Sheet</button>
@@ -715,8 +714,12 @@
         </div>
 
         <!-- Seção 5: Análise Geográfica e Ambiental -->
-        <div class="bg-white rounded-lg shadow-lg p-4 mb-3">
-            <h2 class="text-lg font-bold text-gray-800 mb-3">🌍 Análise Geográfica e Ambiental</h2>
+        <div class="bg-white rounded-lg shadow-lg p-4 mb-3" id="section-geo">
+            <div class="flex items-center justify-between cursor-pointer" onclick="toggleSection('geo')">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center">🌍 Análise Geográfica e Ambiental</h2>
+                <span id="toggle-geo" class="text-gray-400 text-xl transition-transform">▼</span>
+            </div>
+            <div id="content-geo" class="mt-3" style="display:none;">
             <div class="space-y-4 text-sm">
                 <!-- Locais Próximos -->
                 <div>
@@ -765,12 +768,17 @@
                 
 
             </div>
+            </div>
         </div>
 
 
         <!-- Seção 6: Análise de Construções (OpenStreetMap) -->
-        <div class="bg-white rounded-lg shadow-lg p-4 mb-3">
-            <h2 class="text-lg font-bold text-gray-800 mb-3">🏭 Análise de Construções (OpenStreetMap)</h2>
+        <div class="bg-white rounded-lg shadow-lg p-4 mb-3" id="section-osm">
+            <div class="flex items-center justify-between cursor-pointer" onclick="toggleSection('osm')">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center">🏭 Análise de Construções (OpenStreetMap)</h2>
+                <span id="toggle-osm" class="text-gray-400 text-xl transition-transform">▼</span>
+            </div>
+            <div id="content-osm" class="mt-3" style="display:none;">
             <div class="space-y-4 text-sm">
                 <!-- Resumo da Construção -->
                 <div class="bg-green-50 p-3 rounded-lg">
@@ -828,11 +836,16 @@
                     <div id="osm-neighbor-comparison">⏳ Carregando...</div>
                 </div>
             </div>
+            </div>
         </div>
 
         <!-- Seção 7: Análise Demográfica (Census Bureau) -->
-        <div class="bg-white rounded-lg shadow-lg p-4 mb-3">
-            <h2 class="text-lg font-bold text-gray-800 mb-3">📊 Análise Demográfica (Census Bureau)</h2>
+        <div class="bg-white rounded-lg shadow-lg p-4 mb-3" id="section-census">
+            <div class="flex items-center justify-between cursor-pointer" onclick="toggleSection('census')">
+                <h2 class="text-lg font-bold text-gray-800 flex items-center">📊 Análise Demográfica (Census Bureau)</h2>
+                <span id="toggle-census" class="text-gray-400 text-xl transition-transform">▼</span>
+            </div>
+            <div id="content-census" class="mt-3" style="display:none;">
             <div class="space-y-4 text-sm">
                 <!-- Dados da Vizinhança -->
                 <div class="bg-purple-50 p-3 rounded-lg">
@@ -885,6 +898,7 @@
                     <h3 class="text-sm font-bold text-gray-700 mb-2">🎯 Análise de Investimento:</h3>
                     <div id="census-investment">⏳ Carregando...</div>
                 </div>
+            </div>
             </div>
         </div>
 
@@ -2884,9 +2898,11 @@
         /**
          * Toggle Research Links accordion
          */
-        function toggleResearchLinks() {
-            const content = document.getElementById('research-links-content');
-            const toggle = document.getElementById('research-links-toggle');
+        // Generic toggle function for all collapsible sections
+        function toggleSection(sectionId) {
+            const content = document.getElementById('content-' + sectionId);
+            const toggle = document.getElementById('toggle-' + sectionId);
+            if (!content || !toggle) return;
             if (content.style.display === 'none') {
                 content.style.display = 'block';
                 toggle.textContent = '▲';
@@ -2895,6 +2911,23 @@
                 toggle.textContent = '▼';
             }
         }
+        
+        // Backward compatibility: Research Links uses specific IDs
+        function toggleResearchLinks() {
+            const content = document.getElementById('research-links-content');
+            const toggle = document.getElementById('research-links-toggle');
+            if (!content || !toggle) return;
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '▲';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '▼';
+            }
+        }
+        
+        window.toggleSection = toggleSection;
+        window.toggleResearchLinks = toggleResearchLinks;
 
         /**
          * Render link buttons into a container
@@ -2953,15 +2986,14 @@
                 renderLinkButtons('owner-research-buttons', links.ownerResearch, 'bg-purple-600');
                 renderLinkButtons('skip-trace-buttons', links.ownerSkipTrace, 'bg-orange-500');
                 renderLinkButtons('property-research-buttons', links.propertyResearch, 'bg-teal-600');
-                renderLinkButtons('research-comps-buttons', links.researchComps, 'bg-green-600');
+                // Research Comparables moved to Tela 3 (v5.3)
 
                 // Update badge count
                 const totalLinks = [
                     ...links.countyLinks,
                     ...links.ownerResearch,
                     ...links.ownerSkipTrace,
-                    ...links.propertyResearch,
-                    ...links.researchComps
+                    ...links.propertyResearch
                 ].length;
                 const badge = document.getElementById('research-links-badge');
                 if (badge) badge.textContent = totalLinks;

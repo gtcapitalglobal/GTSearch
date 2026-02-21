@@ -525,6 +525,20 @@
         // ========================================
         // RENDER CARDS
         // ========================================
+        // Toggle collapsible card sections (v5.3)
+        function toggleCardSection(sectionId) {
+            const content = document.getElementById(sectionId + '-content');
+            const icon = document.getElementById(sectionId + '-icon');
+            if (!content) return;
+            if (content.style.display === 'none') {
+                content.style.display = '';
+                if (icon) icon.textContent = '\u25BC'; // ▼
+            } else {
+                content.style.display = 'none';
+                if (icon) icon.textContent = '\u25B6'; // ▶
+            }
+        }
+
         function renderCards() {
             const container = document.getElementById('cardsContainer');
             
@@ -713,7 +727,11 @@
                         
                         <!-- User Input Fields -->
                         <div class="mb-3">
-                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">✏️ Dados do Investidor</h4>
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 cursor-pointer flex items-center justify-between" onclick="toggleCardSection('custos-${index}')">
+                                <span>💰 Custos da Propriedade</span>
+                                <span class="text-gray-300 text-sm" id="custos-${index}-icon">▼</span>
+                            </h4>
+                            <div id="custos-${index}-content" class="">
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
                                     <label class="text-xs text-gray-500 font-semibold block mb-1">Valor de Mercado ($) *</label>
@@ -760,13 +778,18 @@
                                     <div class="ref-value" id="bidPerAcre-${index}">-</div>
                                 </div>
                             </div>
+                            </div><!-- close custos content -->
                         </div>
                         
                         <div class="section-divider"></div>
                         
                         <!-- Calculated Results -->
                         <div class="mb-3">
-                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">📊 Cálculos de Max Bid</h4>
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 cursor-pointer flex items-center justify-between" onclick="toggleCardSection('maxbid-${index}')">
+                                <span>📊 Cálculos de Max Bid</span>
+                                <span class="text-gray-300 text-sm" id="maxbid-${index}-icon">▼</span>
+                            </h4>
+                            <div id="maxbid-${index}-content" class="">
                             
                             <!-- Closing Cost (auto-calculated) -->
                             <div class="flex items-center justify-between bg-gray-50 rounded-lg p-2 mb-3 border border-gray-200">
@@ -853,17 +876,18 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div><!-- close maxbid content -->
                         </div>
                         
                         <div class="section-divider"></div>
                         
                         <!-- RentCast Comps Panel -->
                         <div class="mb-3" id="comps-panel-${index}">
-                            <div class="flex items-center justify-between mb-2">
-                                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">🔍 Comps RentCast</h4>
-                                <span class="text-xs text-gray-400" id="comps-usage-${index}"></span>
-                            </div>
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 cursor-pointer flex items-center justify-between" onclick="toggleCardSection('comps-${index}')">
+                                <span class="flex items-center gap-2">🔍 Comps RentCast <span class="text-xs text-gray-400 font-normal" id="comps-usage-${index}"></span></span>
+                                <span class="text-gray-300 text-sm" id="comps-${index}-icon">▼</span>
+                            </h4>
+                            <div id="comps-${index}-content" class="">
                             
                             <!-- Filters -->
                             <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 mb-2" id="comps-filters-${index}">
@@ -930,25 +954,62 @@
                                 📋 Coletar Property Record (1 crédito)
                             </button>
                             <div id="proprec-results-${index}" style="display: none;"></div>
+                            </div><!-- close comps content -->
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
+                        <!-- Research Comparables (v5.3) -->
+                        <div class="mb-3">
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 cursor-pointer flex items-center justify-between" onclick="toggleCardSection('rescomps-${index}')">
+                                <span>🏠 Research Comparables</span>
+                                <span class="text-gray-300 text-sm" id="rescomps-${index}-icon">▼</span>
+                            </h4>
+                            <div id="rescomps-${index}-content" class="">
+                                <div class="flex gap-2 flex-wrap">
+                                    <a href="https://www.realtor.com/realestateandhomes-search/${encodeURIComponent(address !== '-' ? address + ', ' + (city !== '-' ? city : '') + ', FL' : parcelId)}" 
+                                       target="_blank" rel="noopener noreferrer"
+                                       class="px-3 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors text-center no-underline font-semibold flex items-center justify-center gap-1">
+                                        🏡 Realtor.com
+                                    </a>
+                                    <a href="https://www.redfin.com/search#query=${encodeURIComponent(address !== '-' ? address + ', ' + (city !== '-' ? city : '') + ', FL' : parcelId + ' FL')}" 
+                                       target="_blank" rel="noopener noreferrer"
+                                       class="px-3 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition-colors text-center no-underline font-semibold flex items-center justify-center gap-1">
+                                        🏡 Redfin
+                                    </a>
+                                    <a href="https://www.zillow.com/homes/${encodeURIComponent(address !== '-' ? address + ', ' + (city !== '-' ? city : '') + ', FL' : parcelId + ' FL')}_rb/" 
+                                       target="_blank" rel="noopener noreferrer"
+                                       class="px-3 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition-colors text-center no-underline font-semibold flex items-center justify-center gap-1">
+                                        🏠 Zillow
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="section-divider"></div>
                         
                         <!-- Notes -->
                         <div class="mb-3">
-                            <label class="text-xs text-gray-500 font-semibold block mb-1">📝 Notas</label>
-                            <textarea class="notes-field" data-index="${index}" 
-                                      placeholder="Observações sobre esta propriedade..."
-                                      oninput="saveCardData(${index})">${savedData.notes || ''}</textarea>
+                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 cursor-pointer flex items-center justify-between" onclick="toggleCardSection('notes-${index}')">
+                                <span>📝 Notas</span>
+                                <span class="text-gray-300 text-sm" id="notes-${index}-icon">▼</span>
+                            </h4>
+                            <div id="notes-${index}-content" class="">
+                                <textarea class="notes-field" data-index="${index}" 
+                                          placeholder="Observações sobre esta propriedade..."
+                                          oninput="saveCardData(${index})">${savedData.notes || ''}</textarea>
+                            </div>
                         </div>
                         
                         <div class="section-divider"></div>
                         
                         <!-- Final Due Diligence (v5.2) -->
                         <div class="mb-3" id="due-diligence-${index}">
-                            <h4 class="text-xs font-bold text-red-600 uppercase tracking-wider mb-2 flex items-center gap-1">
-                                ⚠️ Final Due Diligence — Pré-Leilão
+                            <h4 class="text-xs font-bold text-red-600 uppercase tracking-wider mb-2 cursor-pointer flex items-center justify-between" onclick="toggleCardSection('dd-${index}')">
+                                <span>⚠️ Final Due Diligence — Pré-Leilão</span>
+                                <span class="text-red-300 text-sm" id="dd-${index}-icon">▼</span>
                             </h4>
+                            <div id="dd-${index}-content" class="">
                             <div class="bg-red-50 border border-red-200 rounded-lg p-3">
                                 <div class="flex gap-2 flex-wrap mb-2" id="due-diligence-links-${index}">
                                     <span class="text-xs text-gray-400">Carregando links...</span>
@@ -973,7 +1034,7 @@
                                         </label>
                                     </div>
                                 </div>
-                            </div>
+                            </div><!-- close dd content -->
                         </div>
                         
                         <div class="section-divider"></div>

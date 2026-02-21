@@ -370,3 +370,19 @@
 - [x] Implementar seção "Research Links" colapsável na Tela 2 (County Links, Owner Research, Skip Trace, Property Research, Comps) — IMPLEMENTADO v5.2
 - [x] Implementar seção "Final Due Diligence" separada na Tela 3 (Clerks Office, Code Enforcement + checklist pré-leilão) — IMPLEMENTADO v5.2
 - [x] Testar fluxo end-to-end com CSV Pasco — TESTADO v5.2 (Clerks=pascoclerkofcourt.org, Code=pascofl.gov/code-enforcement)
+
+## v5.3 — UI: Seções colapsáveis (accordion) na Tela 2
+- [x] Tornar "Análise Geográfica e Ambiental" colapsável — IMPLEMENTADO v5.3
+- [x] Tornar "Análise de Construções (OpenStreetMap)" colapsável — IMPLEMENTADO v5.3
+- [x] Tornar "Análise Demográfica (Census Bureau)" colapsável — IMPLEMENTADO v5.3
+- [x] Tornar "Histórico de Análises" colapsável — IMPLEMENTADO v5.3
+- [x] Batch Analysis Completo já tem botão Fechar (não precisa accordion) — OK v5.3
+- [x] Remover seção "Research Comparables" do accordion da Tela 2 — IMPLEMENTADO v5.3
+- [x] Adicionar seção "Research Comparables" na Tela 3 como seção própria — IMPLEMENTADO v5.3
+
+## v5.3 — UI: Reorganização e seções colapsáveis na Tela 3
+- [x] Renomear "Dados do Investidor" para "Custos da Propriedade" — IMPLEMENTADO v5.3
+- [x] Tornar todas as seções da Tela 3 colapsáveis (accordion) — IMPLEMENTADO v5.3
+- [x] Reordenar seções: Custos → Max Bid → Comps → Research Comparables → Notas → Due Diligence — IMPLEMENTADO v5.3
+- [x] Final Due Diligence é a última seção do card — IMPLEMENTADO v5.3
+- [x] "Dados da Propriedade" sempre visível (sem accordion) — IMPLEMENTADO v5.3
