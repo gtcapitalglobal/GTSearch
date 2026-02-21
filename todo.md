@@ -229,3 +229,22 @@
 - [ ] Tax Assessment breakdown (land vs improvements)
 - [ ] Property Tax anual
 - [ ] Botão "Ver dados brutos (JSON)"
+
+## INFRAESTRUTURA — Anotações (NÃO IMPLEMENTAR SEM PERMISSÃO)
+
+### localStorage → IndexedDB (quando encher)
+- [ ] Monitorar uso do localStorage — avisar Gustavo quando estiver enchendo (>70% do limite)
+- [ ] Migrar para IndexedDB (lib idb, 3KB) — grátis, 50-100MB+, busca por índice
+- [ ] Migração transparente — detecta dados antigos no localStorage e migra automaticamente
+
+### Classificação A/B/C automática — Tela 1
+- [ ] Scoring por: Acres (25%), Amount Due vs Assessed (30%), Land Use (20%), Assessed Value (15%), Improvements (10%)
+- [ ] A (70-100) 🟢, B (40-69) 🟡, C (0-39) 🔴
+- [ ] Pesos e faixas configuráveis no Settings (presets por condado/região)
+- [ ] Badge colorido em cada linha da tabela + filtro por classificação
+- [ ] TESTAR a ferramenta e a sugestão antes de usar em produção
+
+### Cache cleanup automático
+- [ ] Cleanup no startup do servidor — deletar entradas >7 dias
+- [ ] Limite máximo de 500 entradas — deletar mais antigos quando exceder
+- [ ] LEMBRETE: rodar limpeza de cache frequentemente até implementar automático
