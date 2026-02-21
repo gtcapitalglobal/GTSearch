@@ -1,7 +1,7 @@
 {
   "version": "2.0",
   "description": "Zoning & Land Use service registry per jurisdiction in Florida. Supports dynamic county routing.",
-  "updated": "2026-02-20",
+  "updated": "2026-02-21",
   "supported_counties": ["Alachua", "Citrus", "Duval", "Hernando", "Highlands", "Hillsborough", "Lake", "Levy", "Marion", "Okeechobee", "Orange", "Pasco", "Polk", "Putnam", "Seminole", "St. Johns", "Volusia"],
 
   "statewide": {
@@ -227,9 +227,35 @@
     "Marion": {
       "fips": "083",
       "co_no": 42,
-      "zoning": null,
-      "manual_link": "https://www.marioncountyfl.org/departments-agencies/growth-services",
-      "notes": "Self-hosted server at gis.marionfl.org exists but has SSL issues. No AGOL mirror found."
+      "zoning": {
+        "name": "Marion County Zoning & FLU",
+        "base_url": "https://gis.marionfl.org/public/rest/services/General/PlanningZoning/MapServer",
+        "type": "self-hosted MapServer",
+        "reliability": "best-effort",
+        "timeout_ms": 15000,
+        "retries": 2,
+        "ssl_reject_unauthorized": false,
+        "layers": {
+          "county_zoning": {
+            "id": 20,
+            "name": "Zoning Classification",
+            "fields": {
+              "zoning_code": "ZONECLASS",
+              "description": "ZONEDESC"
+            }
+          },
+          "county_flu": {
+            "id": 6,
+            "name": "Future Land Use",
+            "fields": {
+              "land_use": "GS_FLUM",
+              "description": "LANDUSECOD"
+            }
+          }
+        },
+        "manual_link": "https://www.marioncountyfl.org/departments-agencies/growth-services",
+        "notes": "Self-hosted MapServer with SSL TLS issues from some environments. ZONECLASS for code, ZONEDESC for description. FLU uses GS_FLUM code and LANDUSECOD. Discovered 2026-02-21. May require special SSL handling."
+      }
     },
 
     "Orange": {
@@ -432,9 +458,35 @@
     "Volusia": {
       "fips": "127",
       "co_no": 64,
-      "zoning": null,
-      "manual_link": "https://www.volusia.org/services/growth-and-resource-management/planning-and-development/",
-      "notes": "No ArcGIS zoning service found via discovery."
+      "zoning": {
+        "name": "Volusia County Zoning & FLU",
+        "base_url": "https://maps5.vcgov.org/arcgis/rest/services/Land_Use_Zoning/MapServer",
+        "type": "self-hosted MapServer",
+        "reliability": "best-effort",
+        "timeout_ms": 12000,
+        "retries": 2,
+        "ssl_reject_unauthorized": false,
+        "layers": {
+          "county_zoning": {
+            "id": 0,
+            "name": "County Zoning",
+            "fields": {
+              "zoning_code": "ZONCODE",
+              "jurisdiction": "CITYNAME"
+            }
+          },
+          "county_flu": {
+            "id": 1,
+            "name": "County Future Land Use",
+            "fields": {
+              "land_use": "LUNAME",
+              "description": "LUCODE"
+            }
+          }
+        },
+        "manual_link": "https://www.volusia.org/services/growth-and-resource-management/planning-and-development/",
+        "notes": "Self-hosted MapServer with self-signed SSL cert (needs rejectUnauthorized: false). ZONCODE for zoning code, CITYNAME for jurisdiction. FLU has LUCODE and LUNAME. Cities may return ZONCODE=999 (use FLU instead). Discovered 2026-02-21."
+      }
     }
   },
 

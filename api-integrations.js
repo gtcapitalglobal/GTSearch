@@ -56,7 +56,7 @@ async function safeArcGISQuery(url, params, { timeout = 10000, retries = 1, labe
                 params, 
                 timeout,
                 // Allow self-signed certs for known self-hosted county servers
-                httpsAgent: (url.includes('gis.highlandsfl.gov') || url.includes('mgrcmaps.org') || url.includes('gis.marionfl.org') || url.includes('gis.sumtercountyfl.gov') || url.includes('pascogis.pascocountyfl.net') || url.includes('mapping.pascopa.com') || url.includes('gis.polk-county.net'))
+                httpsAgent: (url.includes('gis.highlandsfl.gov') || url.includes('mgrcmaps.org') || url.includes('gis.marionfl.org') || url.includes('gis.sumtercountyfl.gov') || url.includes('pascogis.pascocountyfl.net') || url.includes('mapping.pascopa.com') || url.includes('gis.polk-county.net') || url.includes('maps5.vcgov.org'))
                     ? new (await import('https')).Agent({ rejectUnauthorized: false })
                     : undefined
             });

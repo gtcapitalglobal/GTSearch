@@ -1,6 +1,6 @@
 # GTSearch — TODO (v4.1-basic)
 
-> Atualizado: 2026-02-21 | v4.7 — Scoring A/B/C + RentCast enrichment
+> Atualizado: 2026-02-21 | v4.9 — Zoning Expansion (Volusia + Marion)
 
 ---
 
@@ -34,7 +34,7 @@
 - [x] Análise em batch (todas de uma vez)
 - [x] FEMA Flood Zone via API NFHL (zona, subtipo, risco, BFE)
 - [x] Wetlands via NWI MapServer (on-property, nearby, sem wetlands)
-- [x] Zoning via ArcGIS Registry (13 condados FL, 10 funcionais)
+- [x] Zoning via ArcGIS Registry (17 condados FL, 12 funcionais)
 - [x] Land Use via FDOR Statewide Cadastral
 - [x] Risk Score automático (semáforo verde/amarelo/vermelho)
 - [x] Aprovação/rejeição de propriedades
@@ -49,7 +49,7 @@
 - [ ] Checar Code Enforcement
 - [ ] Legal Description analysis via IA
 - [ ] Imagens Landsat/satélite reais (hoje usa placeholder)
-- [ ] Expandir zoning para mais condados FL (hoje: 10/67)
+- [x] Expandir zoning para mais condados FL — v4.9 (Volusia funcional, Marion best-effort)
 
 ---
 
@@ -96,7 +96,7 @@
 - [x] Proxy para APIs externas (FEMA, NWI, ArcGIS, FDOR)
 - [x] Settings page com API keys + testes
 - [x] Google Sheets integration config
-- [x] Zoning Registry com 13 condados FL
+- [x] Zoning Registry com 17 condados FL (12 funcionais, 5 sem API pública)
 
 ---
 
@@ -121,7 +121,7 @@
 
 ### Prioridade Média
 - [ ] Integração Regrid API (token expirado — renovar)
-- [ ] Expandir zoning para mais condados FL
+- [x] Expandir zoning para mais condados FL — v4.9 (pesquisados 7 condados, 2 novos adicionados)
 - [ ] Legal Description analysis via IA
 - [ ] Code Enforcement check
 
@@ -138,22 +138,22 @@
 | Condado | Zoning | FLU | Status |
 |---------|--------|-----|--------|
 | Alachua | ✅ | ✅ | Funcional |
-| Citrus | ⚠️ | ⚠️ | No registry, sem validação |
-| Duval | ⚠️ | ⚠️ | No registry, sem validação |
+| Citrus | ❌ | ❌ | Sem API pública (portal requer login) |
+| Duval | ❌ | ❌ | Sem API pública acessível |
 | Hernando | ✅ | ✅ | Funcional |
 | Highlands | ✅ | ✅ | Funcional |
 | Hillsborough | ✅ | ✅ | NOVO v4.1 |
-| Lake | ⚠️ | ⚠️ | No registry, sem validação |
-| Levy | ⚠️ | ⚠️ | No registry, sem validação |
-| Marion | ❌ | ❌ | Sem API pública |
-| Okeechobee | ⚠️ | ⚠️ | No registry, sem validação |
+| Lake | ❌ | ❌ | Cloudflare bloqueio (CityView tem zoning por cidade, não county) |
+| Levy | ❌ | ❌ | Sem API pública |
+| Marion | ⚠️ | ⚠️ | NOVO v4.9 (best-effort, SSL issues de alguns ambientes) |
+| Okeechobee | ❌ | ❌ | Sem API pública |
 | Orange | ✅ | ✅ | NOVO v4.1 |
 | Pasco | ✅ | ❌ | NOVO v4.1 (zoning only) |
 | Polk | ❌ | ✅ | NOVO v4.1 (FLU only) |
 | Putnam | ✅ | ✅ | Funcional |
 | Seminole | ✅ | ✅ | Funcional |
 | St. Johns | ✅ | ✅ | Funcional |
-| Volusia | ⚠️ | ⚠️ | No registry, sem validação |
+| Volusia | ✅ | ✅ | NOVO v4.9 (funcional, self-signed SSL) |
 
 ---
 
@@ -269,3 +269,15 @@
 - [x] Cache cleanup automático no startup do servidor (deletar entradas >7 dias, limite 500) — IMPLEMENTADO v4.8
 - [x] Ranking automático por ROI na Tela 3 (ordenar cards por melhor ROI) — IMPLEMENTADO v4.8 (7 critérios: ROI, Max Bid, Profit, Acres, Amount Due, Case #)
 - [x] Gráfico comparativo de propriedades na Tela 3 (Chart.js bar chart, 6 métricas) — IMPLEMENTADO v4.8
+
+## v4.9 — Expandir Zoning para mais condados FL
+
+- [x] Descobrir ArcGIS zoning/FLU para Citrus County — NÃO ENCONTRADO (portal requer login)
+- [x] Descobrir ArcGIS zoning/FLU para Duval County (Jacksonville) — NÃO ENCONTRADO (sem API pública)
+- [x] Descobrir ArcGIS zoning/FLU para Lake County — BLOQUEADO (Cloudflare protege o servidor)
+- [x] Descobrir ArcGIS zoning/FLU para Levy County — NÃO ENCONTRADO (sem API pública)
+- [x] Descobrir ArcGIS zoning/FLU para Marion County — ENCONTRADO (Layer 20 Zoning + Layer 6 FLU, best-effort SSL)
+- [x] Descobrir ArcGIS zoning/FLU para Okeechobee County — NÃO ENCONTRADO (sem API pública)
+- [x] Descobrir ArcGIS zoning/FLU para Volusia County — ENCONTRADO E VALIDADO (Layer 0 Zoning + Layer 1 FLU)
+- [x] Atualizar zoning_registry.json com novos serviços encontrados — Volusia + Marion adicionados
+- [x] Testar com coordenadas reais de cada condado — Volusia validado (FRA/FR), Marion ECONNRESET do sandbox
