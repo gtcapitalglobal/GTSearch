@@ -269,6 +269,9 @@
                     <button onclick="saveCurrentBatch()" class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors text-sm">
                         💾 Salvar Batch
                     </button>
+                    <button onclick="novoLeilao()" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm">
+                        🆕 Novo Leilão
+                    </button>
                 </div>
             </div>
         </div>
@@ -513,6 +516,7 @@
                 card.id = `card-${index}`;
                 
                 // Extract property info
+                const caseNumber = getFieldValue(prop, 'CS', 'Case', 'Case #', 'Case Number', 'case_number');
                 const address = getFieldValue(prop, 'Address', 'address');
                 const city = getFieldValue(prop, 'City', 'city');
                 const county = getFieldValue(prop, 'County', 'county');
@@ -591,7 +595,7 @@
                     <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 p-4 text-white">
                         <div class="flex items-center justify-between">
                             <div>
-                                <div class="text-indigo-200 text-xs uppercase tracking-wider">#${index + 1} de ${approvedProperties.length}</div>
+                                <div class="text-indigo-200 text-xs uppercase tracking-wider">#${index + 1} de ${approvedProperties.length}${caseNumber !== '-' ? ' | Case: ' + caseNumber : ''}</div>
                                 <h3 class="text-lg font-bold">${parcelId}</h3>
                                 <p class="text-indigo-200 text-sm">${address !== '-' ? address + ', ' + city : county}</p>
                             </div>
@@ -600,6 +604,11 @@
                                     ${riskLevel !== '-' ? riskLevel + ' (' + riskScore + ')' : 'N/A'}
                                 </span>
                                 <span class="viability-badge text-xs font-bold px-2 py-1 rounded-full" id="viability-badge-${index}" style="display:none;"></span>
+                                <button onclick="removeApprovedProperty(${index})" 
+                                        class="ml-1 w-7 h-7 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors text-sm font-bold" 
+                                        title="Remover propriedade">
+                                    ✕
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -821,6 +830,11 @@
                                target="_blank" 
                                class="flex-1 px-3 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 transition-colors text-center no-underline font-semibold flex items-center justify-center gap-1">
                                 🏠 Zillow
+                            </a>
+                            <a href="https://www.redfin.com/search#query=${encodeURIComponent(address !== '-' ? address + ', ' + (city !== '-' ? city : '') + ', FL' : parcelId + ' FL')}" 
+                               target="_blank" 
+                               class="px-3 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition-colors text-center no-underline font-semibold flex items-center justify-center gap-1">
+                                🏡 Redfin
                             </a>
                             <a href="https://www.google.com/maps/search/${encodeURIComponent(address !== '-' ? address + ', ' + (city !== '-' ? city : '') + ', FL' : parcelId)}" 
                                target="_blank" 
@@ -1193,6 +1207,15 @@
             const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
             const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
             
+            // Sort properties by Case # (CS field) for auction order
+            const sortedProps = [...approvedProperties].sort((a, b) => {
+                const csA = getFieldValue(a, 'CS', 'Case', 'Case #', 'Case Number', 'case_number');
+                const csB = getFieldValue(b, 'CS', 'Case', 'Case #', 'Case Number', 'case_number');
+                const numA = parseInt(csA) || 999999;
+                const numB = parseInt(csB) || 999999;
+                return numA - numB;
+            });
+            
             // Build HTML for PDF
             let html = `
             <html>
@@ -1202,32 +1225,37 @@
                 <style>
                     * { margin: 0; padding: 0; box-sizing: border-box; }
                     body { font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #1a1a1a; }
-                    .page { page-break-after: always; padding: 20px 30px; }
+                    .page { page-break-after: always; padding: 18px 25px; }
                     .page:last-child { page-break-after: auto; }
-                    .header { text-align: center; border-bottom: 3px solid #4338ca; padding-bottom: 10px; margin-bottom: 15px; }
-                    .header h1 { font-size: 18px; color: #4338ca; }
-                    .header p { font-size: 11px; color: #666; }
-                    .prop-title { background: #4338ca; color: white; padding: 8px 12px; border-radius: 6px; margin-bottom: 10px; }
-                    .prop-title h2 { font-size: 14px; margin: 0; }
+                    .header { text-align: center; border-bottom: 3px solid #4338ca; padding-bottom: 8px; margin-bottom: 10px; }
+                    .header h1 { font-size: 16px; color: #4338ca; margin: 0; }
+                    .header p { font-size: 10px; color: #666; margin: 2px 0 0; }
+                    .case-banner { background: #1e1b4b; color: #fbbf24; padding: 6px 12px; border-radius: 6px 6px 0 0; font-size: 20px; font-weight: 900; text-align: center; letter-spacing: 2px; }
+                    .prop-title { background: #4338ca; color: white; padding: 6px 12px; border-radius: 0 0 6px 6px; margin-bottom: 8px; }
+                    .prop-title h2 { font-size: 13px; margin: 0; }
                     .prop-title span { font-size: 10px; opacity: 0.8; }
-                    table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-                    th, td { padding: 5px 8px; border: 1px solid #ddd; text-align: left; font-size: 10px; }
-                    th { background: #f0f0f0; font-weight: 700; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+                    th, td { padding: 4px 6px; border: 1px solid #ddd; text-align: left; font-size: 10px; }
+                    th { background: #f0f0f0; font-weight: 700; width: 18%; }
                     .bid-table th { background: #4338ca; color: white; }
                     .bid-table td { font-size: 12px; font-weight: 700; }
+                    .bid-field { background: #fffbeb; border: 2px solid #f59e0b !important; min-width: 90px; }
                     .viable { color: #16a34a; font-weight: 900; }
                     .marginal { color: #d97706; font-weight: 900; }
                     .inviable { color: #dc2626; font-weight: 900; }
-                    .notes { background: #f8f8f8; padding: 6px 10px; border-radius: 4px; font-style: italic; margin-top: 5px; font-size: 10px; }
-                    .write-line { border-bottom: 1px solid #999; height: 25px; margin: 3px 0; }
+                    .notes-section { background: #f8f8f8; border: 1px solid #e5e7eb; border-radius: 4px; padding: 6px 10px; margin-top: 6px; }
+                    .notes-section .notes-title { font-size: 9px; font-weight: 700; color: #6b7280; text-transform: uppercase; margin-bottom: 3px; }
+                    .notes-saved { font-size: 10px; font-style: italic; color: #374151; margin-bottom: 4px; }
+                    .write-line { border-bottom: 1px solid #999; height: 22px; margin: 2px 0; }
                     .write-label { font-size: 9px; color: #666; font-weight: 700; text-transform: uppercase; }
-                    .footer { text-align: center; font-size: 9px; color: #999; border-top: 1px solid #ddd; padding-top: 8px; margin-top: 15px; }
+                    .footer { text-align: center; font-size: 8px; color: #999; border-top: 1px solid #ddd; padding-top: 6px; margin-top: 10px; }
                 </style>
             </head>
             <body>`;
             
-            approvedProperties.forEach((prop, index) => {
+            sortedProps.forEach((prop, index) => {
                 const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
+                const caseNumber = getFieldValue(prop, 'CS', 'Case', 'Case #', 'Case Number', 'case_number');
                 const data = savedInvestmentData[parcelId] || {};
                 const address = getFieldValue(prop, 'Address', 'address');
                 const city = getFieldValue(prop, 'City', 'city');
@@ -1302,16 +1330,19 @@
                 <div class="page">
                     <div class="header">
                         <h1>GT LANDS - BID SHEET</h1>
-                        <p>Propriedade ${index + 1} de ${approvedProperties.length} | Gerado em ${new Date().toLocaleDateString('pt-BR')}</p>
+                        <p>Propriedade ${index + 1} de ${sortedProps.length} | Gerado em ${new Date().toLocaleDateString('pt-BR')}</p>
                     </div>
                     
-                    <div class="prop-title">
+                    <!-- CASE # BANNER (destaque para leilão) -->
+                    ${caseNumber !== '-' ? `<div class="case-banner">🎯 CASE #${caseNumber}</div>` : ''}
+                    
+                    <div class="prop-title" ${caseNumber !== '-' ? 'style="border-radius: 0 0 6px 6px;"' : ''}>
                         <h2>${parcelId}</h2>
                         <span>${address !== '-' ? address + ', ' + city + ', FL' : county + ', FL'}</span>
                     </div>
                     
                     <!-- Image Placeholder (Square) -->
-                    <div style="width: 200px; height: 200px; background: #f8f8f8; border: 2px dashed #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; color: #999; font-size: 12px; float: right; margin-left: 15px;">
+                    <div style="width: 180px; height: 180px; background: #f8f8f8; border: 2px dashed #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; color: #999; font-size: 12px; float: right; margin-left: 12px;">
                         🖼️ Imagem
                     </div>
                     
@@ -1325,11 +1356,11 @@
                             <th>Land Use</th><td>${landUsePdf}</td>
                         </tr>
                         <tr>
-                            <th>FEMA Zone</th><td style="font-size:11px;">${femaPdf}</td>
+                            <th>FEMA Zone</th><td style="font-size:10px;">${femaPdf}</td>
                             <th>Risk Level</th><td style="font-weight:700;color:${(prop.riskLevel === 'green' ? '#059669' : prop.riskLevel === 'yellow' ? '#d97706' : prop.riskLevel === 'red' || prop.riskLevel === 'critical' ? '#dc2626' : '#6b7280')};">${prop.riskLevel ? prop.riskLevel.toUpperCase() + (prop.riskScore !== undefined && prop.riskScore !== '-' ? ' (' + prop.riskScore + ')' : '') : '-'}</td>
                         </tr>
                         <tr>
-                            <th>Wetlands</th><td style="font-size:11px;">${wetlandsPdf}</td>
+                            <th>Wetlands</th><td style="font-size:10px;">${wetlandsPdf}</td>
                             <th>Assessed Value</th><td>${totalValue}</td>
                         </tr>
                         <tr>
@@ -1348,28 +1379,28 @@
                             <th>ROI %</th>
                             <th>Max Bid</th>
                             <th>Profit</th>
-                            <th style="background:#1e1b4b;">Bid no Leilão</th>
+                            <th style="background:#1e1b4b;">Bid $ (escrever)</th>
                         </tr>
                         <tr>
-                            <td>ROI 1 (Conservador)</td>
+                            <td>ROI 1 (${r1}%)</td>
                             <td>${r1}%</td>
-                            <td>${calc1 ? formatCurrency(calc1.maxBid) : '-'}</td>
+                            <td style="font-size:14px;">${calc1 ? formatCurrency(calc1.maxBid) : '-'}</td>
                             <td style="color:${calc1 && calc1.profit >= 0 ? '#059669' : '#dc2626'};">${calc1 ? formatCurrency(calc1.profit) : '-'}</td>
-                            <td style="border-bottom: 1px solid #999; min-width: 100px;"></td>
+                            <td class="bid-field"></td>
                         </tr>
                         <tr>
-                            <td>ROI 2 (Moderado)</td>
+                            <td>ROI 2 (${r2}%)</td>
                             <td>${r2}%</td>
-                            <td>${calc2 ? formatCurrency(calc2.maxBid) : '-'}</td>
+                            <td style="font-size:14px;">${calc2 ? formatCurrency(calc2.maxBid) : '-'}</td>
                             <td style="color:${calc2 && calc2.profit >= 0 ? '#059669' : '#dc2626'};">${calc2 ? formatCurrency(calc2.profit) : '-'}</td>
-                            <td style="border-bottom: 1px solid #999; min-width: 100px;"></td>
+                            <td class="bid-field"></td>
                         </tr>
                         <tr>
-                            <td>ROI 3 (Agressivo)</td>
+                            <td>ROI 3 (${r3}%)</td>
                             <td>${r3}%</td>
-                            <td>${calc3 ? formatCurrency(calc3.maxBid) : '-'}</td>
+                            <td style="font-size:14px;">${calc3 ? formatCurrency(calc3.maxBid) : '-'}</td>
                             <td style="color:${calc3 && calc3.profit >= 0 ? '#059669' : '#dc2626'};">${calc3 ? formatCurrency(calc3.profit) : '-'}</td>
-                            <td style="border-bottom: 1px solid #999; min-width: 100px;"></td>
+                            <td class="bid-field"></td>
                         </tr>
                     </table>
                     
@@ -1388,18 +1419,17 @@
                         </tr>
                     </table>
                     
-                    ${data.notes ? `<div class="notes">📝 ${data.notes}</div>` : ''}
-                    
-                    <div style="margin-top: 15px;">
-                        <div class="write-label">Bid Final no Leilão:</div>
+                    <!-- Notas Section -->
+                    <div class="notes-section">
+                        <div class="notes-title">📝 Notas</div>
+                        ${data.notes ? `<div class="notes-saved">${data.notes}</div>` : ''}
                         <div class="write-line"></div>
-                        <div class="write-label" style="margin-top:8px;">Observações do Leilão:</div>
                         <div class="write-line"></div>
                         <div class="write-line"></div>
                     </div>
                     
                     <div class="footer">
-                        GT Lands | Confidencial | ${new Date().toLocaleDateString('pt-BR')} | Página ${index + 1}/${approvedProperties.length}
+                        GT Lands | Confidencial | ${new Date().toLocaleDateString('pt-BR')} | Página ${index + 1}/${sortedProps.length}${caseNumber !== '-' ? ' | Case #' + caseNumber : ''}
                     </div>
                 </div>`;
             });
@@ -1568,7 +1598,21 @@
             
             try {
                 localStorage.setItem('investmentHistory', JSON.stringify(history));
-                alert(`Batch "${batchName}" salvo com ${approvedProperties.length} propriedades!`);
+                
+                // Auto-export CSV on batch save
+                const autoExport = confirm(`Batch "${batchName}" salvo com ${approvedProperties.length} propriedades!\n\nDeseja exportar CSV automaticamente?`);
+                if (autoExport) {
+                    exportInvestmentCSV();
+                }
+                
+                // Try Google Sheets if configured
+                const webAppUrl = localStorage.getItem('googleSheetsWebAppUrl');
+                if (webAppUrl && autoExport) {
+                    const sheetsExport = confirm('Enviar também para Google Sheets?');
+                    if (sheetsExport) {
+                        sendToGoogleSheets();
+                    }
+                }
             } catch (e) {
                 alert('Erro: localStorage cheio. Tente apagar batches antigos.');
             }
@@ -1668,6 +1712,67 @@
         }
         
         // ========================================
+        // NOVO LEILÃO - Clear all and start fresh
+        // ========================================
+        function novoLeilao() {
+            if (approvedProperties.length === 0) {
+                alert('Nenhuma propriedade na lista atual.');
+                return;
+            }
+            
+            const action = confirm(
+                `🆕 NOVO LEILÃO\n\n` +
+                `Isso vai:\n` +
+                `1. Salvar o leilão atual no histórico\n` +
+                `2. Limpar todas as ${approvedProperties.length} propriedades aprovadas\n` +
+                `3. Resetar a Tela 3 para um novo leilão\n\n` +
+                `Deseja continuar?`
+            );
+            
+            if (!action) return;
+            
+            // Auto-save current batch before clearing
+            const batchName = prompt('Nome para salvar o leilão atual (ex: "Leilão Orange County Jan 2026"):', 
+                `Leilão ${new Date().toLocaleDateString('pt-BR')}`);
+            
+            if (batchName) {
+                const history = JSON.parse(localStorage.getItem('investmentHistory') || '[]');
+                const batch = {
+                    id: Date.now(),
+                    name: batchName,
+                    date: new Date().toISOString(),
+                    propertyCount: approvedProperties.length,
+                    properties: JSON.parse(JSON.stringify(approvedProperties)),
+                    investmentData: JSON.parse(JSON.stringify(savedInvestmentData)),
+                    settings: {
+                        closingPct: parseFloat(document.getElementById('globalClosingPct').value),
+                        cleanTitle: parseFloat(document.getElementById('globalCleanTitle').value),
+                        roi1: parseFloat(document.getElementById('globalROI1').value),
+                        roi2: parseFloat(document.getElementById('globalROI2').value),
+                        roi3: parseFloat(document.getElementById('globalROI3').value)
+                    }
+                };
+                history.unshift(batch);
+                if (history.length > 50) history.pop();
+                localStorage.setItem('investmentHistory', JSON.stringify(history));
+                console.log(`💾 Leilão "${batchName}" salvo no histórico.`);
+            }
+            
+            // Clear approved properties
+            localStorage.removeItem('approvedProperties');
+            
+            // Clear investment data
+            localStorage.removeItem('investmentData');
+            
+            // Clear selected properties (Tela 2)
+            localStorage.removeItem('selectedProperties');
+            
+            // Reload page
+            alert(`✅ Leilão limpo! Pronto para um novo leilão.${batchName ? '\nLeilão anterior salvo como: "' + batchName + '"' : ''}`);
+            location.reload();
+        }
+        
+        // ========================================
         // ZILLOW URL BUILDER
         // ========================================
         function buildZillowUrl(address, city, prop) {
@@ -1697,6 +1802,29 @@
                 document.body.removeChild(ta);
                 alert('Parcel # ' + parcelNumber + ' copiado!');
             });
+        }
+        
+        // ========================================
+        // REMOVE APPROVED PROPERTY
+        // ========================================
+        function removeApprovedProperty(index) {
+            const prop = approvedProperties[index];
+            const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
+            if (!confirm(`Remover propriedade ${parcelId} da lista de aprovadas?`)) return;
+            
+            // Remove from array
+            approvedProperties.splice(index, 1);
+            
+            // Save back to localStorage
+            localStorage.setItem('approvedProperties', JSON.stringify(approvedProperties));
+            
+            // Update counter
+            document.getElementById('totalProperties').textContent = approvedProperties.length;
+            
+            // Re-render all cards
+            renderCards();
+            
+            console.log(`❌ Propriedade ${parcelId} removida. Restam ${approvedProperties.length} aprovadas.`);
         }
         
         // ========================================

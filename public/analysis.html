@@ -361,9 +361,15 @@
                             📋 Copiar
                         </button>
                     </div>
-                    <div>
+                    <div class="flex flex-wrap gap-1">
                         <button onclick="openGoogleMaps()" class="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-semibold">
-                            📍 View on Google Maps
+                            📍 Google Maps
+                        </button>
+                        <button onclick="openZillow()" class="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-xs font-semibold">
+                            🏠 Zillow
+                        </button>
+                        <button onclick="openRedfin()" class="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-xs font-semibold">
+                            🏡 Redfin
                         </button>
                     </div>
                     <div>
@@ -2647,6 +2653,52 @@
                 window.open(url, '_blank');
             } else {
                 alert('⚠️ Coordenadas não disponíveis.');
+            }
+        }
+        
+        function openZillow() {
+            const prop = window.currentProp;
+            if (!prop) { alert('⚠️ Nenhuma propriedade selecionada.'); return; }
+            const address = prop['Address'] || '';
+            const city = prop['City'] || '';
+            const state = 'FL';
+            const fullAddress = `${address}, ${city}, ${state}`.trim();
+            if (fullAddress.length > 5) {
+                const url = `https://www.zillow.com/homes/${encodeURIComponent(fullAddress)}_rb/`;
+                window.open(url, '_blank');
+            } else {
+                // Fallback to coordinates
+                const coordinates = window.currentCoordinates || document.getElementById('prop-coordinates-1').textContent;
+                if (coordinates && coordinates !== '-') {
+                    const [lat, lng] = coordinates.split(',').map(c => c.trim());
+                    const url = `https://www.zillow.com/homes/${lat},${lng}_rb/`;
+                    window.open(url, '_blank');
+                } else {
+                    alert('⚠️ Endereço e coordenadas não disponíveis.');
+                }
+            }
+        }
+        
+        function openRedfin() {
+            const prop = window.currentProp;
+            if (!prop) { alert('⚠️ Nenhuma propriedade selecionada.'); return; }
+            const address = prop['Address'] || '';
+            const city = prop['City'] || '';
+            const state = 'FL';
+            const fullAddress = `${address}, ${city}, ${state}`.trim();
+            if (fullAddress.length > 5) {
+                const url = `https://www.redfin.com/search#query=${encodeURIComponent(fullAddress)}`;
+                window.open(url, '_blank');
+            } else {
+                // Fallback to coordinates
+                const coordinates = window.currentCoordinates || document.getElementById('prop-coordinates-1').textContent;
+                if (coordinates && coordinates !== '-') {
+                    const [lat, lng] = coordinates.split(',').map(c => c.trim());
+                    const url = `https://www.redfin.com/search#query=${lat}%2C${lng}`;
+                    window.open(url, '_blank');
+                } else {
+                    alert('⚠️ Endereço e coordenadas não disponíveis.');
+                }
             }
         }
         

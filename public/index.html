@@ -2438,9 +2438,9 @@
             
             // Ordenar linhas
             rows.sort((a, b) => {
-                // +1 porque a primeira coluna é o checkbox
-                const cellA = a.cells[columnIndex + 1]?.textContent.trim() || '';
-                const cellB = b.cells[columnIndex + 1]?.textContent.trim() || '';
+                // +3 porque as 3 primeiras colunas são: checkbox, favorito (⭐), número (#)
+                const cellA = a.cells[columnIndex + 3]?.textContent.trim() || '';
+                const cellB = b.cells[columnIndex + 3]?.textContent.trim() || '';
                 
                 // Tentar converter para número se possível
                 const numA = parseFloat(cellA.replace(/[^0-9.-]/g, ''));

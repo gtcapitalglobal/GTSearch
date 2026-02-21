@@ -17,8 +17,9 @@
 - [x] Exibição de dados básicos (parcel, address, acres, owner)
 - [ ] Filtro avançado multi-critério (combinar condado + acres + amount due)
 - [ ] Classificação automática A/B/C por scoring
-- [ ] Ordenação por coluna (acres, amount due, assessed value)
+- [x] Ordenação por coluna (acres, amount due, assessed value) — CORRIGIDO v4.2
 - [ ] Indicador visual de propriedades já analisadas
+- [x] 🐛 BUG: Ordenação por coluna não funciona (clicar nos headers Parcel#, Acres, Type, Name, etc. não ordena) — CORRIGIDO: offset era +1, correto é +3
 
 ---
 
@@ -36,6 +37,7 @@
 - [x] Salvamento de riskLevel e riskScore no objeto da propriedade
 - [x] Google Street View embed
 - [x] Link para County Appraiser
+- [x] Adicionar botão Redfin ao lado do Zillow (com endereço da propriedade na URL, igual Zillow) — IMPLEMENTADO v4.2 (Zillow + Redfin + Google Maps)
 - [x] Histórico de análises por propriedade
 - [ ] Comps (propriedades comparáveis) — vendas recentes na região
 - [ ] Checar Liens (link direto para County Clerk Official Records)
@@ -65,6 +67,15 @@
 - [x] Export CSV com todos os dados + profit
 - [x] Export Google Sheets com todos os dados + profit
 - [x] Histórico de cálculos por propriedade
+- [x] Exibir Case # (campo CS do CSV) no card e no PDF — IMPLEMENTADO v4.2 (card header mostra Case #)
+- [x] PDF ordenado por Case # (mesma ordem do leilão) — IMPLEMENTADO v4.2
+- [x] PDF: Case # em destaque no topo de cada página — IMPLEMENTADO v4.2 (banner amarelo CASE #XX)
+- [x] PDF: campo Bid separado por cenário ROI (30%, 40%, 50%) — IMPLEMENTADO v4.2 (campo amarelo por ROI)
+- [x] PDF: campo Notas em cada página — IMPLEMENTADO v4.2 (notas salvas + linhas para escrever)
+- [x] Botão deletar/desaprovar card na Tela 3 (remover propriedade da lista de aprovadas) — IMPLEMENTADO v4.2 (botão ✕ no header do card)
+- [x] Botão "Novo Leilão" — limpa todas as propriedades aprovadas e reseta a Tela 3 — IMPLEMENTADO v4.2 (auto-salva histórico antes de limpar)
+- [x] Histórico de Leilões — salva cada batch como um leilão com data, condado e lista de propriedades — JÁ EXISTIA (saveCurrentBatch + showHistoryModal + loadBatch)
+- [x] Export automático no batch save (gera CSV ou envia pro Google Sheets automaticamente) — IMPLEMENTADO v4.2 (auto-export CSV + Google Sheets no Salvar Batch)
 - [ ] Comps como referência para Market Value
 - [ ] Gráfico comparativo de propriedades
 - [ ] Ranking automático por ROI
