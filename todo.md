@@ -175,8 +175,9 @@
 - [x] Endpoint: passar novos params via query string
 - [x] UI: botão "🔍 Comps RentCast" em cada card
 - [x] UI: mini-painel de filtros pré-preenchido com dados da propriedade
-- [x] Defaults: 0.5mi raio, 90 dias, tipo Land, dados do CSV
+- [x] Defaults: 0.5mi raio, 180 dias (6 meses), tipo Land, dados do CSV
 - [x] Filtros editáveis antes de buscar
 - [x] Exibir resultado: FMV sugerido + comps + confidence
 - [x] Botão "Aceitar FMV" para preencher Market Value com 1 clique
 - [x] Contador de uso visível (X/50)
+- [x] Alterar default de dias dos comps de 90 para 180 (6 meses) — melhor para terrenos

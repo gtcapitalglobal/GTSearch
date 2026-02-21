@@ -843,7 +843,7 @@
                                     <div>
                                         <label class="text-xs text-gray-500 font-semibold block mb-1">Dias</label>
                                         <input type="number" class="comps-filter input-field" data-filter="daysOld" data-index="${index}" 
-                                               value="${savedData.compsDays || '90'}" min="1" max="730" step="1" style="padding: 4px 6px; font-size: 12px;">
+                                               value="${savedData.compsDays || '180'}" min="1" max="730" step="1" style="padding: 4px 6px; font-size: 12px;">
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-3 gap-2 mb-2">
@@ -1951,7 +1951,7 @@
                 // Save comps filter settings
                 const savedData = savedInvestmentData[parcelId] || {};
                 savedData.compsRadius = filters.maxRadius || '0.5';
-                savedData.compsDays = filters.daysOld || '90';
+                savedData.compsDays = filters.daysOld || '180';
                 savedData.compsBedrooms = filters.bedrooms || '';
                 savedData.compsBathrooms = filters.bathrooms || '';
                 savedData.compsCount = filters.compCount || '10';
