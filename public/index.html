@@ -12,6 +12,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="/js/utils.js"></script>
     <style>
         /* Dark Mode Styles */
         body.dark-mode {
@@ -1164,7 +1165,7 @@
             const fileList = document.getElementById('fileList');
             fileList.innerHTML = loadedFiles.map((file, index) => `
                 <div class="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3 mb-2">
-                    <span class="text-green-700">✓ ${file.name}</span>
+                    <span class="text-green-700">✓ ${escapeHTML(file.name)}</span>
                     <button onclick="removeFile(${index})" class="text-red-600 hover:text-red-800">✕</button>
                 </div>
             `).join('');
@@ -1539,14 +1540,14 @@
             const currentCounty = countySelect.value;
             const counties = [...new Set(allNewProperties.map(p => p.County))].sort();
             countySelect.innerHTML = '<option value="">Todos os Condados</option>' + 
-                counties.map(c => `<option value="${c}" ${c === currentCounty ? 'selected' : ''}>${c}</option>`).join('');
+                counties.map(c => `<option value="${escapeHTML(c)}" ${c === currentCounty ? 'selected' : ''}>${escapeHTML(c)}</option>`).join('');
             
             // Populate city dropdown
             const citySelect = document.getElementById('filterCity');
             const currentCity = citySelect.value;
             const cities = [...new Set(allNewProperties.map(p => p.City).filter(c => c))].sort();
             citySelect.innerHTML = '<option value="">Todas as Cidades</option>' + 
-                cities.map(c => `<option value="${c}" ${c === currentCity ? 'selected' : ''}>${c}</option>`).join('');
+                cities.map(c => `<option value="${escapeHTML(c)}" ${c === currentCity ? 'selected' : ''}>${escapeHTML(c)}</option>`).join('');
             
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = filteredProperties.map((row, index) => {
@@ -1563,7 +1564,7 @@
                 if (alertKeywords.risk) {
                     alertKeywords.risk.forEach(keyword => {
                         if (legalDesc.includes(keyword.toUpperCase())) {
-                            alertBadges += `<span class="alert-badge alert-risk">⚠️ ${keyword}</span> `;
+                            alertBadges += `<span class="alert-badge alert-risk">⚠️ ${escapeHTML(keyword)}</span> `;
                             rowClass = 'alert-row-risk text-[10px]';
                         }
                     });
@@ -1573,7 +1574,7 @@
                 if (alertKeywords.warning && !alertBadges) {
                     alertKeywords.warning.forEach(keyword => {
                         if (legalDesc.includes(keyword.toUpperCase())) {
-                            alertBadges += `<span class="alert-badge alert-warning">⚡ ${keyword}</span> `;
+                            alertBadges += `<span class="alert-badge alert-warning">⚡ ${escapeHTML(keyword)}</span> `;
                             if (rowClass === 'hover:bg-blue-50 transition-colors text-[10px]') {
                                 rowClass = 'alert-row-warning text-[10px]';
                             }
@@ -1585,7 +1586,7 @@
                 if (alertKeywords.info && !alertBadges) {
                     alertKeywords.info.forEach(keyword => {
                         if (legalDesc.includes(keyword.toUpperCase())) {
-                            alertBadges += `<span class="alert-badge alert-info">ℹ️ ${keyword}</span> `;
+                            alertBadges += `<span class="alert-badge alert-info">ℹ️ ${escapeHTML(keyword)}</span> `;
                             if (rowClass === 'hover:bg-blue-50 transition-colors text-[10px]') {
                                 rowClass = 'alert-row-info text-[10px]';
                             }
@@ -1631,21 +1632,21 @@
                         <input type="checkbox" class="row-checkbox w-3 h-3 cursor-pointer" data-index="${originalIndex}" data-property='${JSON.stringify(cleanRow).replace(/'/g, "&apos;")}'>
                     </td>
                     <td class="px-1 py-0.5 whitespace-nowrap text-center">
-                        <button class="favorite-btn text-xl hover:scale-125 transition-transform" data-parcel="${row['Parcel Number']}" title="${isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}">${starIcon}</button>
+                        <button class="favorite-btn text-xl hover:scale-125 transition-transform" data-parcel="${escapeHTML(row['Parcel Number'])}" title="${isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}">${starIcon}</button>
                     </td>
                     <td class="px-1 py-0.5 whitespace-nowrap text-center text-gray-500 font-medium">${index + 1}</td>
                     <td class="px-1 py-0.5 whitespace-nowrap text-center" style="position:relative">
                         <span class="grade-badge grade-${grade}" data-tooltip="${tooltipText}">${grade}</span>
                     </td>
-                    <td class="px-1 py-0.5 whitespace-nowrap">${analyzedDot}${alertBadges}${row['Parcel Number']}</td>
-                    <td class="px-1 py-0.5 whitespace-nowrap ${acresClass} font-semibold">${row.Acres}</td>
-                    <td class="px-1 py-0.5 whitespace-nowrap">${row['Parcel Type'] || 'N/A'}</td>
-                    <td class="px-1 py-0.5 whitespace-nowrap cursor-pointer">${row.Name}</td>
-                    <td class="px-1 py-0.5 whitespace-nowrap">${row.Address}</td>
-                    <td class="px-1 py-0.5 whitespace-nowrap">${row.City}</td>
-                    <td class="px-1 py-0.5 whitespace-nowrap">${row.County}</td>
-                    <td class="px-1 py-0.5 whitespace-nowrap">$${row['Amount Due']}</td>
-                    <td class="px-1 py-0.5 whitespace-nowrap">${(row['Legal Description'] || 'N/A').substring(0, 50)}...</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${analyzedDot}${alertBadges}${escapeHTML(row['Parcel Number'])}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap ${acresClass} font-semibold">${escapeHTML(row.Acres)}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${escapeHTML(row['Parcel Type'] || 'N/A')}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap cursor-pointer">${escapeHTML(row.Name)}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${escapeHTML(row.Address)}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${escapeHTML(row.City)}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${escapeHTML(row.County)}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">$${escapeHTML(row['Amount Due'])}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${escapeHTML((row['Legal Description'] || 'N/A').substring(0, 50))}...</td>
                 </tr>
             `}).join('');
             

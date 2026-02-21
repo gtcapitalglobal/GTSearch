@@ -18,6 +18,7 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const VERSION = '5.0.0';
 
 // ========================================
 // OFFLINE MODE CONFIGURATION (FAIL-CLOSED)
@@ -151,7 +152,7 @@ function checkAPIAllowed(req, res, next) {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    version: '2.0.0',
+    version: VERSION,
     offline_mode: OFFLINE_MODE,
     timestamp: new Date().toISOString()
   });
@@ -164,7 +165,7 @@ app.get('/api/status', (req, res) => {
     offline_mode: OFFLINE_MODE,
     apis_enabled: !OFFLINE_MODE,
     mock_data_available: true,
-    version: '2.0.0',
+    version: VERSION,
     timestamp: new Date().toISOString()
   });
 });
@@ -217,17 +218,23 @@ app.post('/api/config/save', (req, res) => {
   });
 });
 
-// Get Google Maps API Key - DISABLED in OFFLINE MODE
-app.get('/api/google-maps-key', (req, res) => {
+// Get Google Maps API Key for Maps JS SDK loading
+// NOTE: Google Maps JS SDK requires client-side key. This is the standard approach.
+// Security: Restrict the key by HTTP referrer in Google Cloud Console.
+// This endpoint ONLY returns the Maps key, not other API keys.
+app.get('/api/google-maps-loader', (req, res) => {
   if (OFFLINE_MODE) {
-    return res.status(403).json({
-      error: 'Disabled in OFFLINE MODE',
-      message: 'Google Maps API not available in OFFLINE MODE',
+    return res.json({
+      key: null,
+      message: 'Google Maps not available in OFFLINE MODE',
       offline_mode: true
     });
   }
-
-  res.json({ key: process.env.GOOGLE_MAPS_API_KEY || '' });
+  const key = process.env.GOOGLE_MAPS_API_KEY;
+  if (!key) {
+    return res.json({ key: null, message: 'GOOGLE_MAPS_API_KEY not configured' });
+  }
+  res.json({ key });
 });
 
 // ========================================
@@ -301,23 +308,36 @@ app.get('/api/schema/property', (req, res) => {
 // API PROXY ENDPOINTS (DISABLED IN OFFLINE MODE)
 // ========================================
 
-// Google Maps API Proxy
+// Google Maps API Proxy (with URL allowlist — MED-9)
+const GOOGLE_MAPS_ALLOWED_HOSTS = ['maps.googleapis.com', 'roads.googleapis.com'];
+
 app.post('/api/google-maps', checkAPIAllowed, async (req, res) => {
   try {
     const { endpoint, params } = req.body;
     
+    if (!endpoint || typeof endpoint !== 'string') {
+      return res.status(400).json({ error: 'Missing or invalid endpoint' });
+    }
+    
     const url = new URL(endpoint);
+    
+    // Validate URL host against allowlist (prevent SSRF)
+    if (!GOOGLE_MAPS_ALLOWED_HOSTS.some(host => url.hostname.endsWith(host))) {
+      return res.status(403).json({ error: 'Endpoint not allowed', allowed_hosts: GOOGLE_MAPS_ALLOWED_HOSTS });
+    }
+    
     url.searchParams.append('key', process.env.GOOGLE_MAPS_API_KEY);
     
-    if (params) {
+    if (params && typeof params === 'object') {
       Object.entries(params).forEach(([key, value]) => {
-        url.searchParams.append(key, value);
+        url.searchParams.append(key, String(value));
       });
     }
 
-    const response = await axios.get(url.toString());
+    const response = await axios.get(url.toString(), { timeout: 15000 });
     res.json(response.data);
   } catch (error) {
+    console.error('[Google Maps Proxy] Error:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
@@ -402,12 +422,16 @@ app.post('/api/perplexity', checkAPIAllowed, async (req, res) => {
 app.post('/api/zillow', checkAPIAllowed, async (req, res) => {
   try {
     const { endpoint, params } = req.body;
+    
+    if (!endpoint || typeof endpoint !== 'string' || endpoint.includes('..')) {
+      return res.status(400).json({ error: 'Missing or invalid endpoint' });
+    }
 
     const url = new URL(`https://zillow-com1.p.rapidapi.com${endpoint}`);
     
-    if (params) {
+    if (params && typeof params === 'object') {
       Object.entries(params).forEach(([key, value]) => {
-        url.searchParams.append(key, value);
+        url.searchParams.append(key, String(value));
       });
     }
 
@@ -428,12 +452,16 @@ app.post('/api/zillow', checkAPIAllowed, async (req, res) => {
 app.post('/api/realtor', checkAPIAllowed, async (req, res) => {
   try {
     const { endpoint, params } = req.body;
+    
+    if (!endpoint || typeof endpoint !== 'string' || endpoint.includes('..')) {
+      return res.status(400).json({ error: 'Missing or invalid endpoint' });
+    }
 
     const url = new URL(`https://realtor.p.rapidapi.com${endpoint}`);
     
-    if (params) {
+    if (params && typeof params === 'object') {
       Object.entries(params).forEach(([key, value]) => {
-        url.searchParams.append(key, value);
+        url.searchParams.append(key, String(value));
       });
     }
 
@@ -454,12 +482,16 @@ app.post('/api/realtor', checkAPIAllowed, async (req, res) => {
 app.post('/api/realty-mole', checkAPIAllowed, async (req, res) => {
   try {
     const { endpoint, params } = req.body;
+    
+    if (!endpoint || typeof endpoint !== 'string' || endpoint.includes('..')) {
+      return res.status(400).json({ error: 'Missing or invalid endpoint' });
+    }
 
     const url = new URL(`https://realty-mole-property-api.p.rapidapi.com${endpoint}`);
     
-    if (params) {
+    if (params && typeof params === 'object') {
       Object.entries(params).forEach(([key, value]) => {
-        url.searchParams.append(key, value);
+        url.searchParams.append(key, String(value));
       });
     }
 
@@ -763,6 +795,11 @@ app.get('/api/property/record', compsRateLimiter, async (req, res) => {
  * Clears the RentCast cache (admin only in production)
  */
 app.post('/api/comps/cache-clear', (req, res) => {
+  // Only allow cache clear in OFFLINE mode or with a simple auth check
+  const authHeader = req.headers['x-admin-key'];
+  if (!OFFLINE_MODE && authHeader !== process.env.ADMIN_KEY) {
+    return res.status(403).json({ error: 'Unauthorized. Set x-admin-key header.' });
+  }
   clearCache();
   res.json({ success: true, message: 'RentCast cache cleared' });
 });

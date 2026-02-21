@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Análise Detalhada - GTSearch v22.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/js/utils.js"></script>
     <script src="florida-counties-api.js"></script>
     <script src="flood-zones-data.js"></script>
     <script src="property-analysis-widget.js"></script>
@@ -853,23 +854,27 @@
     </div>
 
     <!-- Load Google Maps API -->
+    <!-- NOTE: Google Maps JS SDK requires client-side key loading.
+         Security: Restrict the key by HTTP referrer in Google Cloud Console.
+         The /api/google-maps-loader endpoint returns only the Maps key (not other keys). -->
     <script>
-        // Load API key from server
-        console.log('Loading Google Maps API key...');
-        fetch('/api/google-maps-key')
+        console.log('Loading Google Maps API...');
+        fetch('/api/google-maps-loader')
             .then(r => r.json())
             .then(data => {
-                console.log('API Key received:', data.key ? 'Yes' : 'No');
-                window.googleMapsApiKey = data.key; // Save for later use
-                const script = document.createElement('script');
-                script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places&callback=initMaps`;
-                script.async = true;
-                script.defer = true;
-                script.onerror = () => console.error('Failed to load Google Maps API');
-                script.onload = () => console.log('Google Maps API loaded successfully');
-                document.head.appendChild(script);
+                if (data.key) {
+                    window.googleMapsApiKey = data.key;
+                    const script = document.createElement('script');
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places&callback=initMaps`;
+                    script.async = true;
+                    script.defer = true;
+                    script.onerror = () => console.error('Failed to load Google Maps API');
+                    document.head.appendChild(script);
+                } else {
+                    console.warn('Google Maps API key not available:', data.message || 'not configured');
+                }
             })
-            .catch(err => console.error('Error fetching API key:', err));
+            .catch(err => console.error('Error loading Google Maps:', err));
     </script>
 
     <script src="fetch-timeout.js"></script>
@@ -1307,7 +1312,7 @@
             // Get county link asynchronously and update
             getCountyAppraisalLink(countyName).then(countyLink => {
                 if (countyLink) {
-                    document.getElementById('prop-county-1').innerHTML = `${countyName} (<a href="${countyLink}" target="_blank" class="text-blue-600 hover:underline">Appraisal</a>)`;
+                    document.getElementById('prop-county-1').innerHTML = `${escapeHTML(countyName)} (<a href="${sanitizeURL(countyLink)}" target="_blank" class="text-blue-600 hover:underline">Appraisal</a>)`;
                 }
             }).catch(err => {
                 console.error('Error loading county link:', err);

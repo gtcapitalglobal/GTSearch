@@ -19,6 +19,7 @@ const __dirname = path.dirname(__filename);
 
 const AUDIT_LOG_DIR = path.join(__dirname, '..', 'logs');
 const AUDIT_LOG_FILE = path.join(AUDIT_LOG_DIR, 'audit.log');
+const MAX_LOG_SIZE = 5 * 1024 * 1024; // 5MB max log size
 
 // Ensure logs directory exists
 if (!fs.existsSync(AUDIT_LOG_DIR)) {
@@ -52,6 +53,16 @@ export function auditLog(entry) {
   const logLine = JSON.stringify(logEntry) + '\n';
   
   try {
+    // Check log rotation before writing
+    try {
+      const stats = fs.statSync(AUDIT_LOG_FILE);
+      if (stats.size > MAX_LOG_SIZE) {
+        // Rotate: rename current to .old (overwrite previous .old)
+        const oldFile = AUDIT_LOG_FILE + '.old';
+        fs.renameSync(AUDIT_LOG_FILE, oldFile);
+      }
+    } catch { /* file doesn't exist yet, that's fine */ }
+    
     // Append to audit log file
     fs.appendFileSync(AUDIT_LOG_FILE, logLine, 'utf8');
   } catch (error) {

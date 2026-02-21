@@ -10,6 +10,7 @@
  */
 
 import axios from 'axios';
+import https from 'https';
 import { getWetlandsProgressive } from './wetlands-local.js';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
@@ -31,6 +32,7 @@ try {
 // Simple in-memory cache (parcel_id -> result)
 const cache = new Map();
 const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+const CACHE_MAX_ENTRIES = 1000;
 
 function getCached(key) {
     const entry = cache.get(key);
@@ -41,7 +43,33 @@ function getCached(key) {
 
 function setCache(key, data) {
     cache.set(key, { data, ts: Date.now() });
+    // Evict oldest entries if cache exceeds max size
+    if (cache.size > CACHE_MAX_ENTRIES) {
+        const oldest = cache.keys().next().value;
+        cache.delete(oldest);
+    }
 }
+
+// Periodic cache cleanup (every 10 minutes, remove expired entries)
+setInterval(() => {
+    const now = Date.now();
+    let cleaned = 0;
+    for (const [key, entry] of cache) {
+        if (now - entry.ts >= CACHE_TTL) {
+            cache.delete(key);
+            cleaned++;
+        }
+    }
+    if (cleaned > 0) console.log(`[Cache] Cleaned ${cleaned} expired entries. Remaining: ${cache.size}`);
+}, 10 * 60 * 1000);
+
+// Pre-create HTTPS agent for self-signed cert servers (reuse across requests)
+const SELF_SIGNED_HOSTS = [
+    'gis.highlandsfl.gov', 'mgrcmaps.org', 'gis.marionfl.org',
+    'gis.sumtercountyfl.gov', 'pascogis.pascocountyfl.net',
+    'mapping.pascopa.com', 'gis.polk-county.net', 'maps5.vcgov.org'
+];
+const insecureAgent = new https.Agent({ rejectUnauthorized: false });
 
 // ============================================================================
 // HELPER: Safe ArcGIS query with timeout + retries
@@ -56,8 +84,8 @@ async function safeArcGISQuery(url, params, { timeout = 10000, retries = 1, labe
                 params, 
                 timeout,
                 // Allow self-signed certs for known self-hosted county servers
-                httpsAgent: (url.includes('gis.highlandsfl.gov') || url.includes('mgrcmaps.org') || url.includes('gis.marionfl.org') || url.includes('gis.sumtercountyfl.gov') || url.includes('pascogis.pascocountyfl.net') || url.includes('mapping.pascopa.com') || url.includes('gis.polk-county.net') || url.includes('maps5.vcgov.org'))
-                    ? new (await import('https')).Agent({ rejectUnauthorized: false })
+                httpsAgent: SELF_SIGNED_HOSTS.some(host => url.includes(host))
+                    ? insecureAgent
                     : undefined
             });
             
@@ -455,71 +483,79 @@ async function getZoningForCounty(county, lat, lng) {
     // Dynamic registry lookup for all other counties
     const countyConfig = REGISTRY.counties?.[county];
     if (countyConfig?.zoning) {
-        const zoningResult = await getGenericRegistryZoning(county, countyConfig.zoning, lat, lng);
+        const zoningConfig = countyConfig.zoning;
+        const manualLink = zoningConfig.manual_link || null;
         
-        // If zoning config has a separate FLU service and we didn't get FLU from the main query
-        if (!zoningResult.futureLandUse && countyConfig.zoning.flu) {
-            const fluResult = await queryFLUService(county, countyConfig.zoning.flu, lat, lng);
+        // Counties flagged as "no zoning" go straight to statewide FLU fallback
+        if (zoningConfig.has_zoning === false && zoningConfig.use_statewide_flu) {
+            console.log(`[Zoning] ${county} flagged as no zoning service. Going to statewide FLU fallback...`);
+            // Fall through to statewide FLU below
+        } else if (zoningConfig.has_zoning === false && zoningConfig.layers?.county_flu) {
+            // County has FLU but no zoning (e.g., Polk) — query FLU from registry
+            const fluResult = await queryFLUService(county, zoningConfig, lat, lng);
             if (fluResult) {
-                zoningResult.futureLandUse = fluResult.code;
-                zoningResult.futureLandUseDesc = fluResult.description;
+                return {
+                    found: true,
+                    code: null,
+                    description: '⚠️ Zoning não disponível via API',
+                    futureLandUse: fluResult.code,
+                    futureLandUseDesc: fluResult.description,
+                    jurisdiction: `${county} County`,
+                    status: '⚠️ PARCIAL (apenas FLU)',
+                    source: `${county} County Planning (FLU only)`,
+                    note: manualLink 
+                        ? `Zoning não disponível via API. FLU disponível. Consulte: ${manualLink}`
+                        : 'Zoning não disponível via API. Apenas FLU disponível.',
+                    manualLink
+                };
             }
-        }
-        return zoningResult;
-    }
-    
-    // County has FLU but no zoning (e.g., Polk)
-    if (countyConfig?.flu) {
-        const fluResult = await queryFLUService(county, countyConfig.flu, lat, lng);
-        const manualLink = countyConfig?.manual_link || null;
-        if (fluResult) {
-            return {
-                found: true,
-                code: null,
-                description: '⚠️ Zoning não disponível via API',
-                futureLandUse: fluResult.code,
-                futureLandUseDesc: fluResult.description,
-                jurisdiction: `${county} County`,
-                status: '⚠️ PARCIAL (apenas FLU)',
-                source: `${county} County Planning (FLU only)`,
-                note: manualLink 
-                    ? `Zoning não disponível via API. FLU disponível. Consulte: ${manualLink}`
-                    : 'Zoning não disponível via API. Apenas FLU disponível.',
-                manualLink
-            };
+        } else {
+            // Normal county with zoning service
+            const zoningResult = await getGenericRegistryZoning(county, zoningConfig, lat, lng);
+            
+            // If zoning config has a separate FLU service and we didn't get FLU from the main query
+            if (!zoningResult.futureLandUse && zoningConfig.flu) {
+                const fluResult = await queryFLUService(county, zoningConfig.flu, lat, lng);
+                if (fluResult) {
+                    zoningResult.futureLandUse = fluResult.code;
+                    zoningResult.futureLandUseDesc = fluResult.description;
+                }
+            }
+            return zoningResult;
         }
     }
     
     // County in registry but no zoning data — try statewide FLU as fallback
-    const manualLink = countyConfig?.manual_link || null;
+    const manualLink = countyConfig?.zoning?.manual_link || countyConfig?.manual_link || null;
     
     // === STATEWIDE FLU FALLBACK ===
     // Uses FGDL FLU_L2_2020_JDX dataset (free, covers all 67 FL counties)
     console.log(`[Zoning] No county-specific data for ${county}. Trying statewide FLU fallback...`);
-    const statewideFLU = await getStatewideFLU(lat, lng).catch(err => {
+    try {
+        const statewideFLU = await getStatewideFLU(lat, lng);
+        
+        if (statewideFLU.found) {
+            console.log(`[Zoning] Statewide FLU fallback SUCCESS for ${county}: ${statewideFLU.fluL2 || statewideFLU.fluL1} - ${statewideFLU.description}`);
+            return {
+                found: true,
+                code: null,
+                description: '⚠️ Zoning não disponível via API',
+                futureLandUse: statewideFLU.fluL2 || statewideFLU.fluL1,
+                futureLandUseDesc: statewideFLU.description || statewideFLU.fluL2Desc || statewideFLU.fluL1Desc,
+                futureLandUseLevel1: statewideFLU.fluL1,
+                futureLandUseLevel1Desc: statewideFLU.fluL1Desc,
+                jurisdiction: statewideFLU.jurisdiction || `${county} County`,
+                status: '⚠️ PARCIAL (FLU estadual)',
+                source: `Statewide FLU (FGDL 2020) — ${county} County`,
+                note: manualLink 
+                    ? `Zoning local não disponível. FLU obtido via dataset estadual (FGDL 2020). Para zoning detalhado, consulte: ${manualLink}`
+                    : 'Zoning local não disponível. FLU obtido via dataset estadual (FGDL 2020). Consulte o Planning Department para zoning detalhado.',
+                manualLink,
+                isStatewideFallback: true
+            };
+        }
+    } catch (err) {
         console.warn(`[Statewide FLU] Fallback failed for ${county}:`, err.message);
-        return { found: false };
-    });
-    
-    if (statewideFLU.found) {
-        console.log(`[Zoning] Statewide FLU fallback SUCCESS for ${county}: ${statewideFLU.fluL2 || statewideFLU.fluL1} - ${statewideFLU.description}`);
-        return {
-            found: true,
-            code: null,
-            description: '⚠️ Zoning não disponível via API',
-            futureLandUse: statewideFLU.fluL2 || statewideFLU.fluL1,
-            futureLandUseDesc: statewideFLU.description || statewideFLU.fluL2Desc || statewideFLU.fluL1Desc,
-            futureLandUseLevel1: statewideFLU.fluL1,
-            futureLandUseLevel1Desc: statewideFLU.fluL1Desc,
-            jurisdiction: statewideFLU.jurisdiction || `${county} County`,
-            status: '⚠️ PARCIAL (FLU estadual)',
-            source: `Statewide FLU (FGDL 2020) — ${county} County`,
-            note: manualLink 
-                ? `Zoning local não disponível. FLU obtido via dataset estadual (FGDL 2020). Para zoning detalhado, consulte: ${manualLink}`
-                : 'Zoning local não disponível. FLU obtido via dataset estadual (FGDL 2020). Consulte o Planning Department para zoning detalhado.',
-            manualLink,
-            isStatewideFallback: true
-        };
     }
     
     // Truly no data available

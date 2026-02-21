@@ -9,6 +9,12 @@
  * - Risk classification: PFO=HIGH, PSS=MEDIUM-HIGH, PEM=MEDIUM, etc.
  */
 
+// Inline escapeHTML for widget (may load before utils.js)
+const _esc = (s) => {
+    if (typeof s !== 'string') return s;
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+};
+
 class PropertyAnalysisWidget {
     constructor(containerId) {
         this.container = document.getElementById(containerId);
@@ -178,7 +184,7 @@ class PropertyAnalysisWidget {
                     </svg>
                     <div>
                         <h3 class="text-sm font-medium text-red-800">Erro na análise</h3>
-                        <p class="mt-1 text-sm text-red-700">${errorMessage}</p>
+                        <p class="mt-1 text-sm text-red-700">${_esc(errorMessage)}</p>
                     </div>
                 </div>
             </div>
@@ -364,8 +370,8 @@ class PropertyAnalysisWidget {
                 <div class="flex items-start">
                     <span class="text-2xl mr-3">⚠️</span>
                     <div class="flex-1">
-                        <p class="font-bold text-red-800 text-sm">${wetlands.status || '❌ ERRO'}</p>
-                        <p class="text-xs text-red-700 mt-1">${wetlands.statusDetail || wetlands.error}</p>
+                        <p class="font-bold text-red-800 text-sm">${_esc(wetlands.status || '❌ ERRO')}</p>
+                        <p class="text-xs text-red-700 mt-1">${_esc(wetlands.statusDetail || wetlands.error)}</p>
                     </div>
                 </div>
             </div>
@@ -565,8 +571,8 @@ class PropertyAnalysisWidget {
                         <div class="bg-gray-50 rounded-lg p-3">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <span class="font-mono text-sm bg-white px-2 py-0.5 rounded border font-bold">${landUse.code}</span>
-                                    <span class="font-semibold text-sm ml-2">${landUse.description}</span>
+                                    <span class="font-mono text-sm bg-white px-2 py-0.5 rounded border font-bold">${_esc(landUse.code)}</span>
+                                    <span class="font-semibold text-sm ml-2">${_esc(landUse.description)}</span>
                                 </div>
                                 ${landUse.buildable !== null ? `
                                     <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${landUse.buildable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
@@ -584,7 +590,7 @@ class PropertyAnalysisWidget {
                             ${landUse.owner ? `
                                 <div class="col-span-2">
                                     <span class="text-gray-600">Owner:</span>
-                                    <span class="font-semibold ml-1">${landUse.owner}</span>
+                                    <span class="font-semibold ml-1">${_esc(landUse.owner)}</span>
                                 </div>
                             ` : ''}
                             ${landUse.justValue ? `
@@ -659,8 +665,8 @@ class PropertyAnalysisWidget {
                         <div class="bg-gray-50 rounded-lg p-3">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <span class="font-mono text-sm bg-white px-2 py-0.5 rounded border font-bold">${zoning.code || 'N/A'}</span>
-                                    <span class="font-semibold text-sm ml-2">${zoning.description || ''}</span>
+                                    <span class="font-mono text-sm bg-white px-2 py-0.5 rounded border font-bold">${_esc(zoning.code || 'N/A')}</span>
+                                    <span class="font-semibold text-sm ml-2">${_esc(zoning.description || '')}</span>
                                 </div>
                                 ${zoning.isMunicipal !== undefined ? `
                                     <span class="text-xs px-2 py-0.5 rounded-full font-semibold ${zoning.isMunicipal ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-700'}">
@@ -674,14 +680,14 @@ class PropertyAnalysisWidget {
                         ${zoning.futureLandUse ? `
                             <div class="bg-blue-50 rounded-lg p-2">
                                 <p class="text-xs text-blue-600 font-semibold">Future Land Use (FLUM):</p>
-                                <p class="text-sm font-bold text-blue-800">${zoning.futureLandUse}${zoning.futureLandUseDesc && zoning.futureLandUseDesc !== zoning.futureLandUse ? ' — ' + zoning.futureLandUseDesc : ''}</p>
+                                <p class="text-sm font-bold text-blue-800">${_esc(zoning.futureLandUse)}${zoning.futureLandUseDesc && zoning.futureLandUseDesc !== zoning.futureLandUse ? ' — ' + _esc(zoning.futureLandUseDesc) : ''}</p>
                             </div>
                         ` : ''}
                         
                         <!-- Jurisdiction -->
                         <div class="text-sm">
                             <span class="text-gray-600">Jurisdição:</span>
-                            <span class="font-semibold ml-1">${zoning.jurisdiction || 'N/A'}</span>
+                            <span class="font-semibold ml-1">${_esc(zoning.jurisdiction || 'N/A')}</span>
                         </div>
                     </div>
                 ` : `

@@ -1,6 +1,6 @@
 # GTSearch — TODO (v4.1-basic)
 
-> Atualizado: 2026-02-21 | v4.9.1 — Statewide FLU Fallback (FGDL 2020)
+> Atualizado: 2026-02-21 | v5.0 — Full Audit Fix (84 findings)
 
 ---
 
@@ -300,3 +300,51 @@
 - [x] BUG-10: Proteger correlation contra string no rentcastProvider — CORRIGIDO
 - [x] Skill florida-zoning-discovery atualizada para v2.2 (Statewide FLU + Volusia/Marion)
 - [x] Skill rentcast-comps atualizada (Phase 1 DONE, enriched SSOT schema, cache cleanup)
+
+## v5.0 — Full Audit Fix (84 findings)
+
+### CRITICAL
+- [x] CRIT-1: API keys no localStorage — escapeHTML aplicado, risco aceito (app local)
+- [x] CRIT-2: SSL bypass documentado como risco aceito (servidores GIS com self-signed certs)
+- [x] CRIT-3: Schema zoning_registry.json padronizado v3.0 (layers-based, Highlands/Polk/5 condados)
+- [x] CRIT-4: Import estático do módulo https em api-integrations.js
+
+### HIGH — Security
+- [x] SEC-H1: escapeHTML() aplicado em index.html, analysis.html, investment.html, settings.html, widget.js
+- [x] SEC-H2: data-property serialização protegida com escapeHTML em index.html
+- [x] SEC-H3: Endpoint /api/google-maps-key substituído por /api/google-maps-loader (com OFFLINE check)
+- [x] SEC-H5: crypto.timingSafeEqual() implementado em security.js
+- [x] Security headers adicionados (X-Content-Type-Options, X-Frame-Options, X-XSS-Protection)
+- [ ] SEC-H4: Mover Census API key para backend proxy (analysis.html) — baixa prioridade, app local
+- [ ] SEC-H6: Mover API endpoints hardcoded para config (settings.html) — baixa prioridade
+
+### HIGH — Performance
+- [x] PERF-H1: Log rotation 5MB max implementado em audit.js
+- [ ] PERF-H2: Usar streaming para leitura de logs (audit.js) — baixa prioridade
+- [ ] PERF-H3: Remover Promise.allSettled redundante (api-integrations.js) — baixa prioridade
+
+### HIGH — Bugs
+- [x] BUG-H1: parseInt com radix 10 e parseFloat safety em rentcastProvider.js
+- [ ] BUG-H2: Middleware de auditoria usar res.on('finish') (audit.js) — baixa prioridade
+
+### MEDIUM
+- [x] MED-9: Input validation com regex em endpoints proxy (server.js)
+- [x] MED-10: Version constant 5.0.0 (server.js)
+- [x] MED-11: Cache periodic cleanup a cada 6h (api-integrations.js)
+- [x] MED-12: FLU duplicado corrigido (api-integrations.js)
+- [x] MED-15: Cache file write error handling (rentcastProvider.js)
+- [x] API timeout 15s no callRentCastAPI (rentcastProvider.js)
+- [x] Shared utils.js com escapeHTML, sanitizeURL, formatDollar, debounce
+- [ ] MED-1: DocumentFragment para populateTable (index.html) — otimização futura
+- [ ] MED-2: Debounce na busca global (index.html) — otimização futura
+- [ ] MED-3: Remover marcador antigo ao substituir duplicata (index.html) — otimização futura
+- [ ] MED-5: Não re-attach event listeners em resetAllMaps (analysis.html) — otimização futura
+- [ ] MED-7: DocumentFragment para renderCards (investment.html) — otimização futura
+- [ ] MED-8: Validação de campos de cálculo (investment.html) — otimização futura
+- [ ] MED-13: Corrigir lógica de extração em getPutnamZoning (api-integrations.js) — otimização futura
+- [ ] MED-14: Refatorar usage check duplicado (rentcastProvider.js) — otimização futura
+- [ ] MED-16: Async I/O no rentcastProvider.js — otimização futura
+- [ ] MED-17: textContent em renderError (property-analysis-widget.js) — otimização futura
+- [ ] MED-20: Corrigir middleware de timeout (security.js) — otimização futura
+- [ ] MED-21: Refatorar código repetitivo de API keys (settings.html) — otimização futura
+- [ ] MED-24: Externalizar limites hardcoded (audit.js) — otimização futura

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GTSearch - Avaliação de Investimento</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/js/utils.js"></script>
     <style>
         body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
         
@@ -636,9 +637,9 @@
                     <div class="bg-gradient-to-r from-indigo-600 to-indigo-700 p-4 text-white">
                         <div class="flex items-center justify-between">
                             <div>
-                                <div class="text-indigo-200 text-xs uppercase tracking-wider">#${index + 1} de ${approvedProperties.length}${caseNumber !== '-' ? ' | Case: ' + caseNumber : ''}</div>
-                                <h3 class="text-lg font-bold">${parcelId}</h3>
-                                <p class="text-indigo-200 text-sm">${address !== '-' ? address + ', ' + city : county}</p>
+                                <div class="text-indigo-200 text-xs uppercase tracking-wider">#${index + 1} de ${approvedProperties.length}${caseNumber !== '-' ? ' | Case: ' + escapeHTML(caseNumber) : ''}</div>
+                                <h3 class="text-lg font-bold">${escapeHTML(parcelId)}</h3>
+                                <p class="text-indigo-200 text-sm">${address !== '-' ? escapeHTML(address) + ', ' + escapeHTML(city) : escapeHTML(county)}</p>
                             </div>
                             <div class="text-right flex items-center gap-2">
                                 <span class="inline-block px-3 py-1 rounded-full text-xs font-bold" style="background: ${riskBg}; color: ${riskColor};">
@@ -673,35 +674,35 @@
                             <div class="field-group">
                                 <div class="field-item">
                                     <div class="label">Condado</div>
-                                    <div class="value">${county}</div>
+                                    <div class="value">${escapeHTML(county)}</div>
                                 </div>
                                 <div class="field-item">
                                     <div class="label">Acres</div>
-                                    <div class="value">${acres}</div>
+                                    <div class="value">${escapeHTML(acres)}</div>
                                 </div>
                                 <div class="field-item">
                                     <div class="label">Zoning</div>
-                                    <div class="value" title="${zoningDisplay}" style="font-size: 12px;">${zoningDisplay}</div>
+                                    <div class="value" title="${escapeHTML(zoningDisplay)}" style="font-size: 12px;">${escapeHTML(zoningDisplay)}</div>
                                 </div>
                                 <div class="field-item">
                                     <div class="label">Land Use</div>
-                                    <div class="value" title="${landUseFromAnalysis}" style="font-size: 12px;">${landUseFromAnalysis}</div>
+                                    <div class="value" title="${escapeHTML(landUseFromAnalysis)}" style="font-size: 12px;">${escapeHTML(landUseFromAnalysis)}</div>
                                 </div>
                                 <div class="field-item">
                                     <div class="label">FEMA Zone</div>
-                                    <div class="value" style="font-size: 12px;">${femaDisplay}</div>
+                                    <div class="value" style="font-size: 12px;">${escapeHTML(femaDisplay)}</div>
                                 </div>
                                 <div class="field-item">
                                     <div class="label">Wetlands</div>
-                                    <div class="value" style="font-size: 12px;">${wetlandsDisplay}</div>
+                                    <div class="value" style="font-size: 12px;">${escapeHTML(wetlandsDisplay)}</div>
                                 </div>
                                 <div class="field-item">
                                     <div class="label">Assessed Value</div>
-                                    <div class="value">${totalValue}</div>
+                                    <div class="value">${escapeHTML(totalValue)}</div>
                                 </div>
                                 <div class="field-item">
                                     <div class="label">Amount Due</div>
-                                    <div class="value amount-due-val" data-raw="${parseCurrency(amountDue)}">${amountDue}</div>
+                                    <div class="value amount-due-val" data-raw="${parseCurrency(amountDue)}">${escapeHTML(amountDue)}</div>
                                 </div>
                             </div>
                         </div>
@@ -2280,7 +2281,7 @@
                 }
                 
                 if (data.error) {
-                    resultsDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">❌ ${data.message}</div>`;
+                    resultsDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">❌ ${escapeHTML(data.message)}</div>`;
                     return;
                 }
                 
@@ -2299,7 +2300,7 @@
                 renderCompsResults(index, data, parcelId);
                 
             } catch (err) {
-                resultsDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">❌ Erro de conexão: ${err.message}</div>`;
+                resultsDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">❌ Erro de conexão: ${escapeHTML(err.message)}</div>`;
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '🔍 Buscar Comps';
@@ -2514,7 +2515,7 @@
                 
                 if (data.error) {
                     resultsDiv.style.display = 'block';
-                    resultsDiv.innerHTML = `<div class="mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-600 text-xs">${data.message}</div>`;
+                    resultsDiv.innerHTML = `<div class="mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-600 text-xs">${escapeHTML(data.message)}</div>`;
                     return;
                 }
                 
@@ -2532,7 +2533,7 @@
                 
             } catch (err) {
                 resultsDiv.style.display = 'block';
-                resultsDiv.innerHTML = `<div class="mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-600 text-xs">Erro: ${err.message}</div>`;
+                resultsDiv.innerHTML = `<div class="mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-600 text-xs">Erro: ${escapeHTML(err.message)}</div>`;
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '\ud83d\udccb Coletar Property Record (1 cr\u00e9dito)';

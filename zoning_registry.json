@@ -1,5 +1,5 @@
 {
-  "version": "2.0",
+  "version": "3.0",
   "description": "Zoning & Land Use service registry per jurisdiction in Florida. Supports dynamic county routing.",
   "updated": "2026-02-21",
   "supported_counties": ["Alachua", "Citrus", "Duval", "Hernando", "Highlands", "Hillsborough", "Lake", "Levy", "Marion", "Okeechobee", "Orange", "Pasco", "Polk", "Putnam", "Seminole", "St. Johns", "Volusia"],
@@ -66,17 +66,27 @@
     "Citrus": {
       "fips": "017",
       "co_no": 9,
-      "zoning": null,
-      "manual_link": "https://www.citrusbocc.com/commdev/planning/",
-      "notes": "No ArcGIS zoning service found via discovery. Check county GIS portal manually."
+      "zoning": {
+        "name": "Citrus County (no zoning service)",
+        "has_zoning": false,
+        "has_flu": false,
+        "use_statewide_flu": true,
+        "manual_link": "https://www.citrusbocc.com/commdev/planning/",
+        "notes": "No ArcGIS zoning service found via discovery. Uses statewide FLU fallback (FGDL 2020). Check county GIS portal manually."
+      }
     },
 
     "Duval": {
       "fips": "031",
       "co_no": 16,
-      "zoning": null,
-      "manual_link": "https://www.coj.net/departments/planning-and-development",
-      "notes": "No ArcGIS zoning service found via discovery. Jacksonville/Duval uses consolidated city-county government."
+      "zoning": {
+        "name": "Duval/Jacksonville (no zoning service)",
+        "has_zoning": false,
+        "has_flu": false,
+        "use_statewide_flu": true,
+        "manual_link": "https://www.coj.net/departments/planning-and-development",
+        "notes": "No ArcGIS zoning service found via discovery. Jacksonville/Duval uses consolidated city-county government. Uses statewide FLU fallback."
+      }
     },
 
     "Hillsborough": {
@@ -179,24 +189,38 @@
       "co_no": 28,
       "zoning": {
         "name": "Highlands County Zoning",
-        "url": "https://gis.highlandsfl.gov/server/rest/services/Layers/Zoning/MapServer/0/query",
-        "agol_url": "https://services2.arcgis.com/xEhz4K4uxbjGXOPE/arcgis/rest/services/Zoning/FeatureServer/0/query",
+        "base_url": "https://gis.highlandsfl.gov/server/rest/services/Layers/Zoning/MapServer",
+        "agol_url": "https://services2.arcgis.com/xEhz4K4uxbjGXOPE/arcgis/rest/services/Zoning/FeatureServer",
         "type": "self-hosted ArcGIS Server + AGOL mirror",
         "reliability": "best-effort",
         "timeout_ms": 8000,
         "retries": 2,
-        "fields": {
+        "layers": {
+          "county_zoning": {
+            "id": 0,
+            "name": "County Zoning",
+            "fields": {
+              "zoning_code": "ZON",
+              "future_land_use": "FLUM"
+            }
+          },
+          "county_flu": {
+            "id": 0,
+            "name": "Future Land Use (AGOL)",
+            "base_url_override": "https://services2.arcgis.com/xEhz4K4uxbjGXOPE/arcgis/rest/services/FLUMService/FeatureServer",
+            "fields": {
+              "land_use": "FLUM"
+            }
+          }
+        },
+        "_legacy_fields": {
           "zoning_code": "ZON",
           "future_land_use": "FLUM"
         },
-        "flu_service": {
-          "url": "https://services2.arcgis.com/xEhz4K4uxbjGXOPE/arcgis/rest/services/FLUMService/FeatureServer/0/query",
-          "fields": {
-            "future_land_use": "FLUM"
-          }
-        },
+        "_legacy_url": "https://gis.highlandsfl.gov/server/rest/services/Layers/Zoning/MapServer/0/query",
+        "_legacy_flu_url": "https://services2.arcgis.com/xEhz4K4uxbjGXOPE/arcgis/rest/services/FLUMService/FeatureServer/0/query",
         "manual_link": "https://www.highlandsfl.gov/departments/building-zoning",
-        "notes": "Self-hosted server may have SSL issues. AGOL mirror available as fallback. ZON field for zoning, FLUM for future land use."
+        "notes": "Self-hosted server may have SSL issues. AGOL mirror available as fallback. ZON field for zoning, FLUM for future land use. Schema standardized v5.0 — legacy fields preserved for backward compat."
       },
       "jurisdiction": {
         "name": "Highlands Municipal Boundary",
@@ -211,17 +235,27 @@
     "Lake": {
       "fips": "069",
       "co_no": 35,
-      "zoning": null,
-      "manual_link": "https://www.lakecountyfl.gov/offices/planning_and_zoning/",
-      "notes": "No ArcGIS zoning service found via discovery."
+      "zoning": {
+        "name": "Lake County (no zoning service)",
+        "has_zoning": false,
+        "has_flu": false,
+        "use_statewide_flu": true,
+        "manual_link": "https://www.lakecountyfl.gov/offices/planning_and_zoning/",
+        "notes": "Cloudflare blocks programmatic access. CityView has city-level zoning but not county. Uses statewide FLU fallback."
+      }
     },
 
     "Levy": {
       "fips": "075",
       "co_no": 38,
-      "zoning": null,
-      "manual_link": "https://www.levycounty.org/",
-      "notes": "No ArcGIS zoning service found via discovery."
+      "zoning": {
+        "name": "Levy County (no zoning service)",
+        "has_zoning": false,
+        "has_flu": false,
+        "use_statewide_flu": true,
+        "manual_link": "https://www.levycounty.org/",
+        "notes": "No ArcGIS zoning service found via discovery. Uses statewide FLU fallback."
+      }
     },
 
     "Marion": {
@@ -294,9 +328,14 @@
     "Okeechobee": {
       "fips": "093",
       "co_no": 47,
-      "zoning": null,
-      "manual_link": "https://www.co.okeechobee.fl.us/",
-      "notes": "No ArcGIS zoning service found via discovery."
+      "zoning": {
+        "name": "Okeechobee County (no zoning service)",
+        "has_zoning": false,
+        "has_flu": false,
+        "use_statewide_flu": true,
+        "manual_link": "https://www.co.okeechobee.fl.us/",
+        "notes": "No ArcGIS zoning service found via discovery. Uses statewide FLU fallback."
+      }
     },
 
     "Pasco": {
@@ -327,12 +366,15 @@
     "Polk": {
       "fips": "105",
       "co_no": 53,
-      "zoning": null,
-      "flu": {
-        "name": "Polk County Future Land Use 2030",
+      "zoning": {
+        "name": "Polk County FLU (no zoning service)",
         "base_url": "https://gis.polk-county.net/hosting/rest/services/Hosted/polkfuturelanduse2030/FeatureServer",
         "type": "self-hosted FeatureServer",
+        "reliability": "best-effort",
+        "timeout_ms": 10000,
+        "retries": 2,
         "ssl_bypass": true,
+        "has_zoning": false,
         "layers": {
           "county_flu": {
             "id": 0,
@@ -342,10 +384,10 @@
               "description": "dev_area_d"
             }
           }
-        }
-      },
-      "manual_link": "https://www.polk-county.net/land-development",
-      "notes": "No public zoning ArcGIS service found. FLU 2030 available via self-hosted server (SSL bypass needed). flu_cp for code, dev_area_d for description."
+        },
+        "manual_link": "https://www.polk-county.net/land-development",
+        "notes": "No public zoning ArcGIS service found. FLU 2030 available via self-hosted server (SSL bypass needed). flu_cp for code, dev_area_d for description. Schema standardized v5.0."
+      }
     },
 
     "Putnam": {

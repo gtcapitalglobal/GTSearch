@@ -88,9 +88,12 @@ function loadUsage() {
  */
 function saveUsage() {
   try {
-    fs.writeFileSync(USAGE_FILE, JSON.stringify(usageData, null, 2), 'utf8');
+    const data = JSON.stringify(usageData, null, 2);
+    fs.writeFileSync(USAGE_FILE + '.tmp', data, 'utf8');
+    fs.renameSync(USAGE_FILE + '.tmp', USAGE_FILE);
   } catch (err) {
     logError('RentCast usage: failed to save', err);
+    try { fs.unlinkSync(USAGE_FILE + '.tmp'); } catch (_) {}
   }
 }
 
@@ -185,9 +188,13 @@ function loadCache() {
 
 function saveCache() {
   try {
-    fs.writeFileSync(CACHE_FILE, JSON.stringify(cacheStore, null, 2), 'utf8');
+    const data = JSON.stringify(cacheStore, null, 2);
+    fs.writeFileSync(CACHE_FILE + '.tmp', data, 'utf8');
+    fs.renameSync(CACHE_FILE + '.tmp', CACHE_FILE);
   } catch (err) {
     logError('RentCast cache: failed to save to disk', err);
+    // Clean up temp file if rename failed
+    try { fs.unlinkSync(CACHE_FILE + '.tmp'); } catch (_) {}
   }
 }
 
@@ -542,11 +549,11 @@ export async function getValueEstimate(params = {}) {
   // Optional filters — only add if provided
   if (propertyType) queryParams.propertyType = propertyType;
   if (maxRadius) queryParams.maxRadius = parseFloat(maxRadius);
-  if (daysOld) queryParams.daysOld = parseInt(daysOld);
+    if (daysOld) queryParams.daysOld = parseInt(daysOld, 10) || 90;
   if (bedrooms !== undefined && bedrooms !== null && bedrooms !== '') queryParams.bedrooms = parseFloat(bedrooms);
   if (bathrooms !== undefined && bathrooms !== null && bathrooms !== '') queryParams.bathrooms = parseFloat(bathrooms);
   if (squareFootage) queryParams.squareFootage = parseFloat(squareFootage);
-  if (compCount) queryParams.compCount = Math.min(25, Math.max(5, parseInt(compCount)));
+    if (compCount) queryParams.compCount = Math.min(25, Math.max(5, parseInt(compCount, 10) || 10));
   
   // Call API
   try {

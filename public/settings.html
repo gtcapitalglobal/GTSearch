@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>⚙️ Configurações - GTSearch</title>
+    <script src="/js/utils.js"></script>
     <style>
         * {
             margin: 0;
@@ -1187,7 +1188,7 @@
             } catch (error) {
                 resultDiv.innerHTML = `
                     <div class="error-message" style="margin-top: 10px;">
-                        <strong>❌ Erro:</strong> ${error.message}<br><br>
+                        <strong>❌ Erro:</strong> ${typeof escapeHTML === 'function' ? escapeHTML(error.message) : error.message}<br><br>
                         <strong>Possíveis causas:</strong><br>
                         • API key inválida<br>
                         • Sem créditos disponíveis<br>
@@ -1241,7 +1242,7 @@
             } catch (error) {
                 resultDiv.innerHTML = `
                     <div class="error-message" style="margin-top: 10px;">
-                        <strong>❌ Erro:</strong> ${error.message}<br><br>
+                        <strong>❌ Erro:</strong> ${typeof escapeHTML === 'function' ? escapeHTML(error.message) : error.message}<br><br>
                         <strong>Possíveis causas:</strong><br>
                         • API key inválida<br>
                         • API não ativada<br>
@@ -1295,7 +1296,7 @@
             } catch (error) {
                 resultDiv.innerHTML = `
                     <div class="error-message" style="margin-top: 10px;">
-                        <strong>❌ Erro:</strong> ${error.message}<br><br>
+                        <strong>❌ Erro:</strong> ${typeof escapeHTML === 'function' ? escapeHTML(error.message) : error.message}<br><br>
                         <strong>Possíveis causas:</strong><br>
                         • API key inválida<br>
                         • Sem créditos disponíveis<br>
@@ -1439,7 +1440,7 @@
             } catch (error) {
                 resultDiv.innerHTML = `
                     <div class="error-message" style="margin-top: 10px;">
-                        <strong>❌ Erro:</strong> ${error.message}<br><br>
+                        <strong>❌ Erro:</strong> ${typeof escapeHTML === 'function' ? escapeHTML(error.message) : error.message}<br><br>
                         <strong>Possíveis causas:</strong><br>
                         • API key inválida<br>
                         • API key não ativada (verifique seu email)<br>
@@ -1675,14 +1676,14 @@
                     <div class="success-message" style="margin-top: 10px;">
                         <strong>✅ Sucesso!</strong> ${loadedCount} API keys carregadas do Google Sheets!<br><br>
                         <strong>Timestamp:</strong> ${data.timestamp}<br>
-                        <strong>APIs carregadas:</strong> ${Object.keys(apiKeys).join(', ')}
+                        <strong>APIs carregadas:</strong> ${Object.keys(apiKeys).map(k => escapeHTML(k)).join(', ')}
                     </div>
                 `;
                 
             } catch (error) {
                 resultDiv.innerHTML = `
                     <div class="error-message" style="margin-top: 10px;">
-                        <strong>❌ Erro:</strong> ${error.message}<br><br>
+                        <strong>❌ Erro:</strong> ${typeof escapeHTML === 'function' ? escapeHTML(error.message) : error.message}<br><br>
                         <strong>Possíveis causas:</strong><br>
                         • URL do Web App incorreta<br>
                         • Senha incorreta<br>

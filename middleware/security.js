@@ -10,6 +10,7 @@
  */
 
 import rateLimit from 'express-rate-limit';
+import crypto from 'crypto';
 
 // ========================================
 // RATE LIMITING
@@ -177,7 +178,10 @@ export function requireAdminToken(OFFLINE_MODE) {
       });
     }
     
-    if (providedToken !== adminToken) {
+    // Timing-safe comparison to prevent timing attacks
+    const tokenMatch = adminToken.length === providedToken.length &&
+      crypto.timingSafeEqual(Buffer.from(adminToken), Buffer.from(providedToken));
+    if (!tokenMatch) {
       return res.status(403).json({
         error: 'Authentication failed',
         message: 'Invalid ADMIN_TOKEN'
