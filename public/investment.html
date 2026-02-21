@@ -2031,8 +2031,31 @@
                 </div>
             `;
             
+            // Subject property enrichment (if available)
+            const subject = data.subject || {};
+            if (subject.last_sale_price || subject.year_built || subject.zoning) {
+                html += `
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2">
+                        <div class="text-xs font-bold text-blue-700 mb-1">Dados do Imóvel (Subject)</div>
+                        <div class="flex flex-wrap gap-3 text-xs text-blue-800">
+                            ${subject.last_sale_price ? `<span>💰 Últ. Venda: <b>$${subject.last_sale_price.toLocaleString('en-US')}</b></span>` : ''}
+                            ${subject.last_sale_date ? `<span>📅 Data: <b>${new Date(subject.last_sale_date).toLocaleDateString('en-US', {month:'short', year:'numeric'})}</b></span>` : ''}
+                            ${subject.year_built ? `<span>🏠 Construído: <b>${subject.year_built}</b></span>` : ''}
+                            ${subject.zoning ? `<span>📍 Zoning: <b>${subject.zoning}</b></span>` : ''}
+                            ${subject.lot_size_acres ? `<span>📏 Lote: <b>${subject.lot_size_acres} ac</b></span>` : ''}
+                            ${subject.property_type ? `<span>🏠 Tipo: <b>${subject.property_type}</b></span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+            
             // Comps table
             if (comps.length > 0) {
+                // Check if any comp has enriched fields
+                const hasCorrelation = comps.some(c => c.correlation != null);
+                const hasYearBuilt = comps.some(c => c.year_built != null);
+                const hasStatus = comps.some(c => c.status != null);
+                
                 html += `
                     <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
                         <div class="bg-gray-50 px-3 py-2 border-b border-gray-200">
@@ -2047,6 +2070,9 @@
                                         <th style="padding: 6px 8px; text-align: right; font-weight: 700; color: #6b7280; border-bottom: 1px solid #e5e7eb;">Dist.</th>
                                         <th style="padding: 6px 8px; text-align: right; font-weight: 700; color: #6b7280; border-bottom: 1px solid #e5e7eb;">Acres</th>
                                         <th style="padding: 6px 8px; text-align: right; font-weight: 700; color: #6b7280; border-bottom: 1px solid #e5e7eb;">Data</th>
+                                        ${hasCorrelation ? '<th style="padding: 6px 8px; text-align: right; font-weight: 700; color: #6b7280; border-bottom: 1px solid #e5e7eb;" title="Similaridade (0-1)">Sim.</th>' : ''}
+                                        ${hasYearBuilt ? '<th style="padding: 6px 8px; text-align: right; font-weight: 700; color: #6b7280; border-bottom: 1px solid #e5e7eb;">Ano</th>' : ''}
+                                        ${hasStatus ? '<th style="padding: 6px 8px; text-align: center; font-weight: 700; color: #6b7280; border-bottom: 1px solid #e5e7eb;">Status</th>' : ''}
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -2054,6 +2080,19 @@
                 comps.forEach((c, i) => {
                     const rowBg = i % 2 === 0 ? '#ffffff' : '#f9fafb';
                     const saleDate = c.sale_date ? new Date(c.sale_date).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'2-digit'}) : '-';
+                    // Correlation color coding
+                    let corrColor = '#6b7280';
+                    if (c.correlation != null) {
+                        if (c.correlation >= 0.7) corrColor = '#059669';
+                        else if (c.correlation >= 0.4) corrColor = '#d97706';
+                        else corrColor = '#dc2626';
+                    }
+                    // Status badge
+                    let statusBadge = '-';
+                    if (c.status) {
+                        const sColor = c.status === 'Sold' ? '#059669' : (c.status === 'Pending' ? '#d97706' : '#3b82f6');
+                        statusBadge = `<span style="color:${sColor};font-weight:600;">${c.status}</span>`;
+                    }
                     html += `
                                     <tr style="background: ${rowBg};">
                                         <td style="padding: 5px 8px; border-bottom: 1px solid #f3f4f6; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${c.address}">${c.address}</td>
@@ -2061,6 +2100,9 @@
                                         <td style="padding: 5px 8px; text-align: right; border-bottom: 1px solid #f3f4f6;">${c.distance_miles ? c.distance_miles + ' mi' : '-'}</td>
                                         <td style="padding: 5px 8px; text-align: right; border-bottom: 1px solid #f3f4f6;">${c.lot_size_acres || '-'}</td>
                                         <td style="padding: 5px 8px; text-align: right; border-bottom: 1px solid #f3f4f6; color: #6b7280;">${saleDate}</td>
+                                        ${hasCorrelation ? `<td style="padding: 5px 8px; text-align: right; border-bottom: 1px solid #f3f4f6; color: ${corrColor}; font-weight: 600;">${c.correlation != null ? (c.correlation * 100).toFixed(0) + '%' : '-'}</td>` : ''}
+                                        ${hasYearBuilt ? `<td style="padding: 5px 8px; text-align: right; border-bottom: 1px solid #f3f4f6;">${c.year_built || '-'}</td>` : ''}
+                                        ${hasStatus ? `<td style="padding: 5px 8px; text-align: center; border-bottom: 1px solid #f3f4f6;">${statusBadge}</td>` : ''}
                                     </tr>
                     `;
                 });

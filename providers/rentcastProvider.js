@@ -239,14 +239,28 @@ const MOCK_RESPONSE = {
   price_range_low: 38000,
   price_range_high: 52000,
   confidence: 'HIGH',
+  comp_count: 6,
   comps: [
-    { address: '123 Mock Rd, Ocala, FL 34470', price: 42000, distance_miles: 0.8, sale_date: '2025-09-15', sqft: 0, lot_size_acres: 0.50, bedrooms: 0, bathrooms: 0 },
-    { address: '456 Sample Ln, Ocala, FL 34470', price: 48000, distance_miles: 1.2, sale_date: '2025-08-20', sqft: 0, lot_size_acres: 0.45, bedrooms: 0, bathrooms: 0 },
-    { address: '789 Test Ave, Ocala, FL 34470', price: 39000, distance_miles: 1.5, sale_date: '2025-07-10', sqft: 0, lot_size_acres: 0.55, bedrooms: 0, bathrooms: 0 },
-    { address: '101 Demo Dr, Ocala, FL 34470', price: 51000, distance_miles: 2.0, sale_date: '2025-06-05', sqft: 0, lot_size_acres: 0.48, bedrooms: 0, bathrooms: 0 },
-    { address: '202 Fake Blvd, Ocala, FL 34470', price: 44000, distance_miles: 2.3, sale_date: '2025-05-18', sqft: 0, lot_size_acres: 0.52, bedrooms: 0, bathrooms: 0 },
-    { address: '303 Phantom Ct, Ocala, FL 34470', price: 47000, distance_miles: 2.8, sale_date: '2025-04-22', sqft: 0, lot_size_acres: 0.40, bedrooms: 0, bathrooms: 0 },
+    { address: '123 Mock Rd, Ocala, FL 34470', price: 42000, distance_miles: 0.8, sale_date: '2025-09-15', sqft: 0, lot_size_acres: 0.50, bedrooms: 0, bathrooms: 0, year_built: null, correlation: 0.85, days_on_market: null, listing_type: 'Standard', status: 'Sold', property_type: 'Land' },
+    { address: '456 Sample Ln, Ocala, FL 34470', price: 48000, distance_miles: 1.2, sale_date: '2025-08-20', sqft: 0, lot_size_acres: 0.45, bedrooms: 0, bathrooms: 0, year_built: null, correlation: 0.72, days_on_market: null, listing_type: 'Standard', status: 'Sold', property_type: 'Land' },
+    { address: '789 Test Ave, Ocala, FL 34470', price: 39000, distance_miles: 1.5, sale_date: '2025-07-10', sqft: 0, lot_size_acres: 0.55, bedrooms: 0, bathrooms: 0, year_built: null, correlation: 0.68, days_on_market: null, listing_type: 'Standard', status: 'Sold', property_type: 'Land' },
+    { address: '101 Demo Dr, Ocala, FL 34470', price: 51000, distance_miles: 2.0, sale_date: '2025-06-05', sqft: 0, lot_size_acres: 0.48, bedrooms: 0, bathrooms: 0, year_built: null, correlation: 0.55, days_on_market: null, listing_type: 'Standard', status: 'Sold', property_type: 'Land' },
+    { address: '202 Fake Blvd, Ocala, FL 34470', price: 44000, distance_miles: 2.3, sale_date: '2025-05-18', sqft: 0, lot_size_acres: 0.52, bedrooms: 0, bathrooms: 0, year_built: null, correlation: 0.48, days_on_market: null, listing_type: 'Auction', status: 'Sold', property_type: 'Land' },
+    { address: '303 Phantom Ct, Ocala, FL 34470', price: 47000, distance_miles: 2.8, sale_date: '2025-04-22', sqft: 0, lot_size_acres: 0.40, bedrooms: 0, bathrooms: 0, year_built: null, correlation: 0.42, days_on_market: null, listing_type: 'Standard', status: 'Sold', property_type: 'Land' },
   ],
+  subject: {
+    year_built: null,
+    last_sale_date: '2022-05-10',
+    last_sale_price: 25000,
+    property_type: 'Land',
+    lot_size: 21780,
+    lot_size_acres: 0.500,
+    sqft: 0,
+    bedrooms: 0,
+    bathrooms: 0,
+    zoning: 'A-1',
+    county: 'Marion'
+  },
   source: 'RENTCAST',
   mode: 'MOCK',
   _meta: { provider: 'rentcast_mock', cached: false, timestamp: new Date().toISOString() }
@@ -270,7 +284,14 @@ function mapToSSOT(raw, params, fromCache = false) {
     sqft: c.squareFootage || c.sqft || 0,
     lot_size_acres: c.lotSize ? parseFloat((c.lotSize / 43560).toFixed(3)) : (c.lot_size_acres || 0),
     bedrooms: c.bedrooms || 0,
-    bathrooms: c.bathrooms || 0
+    bathrooms: c.bathrooms || 0,
+    // Enriched fields (Phase 1)
+    year_built: c.yearBuilt || null,
+    correlation: c.correlation != null ? parseFloat(c.correlation.toFixed(3)) : null,
+    days_on_market: c.daysOnMarket || c.daysOld || null,
+    listing_type: c.listingType || null,
+    status: c.status || null,
+    property_type: c.propertyType || null
   }));
   
   const compCount = comps.length;
@@ -281,6 +302,22 @@ function mapToSSOT(raw, params, fromCache = false) {
   
   const usage = checkUsageAllowed();
   
+  // Subject property enrichment (from raw response, no extra credit)
+  const subject = raw.subjectProperty || raw.subject || {};
+  const subjectEnriched = {
+    year_built: subject.yearBuilt || raw.yearBuilt || null,
+    last_sale_date: subject.lastSaleDate || raw.lastSaleDate || null,
+    last_sale_price: subject.lastSalePrice || raw.lastSalePrice || null,
+    property_type: subject.propertyType || raw.propertyType || null,
+    lot_size: subject.lotSize || raw.lotSize || null,
+    lot_size_acres: subject.lotSize ? parseFloat((subject.lotSize / 43560).toFixed(3)) : (raw.lotSize ? parseFloat((raw.lotSize / 43560).toFixed(3)) : null),
+    sqft: subject.squareFootage || raw.squareFootage || null,
+    bedrooms: subject.bedrooms != null ? subject.bedrooms : (raw.bedrooms != null ? raw.bedrooms : null),
+    bathrooms: subject.bathrooms != null ? subject.bathrooms : (raw.bathrooms != null ? raw.bathrooms : null),
+    zoning: subject.zoning || raw.zoning || null,
+    county: subject.county || raw.county || null
+  };
+  
   return {
     estimated_fmv: price,
     price_range_low: priceLow,
@@ -288,6 +325,7 @@ function mapToSSOT(raw, params, fromCache = false) {
     confidence,
     comp_count: compCount,
     comps,
+    subject: subjectEnriched,
     source: 'RENTCAST',
     mode: 'LIVE',
     query: {

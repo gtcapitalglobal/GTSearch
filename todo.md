@@ -1,10 +1,10 @@
 # GTSearch — TODO (v4.1-basic)
 
-> Atualizado: 2026-02-20 | Baseado na auditoria completa do projeto
+> Atualizado: 2026-02-21 | v4.7 — Scoring A/B/C + RentCast enrichment
 
 ---
 
-## ✅ TELA 1 — Search & Import (83%)
+## ✅ TELA 1 — Search & Import (100%)
 
 - [x] Upload CSV com parsing automático de colunas
 - [x] Upload KML com extração de coordenadas
@@ -15,10 +15,15 @@
 - [x] Seleção individual e em massa de propriedades
 - [x] Navegação para Tela 2 com propriedades selecionadas
 - [x] Exibição de dados básicos (parcel, address, acres, owner)
-- [ ] Filtro avançado multi-critério (combinar condado + acres + amount due)
-- [ ] Classificação automática A/B/C por scoring
+- [x] Filtro avançado multi-critério (combinar condado + acres + amount due + total value + grade) — IMPLEMENTADO v4.7
+- [x] Classificação automática A/B/C por scoring — IMPLEMENTADO v4.7 (5 critérios ponderados, pesos configuráveis)
 - [x] Ordenação por coluna (acres, amount due, assessed value) — CORRIGIDO v4.2
-- [ ] Indicador visual de propriedades já analisadas
+- [x] Indicador visual de propriedades já analisadas — IMPLEMENTADO v4.7 (badge ✓ na tabela, tracking via localStorage)
+- [x] Filtro por Total Value — IMPLEMENTADO v4.7
+- [x] Filtro por Grade (A, B, C, A+B) — IMPLEMENTADO v4.7
+- [x] Barra de estatísticas de scoring (contagem A/B/C) — IMPLEMENTADO v4.7
+- [x] Modal de configuração de pesos do scoring — IMPLEMENTADO v4.7
+- [x] Ordenação por Grade na tabela — IMPLEMENTADO v4.7
 - [x] 🐛 BUG: Ordenação por coluna não funciona (clicar nos headers Parcel#, Acres, Type, Name, etc. não ordena) — CORRIGIDO: offset era +1, correto é +3
 
 ---
@@ -110,7 +115,7 @@
 ## 🔜 PRÓXIMAS FEATURES (por prioridade)
 
 ### Prioridade Alta
-- [ ] Classificação A/B/C automática na Tela 1
+- [x] Classificação A/B/C automática na Tela 1 — IMPLEMENTADO v4.7
 - [ ] Comps via Realty Mole (RapidAPI) ou Regrid
 - [ ] Link direto para County Clerk (liens)
 
@@ -181,17 +186,21 @@
 - [x] Botão "Aceitar FMV" para preencher Market Value com 1 clique
 - [x] Contador de uso visível (X/50)
 - [x] Alterar default de dias dos comps de 90 para 180 (6 meses) — melhor para terrenos
-- [ ] Adicionar yearBuilt (ano de construção) ao SSOT mapper do provider e exibir no card da Tela 3 e na tabela de comps
+- [x] Adicionar yearBuilt (ano de construção) ao SSOT mapper do provider e exibir no card da Tela 3 e na tabela de comps — IMPLEMENTADO v4.7
 
 ## RENTCAST — Melhorias Futuras (anotado, NÃO implementar sem permissão)
 
-### Phase 1: Enriquecer resposta AVM atual (sem crédito extra)
-- [ ] Extrair yearBuilt dos comps e subjectProperty e exibir no card
-- [ ] Extrair correlation score (similaridade 0-1) dos comps
-- [ ] Extrair daysOnMarket dos comps
-- [ ] Extrair listingType (Standard, Auction, Foreclosure) dos comps
-- [ ] Extrair squareFootage dos comps
-- [ ] Extrair lastSaleDate e lastSalePrice do subjectProperty
+### Phase 1: Enriquecer resposta AVM atual (sem crédito extra) — IMPLEMENTADO v4.7
+- [x] Extrair yearBuilt dos comps e subjectProperty e exibir no card — IMPLEMENTADO v4.7
+- [x] Extrair correlation score (similaridade 0-1) dos comps — IMPLEMENTADO v4.7
+- [x] Extrair daysOnMarket dos comps — IMPLEMENTADO v4.7
+- [x] Extrair listingType (Standard, Auction, Foreclosure) dos comps — IMPLEMENTADO v4.7
+- [x] Extrair squareFootage dos comps — IMPLEMENTADO v4.7 (já existia como sqft)
+- [x] Extrair lastSaleDate e lastSalePrice do subjectProperty — IMPLEMENTADO v4.7
+- [x] Subject property enrichment panel na Tela 3 (zoning, lot size, tipo, última venda) — IMPLEMENTADO v4.7
+- [x] Colunas condicionais na tabela de comps (Sim%, Ano, Status) — IMPLEMENTADO v4.7
+- [x] Color coding para correlation (verde ≥70%, amarelo ≥40%, vermelho <40%) — IMPLEMENTADO v4.7
+- [x] Status badge colorido (Sold=verde, Pending=amarelo, Active=azul) — IMPLEMENTADO v4.7
 
 ### Phase 2: Property Records Integration (1 crédito extra por propriedade)
 - [x] Novo provider: getPropertyRecord({ address }) → /v1/properties — IMPLEMENTADO v4.5
@@ -237,11 +246,11 @@
 - [ ] Migrar para IndexedDB (lib idb, 3KB) — grátis, 50-100MB+, busca por índice
 - [ ] Migração transparente — detecta dados antigos no localStorage e migra automaticamente
 
-### Classificação A/B/C automática — Tela 1
-- [ ] Scoring por: Acres (25%), Amount Due vs Assessed (30%), Land Use (20%), Assessed Value (15%), Improvements (10%)
-- [ ] A (70-100) 🟢, B (40-69) 🟡, C (0-39) 🔴
-- [ ] Pesos e faixas configuráveis no Settings (presets por condado/região)
-- [ ] Badge colorido em cada linha da tabela + filtro por classificação
+### Classificação A/B/C automática — Tela 1 — IMPLEMENTADO v4.7
+- [x] Scoring por: Acres (25%), Amount Due vs Total Value (30%), Land Use (20%), Total Value (15%), Improvements (10%) — IMPLEMENTADO v4.7
+- [x] A (70-100) 🟢, B (40-69) 🟡, C (0-39) 🔴 — IMPLEMENTADO v4.7
+- [x] Pesos configuráveis via modal de settings — IMPLEMENTADO v4.7
+- [x] Badge colorido em cada linha da tabela + filtro por classificação — IMPLEMENTADO v4.7
 - [ ] TESTAR a ferramenta e a sugestão antes de usar em produção
 
 ### Cache cleanup automático

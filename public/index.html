@@ -228,6 +228,96 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.8; transform: scale(1.05); }
         }
+        
+        /* A/B/C Classification Badges */
+        .grade-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            letter-spacing: -0.5px;
+            cursor: help;
+            transition: transform 0.15s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+        }
+        .grade-badge:hover {
+            transform: scale(1.15);
+        }
+        .grade-A {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+        }
+        .grade-B {
+            background: linear-gradient(135deg, #d97706, #b45309);
+            color: white;
+        }
+        .grade-C {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+        }
+        .grade-row-A {
+            border-left: 3px solid #059669 !important;
+        }
+        .grade-row-B {
+            border-left: 3px solid #d97706 !important;
+        }
+        .grade-row-C {
+            border-left: 3px solid #dc2626 !important;
+        }
+        
+        /* Score tooltip */
+        .grade-badge[data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 4px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 400;
+            white-space: nowrap;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        /* Scoring stats bar */
+        .scoring-stats {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .scoring-stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .scoring-stat-A { background: #d1fae5; color: #065f46; }
+        .scoring-stat-B { background: #fef3c7; color: #78350f; }
+        .scoring-stat-C { background: #fee2e2; color: #991b1b; }
+        body.dark-mode .scoring-stat-A { background: #065f46; color: #d1fae5; }
+        body.dark-mode .scoring-stat-B { background: #78350f; color: #fef3c7; }
+        body.dark-mode .scoring-stat-C { background: #991b1b; color: #fee2e2; }
+        
+        /* Analyzed indicator */
+        .analyzed-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
@@ -463,8 +553,18 @@
                             <option value="Structures Only">Apenas Estrutura (Structures Only)</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">🏆 Classificação</label>
+                        <select id="filterGrade" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Todas (A/B/C)</option>
+                            <option value="A">🟢 A — Excelente (70-100)</option>
+                            <option value="B">🟡 B — Moderado (40-69)</option>
+                            <option value="C">🔴 C — Fraco (0-39)</option>
+                            <option value="AB">🟢🟡 A+B (40+)</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">📏 Acres</label>
                         <div class="flex gap-2">
@@ -479,6 +579,29 @@
                             <input type="number" id="filterAmountMax" placeholder="Máximo" class="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" step="0.01">
                         </div>
                     </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">🏠 Total Value</label>
+                        <div class="flex gap-2">
+                            <input type="number" id="filterTotalValueMin" placeholder="Mínimo" class="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" step="100">
+                            <input type="number" id="filterTotalValueMax" placeholder="Máximo" class="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" step="100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Scoring Stats Bar -->
+            <div id="scoringStatsBar" class="hidden bg-white rounded-lg shadow-sm border border-gray-200 p-3 mb-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm font-bold text-gray-700">🏆 Classificação:</span>
+                        <div class="scoring-stats">
+                            <span class="scoring-stat scoring-stat-A">🟢 A: <span id="gradeCountA">0</span></span>
+                            <span class="scoring-stat scoring-stat-B">🟡 B: <span id="gradeCountB">0</span></span>
+                            <span class="scoring-stat scoring-stat-C">🔴 C: <span id="gradeCountC">0</span></span>
+                        </div>
+                    </div>
+                    <button id="scoringSettingsBtn" class="text-xs px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-600 transition-colors" title="Configurar pesos do scoring">
+                        ⚙️ Pesos
+                    </button>
                 </div>
             </div>
             <div class="flex justify-between items-center mb-4">
@@ -506,6 +629,9 @@
                             </th>
                             <th class="px-2 py-2 text-center text-gray-600">
                                 #
+                            </th>
+                            <th class="px-2 py-2 text-center cursor-pointer hover:bg-gray-100" onclick="sortTable(-1)" data-tooltip="Classificação A/B/C automática">
+                                Grade <span id="sort-icon-grade">⇅</span>
                             </th>
                             <th class="px-2 py-2 text-left cursor-pointer hover:bg-gray-100" onclick="sortTable(0)">
                                 Parcel # <span id="sort-icon-0">⇅</span>
@@ -600,6 +726,181 @@
             new: 0,
             outros: 0
         };
+
+        // ===== A/B/C CLASSIFICATION SCORING SYSTEM =====
+        
+        // Default scoring weights (configurable via Settings)
+        function getScoringConfig() {
+            const saved = localStorage.getItem('scoringConfig');
+            if (saved) {
+                try { return JSON.parse(saved); } catch(e) {}
+            }
+            return {
+                weights: {
+                    acres: 25,           // 25% - Lot size
+                    amountVsValue: 30,   // 30% - Amount Due vs Total Value ratio
+                    landUseType: 20,     // 20% - Land Use / Parcel Type
+                    totalValue: 15,      // 15% - Total assessed value
+                    improvements: 10     // 10% - Improvements (penalize structures)
+                },
+                ranges: {
+                    A: { min: 70, max: 100 },
+                    B: { min: 40, max: 69 },
+                    C: { min: 0, max: 39 }
+                },
+                // Ideal ranges for land investment
+                acresIdeal: { min: 0.25, max: 5.0 },    // Sweet spot for vacant land
+                ratioIdeal: { max: 0.50 },                // Amount Due < 50% of Total Value = great deal
+                totalValueIdeal: { min: 500, max: 50000 } // Reasonable land value range
+            };
+        }
+        
+        function saveScoringConfig(config) {
+            localStorage.setItem('scoringConfig', JSON.stringify(config));
+        }
+        
+        // Parse dollar string to number: "$1,024.84" → 1024.84
+        function parseDollar(str) {
+            if (!str || str === 'N/A' || str === '-') return 0;
+            return parseFloat(String(str).replace(/[^0-9.-]/g, '')) || 0;
+        }
+        
+        // Calculate score for a single property (0-100)
+        function calculatePropertyScore(prop) {
+            const config = getScoringConfig();
+            const w = config.weights;
+            
+            const acres = parseFloat(prop.Acres) || 0;
+            const amountDue = parseDollar(prop['Amount Due']);
+            const totalValue = parseDollar(prop['Total Value']);
+            const landValue = parseDollar(prop['Land']);
+            const improvements = parseDollar(prop['Improvements']);
+            const parcelType = (prop['Parcel Type'] || '').toLowerCase();
+            const legalDesc = (prop['Legal Description'] || '').toUpperCase();
+            
+            let scores = {};
+            
+            // 1. ACRES SCORE (0-100)
+            // Sweet spot: 0.25 - 5.0 acres for vacant land
+            if (acres >= config.acresIdeal.min && acres <= config.acresIdeal.max) {
+                // Within ideal range: score based on proximity to sweet spot (0.5 - 2.0)
+                if (acres >= 0.5 && acres <= 2.0) scores.acres = 100;
+                else if (acres >= 0.25 && acres < 0.5) scores.acres = 70;
+                else if (acres > 2.0 && acres <= 3.0) scores.acres = 80;
+                else if (acres > 3.0 && acres <= 5.0) scores.acres = 60;
+                else scores.acres = 50;
+            } else if (acres < config.acresIdeal.min) {
+                // Too small: penalize heavily
+                scores.acres = Math.max(0, 30 * (acres / config.acresIdeal.min));
+            } else {
+                // Too large: slight penalty
+                scores.acres = Math.max(20, 60 - (acres - config.acresIdeal.max) * 5);
+            }
+            
+            // 2. AMOUNT DUE vs TOTAL VALUE RATIO (0-100)
+            // Lower ratio = better deal (Amount Due << Total Value)
+            if (totalValue > 0) {
+                const ratio = amountDue / totalValue;
+                if (ratio <= 0.20) scores.amountVsValue = 100;       // Amazing deal
+                else if (ratio <= 0.35) scores.amountVsValue = 90;   // Great deal
+                else if (ratio <= 0.50) scores.amountVsValue = 80;   // Good deal
+                else if (ratio <= 0.75) scores.amountVsValue = 60;   // Decent
+                else if (ratio <= 1.00) scores.amountVsValue = 40;   // Break-even territory
+                else if (ratio <= 1.50) scores.amountVsValue = 20;   // Overpaying
+                else scores.amountVsValue = 0;                        // Way overpaying
+            } else {
+                scores.amountVsValue = 30; // No data = neutral-low
+            }
+            
+            // 3. LAND USE / PARCEL TYPE (0-100)
+            // Land Only = ideal, Structures = penalize
+            if (parcelType.includes('land only')) {
+                scores.landUseType = 100; // Perfect for land investment
+            } else if (parcelType.includes('structures only')) {
+                scores.landUseType = 20;  // No land value, just structure
+            } else if (parcelType.includes('land & structures')) {
+                scores.landUseType = 40;  // Has structures = complications
+            } else {
+                scores.landUseType = 50;  // Unknown
+            }
+            
+            // Bonus/penalty for legal description keywords
+            if (legalDesc.includes('UNDIVIDED')) scores.landUseType = Math.max(0, scores.landUseType - 30);
+            if (legalDesc.includes('MOBILE HOME')) scores.landUseType = Math.max(0, scores.landUseType - 20);
+            if (legalDesc.includes('CONDO')) scores.landUseType = Math.max(0, scores.landUseType - 25);
+            
+            // 4. TOTAL VALUE SCORE (0-100)
+            // Reasonable value range for vacant land
+            if (totalValue >= config.totalValueIdeal.min && totalValue <= config.totalValueIdeal.max) {
+                // Within range: higher value = slightly better (more equity potential)
+                scores.totalValue = 60 + Math.min(40, (totalValue / config.totalValueIdeal.max) * 40);
+            } else if (totalValue < config.totalValueIdeal.min) {
+                scores.totalValue = Math.max(10, 50 * (totalValue / config.totalValueIdeal.min));
+            } else {
+                // Very high value: might be a house, penalize slightly
+                scores.totalValue = Math.max(20, 80 - ((totalValue - config.totalValueIdeal.max) / 10000) * 5);
+            }
+            
+            // 5. IMPROVEMENTS SCORE (0-100)
+            // No improvements = best for vacant land
+            if (improvements === 0) {
+                scores.improvements = 100; // No improvements = clean land
+            } else if (improvements < 5000) {
+                scores.improvements = 70;  // Minor improvements
+            } else if (improvements < 20000) {
+                scores.improvements = 40;  // Moderate improvements
+            } else {
+                scores.improvements = 10;  // Heavy improvements = house
+            }
+            
+            // Calculate weighted total
+            const totalScore = (
+                (scores.acres * w.acres / 100) +
+                (scores.amountVsValue * w.amountVsValue / 100) +
+                (scores.landUseType * w.landUseType / 100) +
+                (scores.totalValue * w.totalValue / 100) +
+                (scores.improvements * w.improvements / 100)
+            );
+            
+            // Determine grade
+            const config2 = getScoringConfig();
+            let grade;
+            if (totalScore >= config2.ranges.A.min) grade = 'A';
+            else if (totalScore >= config2.ranges.B.min) grade = 'B';
+            else grade = 'C';
+            
+            return {
+                score: Math.round(totalScore),
+                grade: grade,
+                breakdown: scores,
+                details: {
+                    acres, amountDue, totalValue, landValue, improvements, parcelType,
+                    ratio: totalValue > 0 ? (amountDue / totalValue).toFixed(2) : 'N/A'
+                }
+            };
+        }
+        
+        // Calculate scores for all properties
+        function calculateAllScores() {
+            allNewProperties.forEach(prop => {
+                const result = calculatePropertyScore(prop);
+                prop._score = result.score;
+                prop._grade = result.grade;
+                prop._scoreBreakdown = result.breakdown;
+                prop._scoreDetails = result.details;
+            });
+        }
+        
+        // Get scoring statistics
+        function getScoringStats() {
+            let countA = 0, countB = 0, countC = 0;
+            allNewProperties.forEach(prop => {
+                if (prop._grade === 'A') countA++;
+                else if (prop._grade === 'B') countB++;
+                else countC++;
+            });
+            return { A: countA, B: countB, C: countC, total: allNewProperties.length };
+        }
 
         // Custom marker icons with house SVG
         const createHouseIcon = (color) => L.divIcon({
@@ -1086,6 +1387,17 @@
                 document.getElementById('downloadsSection').classList.remove('hidden');
                 document.getElementById('tableSection').classList.remove('hidden');
                 
+                // Calculate A/B/C scores for all properties
+                calculateAllScores();
+                
+                // Show scoring stats bar
+                const scoringStatsBar = document.getElementById('scoringStatsBar');
+                scoringStatsBar.classList.remove('hidden');
+                const stats = getScoringStats();
+                document.getElementById('gradeCountA').textContent = stats.A;
+                document.getElementById('gradeCountB').textContent = stats.B;
+                document.getElementById('gradeCountC').textContent = stats.C;
+                
                 // Restore saved filters when data is loaded
                 restoreFilters();
                 
@@ -1143,18 +1455,33 @@
             const filterAcresMax = parseFloat(document.getElementById('filterAcresMax').value) || Infinity;
             const filterAmountMin = parseFloat(document.getElementById('filterAmountMin').value) || 0;
             const filterAmountMax = parseFloat(document.getElementById('filterAmountMax').value) || Infinity;
+            const filterGrade = document.getElementById('filterGrade').value;
+            const filterTotalValueMin = parseFloat(document.getElementById('filterTotalValueMin').value) || 0;
+            const filterTotalValueMax = parseFloat(document.getElementById('filterTotalValueMax').value) || Infinity;
             
             // Get favorites list
             const favorites = JSON.parse(localStorage.getItem('gtSearchFavorites') || '[]');
+            
+            // Get analyzed properties list
+            const analyzedProperties = JSON.parse(localStorage.getItem('analyzedProperties') || '[]');
             
             const filteredProperties = allNewProperties.filter(row => {
                 const acres = parseFloat(row.Acres) || 0;
                 const amount = parseFloat(row['Amount Due']) || 0;
                 const name = (row.Name || '').toLowerCase();
                 const type = row['Parcel Type'] || '';
+                const totalVal = parseDollar(row['Total Value']);
+                const grade = row._grade || 'C';
                 
                 // Favorites filter
                 const favoriteMatch = !showingFavoritesOnly || favorites.includes(row['Parcel Number']);
+                
+                // Grade filter
+                let gradeMatch = true;
+                if (filterGrade === 'A') gradeMatch = grade === 'A';
+                else if (filterGrade === 'B') gradeMatch = grade === 'B';
+                else if (filterGrade === 'C') gradeMatch = grade === 'C';
+                else if (filterGrade === 'AB') gradeMatch = grade === 'A' || grade === 'B';
                 
                 // Global search - searches across multiple fields
                 const globalMatch = !globalSearch || [
@@ -1168,13 +1495,15 @@
                 
                 return (
                     favoriteMatch &&
+                    gradeMatch &&
                     globalMatch &&
                     (!filterName || name.includes(filterName)) &&
                     (!filterCounty || row.County === filterCounty) &&
                     (!filterCity || row.City === filterCity) &&
                     (!filterType || type === filterType) &&
                     (acres >= filterAcresMin && acres <= filterAcresMax) &&
-                    (amount >= filterAmountMin && amount <= filterAmountMax)
+                    (amount >= filterAmountMin && amount <= filterAmountMax) &&
+                    (totalVal >= filterTotalValueMin && totalVal <= filterTotalValueMax)
                 );
             });
             
@@ -1192,9 +1521,10 @@
             
             // Show/hide delete filtered button
             const deleteFilteredBtn = document.getElementById('deleteFilteredBtn');
-            const hasActiveFilters = filterName || filterCounty || filterCity || filterType || 
+            const hasActiveFilters = filterName || filterCounty || filterCity || filterType || filterGrade ||
                                      filterAcresMin > 0 || filterAcresMax < Infinity || 
-                                     filterAmountMin > 0 || filterAmountMax < Infinity;
+                                     filterAmountMin > 0 || filterAmountMax < Infinity ||
+                                     filterTotalValueMin > 0 || filterTotalValueMax < Infinity;
             
             if (hasActiveFilters && filteredProperties.length > 0 && filteredProperties.length < allNewProperties.length) {
                 deleteFilteredBtn.classList.remove('hidden');
@@ -1273,12 +1603,28 @@
                 const isFavorite = favorites.includes(row['Parcel Number']);
                 const starIcon = isFavorite ? '⭐' : '☆';
                 
-                // Create a clean copy without marker (to avoid circular reference)
+                // A/B/C Grade badge
+                const grade = row._grade || 'C';
+                const score = row._score || 0;
+                const breakdown = row._scoreBreakdown || {};
+                const details = row._scoreDetails || {};
+                const tooltipText = `Score: ${score}/100 | Acres: ${Math.round(breakdown.acres||0)} | Ratio: ${Math.round(breakdown.amountVsValue||0)} | Type: ${Math.round(breakdown.landUseType||0)} | Value: ${Math.round(breakdown.totalValue||0)} | Impr: ${Math.round(breakdown.improvements||0)}`;
+                const gradeRowClass = `grade-row-${grade}`;
+                
+                // Check if property was already analyzed
+                const isAnalyzed = analyzedProperties.includes(row['Parcel Number']);
+                const analyzedDot = isAnalyzed ? '<span class="analyzed-indicator" title="Já analisada na Tela 2"></span> ' : '';
+                
+                // Create a clean copy without marker and internal scoring fields
                 const cleanRow = Object.assign({}, row);
                 delete cleanRow.marker;
+                delete cleanRow._score;
+                delete cleanRow._grade;
+                delete cleanRow._scoreBreakdown;
+                delete cleanRow._scoreDetails;
                 
                 return `
-                <tr class="${rowClass}" data-index="${originalIndex}">
+                <tr class="${rowClass} ${gradeRowClass}" data-index="${originalIndex}" data-grade="${grade}" data-score="${score}">
                     <td class="px-2 py-1 whitespace-nowrap text-center">
                         <input type="checkbox" class="row-checkbox w-3 h-3 cursor-pointer" data-index="${originalIndex}" data-property='${JSON.stringify(cleanRow).replace(/'/g, "&apos;")}'>
                     </td>
@@ -1286,7 +1632,10 @@
                         <button class="favorite-btn text-xl hover:scale-125 transition-transform" data-parcel="${row['Parcel Number']}" title="${isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}">${starIcon}</button>
                     </td>
                     <td class="px-1 py-0.5 whitespace-nowrap text-center text-gray-500 font-medium">${index + 1}</td>
-                    <td class="px-1 py-0.5 whitespace-nowrap">${alertBadges}${row['Parcel Number']}</td>
+                    <td class="px-1 py-0.5 whitespace-nowrap text-center" style="position:relative">
+                        <span class="grade-badge grade-${grade}" data-tooltip="${tooltipText}">${grade}</span>
+                    </td>
+                    <td class="px-1 py-0.5 whitespace-nowrap">${analyzedDot}${alertBadges}${row['Parcel Number']}</td>
                     <td class="px-1 py-0.5 whitespace-nowrap ${acresClass} font-semibold">${row.Acres}</td>
                     <td class="px-1 py-0.5 whitespace-nowrap">${row['Parcel Type'] || 'N/A'}</td>
                     <td class="px-1 py-0.5 whitespace-nowrap cursor-pointer">${row.Name}</td>
@@ -1576,6 +1925,9 @@
         document.getElementById('filterAcresMax').addEventListener('input', () => { saveFilters(); populateTable(); });
         document.getElementById('filterAmountMin').addEventListener('input', () => { saveFilters(); populateTable(); });
         document.getElementById('filterAmountMax').addEventListener('input', () => { saveFilters(); populateTable(); });
+        document.getElementById('filterGrade').addEventListener('change', () => { saveFilters(); populateTable(); });
+        document.getElementById('filterTotalValueMin').addEventListener('input', () => { saveFilters(); populateTable(); });
+        document.getElementById('filterTotalValueMax').addEventListener('input', () => { saveFilters(); populateTable(); });
         
         // Auto-save filters to localStorage
         function saveFilters() {
@@ -1588,7 +1940,10 @@
                 filterAcresMin: document.getElementById('filterAcresMin').value,
                 filterAcresMax: document.getElementById('filterAcresMax').value,
                 filterAmountMin: document.getElementById('filterAmountMin').value,
-                filterAmountMax: document.getElementById('filterAmountMax').value
+                filterAmountMax: document.getElementById('filterAmountMax').value,
+                filterGrade: document.getElementById('filterGrade').value,
+                filterTotalValueMin: document.getElementById('filterTotalValueMin').value,
+                filterTotalValueMax: document.getElementById('filterTotalValueMax').value
             };
             localStorage.setItem('gtSearchFilters', JSON.stringify(filters));
         }
@@ -1608,6 +1963,9 @@
                     document.getElementById('filterAcresMax').value = filters.filterAcresMax || '';
                     document.getElementById('filterAmountMin').value = filters.filterAmountMin || '';
                     document.getElementById('filterAmountMax').value = filters.filterAmountMax || '';
+                    document.getElementById('filterGrade').value = filters.filterGrade || '';
+                    document.getElementById('filterTotalValueMin').value = filters.filterTotalValueMin || '';
+                    document.getElementById('filterTotalValueMax').value = filters.filterTotalValueMax || '';
                     
                     // Show clear button if global search has value
                     if (filters.globalSearch) {
@@ -1628,6 +1986,9 @@
             document.getElementById('filterAcresMax').value = '';
             document.getElementById('filterAmountMin').value = '';
             document.getElementById('filterAmountMax').value = '';
+            document.getElementById('filterGrade').value = '';
+            document.getElementById('filterTotalValueMin').value = '';
+            document.getElementById('filterTotalValueMax').value = '';
             document.getElementById('globalSearch').value = '';
             document.getElementById('clearGlobalSearch').classList.add('hidden');
             saveFilters();
@@ -2429,31 +2790,46 @@
                 const icon = document.getElementById(`sort-icon-${i}`);
                 if (icon) icon.textContent = '⇅';
             }
+            // Reset grade sort icon too
+            const gradeIcon = document.getElementById('sort-icon-grade');
+            if (gradeIcon) gradeIcon.textContent = '⇅';
             
             // Atualizar ícone da coluna atual
-            const currentIcon = document.getElementById(`sort-icon-${columnIndex}`);
-            if (currentIcon) {
-                currentIcon.textContent = direction === 'asc' ? '↑' : '↓';
+            if (columnIndex === -1) {
+                // Grade column
+                if (gradeIcon) gradeIcon.textContent = direction === 'asc' ? '↑' : '↓';
+            } else {
+                const currentIcon = document.getElementById(`sort-icon-${columnIndex}`);
+                if (currentIcon) {
+                    currentIcon.textContent = direction === 'asc' ? '↑' : '↓';
+                }
             }
             
             // Ordenar linhas
             rows.sort((a, b) => {
-                // +3 porque as 3 primeiras colunas são: checkbox, favorito (⭐), número (#)
-                const cellA = a.cells[columnIndex + 3]?.textContent.trim() || '';
-                const cellB = b.cells[columnIndex + 3]?.textContent.trim() || '';
-                
-                // Tentar converter para número se possível
-                const numA = parseFloat(cellA.replace(/[^0-9.-]/g, ''));
-                const numB = parseFloat(cellB.replace(/[^0-9.-]/g, ''));
-                
                 let comparison = 0;
                 
-                // Se ambos são números válidos, comparar como números
-                if (!isNaN(numA) && !isNaN(numB)) {
-                    comparison = numA - numB;
+                if (columnIndex === -1) {
+                    // Sort by grade score (stored in data-score attribute)
+                    const scoreA = parseInt(a.getAttribute('data-score')) || 0;
+                    const scoreB = parseInt(b.getAttribute('data-score')) || 0;
+                    comparison = scoreA - scoreB;
                 } else {
-                    // Caso contrário, comparar como strings
-                    comparison = cellA.localeCompare(cellB, 'pt-BR', { numeric: true, sensitivity: 'base' });
+                    // +4 porque as 4 primeiras colunas são: checkbox, favorito (⭐), número (#), grade
+                    const cellA = a.cells[columnIndex + 4]?.textContent.trim() || '';
+                    const cellB = b.cells[columnIndex + 4]?.textContent.trim() || '';
+                    
+                    // Tentar converter para número se possível
+                    const numA = parseFloat(cellA.replace(/[^0-9.-]/g, ''));
+                    const numB = parseFloat(cellB.replace(/[^0-9.-]/g, ''));
+                    
+                    // Se ambos são números válidos, comparar como números
+                    if (!isNaN(numA) && !isNaN(numB)) {
+                        comparison = numA - numB;
+                    } else {
+                        // Caso contrário, comparar como strings
+                        comparison = cellA.localeCompare(cellB, 'pt-BR', { numeric: true, sensitivity: 'base' });
+                    }
                 }
                 
                 return direction === 'asc' ? comparison : -comparison;
@@ -2545,8 +2921,181 @@
                 }
             }
         });
+        // ===== ⚙️ SCORING SETTINGS MODAL =====
+        document.getElementById('scoringSettingsBtn').addEventListener('click', function() {
+            document.getElementById('scoringModal').classList.remove('hidden');
+            // Load current config into modal
+            const config = getScoringConfig();
+            document.getElementById('weight-acres').value = config.weights.acres;
+            document.getElementById('weight-ratio').value = config.weights.amountVsValue;
+            document.getElementById('weight-type').value = config.weights.landUseType;
+            document.getElementById('weight-value').value = config.weights.totalValue;
+            document.getElementById('weight-improvements').value = config.weights.improvements;
+            document.getElementById('range-a-min').value = config.ranges.A.min;
+            document.getElementById('range-b-min').value = config.ranges.B.min;
+            document.getElementById('acres-ideal-min').value = config.acresIdeal.min;
+            document.getElementById('acres-ideal-max').value = config.acresIdeal.max;
+            document.getElementById('value-ideal-min').value = config.totalValueIdeal.min;
+            document.getElementById('value-ideal-max').value = config.totalValueIdeal.max;
+            updateWeightTotal();
+        });
+        
+        function updateWeightTotal() {
+            const total = ['weight-acres', 'weight-ratio', 'weight-type', 'weight-value', 'weight-improvements']
+                .reduce((sum, id) => sum + (parseInt(document.getElementById(id).value) || 0), 0);
+            const el = document.getElementById('weight-total');
+            el.textContent = total + '%';
+            el.className = total === 100 ? 'font-bold text-green-600' : 'font-bold text-red-600';
+        }
+        
+        function saveScoringSettings() {
+            const config = getScoringConfig();
+            config.weights.acres = parseInt(document.getElementById('weight-acres').value) || 25;
+            config.weights.amountVsValue = parseInt(document.getElementById('weight-ratio').value) || 30;
+            config.weights.landUseType = parseInt(document.getElementById('weight-type').value) || 20;
+            config.weights.totalValue = parseInt(document.getElementById('weight-value').value) || 15;
+            config.weights.improvements = parseInt(document.getElementById('weight-improvements').value) || 10;
+            config.ranges.A.min = parseInt(document.getElementById('range-a-min').value) || 70;
+            config.ranges.B.min = parseInt(document.getElementById('range-b-min').value) || 40;
+            config.acresIdeal.min = parseFloat(document.getElementById('acres-ideal-min').value) || 0.25;
+            config.acresIdeal.max = parseFloat(document.getElementById('acres-ideal-max').value) || 5.0;
+            config.totalValueIdeal.min = parseFloat(document.getElementById('value-ideal-min').value) || 500;
+            config.totalValueIdeal.max = parseFloat(document.getElementById('value-ideal-max').value) || 50000;
+            
+            // Validate weights total = 100
+            const total = Object.values(config.weights).reduce((a, b) => a + b, 0);
+            if (total !== 100) {
+                alert(`⚠️ Os pesos devem somar 100%. Atualmente: ${total}%`);
+                return;
+            }
+            
+            saveScoringConfig(config);
+            calculateAllScores();
+            
+            // Update stats bar
+            const stats = getScoringStats();
+            document.getElementById('gradeCountA').textContent = stats.A;
+            document.getElementById('gradeCountB').textContent = stats.B;
+            document.getElementById('gradeCountC').textContent = stats.C;
+            
+            populateTable();
+            document.getElementById('scoringModal').classList.add('hidden');
+            showNotification('✅ Pesos de scoring atualizados! Tabela recalculada.', 'success');
+        }
+        
+        function resetScoringDefaults() {
+            localStorage.removeItem('scoringConfig');
+            document.getElementById('scoringSettingsBtn').click(); // Reopen with defaults
+            showNotification('🔄 Pesos resetados para valores padrão.', 'info');
+        }
     });
     </script>
+    
+    <!-- Scoring Settings Modal -->
+    <div id="scoringModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-2xl p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-gray-800">⚙️ Configuração do Scoring A/B/C</h2>
+                <button onclick="document.getElementById('scoringModal').classList.add('hidden')" class="text-gray-500 hover:text-gray-700 text-2xl">×</button>
+            </div>
+            
+            <div class="space-y-4">
+                <!-- Weights -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-700 mb-3">🎯 Pesos (devem somar 100%)</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm text-gray-600">📏 Acres (tamanho do lote)</label>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="weight-acres" class="w-16 px-2 py-1 border rounded text-center text-sm" min="0" max="100" oninput="updateWeightTotal()">
+                                <span class="text-xs text-gray-400">%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm text-gray-600">💰 Amount Due vs Total Value</label>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="weight-ratio" class="w-16 px-2 py-1 border rounded text-center text-sm" min="0" max="100" oninput="updateWeightTotal()">
+                                <span class="text-xs text-gray-400">%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm text-gray-600">🏠 Tipo (Land Only vs Structures)</label>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="weight-type" class="w-16 px-2 py-1 border rounded text-center text-sm" min="0" max="100" oninput="updateWeightTotal()">
+                                <span class="text-xs text-gray-400">%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm text-gray-600">💵 Total Value (valor avaliado)</label>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="weight-value" class="w-16 px-2 py-1 border rounded text-center text-sm" min="0" max="100" oninput="updateWeightTotal()">
+                                <span class="text-xs text-gray-400">%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm text-gray-600">🛠️ Improvements (penalizar estruturas)</label>
+                            <div class="flex items-center gap-1">
+                                <input type="number" id="weight-improvements" class="w-16 px-2 py-1 border rounded text-center text-sm" min="0" max="100" oninput="updateWeightTotal()">
+                                <span class="text-xs text-gray-400">%</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between pt-2 border-t">
+                            <label class="text-sm font-semibold text-gray-700">Total:</label>
+                            <span id="weight-total" class="font-bold text-green-600">100%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Grade Ranges -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-700 mb-3">🏆 Faixas de Classificação</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm">🟢 A (Excelente): mínimo</label>
+                            <input type="number" id="range-a-min" class="w-16 px-2 py-1 border rounded text-center text-sm" min="0" max="100">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm">🟡 B (Moderado): mínimo</label>
+                            <input type="number" id="range-b-min" class="w-16 px-2 py-1 border rounded text-center text-sm" min="0" max="100">
+                        </div>
+                        <p class="text-xs text-gray-400">🔴 C = tudo abaixo do mínimo de B</p>
+                    </div>
+                </div>
+                
+                <!-- Ideal Ranges -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-700 mb-3">🎯 Faixas Ideais</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm">Acres ideal (min-max)</label>
+                            <div class="flex gap-1">
+                                <input type="number" id="acres-ideal-min" class="w-16 px-2 py-1 border rounded text-center text-sm" step="0.01">
+                                <span class="text-gray-400">-</span>
+                                <input type="number" id="acres-ideal-max" class="w-16 px-2 py-1 border rounded text-center text-sm" step="0.01">
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-sm">Total Value ideal ($)</label>
+                            <div class="flex gap-1">
+                                <input type="number" id="value-ideal-min" class="w-20 px-2 py-1 border rounded text-center text-sm" step="100">
+                                <span class="text-gray-400">-</span>
+                                <input type="number" id="value-ideal-max" class="w-20 px-2 py-1 border rounded text-center text-sm" step="100">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="saveScoringSettings()" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                    ✅ Salvar e Recalcular
+                </button>
+                <button onclick="resetScoringDefaults()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                    🔄 Reset
+                </button>
+            </div>
+        </div>
+    </div>
     
     <!-- Export Modal -->
     <div id="exportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

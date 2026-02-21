@@ -1223,6 +1223,21 @@
             currentIndex = index;
             window.currentIndex = index;
             
+            // Track this property as "analyzed" (viewed in Tela 2)
+            const parcelNum = properties[index]?.['Parcel Number'] || properties[index]?.['Parcel Id'] || '';
+            if (parcelNum) {
+                try {
+                    const analyzedList = JSON.parse(localStorage.getItem('analyzedProperties') || '[]');
+                    if (!analyzedList.includes(parcelNum)) {
+                        analyzedList.push(parcelNum);
+                        localStorage.setItem('analyzedProperties', JSON.stringify(analyzedList));
+                        console.log(`📊 Propriedade marcada como analisada: ${parcelNum} (total: ${analyzedList.length})`);
+                    }
+                } catch (e) {
+                    console.warn('Erro ao salvar analyzed property:', e);
+                }
+            }
+            
             // 🔄 RESETAR widget de análise automática ao trocar de propriedade
             // Se já tem analysisData, restaura em vez de resetar (evita flash)
             if (propertyAnalysisWidget) {
