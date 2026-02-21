@@ -346,10 +346,17 @@ async function callWithRetry(queryParams, apiKey) {
  * @param {string} [params.address] - Full property address (preferred)
  * @param {number} [params.lat] - Latitude (alternative to address)
  * @param {number} [params.lon] - Longitude (alternative to address)
+ * @param {string} [params.propertyType] - Property type: Land, Single Family, Condo, etc.
+ * @param {number} [params.maxRadius] - Max radius in miles for comps (default 0.5)
+ * @param {number} [params.daysOld] - Max days since comp listed (default 90)
+ * @param {number} [params.bedrooms] - Number of bedrooms
+ * @param {number} [params.bathrooms] - Number of bathrooms
+ * @param {number} [params.squareFootage] - Square footage
+ * @param {number} [params.compCount] - Number of comps to return (5-25, default 10)
  * @returns {Object} SSOT-formatted value estimate with comps
  */
 export async function getValueEstimate(params = {}) {
-  const { address, lat, lon } = params;
+  const { address, lat, lon, propertyType, maxRadius, daysOld, bedrooms, bathrooms, squareFootage, compCount } = params;
   
   // Validate input
   if (!address && (!lat || !lon)) {
@@ -430,6 +437,14 @@ export async function getValueEstimate(params = {}) {
     queryParams.latitude = lat;
     queryParams.longitude = lon;
   }
+  // Optional filters — only add if provided
+  if (propertyType) queryParams.propertyType = propertyType;
+  if (maxRadius) queryParams.maxRadius = parseFloat(maxRadius);
+  if (daysOld) queryParams.daysOld = parseInt(daysOld);
+  if (bedrooms !== undefined && bedrooms !== null && bedrooms !== '') queryParams.bedrooms = parseFloat(bedrooms);
+  if (bathrooms !== undefined && bathrooms !== null && bathrooms !== '') queryParams.bathrooms = parseFloat(bathrooms);
+  if (squareFootage) queryParams.squareFootage = parseFloat(squareFootage);
+  if (compCount) queryParams.compCount = Math.min(25, Math.max(5, parseInt(compCount)));
   
   // Call API
   try {

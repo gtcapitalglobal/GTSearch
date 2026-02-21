@@ -814,6 +814,68 @@
                         
                         <div class="section-divider"></div>
                         
+                        <!-- RentCast Comps Panel -->
+                        <div class="mb-3" id="comps-panel-${index}">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">🔍 Comps RentCast</h4>
+                                <span class="text-xs text-gray-400" id="comps-usage-${index}"></span>
+                            </div>
+                            
+                            <!-- Filters -->
+                            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 mb-2" id="comps-filters-${index}">
+                                <div class="grid grid-cols-3 gap-2 mb-2">
+                                    <div>
+                                        <label class="text-xs text-gray-500 font-semibold block mb-1">Tipo</label>
+                                        <select class="comps-filter input-field" data-filter="propertyType" data-index="${index}" style="padding: 4px 6px; font-size: 12px;">
+                                            <option value="Land" ${landUse.toLowerCase().includes('vacant') || landUse.toLowerCase().includes('land') ? 'selected' : ''}>Land</option>
+                                            <option value="Single Family" ${landUse.toLowerCase().includes('single') || improvements !== '-' && parseFloat(String(improvements).replace(/[^0-9.]/g,'')) > 0 ? 'selected' : ''}>Single Family</option>
+                                            <option value="Condo">Condo</option>
+                                            <option value="Townhouse">Townhouse</option>
+                                            <option value="Manufactured">Manufactured</option>
+                                            <option value="Multi-Family">Multi-Family</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-gray-500 font-semibold block mb-1">Raio (mi)</label>
+                                        <input type="number" class="comps-filter input-field" data-filter="maxRadius" data-index="${index}" 
+                                               value="${savedData.compsRadius || '0.5'}" min="0.1" max="50" step="0.1" style="padding: 4px 6px; font-size: 12px;">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-gray-500 font-semibold block mb-1">Dias</label>
+                                        <input type="number" class="comps-filter input-field" data-filter="daysOld" data-index="${index}" 
+                                               value="${savedData.compsDays || '90'}" min="1" max="730" step="1" style="padding: 4px 6px; font-size: 12px;">
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 mb-2">
+                                    <div>
+                                        <label class="text-xs text-gray-500 font-semibold block mb-1">Quartos</label>
+                                        <input type="number" class="comps-filter input-field" data-filter="bedrooms" data-index="${index}" 
+                                               value="${savedData.compsBedrooms || ''}" min="0" max="20" step="1" placeholder="-" style="padding: 4px 6px; font-size: 12px;">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-gray-500 font-semibold block mb-1">Banheiros</label>
+                                        <input type="number" class="comps-filter input-field" data-filter="bathrooms" data-index="${index}" 
+                                               value="${savedData.compsBathrooms || ''}" min="0" max="20" step="0.5" placeholder="-" style="padding: 4px 6px; font-size: 12px;">
+                                    </div>
+                                    <div>
+                                        <label class="text-xs text-gray-500 font-semibold block mb-1">Comps</label>
+                                        <input type="number" class="comps-filter input-field" data-filter="compCount" data-index="${index}" 
+                                               value="${savedData.compsCount || '10'}" min="5" max="25" step="1" style="padding: 4px 6px; font-size: 12px;">
+                                    </div>
+                                </div>
+                                <button onclick="fetchComps(${index})" 
+                                        class="w-full px-3 py-2 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition-colors font-semibold flex items-center justify-center gap-2" 
+                                        id="comps-btn-${index}">
+                                    🔍 Buscar Comps
+                                </button>
+                            </div>
+                            
+                            <!-- Results (hidden until fetched) -->
+                            <div id="comps-results-${index}" style="display: none;"></div>
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
                         <!-- Notes -->
                         <div class="mb-3">
                             <label class="text-xs text-gray-500 font-semibold block mb-1">📝 Notas</label>
@@ -1828,9 +1890,219 @@
         }
         
         // ========================================
+        // RENTCAST COMPS — FETCH & DISPLAY
+        // ========================================
+        async function fetchComps(index) {
+            const btn = document.getElementById(`comps-btn-${index}`);
+            const resultsDiv = document.getElementById(`comps-results-${index}`);
+            const usageSpan = document.getElementById(`comps-usage-${index}`);
+            const prop = approvedProperties[index];
+            const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
+            
+            // Get address
+            const address = getFieldValue(prop, 'Address', 'address');
+            const city = getFieldValue(prop, 'City', 'city');
+            const fullAddress = address !== '-' ? `${address}, ${city !== '-' ? city + ', ' : ''}FL` : '';
+            
+            if (!fullAddress) {
+                resultsDiv.style.display = 'block';
+                resultsDiv.innerHTML = '<div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">❌ Endereço não disponível para esta propriedade.</div>';
+                return;
+            }
+            
+            // Get filter values from the panel
+            const panel = document.getElementById(`comps-filters-${index}`);
+            const filters = {};
+            panel.querySelectorAll('.comps-filter').forEach(el => {
+                const key = el.dataset.filter;
+                const val = el.value;
+                if (val && val !== '' && val !== '-') filters[key] = val;
+            });
+            
+            // Build query string
+            let qs = `address=${encodeURIComponent(fullAddress)}`;
+            for (const [k, v] of Object.entries(filters)) {
+                qs += `&${k}=${encodeURIComponent(v)}`;
+            }
+            
+            // UI: loading state
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Buscando...';
+            btn.classList.add('opacity-50');
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = '<div class="text-center py-4 text-gray-400 text-sm">Consultando RentCast API...</div>';
+            
+            try {
+                const resp = await fetch(`/api/comps/value-estimate?${qs}`);
+                const data = await resp.json();
+                
+                // Update usage counter
+                if (data.usage) {
+                    usageSpan.textContent = `${data.usage.used}/${data.usage.limit} usados`;
+                    if (data.usage.remaining <= 10) usageSpan.style.color = '#dc2626';
+                    else usageSpan.style.color = '#9ca3af';
+                }
+                
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">❌ ${data.message}</div>`;
+                    return;
+                }
+                
+                // Save comps filter settings
+                const savedData = savedInvestmentData[parcelId] || {};
+                savedData.compsRadius = filters.maxRadius || '0.5';
+                savedData.compsDays = filters.daysOld || '90';
+                savedData.compsBedrooms = filters.bedrooms || '';
+                savedData.compsBathrooms = filters.bathrooms || '';
+                savedData.compsCount = filters.compCount || '10';
+                savedData.lastCompsResult = data;
+                savedInvestmentData[parcelId] = savedData;
+                localStorage.setItem('investmentData', JSON.stringify(savedInvestmentData));
+                
+                // Render results
+                renderCompsResults(index, data, parcelId);
+                
+            } catch (err) {
+                resultsDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">❌ Erro de conexão: ${err.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '🔍 Buscar Comps';
+                btn.classList.remove('opacity-50');
+            }
+        }
+        
+        function renderCompsResults(index, data, parcelId) {
+            const resultsDiv = document.getElementById(`comps-results-${index}`);
+            const fmv = data.estimated_fmv || 0;
+            const low = data.price_range_low || 0;
+            const high = data.price_range_high || 0;
+            const confidence = data.confidence || 'N/A';
+            const comps = data.comps || [];
+            const mode = data.mode || 'LIVE';
+            const warning = data.warning || '';
+            
+            let confColor = '#6b7280';
+            let confBg = '#f3f4f6';
+            if (confidence === 'HIGH') { confColor = '#059669'; confBg = '#d1fae5'; }
+            else if (confidence === 'MED') { confColor = '#d97706'; confBg = '#fef3c7'; }
+            else if (confidence === 'LOW') { confColor = '#dc2626'; confBg = '#fee2e2'; }
+            
+            let html = '';
+            
+            // Warning banner
+            if (warning) {
+                html += `<div class="bg-yellow-50 border border-yellow-300 rounded-lg p-2 mb-2 text-xs text-yellow-800 font-semibold">⚠️ ${warning}</div>`;
+            }
+            if (mode === 'MOCK') {
+                html += `<div class="bg-blue-50 border border-blue-200 rounded-lg p-2 mb-2 text-xs text-blue-600">ℹ️ Modo OFFLINE — dados simulados (mock)</div>`;
+            }
+            
+            // FMV Summary
+            html += `
+                <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg p-3 mb-2">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs font-bold text-emerald-700 uppercase">Valor Estimado (FMV)</span>
+                        <span class="px-2 py-0.5 rounded-full text-xs font-bold" style="background: ${confBg}; color: ${confColor};">${confidence} (${comps.length} comps)</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="text-2xl font-black text-emerald-800">$${fmv.toLocaleString('en-US')}</div>
+                            <div class="text-xs text-emerald-600">Range: $${low.toLocaleString('en-US')} — $${high.toLocaleString('en-US')}</div>
+                        </div>
+                        <button onclick="acceptFMV(${index}, ${fmv})" 
+                                class="px-4 py-2 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition-colors font-bold shadow-sm">
+                            ✓ Aceitar
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Comps table
+            if (comps.length > 0) {
+                html += `
+                    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                        <div class="bg-gray-50 px-3 py-2 border-b border-gray-200">
+                            <span class="text-xs font-bold text-gray-500 uppercase">Comparáveis (${comps.length})</span>
+                        </div>
+                        <div style="max-height: 300px; overflow-y: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                                <thead>
+                                    <tr style="background: #f9fafb; position: sticky; top: 0;">
+                                        <th style="padding: 6px 8px; text-align: left; font-weight: 700; color: #6b7280; border-bottom: 1px solid #e5e7eb;">Endereço</th>
+                                        <th style="padding: 6px 8px; text-align: right; font-weight: 700; color: #6b7280; border-bottom: 1px solid #e5e7eb;">Preço</th>
+                                        <th style="padding: 6px 8px; text-align: right; font-weight: 700; color: #6b7280; border-bottom: 1px solid #e5e7eb;">Dist.</th>
+                                        <th style="padding: 6px 8px; text-align: right; font-weight: 700; color: #6b7280; border-bottom: 1px solid #e5e7eb;">Acres</th>
+                                        <th style="padding: 6px 8px; text-align: right; font-weight: 700; color: #6b7280; border-bottom: 1px solid #e5e7eb;">Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                `;
+                comps.forEach((c, i) => {
+                    const rowBg = i % 2 === 0 ? '#ffffff' : '#f9fafb';
+                    const saleDate = c.sale_date ? new Date(c.sale_date).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'2-digit'}) : '-';
+                    html += `
+                                    <tr style="background: ${rowBg};">
+                                        <td style="padding: 5px 8px; border-bottom: 1px solid #f3f4f6; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${c.address}">${c.address}</td>
+                                        <td style="padding: 5px 8px; text-align: right; border-bottom: 1px solid #f3f4f6; font-weight: 600; color: #059669;">$${(c.price || 0).toLocaleString('en-US')}</td>
+                                        <td style="padding: 5px 8px; text-align: right; border-bottom: 1px solid #f3f4f6;">${c.distance_miles ? c.distance_miles + ' mi' : '-'}</td>
+                                        <td style="padding: 5px 8px; text-align: right; border-bottom: 1px solid #f3f4f6;">${c.lot_size_acres || '-'}</td>
+                                        <td style="padding: 5px 8px; text-align: right; border-bottom: 1px solid #f3f4f6; color: #6b7280;">${saleDate}</td>
+                                    </tr>
+                    `;
+                });
+                html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function acceptFMV(index, fmv) {
+            const card = document.getElementById(`card-${index}`);
+            if (!card) return;
+            const mvInput = card.querySelector('.market-value');
+            if (mvInput) {
+                mvInput.value = fmv.toLocaleString('en-US');
+                mvInput.dataset.rawValue = String(fmv);
+                recalculateCard(index);
+                saveCardData(index);
+                
+                // Visual feedback
+                const btn = event.target;
+                btn.textContent = '✓ Aplicado!';
+                btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+                btn.classList.add('bg-gray-400');
+                btn.disabled = true;
+                setTimeout(() => {
+                    btn.textContent = '✓ Aceitar';
+                    btn.classList.remove('bg-gray-400');
+                    btn.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
+                    btn.disabled = false;
+                }, 2000);
+            }
+        }
+        
+        // Load usage on page init
+        async function loadCompsUsage() {
+            try {
+                const resp = await fetch('/api/comps/usage');
+                const data = await resp.json();
+                document.querySelectorAll('[id^="comps-usage-"]').forEach(el => {
+                    el.textContent = `${data.used}/${data.limit} usados`;
+                    if (data.remaining <= 10) el.style.color = '#dc2626';
+                });
+            } catch(e) { /* silent */ }
+        }
+        
+        // ========================================
         // INITIALIZE
         // ========================================
         renderCards();
+        loadCompsUsage();
         
         // Setup currency formatting on all monetary inputs
         document.querySelectorAll('.currency-input').forEach(input => {

@@ -168,3 +168,15 @@
 - [x] Teste com endereço FL real — 3456 SW 34th St, Ocala FL: FMV=$111k, 10 comps, HIGH confidence
 - [x] Contador mensal de uso RentCast (soft-limit 50 calls/mês, avisa mas NÃO bloqueia)
 - [x] Endpoint GET /api/comps/usage para consultar uso atual
+
+## RENTCAST COMPS PANEL — Tela 3 (v4.4)
+
+- [x] Provider: suportar propertyType, maxRadius, daysOld, bedrooms, bathrooms, squareFootage params
+- [x] Endpoint: passar novos params via query string
+- [x] UI: botão "🔍 Comps RentCast" em cada card
+- [x] UI: mini-painel de filtros pré-preenchido com dados da propriedade
+- [x] Defaults: 0.5mi raio, 90 dias, tipo Land, dados do CSV
+- [x] Filtros editáveis antes de buscar
+- [x] Exibir resultado: FMV sugerido + comps + confidence
+- [x] Botão "Aceitar FMV" para preencher Market Value com 1 clique
+- [x] Contador de uso visível (X/50)

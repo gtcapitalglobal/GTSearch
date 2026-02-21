@@ -646,12 +646,13 @@ const compsRateLimiter = rateLimit({
 /**
  * GET /api/comps/value-estimate
  * Query params: address OR (lat + lon)
+ * Optional filters: propertyType, maxRadius, daysOld, bedrooms, bathrooms, squareFootage, compCount
  * Returns: SSOT value estimate with comps
  * Rate limited: 10 req/min per IP
  */
 app.get('/api/comps/value-estimate', compsRateLimiter, async (req, res) => {
   try {
-    const { address, lat, lon } = req.query;
+    const { address, lat, lon, propertyType, maxRadius, daysOld, bedrooms, bathrooms, squareFootage, compCount } = req.query;
     
     // Validate input
     if (!address && (!lat || !lon)) {
@@ -659,8 +660,8 @@ app.get('/api/comps/value-estimate', compsRateLimiter, async (req, res) => {
         error: 'Missing required parameters',
         message: 'Provide either address or lat+lon',
         usage: {
-          by_address: '/api/comps/value-estimate?address=123 Main St, Orlando, FL 32801',
-          by_coords: '/api/comps/value-estimate?lat=28.5383&lon=-81.3792'
+          by_address: '/api/comps/value-estimate?address=123 Main St, Orlando, FL 32801&propertyType=Land&maxRadius=0.5&daysOld=90',
+          by_coords: '/api/comps/value-estimate?lat=28.5383&lon=-81.3792&propertyType=Land'
         }
       });
     }
@@ -679,6 +680,15 @@ app.get('/api/comps/value-estimate', compsRateLimiter, async (req, res) => {
         });
       }
     }
+    
+    // Pass optional filters
+    if (propertyType) params.propertyType = propertyType;
+    if (maxRadius) params.maxRadius = maxRadius;
+    if (daysOld) params.daysOld = daysOld;
+    if (bedrooms !== undefined && bedrooms !== '') params.bedrooms = bedrooms;
+    if (bathrooms !== undefined && bathrooms !== '') params.bathrooms = bathrooms;
+    if (squareFootage) params.squareFootage = squareFootage;
+    if (compCount) params.compCount = compCount;
     
     const result = await getValueEstimate(params);
     res.json(result);
