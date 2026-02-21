@@ -386,3 +386,66 @@
 - [x] Reordenar seções: Custos → Max Bid → Comps → Research Comparables → Notas → Due Diligence — IMPLEMENTADO v5.3
 - [x] Final Due Diligence é a última seção do card — IMPLEMENTADO v5.3
 - [x] "Dados da Propriedade" sempre visível (sem accordion) — IMPLEMENTADO v5.3
+
+## v6-basic — Auditoria Completa (15 arquivos, 21 Feb 2026)
+
+### CRITICAL (3 issues — corrigir antes de produção)
+- [ ] CRIT-1: `property-analysis-widget.js` L639 — `calculateRiskAssessment` crash se `data.wetlands` ou `data.fema` forem null — adicionar null checks
+- [ ] CRIT-2: `security.js` L213 — `secureEndpoint` default OFFLINE_MODE=true desabilita auth silenciosamente — trocar default para false
+- [ ] CRIT-3: `investment.html` L2006 — Senha do Google Sheets salva em localStorage (XSS risk) — mover para sessionStorage ou pedir a cada sessão
+
+### HIGH (12 issues — priorizar)
+- [ ] HIGH-1: `property-analysis-widget.js` L431 — `renderWetlandsFound` acessa `wetlands.wetlands.length` mas estrutura correta é `wetlands.features.length`
+- [ ] HIGH-2: `property-analysis-widget.js` L586 — `renderZoning` usa `.map()` em objeto (deveria ser `Object.keys().map()`)
+- [ ] HIGH-3: `property-analysis-widget.js` L741 — `getLandUseRisk` lógica invertida: CONSERVATION=baixo risco, RESIDENTIAL=alto risco (deveria ser o contrário)
+- [ ] HIGH-4: `security.js` L89 — `requestTimeout` chama `next()` antes de configurar timeout — pode crashar ao setar headers em resposta já enviada
+- [ ] HIGH-5: `security.js` L183 — `timingSafeEqual` só compara se lengths são iguais — vaza informação do tamanho do token
+- [ ] HIGH-6: `server.js` L797 — `/api/comps/cache-clear` protegido apenas por header `x-admin-key` — inseguro
+- [ ] HIGH-7: `server.js` L225 — `/api/google-maps-loader` expõe GOOGLE_MAPS_API_KEY ao client — considerar proxy
+- [ ] HIGH-8: `api-integrations.js` L841 — `overallStatus` substitui status de risco alto por genérico "AVALIAR" — refatorar lógica de prioridade
+- [ ] HIGH-9: `county-links.js` L89 — Title-case falha em nomes hifenizados (MIAMI-DADE → Miami-dade em vez de Miami-Dade)
+- [ ] HIGH-10: `index.html` — Múltiplos usos de innerHTML sem sanitização (XSS via CSV/KML malicioso)
+- [ ] HIGH-11: `analysis.html` — Lógica inteira em inline script (>3000 linhas) — separar em arquivos .js
+- [ ] HIGH-12: `rentcastProvider.js` L92,192 — writeFileSync/renameSync bloqueiam event loop — usar fs.promises
+
+### MEDIUM (20 issues — melhorias incrementais)
+- [ ] MED-A1: `api-integrations.js` L72 — `rejectUnauthorized: false` desabilita validação SSL
+- [ ] MED-A2: `api-integrations.js` L668 — `getGenericRegistryZoning` usa "primeiro ganha" — pode perder dados de overlay
+- [ ] MED-A3: `server.js` L125 — `loadMockData` usa readFileSync — trocar por async
+- [ ] MED-A4: `server.js` L164 — `/api/status` retorna OFFLINE_MODE duplicado (upper e lower case)
+- [ ] MED-A5: `security.js` L60 — `requestSizeLimit` só checa content-length header — bypass via chunked encoding
+- [ ] MED-A6: `security.js` L136 — `rejectUserSuppliedUrls` usa blacklist — trocar por allowlist
+- [ ] MED-A7: `validator.js` L59 — `ajv.compile(schema)` recompila a cada chamada — cachear validator
+- [ ] MED-A8: `validator.js` L97 — monkey-patch em `res.json` — refatorar
+- [ ] MED-A9: `audit.js` L84 — monkey-patch em `res.json` — refatorar
+- [ ] MED-A10: `research-links.js` L31 — `parseOwnerName` não lida com partículas (de la, van der)
+- [ ] MED-A11: `research-links.js` L51 — Nome de parte única seta first=last (incorreto)
+- [ ] MED-A12: `research-links.js` L121,136,183 — Slug agressivo remove apóstrofos — pode gerar URLs inválidas
+- [ ] MED-A13: `county-links.js` L172,200,222 — `getByCounty`/`getCountyList` chamam `getAll` toda vez — redundante
+- [ ] MED-A14: `county-links.js` L23 — Sheet ID e Tab hardcoded — externalizar config
+- [ ] MED-A15: `index.html` — Uso de alert()/confirm() — trocar por modais
+- [ ] MED-A16: `index.html` L1086 — Race condition no carregamento de múltiplos KML
+- [ ] MED-A17: `analysis.html` — Variáveis globais extensivas (window.properties, window.currentIndex)
+- [ ] MED-A18: `investment.html` L2106 — fetch Google Sheets com `mode: 'no-cors'` — impede error handling
+- [ ] MED-A19: `rentcastProvider.js` L778 — Lógica de OFFLINE_MODE não convencional (undefined=true)
+- [ ] MED-A20: `wetlands-local.js` L150 — parseFloat duplo redundante
+
+### LOW (18 issues — otimização futura)
+- [ ] LOW-A1: `utils.js` — Funções no window global — usar namespace GTSearch.utils
+- [ ] LOW-A2: `utils.js` L56 — formatDollar usa parseFloat permissivo
+- [ ] LOW-A3: `research-links.js` L94 — Estado 'FL' hardcoded
+- [ ] LOW-A4: `research-links.js` L156 — Buffer EPA hardcoded (0.01)
+- [ ] LOW-A5: `research-links.js` L102,107,149,168 — Funções não utilizadas (dead code)
+- [ ] LOW-A6: `florida-counties-api.js` L64-77 — Lógica ST/SAINT frágil
+- [ ] LOW-A7: `florida-counties-api.js` L51 — Múltiplos requests concorrentes possíveis
+- [ ] LOW-A8: `index.html` — Variáveis globais extensivas — encapsular em objeto
+- [ ] LOW-A9: `index.html` L523 — Busca global sem debounce
+- [ ] LOW-A10: `analysis.html` — console.log em produção — remover
+- [ ] LOW-A11: `analysis.html` L1139 — Uso de alert()
+- [ ] LOW-A12: `investment.html` L236 — Script inline >2400 linhas — separar em arquivo .js
+- [ ] LOW-A13: `audit.js` L124 — readAuditLog lê arquivo inteiro em memória (até 5MB)
+- [ ] LOW-A14: `rentcastProvider.js` L250 — enforceCacheLimit sort inteiro a cada write
+- [ ] LOW-A15: `rentcastProvider.js` L96,197 — Silent catch em cleanup de .tmp
+- [ ] LOW-A16: `wetlands-local.js` L26 — classifyRisk só usa 3 chars do NWI code
+- [ ] LOW-A17: `wetlands-local.js` L248 — Sem retry em falha de API
+- [ ] LOW-A18: `wetlands-local.js` L29-43 — Regras de risco hardcoded — externalizar config
