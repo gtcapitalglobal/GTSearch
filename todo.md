@@ -348,3 +348,10 @@
 - [ ] MED-20: Corrigir middleware de timeout (security.js) — otimização futura
 - [ ] MED-21: Refatorar código repetitivo de API keys (settings.html) — otimização futura
 - [ ] MED-24: Externalizar limites hardcoded (audit.js) — otimização futura
+
+## v5.1 — Auto-Analyze Batch on Tela 2 Load
+
+- [x] Ao abrir Tela 2 via "Analisar Selecionadas", disparar análise automática de TODAS as propriedades em batch — IMPLEMENTADO v5.1
+- [x] Mostrar progresso (ex: "Analisando 3/5...") — IMPLEMENTADO v5.1 (barra de progresso + tempo estimado)
+- [x] Manter botão "Re-analisar" para forçar nova consulta manual — IMPLEMENTADO v5.1
+- [x] Resultados aparecem prontos para revisar (Aprovar/Rejeitar) — IMPLEMENTADO v5.1

@@ -1092,6 +1092,15 @@
             
             // Initialize Property Analysis Widget
             initializePropertyAnalysisWidget();
+            
+            // v5.1: Auto-trigger batch analysis on page load
+            // Small delay to ensure widget is fully initialized and first property is rendered
+            setTimeout(() => {
+                console.log('🚀 Auto-triggering batch analysis on page load...');
+                if (propertyAnalysisWidget && properties.length > 0) {
+                    batchAnalyzeAll(true); // true = auto-triggered (skip confirm)
+                }
+            }, 500);
         }
         
         // Call immediately if DOM is ready, otherwise wait
@@ -4224,21 +4233,22 @@
         // Fix #11: Global abort flag for batch cancel
         let batchAborted = false;
         
-        async function batchAnalyzeAll() {
+        async function batchAnalyzeAll(autoTriggered = false) {
             if (!propertyAnalysisWidget) {
-                alert('Widget não inicializado. Recarregue a página.');
+                if (!autoTriggered) alert('Widget não inicializado. Recarregue a página.');
                 return;
             }
             
             if (!properties || properties.length === 0) {
-                alert('Nenhuma propriedade carregada!');
+                if (!autoTriggered) alert('Nenhuma propriedade carregada!');
                 return;
             }
             
             const total = properties.length;
             // Fix #12: Realistic timing estimate (5s per property avg)
             const estMinutes = Math.ceil(total * 5 / 60);
-            if (!confirm(`Analisar ${total} propriedade(s)? Estimativa: ~${estMinutes} minuto(s). Você pode cancelar a qualquer momento.`)) {
+            // v5.1: Skip confirm dialog when auto-triggered on page load
+            if (!autoTriggered && !confirm(`Analisar ${total} propriedade(s)? Estimativa: ~${estMinutes} minuto(s). Você pode cancelar a qualquer momento.`)) {
                 return;
             }
             
