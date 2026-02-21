@@ -85,15 +85,10 @@ const CountyLinks = (() => {
       if (!countyName || countyName.length < 3) continue;
       if (!cols[COL.COUNTY_WEBSITE] || !cols[COL.COUNTY_WEBSITE].startsWith('http')) continue;
 
-      // Normalize county name: "PASCO" → "Pasco"
-      const normalizedName = countyName.charAt(0).toUpperCase() + countyName.slice(1).toLowerCase();
-      // Handle hyphenated names like "MIAMI-DADE"
-      const displayName = countyName.split(/[-\s]/).map(w => 
+      // Title case: "PASCO" → "Pasco", "MIAMI-DADE" → "Miami-Dade", "PALM BEACH" → "Palm Beach"
+      const displayName = countyName.replace(/[\w]+/g, w => 
         w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
-      ).join('-').replace(/-/g, function(m, offset, str) {
-        // Restore spaces for multi-word names
-        return countyName[offset] === ' ' ? ' ' : '-';
-      });
+      );
 
       counties[countyName.toUpperCase()] = {
         name: displayName,
@@ -113,13 +108,27 @@ const CountyLinks = (() => {
   async function fetchFromSheets() {
     const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
 
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Google Sheets fetch failed: ${response.status}`);
-    }
+    // Timeout after 10 seconds to prevent hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    const csvText = await response.text();
-    return parseCountyData(csvText);
+    try {
+      const response = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`Google Sheets fetch failed: ${response.status}`);
+      }
+
+      const csvText = await response.text();
+      return parseCountyData(csvText);
+    } catch (e) {
+      clearTimeout(timeoutId);
+      if (e.name === 'AbortError') {
+        throw new Error('Google Sheets fetch timed out (10s)');
+      }
+      throw e;
+    }
   }
 
   // --- Cache management ---

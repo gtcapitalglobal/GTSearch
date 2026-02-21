@@ -1051,7 +1051,8 @@
 
                 container.innerHTML = ddLinks.map(link => {
                     const bgColor = link.color || '#dc3545';
-                    return `<a href="${link.url}" target="_blank" rel="noopener noreferrer"
+                    const safeUrl = (link.url || '#').replace(/"/g, '&quot;');
+                    return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer"
                         class="inline-flex items-center gap-1 px-4 py-2 text-white rounded-lg hover:opacity-90 transition-opacity text-sm font-bold shadow-md"
                         style="background-color: ${bgColor}">
                         ${link.icon} ${link.label}
