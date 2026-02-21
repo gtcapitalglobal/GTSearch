@@ -234,6 +234,8 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="county-links.js"></script>
+    <script src="research-links.js"></script>
 </head>
 <body class="bg-gray-50">
     <!-- Header -->
@@ -942,6 +944,40 @@
                         
                         <div class="section-divider"></div>
                         
+                        <!-- Final Due Diligence (v5.2) -->
+                        <div class="mb-3" id="due-diligence-${index}">
+                            <h4 class="text-xs font-bold text-red-600 uppercase tracking-wider mb-2 flex items-center gap-1">
+                                ⚠️ Final Due Diligence — Pré-Leilão
+                            </h4>
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-3">
+                                <div class="flex gap-2 flex-wrap mb-2" id="due-diligence-links-${index}">
+                                    <span class="text-xs text-gray-400">Carregando links...</span>
+                                </div>
+                                <div class="border-t border-red-200 pt-2 mt-2">
+                                    <p class="text-xs text-gray-500 font-semibold mb-1">✅ Checklist Pré-Leilão:</p>
+                                    <div class="space-y-1">
+                                        <label class="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                                            <input type="checkbox" class="dd-check" data-index="${index}" data-check="liens" 
+                                                   ${savedData.ddLiens ? 'checked' : ''} onchange="saveCardData(${index})">
+                                            Liens verificados no Clerks Office
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                                            <input type="checkbox" class="dd-check" data-index="${index}" data-check="violations" 
+                                                   ${savedData.ddViolations ? 'checked' : ''} onchange="saveCardData(${index})">
+                                            Sem violações abertas (Code Enforcement)
+                                        </label>
+                                        <label class="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+                                            <input type="checkbox" class="dd-check" data-index="${index}" data-check="ready" 
+                                                   ${savedData.ddReady ? 'checked' : ''} onchange="saveCardData(${index})">
+                                            Pronto para lance
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
                         <!-- Quick Links -->
                         <div class="flex gap-2 flex-wrap">
                             <a href="${buildZillowUrl(address, city, prop)}" 
@@ -976,8 +1012,59 @@
             });
             
             updateFilledCount();
+            
+            // Load Due Diligence links for all cards (v5.2)
+            loadAllDueDiligenceLinks();
         }
         
+        // ========================================
+        // DUE DILIGENCE LINKS (v5.2)
+        // ========================================
+        async function loadAllDueDiligenceLinks() {
+            for (let i = 0; i < approvedProperties.length; i++) {
+                loadDueDiligenceLinks(i);
+            }
+        }
+
+        async function loadDueDiligenceLinks(index) {
+            const prop = approvedProperties[index];
+            if (!prop) return;
+
+            const container = document.getElementById(`due-diligence-links-${index}`);
+            if (!container) return;
+
+            try {
+                const county = getFieldValue(prop, 'County', 'county');
+                let countyData = null;
+                try {
+                    countyData = await CountyLinks.getByCounty(county);
+                } catch (e) {
+                    console.warn(`[DueDiligence] Failed to fetch county links for ${county}:`, e.message);
+                }
+
+                const ddLinks = ResearchLinks.generateDueDiligence(countyData);
+
+                if (ddLinks.length === 0) {
+                    container.innerHTML = '<span class="text-xs text-gray-400">Nenhum link dispon\u00edvel para este condado</span>';
+                    return;
+                }
+
+                container.innerHTML = ddLinks.map(link => {
+                    const bgColor = link.color || '#dc3545';
+                    return `<a href="${link.url}" target="_blank" rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 px-4 py-2 text-white rounded-lg hover:opacity-90 transition-opacity text-sm font-bold shadow-md"
+                        style="background-color: ${bgColor}">
+                        ${link.icon} ${link.label}
+                    </a>`;
+                }).join('');
+
+                console.log(`[DueDiligence] Card ${index}: ${ddLinks.length} links loaded for ${county}`);
+            } catch (error) {
+                console.error(`[DueDiligence] Error for card ${index}:`, error);
+                container.innerHTML = '<span class="text-xs text-red-400">Erro ao carregar links</span>';
+            }
+        }
+
         // ========================================
         // RECALCULATE CARD
         // ========================================
@@ -1131,7 +1218,11 @@
                 roi1: parseFloat(card.querySelector('.roi1-input')?.value) || 0,
                 roi2: parseFloat(card.querySelector('.roi2-input')?.value) || 0,
                 roi3: parseFloat(card.querySelector('.roi3-input')?.value) || 0,
-                notes: card.querySelector('.notes-field').value || ''
+                notes: card.querySelector('.notes-field').value || '',
+                // Due Diligence checklist (v5.2)
+                ddLiens: card.querySelector('.dd-check[data-check="liens"]')?.checked || false,
+                ddViolations: card.querySelector('.dd-check[data-check="violations"]')?.checked || false,
+                ddReady: card.querySelector('.dd-check[data-check="ready"]')?.checked || false
             };
             
             savedInvestmentData[parcelId] = data;

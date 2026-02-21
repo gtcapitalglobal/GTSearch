@@ -362,3 +362,11 @@
 ## v5.2 — UI Adjustments
 - [ ] Mover contador de progresso ("Progresso: X de Y" + barra) para ACIMA da sidebar "Ações Rápidas" (Deletar/Aprovar/Anterior/Próxima) — atualmente está ao lado, mover para cima da segunda imagem (sidebar)
 - [x] Fix BUG-1: Race condition — adicionar flag batchRunning para evitar auto-análise duplicada na prop 0 — CORRIGIDO v5-basic
+
+## v5.2 — Research Links
+- [x] Criar módulo county-links.js (fetch Google Sheets API pública + cache 24h localStorage) — IMPLEMENTADO v5.2
+- [x] Criar módulo research-links.js (URL builders para todos os tipos de link + owner name parser) — IMPLEMENTADO v5.2
+- [x] Criar mapeamento de state IDs para Legacy.com (50 estados) — IMPLEMENTADO v5.2
+- [x] Implementar seção "Research Links" colapsável na Tela 2 (County Links, Owner Research, Skip Trace, Property Research, Comps) — IMPLEMENTADO v5.2
+- [x] Implementar seção "Final Due Diligence" separada na Tela 3 (Clerks Office, Code Enforcement + checklist pré-leilão) — IMPLEMENTADO v5.2
+- [x] Testar fluxo end-to-end com CSV Pasco — TESTADO v5.2 (Clerks=pascoclerkofcourt.org, Code=pascofl.gov/code-enforcement)
