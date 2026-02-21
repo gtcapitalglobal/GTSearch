@@ -1534,7 +1534,7 @@
             // Só dispara se a propriedade ainda não foi analisada (evita re-análise ao navegar)
             setTimeout(() => {
                 const alreadyAnalyzed = properties[window.currentIndex]?.analysisData;
-                if (propertyAnalysisWidget && !propertyAnalysisWidget.loading && !alreadyAnalyzed) {
+                if (propertyAnalysisWidget && !propertyAnalysisWidget.loading && !alreadyAnalyzed && !window.batchRunning) {
                     console.log('🔍 Auto-análise disparada para propriedade', window.currentIndex);
                     analyzeCurrentProperty();
                 } else if (alreadyAnalyzed) {
@@ -4237,6 +4237,8 @@
         // ===== BATCH ANALYSIS =====
         // Fix #11: Global abort flag for batch cancel
         let batchAborted = false;
+        // Fix BUG-1: Flag to prevent race condition between batch and auto-analysis
+        window.batchRunning = false;
         
         async function batchAnalyzeAll(autoTriggered = false) {
             if (!propertyAnalysisWidget) {
@@ -4258,6 +4260,7 @@
             }
             
             batchAborted = false;
+            window.batchRunning = true;
             const btn = document.getElementById('batch-analyze-btn');
             const singleBtn = document.getElementById('analyze-property-btn');
             btn.disabled = true;
@@ -4451,6 +4454,7 @@
             // Store batch results for export
             window._lastBatchResults = results;
             
+            window.batchRunning = false;
             btn.disabled = false;
             singleBtn.disabled = false;
             btn.textContent = '📦 Analisar Todas';

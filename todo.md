@@ -358,3 +358,7 @@
 - [x] Persistir resultados do batch analysis por propriedade (em memória/objeto) — IMPLEMENTADO v5.1
 - [x] Ao navegar (Anterior/Próxima), restaurar resultados detalhados no widget (FEMA, Wetlands, Zoning, Land Use com semáforos) — IMPLEMENTADO v5.1
 - [x] Não chamar API de novo se já tem resultado salvo do batch — IMPLEMENTADO v5.1
+
+## v5.2 — UI Adjustments
+- [ ] Mover contador de progresso ("Progresso: X de Y" + barra) para ACIMA da sidebar "Ações Rápidas" (Deletar/Aprovar/Anterior/Próxima) — atualmente está ao lado, mover para cima da segunda imagem (sidebar)
+- [x] Fix BUG-1: Race condition — adicionar flag batchRunning para evitar auto-análise duplicada na prop 0 — CORRIGIDO v5-basic
