@@ -490,8 +490,39 @@ async function getZoningForCounty(county, lat, lng) {
         }
     }
     
-    // County in registry but no zoning data
+    // County in registry but no zoning data — try statewide FLU as fallback
     const manualLink = countyConfig?.manual_link || null;
+    
+    // === STATEWIDE FLU FALLBACK ===
+    // Uses FGDL FLU_L2_2020_JDX dataset (free, covers all 67 FL counties)
+    console.log(`[Zoning] No county-specific data for ${county}. Trying statewide FLU fallback...`);
+    const statewideFLU = await getStatewideFLU(lat, lng).catch(err => {
+        console.warn(`[Statewide FLU] Fallback failed for ${county}:`, err.message);
+        return { found: false };
+    });
+    
+    if (statewideFLU.found) {
+        console.log(`[Zoning] Statewide FLU fallback SUCCESS for ${county}: ${statewideFLU.fluL2 || statewideFLU.fluL1} - ${statewideFLU.description}`);
+        return {
+            found: true,
+            code: null,
+            description: '⚠️ Zoning não disponível via API',
+            futureLandUse: statewideFLU.fluL2 || statewideFLU.fluL1,
+            futureLandUseDesc: statewideFLU.description || statewideFLU.fluL2Desc || statewideFLU.fluL1Desc,
+            futureLandUseLevel1: statewideFLU.fluL1,
+            futureLandUseLevel1Desc: statewideFLU.fluL1Desc,
+            jurisdiction: statewideFLU.jurisdiction || `${county} County`,
+            status: '⚠️ PARCIAL (FLU estadual)',
+            source: `Statewide FLU (FGDL 2020) — ${county} County`,
+            note: manualLink 
+                ? `Zoning local não disponível. FLU obtido via dataset estadual (FGDL 2020). Para zoning detalhado, consulte: ${manualLink}`
+                : 'Zoning local não disponível. FLU obtido via dataset estadual (FGDL 2020). Consulte o Planning Department para zoning detalhado.',
+            manualLink,
+            isStatewideFallback: true
+        };
+    }
+    
+    // Truly no data available
     return {
         found: false,
         status: '⚠️ ZONING NÃO DISPONÍVEL',
@@ -683,6 +714,59 @@ async function getGenericRegistryZoning(county, config, lat, lng) {
             source: `${county} County Planning & Zoning`,
             manualLink: config?.manual_link || null
         };
+    }
+}
+
+// ============================================================================
+// STATEWIDE FLU FALLBACK (FGDL FLU_L2_2020_JDX - covers all 67 FL counties)
+// ============================================================================
+
+/**
+ * Query the statewide Future Land Use dataset from FGDL (Florida Geographic Data Library)
+ * This is a FREE, public FeatureServer covering ALL 67 Florida counties.
+ * Used as a universal fallback when county-specific zoning/FLU is not available.
+ * Data source: GeoPlan Level 2 Future Land Use 2020
+ * Fields: FLU_L1 (code), FLU_L1_DESC (description), FLU_L2_1 (detailed code), FLU_L2_DESC (detailed desc)
+ */
+async function getStatewideFLU(lat, lng) {
+    try {
+        const url = 'https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/FLU_L2_2020_JDX/FeatureServer/0/query';
+        
+        const params = {
+            geometry: JSON.stringify({ x: lng, y: lat, spatialReference: { wkid: 4326 } }),
+            geometryType: 'esriGeometryPoint',
+            inSR: 4326,
+            spatialRel: 'esriSpatialRelIntersects',
+            outFields: 'COUNTY,FLU_L1,FLU_L1_DESC,FLU_L2_1,FLU_L2_DESC,JURISDICT_1,DESCRIPT',
+            returnGeometry: false,
+            f: 'json'
+        };
+        
+        const data = await safeArcGISQuery(url, params, { 
+            label: 'Statewide FLU', 
+            timeout: 15000, 
+            retries: 1 
+        });
+        
+        if (data.features && data.features.length > 0) {
+            const attrs = data.features[0].attributes;
+            return {
+                found: true,
+                fluL1: attrs.FLU_L1 || null,
+                fluL1Desc: attrs.FLU_L1_DESC || null,
+                fluL2: attrs.FLU_L2_1 || null,
+                fluL2Desc: attrs.FLU_L2_DESC || null,
+                county: attrs.COUNTY || null,
+                jurisdiction: attrs.JURISDICT_1 || null,
+                description: attrs.DESCRIPT || attrs.FLU_L2_DESC || attrs.FLU_L1_DESC || null
+            };
+        }
+        
+        return { found: false };
+        
+    } catch (error) {
+        console.error('[Statewide FLU] Error:', error.message);
+        return { found: false, error: error.message };
     }
 }
 

@@ -1,6 +1,6 @@
 # GTSearch — TODO (v4.1-basic)
 
-> Atualizado: 2026-02-21 | v4.9 — Zoning Expansion (Volusia + Marion)
+> Atualizado: 2026-02-21 | v4.9.1 — Statewide FLU Fallback (FGDL 2020)
 
 ---
 
@@ -138,15 +138,15 @@
 | Condado | Zoning | FLU | Status |
 |---------|--------|-----|--------|
 | Alachua | ✅ | ✅ | Funcional |
-| Citrus | ❌ | ❌ | Sem API pública (portal requer login) |
-| Duval | ❌ | ❌ | Sem API pública acessível |
+| Citrus | ⚠️ | ✅ | FLU via Statewide FGDL 2020 (fallback) |
+| Duval | ⚠️ | ✅ | FLU via Statewide FGDL 2020 (fallback) |
 | Hernando | ✅ | ✅ | Funcional |
 | Highlands | ✅ | ✅ | Funcional |
 | Hillsborough | ✅ | ✅ | NOVO v4.1 |
-| Lake | ❌ | ❌ | Cloudflare bloqueio (CityView tem zoning por cidade, não county) |
-| Levy | ❌ | ❌ | Sem API pública |
+| Lake | ⚠️ | ✅ | FLU via Statewide FGDL 2020 (fallback) |
+| Levy | ⚠️ | ✅ | FLU via Statewide FGDL 2020 (fallback) |
 | Marion | ⚠️ | ⚠️ | NOVO v4.9 (best-effort, SSL issues de alguns ambientes) |
-| Okeechobee | ❌ | ❌ | Sem API pública |
+| Okeechobee | ⚠️ | ✅ | FLU via Statewide FGDL 2020 (fallback) |
 | Orange | ✅ | ✅ | NOVO v4.1 |
 | Pasco | ✅ | ❌ | NOVO v4.1 (zoning only) |
 | Polk | ❌ | ✅ | NOVO v4.1 (FLU only) |
@@ -281,3 +281,10 @@
 - [x] Descobrir ArcGIS zoning/FLU para Volusia County — ENCONTRADO E VALIDADO (Layer 0 Zoning + Layer 1 FLU)
 - [x] Atualizar zoning_registry.json com novos serviços encontrados — Volusia + Marion adicionados
 - [x] Testar com coordenadas reais de cada condado — Volusia validado (FRA/FR), Marion ECONNRESET do sandbox
+- [x] Implementar Statewide FLU Fallback (FGDL FLU_L2_2020_JDX) — v4.9.1
+- [x] Citrus: CONS (CONSERVATION) via fallback — VALIDADO v4.9.1
+- [x] Duval: COM (COMMERCIAL) via fallback — VALIDADO v4.9.1
+- [x] Lake: MUG (MIXED USE - GENERAL) via fallback — VALIDADO v4.9.1
+- [x] Levy: AG (AGRICULTURE) via fallback — VALIDADO v4.9.1
+- [x] Okeechobee: AG (AGRICULTURE) via fallback — VALIDADO v4.9.1
+- [x] Fallback cobre TODOS os 67 condados FL (dataset estadual gratuito)
