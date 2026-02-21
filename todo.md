@@ -194,16 +194,16 @@
 - [ ] Extrair lastSaleDate e lastSalePrice do subjectProperty
 
 ### Phase 2: Property Records Integration (1 crédito extra por propriedade)
-- [ ] Novo provider: getPropertyRecord({ address }) → /v1/properties
-- [ ] Novo endpoint: GET /api/property/record?address=...
-- [ ] Zoning fallback: se ArcGIS retorna NO_DATA, usar zoning do RentCast (1 crédito)
-- [ ] Extrair e exibir: HOA fee
-- [ ] Extrair e exibir: features (pool, garagem, lareira, telhado, fundação, andares)
-- [ ] Extrair e exibir: owner name + mailing address
-- [ ] Extrair e exibir: tax assessments (land vs improvements)
-- [ ] Extrair e exibir: property tax anual
-- [ ] Extrair e exibir: histórico de vendas
-- [ ] Contador de uso compartilhado (mesmo pool 50/mês para todos endpoints)
+- [x] Novo provider: getPropertyRecord({ address }) → /v1/properties — IMPLEMENTADO v4.5
+- [x] Novo endpoint: GET /api/property/record?address=... — IMPLEMENTADO v4.5
+- [x] Zoning fallback: exibido no Property Record panel — IMPLEMENTADO v4.5
+- [x] Extrair e exibir: HOA fee — IMPLEMENTADO v4.5
+- [x] Extrair e exibir: features (pool, garagem, lareira, telhado, fundação, andares) — IMPLEMENTADO v4.5
+- [x] Extrair e exibir: owner name + mailing address — IMPLEMENTADO v4.5
+- [x] Extrair e exibir: tax assessments (land vs improvements) — IMPLEMENTADO v4.5
+- [x] Extrair e exibir: property tax anual — IMPLEMENTADO v4.5
+- [x] Extrair e exibir: histórico de vendas — IMPLEMENTADO v4.5
+- [x] Contador de uso compartilhado (mesmo pool 50/mês para todos endpoints) — IMPLEMENTADO v4.5
 
 ### Phase 3: Market Intelligence (1 crédito por ZIP)
 - [ ] Market Statistics por ZIP code (tendências de preço)
