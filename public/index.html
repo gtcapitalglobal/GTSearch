@@ -766,8 +766,8 @@
         }
         
         // Calculate score for a single property (0-100)
-        function calculatePropertyScore(prop) {
-            const config = getScoringConfig();
+        function calculatePropertyScore(prop, configOverride) {
+            const config = configOverride || getScoringConfig();
             const w = config.weights;
             
             const acres = parseFloat(prop.Acres) || 0;
@@ -862,11 +862,10 @@
                 (scores.improvements * w.improvements / 100)
             );
             
-            // Determine grade
-            const config2 = getScoringConfig();
+            // Determine grade (reuse config already loaded at top of function)
             let grade;
-            if (totalScore >= config2.ranges.A.min) grade = 'A';
-            else if (totalScore >= config2.ranges.B.min) grade = 'B';
+            if (totalScore >= config.ranges.A.min) grade = 'A';
+            else if (totalScore >= config.ranges.B.min) grade = 'B';
             else grade = 'C';
             
             return {
@@ -882,8 +881,10 @@
         
         // Calculate scores for all properties
         function calculateAllScores() {
+            // PERF-1: Cache config once for the entire batch (avoid reading localStorage per property)
+            const cachedConfig = getScoringConfig();
             allNewProperties.forEach(prop => {
-                const result = calculatePropertyScore(prop);
+                const result = calculatePropertyScore(prop, cachedConfig);
                 prop._score = result.score;
                 prop._grade = result.grade;
                 prop._scoreBreakdown = result.breakdown;
@@ -1462,8 +1463,9 @@
             // Get favorites list
             const favorites = JSON.parse(localStorage.getItem('gtSearchFavorites') || '[]');
             
-            // Get analyzed properties list
-            const analyzedProperties = JSON.parse(localStorage.getItem('analyzedProperties') || '[]');
+            // Get analyzed properties list (PERF-2: use Set for O(1) lookup instead of Array.includes)
+            const analyzedList = JSON.parse(localStorage.getItem('analyzedProperties') || '[]');
+            const analyzedSet = new Set(analyzedList);
             
             const filteredProperties = allNewProperties.filter(row => {
                 const acres = parseFloat(row.Acres) || 0;
@@ -1612,7 +1614,7 @@
                 const gradeRowClass = `grade-row-${grade}`;
                 
                 // Check if property was already analyzed
-                const isAnalyzed = analyzedProperties.includes(row['Parcel Number']);
+                const isAnalyzed = analyzedSet.has(row['Parcel Number']);
                 const analyzedDot = isAnalyzed ? '<span class="analyzed-indicator" title="Já analisada na Tela 2"></span> ' : '';
                 
                 // Create a clean copy without marker and internal scoring fields

@@ -288,3 +288,15 @@
 - [x] Levy: AG (AGRICULTURE) via fallback — VALIDADO v4.9.1
 - [x] Okeechobee: AG (AGRICULTURE) via fallback — VALIDADO v4.9.1
 - [x] Fallback cobre TODOS os 67 condados FL (dataset estadual gratuito)
+
+## v4.9.2 — Audit Bug Fixes
+
+- [x] PERF-1: Cachear getScoringConfig() fora do loop em calculateAllScores() — CORRIGIDO
+- [x] PERF-2: analyzedList usar Set em vez de Array.includes() — CORRIGIDO
+- [x] RISCO-1: Limitar analyzedProperties no localStorage (max 5000) — CORRIGIDO
+- [x] BUG-1: Remover config2 redundante em calculatePropertyScore() — CORRIGIDO
+- [x] BUG-6: Remover primeiro loop de cores morto no chart — CORRIGIDO
+- [x] BUG-7: Filtrar propriedades sem cálculo do ranking (ROI = -999) — CORRIGIDO
+- [x] BUG-10: Proteger correlation contra string no rentcastProvider — CORRIGIDO
+- [x] Skill florida-zoning-discovery atualizada para v2.2 (Statewide FLU + Volusia/Marion)
+- [x] Skill rentcast-comps atualizada (Phase 1 DONE, enriched SSOT schema, cache cleanup)

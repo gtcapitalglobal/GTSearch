@@ -338,7 +338,7 @@ function mapToSSOT(raw, params, fromCache = false) {
     bathrooms: c.bathrooms || 0,
     // Enriched fields (Phase 1)
     year_built: c.yearBuilt || null,
-    correlation: c.correlation != null ? parseFloat(c.correlation.toFixed(3)) : null,
+    correlation: c.correlation != null ? parseFloat(Number(c.correlation).toFixed(3)) : null,
     days_on_market: c.daysOnMarket || c.daysOld || null,
     listing_type: c.listingType || null,
     status: c.status || null,

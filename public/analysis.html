@@ -1227,9 +1227,16 @@
             const parcelNum = properties[index]?.['Parcel Number'] || properties[index]?.['Parcel Id'] || '';
             if (parcelNum) {
                 try {
-                    const analyzedList = JSON.parse(localStorage.getItem('analyzedProperties') || '[]');
-                    if (!analyzedList.includes(parcelNum)) {
+                    const MAX_ANALYZED = 5000; // RISCO-1: prevent localStorage overflow
+                    let analyzedList = JSON.parse(localStorage.getItem('analyzedProperties') || '[]');
+                    const analyzedSet = new Set(analyzedList);
+                    if (!analyzedSet.has(parcelNum)) {
                         analyzedList.push(parcelNum);
+                        // Evict oldest entries if over limit
+                        if (analyzedList.length > MAX_ANALYZED) {
+                            analyzedList = analyzedList.slice(-MAX_ANALYZED);
+                            console.log(`📊 analyzedProperties trimmed to ${MAX_ANALYZED} (oldest removed)`);
+                        }
                         localStorage.setItem('analyzedProperties', JSON.stringify(analyzedList));
                         console.log(`📊 Propriedade marcada como analisada: ${parcelNum} (total: ${analyzedList.length})`);
                     }
