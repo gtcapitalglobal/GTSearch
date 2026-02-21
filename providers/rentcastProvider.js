@@ -29,7 +29,8 @@ const __dirname = path.dirname(__filename);
 // CONFIGURATION
 // ========================================
 
-const RENTCAST_BASE_URL = 'https://api.rentcast.io/v1/avm/value';
+const RENTCAST_AVM_URL = 'https://api.rentcast.io/v1/avm/value';
+const RENTCAST_PROPERTIES_URL = 'https://api.rentcast.io/v1/properties';
 const REQUEST_TIMEOUT_MS = 15000;  // 15 seconds
 const MAX_RETRIES = 1;
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -312,8 +313,8 @@ function mapToSSOT(raw, params, fromCache = false) {
 // CORE API CALL (with retry)
 // ========================================
 
-async function callRentCastAPI(queryParams, apiKey) {
-  const response = await axios.get(RENTCAST_BASE_URL, {
+async function callRentCastAPI(url, queryParams, apiKey) {
+  const response = await axios.get(url, {
     params: queryParams,
     headers: {
       'X-Api-Key': apiKey,
@@ -333,7 +334,7 @@ async function callWithRetry(queryParams, apiKey) {
         logInfo(`RentCast: retry attempt ${attempt}/${MAX_RETRIES}`);
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
-      return await callRentCastAPI(queryParams, apiKey);
+      return await callRentCastAPI(RENTCAST_AVM_URL, queryParams, apiKey);
     } catch (err) {
       lastError = err;
       const status = err.response?.status;
@@ -571,8 +572,362 @@ export function clearCache() {
   logInfo('RentCast cache: cleared');
 }
 
+// ========================================
+// MOCK DATA — PROPERTY RECORDS (for OFFLINE_MODE)
+// ========================================
+
+const MOCK_PROPERTY_RECORD = {
+  id: 'mock-prop-001',
+  formattedAddress: '3456 SW 34th St, Ocala, FL 34474',
+  addressLine1: '3456 SW 34th St',
+  addressLine2: null,
+  city: 'Ocala',
+  state: 'FL',
+  stateFips: '12',
+  zipCode: '34474',
+  county: 'Marion',
+  countyFips: '12083',
+  latitude: 29.1594,
+  longitude: -82.1654,
+  propertyType: 'Land',
+  bedrooms: 0,
+  bathrooms: 0,
+  squareFootage: 0,
+  lotSize: 21780,
+  yearBuilt: null,
+  assessorID: 'MOCK-APN-123456',
+  legalDescription: 'LOT 5 BLK 3 MOCK SUBDIVISION PB 12 PG 45',
+  subdivision: 'Mock Subdivision',
+  zoning: 'A-1',
+  lastSaleDate: '2020-03-15',
+  lastSalePrice: 18000,
+  hoa: null,
+  features: {
+    architectureType: null,
+    cooling: false,
+    coolingType: null,
+    exteriorType: null,
+    fireplace: false,
+    fireplaceType: null,
+    floorCount: 0,
+    foundationType: null,
+    garage: false,
+    garageSpaces: 0,
+    garageType: null,
+    heating: false,
+    heatingType: null,
+    pool: false,
+    poolType: null,
+    roofType: null,
+    roomCount: 0,
+    unitCount: 0,
+    viewType: null
+  },
+  taxAssessments: {
+    '2024': { year: 2024, value: 15000, land: 15000, improvements: 0 },
+    '2023': { year: 2023, value: 13500, land: 13500, improvements: 0 }
+  },
+  propertyTaxes: {
+    '2024': { year: 2024, total: 285 },
+    '2023': { year: 2023, total: 260 }
+  },
+  owner: {
+    names: ['MOCK OWNER LLC'],
+    type: 'Organization',
+    mailingAddress: {
+      formattedAddress: '100 Main St, Tampa, FL 33601',
+      addressLine1: '100 Main St',
+      city: 'Tampa',
+      state: 'FL',
+      zipCode: '33601'
+    }
+  },
+  ownerOccupied: false,
+  history: {
+    '2020-03-15': { event: 'Sale', date: '2020-03-15', price: 18000 },
+    '2015-07-22': { event: 'Sale', date: '2015-07-22', price: 8500 }
+  }
+};
+
+// ========================================
+// PROPERTY RECORDS — GET ALL DATA (1 credit)
+// ========================================
+
+/**
+ * Get complete property record from RentCast
+ * Collects ALL 70+ fields and returns raw + structured data
+ * 
+ * @param {Object} params
+ * @param {string} [params.address] - Full property address
+ * @param {number} [params.lat] - Latitude (alternative)
+ * @param {number} [params.lon] - Longitude (alternative)
+ * @returns {Object} Complete property record with ALL available fields
+ */
+export async function getPropertyRecord(params = {}) {
+  const { address, lat, lon } = params;
+  
+  // Validate input
+  if (!address && (!lat || !lon)) {
+    return {
+      error: true,
+      message: 'Either address or lat+lon is required',
+      source: 'RENTCAST',
+      endpoint: 'properties',
+      _meta: { provider: 'rentcast', timestamp: new Date().toISOString() }
+    };
+  }
+  
+  // Check OFFLINE_MODE
+  const offlineMode = process.env.OFFLINE_MODE;
+  if (offlineMode === undefined || offlineMode === null || offlineMode === '' || offlineMode === 'true') {
+    logInfo('RentCast Property Records: OFFLINE_MODE active, returning mock data');
+    auditLog({
+      action: 'rentcast_property_record',
+      provider: 'rentcast_mock',
+      result: 'mock',
+      metadata: { address: address || `${lat},${lon}`, mode: 'OFFLINE' }
+    });
+    const usage = checkUsageAllowed();
+    return {
+      ...MOCK_PROPERTY_RECORD,
+      _raw: MOCK_PROPERTY_RECORD,
+      source: 'RENTCAST',
+      endpoint: 'properties',
+      mode: 'MOCK',
+      query: { address: address || null, lat: lat || null, lon: lon || null },
+      usage: { used: usage.used, remaining: usage.remaining, limit: usage.limit, month: usage.month },
+      _meta: { provider: 'rentcast_mock', cached: false, timestamp: new Date().toISOString() }
+    };
+  }
+  
+  // Check API key
+  const apiKey = process.env.RENTCAST_API_KEY;
+  if (!apiKey) {
+    logError('RentCast: RENTCAST_API_KEY not configured');
+    return {
+      error: true,
+      message: 'RENTCAST_API_KEY not configured. Add it to .env or Settings.',
+      source: 'RENTCAST',
+      endpoint: 'properties',
+      _meta: { provider: 'rentcast', timestamp: new Date().toISOString() }
+    };
+  }
+  
+  // Cache key for property records (separate namespace)
+  const recKey = address 
+    ? `rec:${address.toLowerCase().trim()}`
+    : `rec:geo:${parseFloat(lat).toFixed(6)},${parseFloat(lon).toFixed(6)}`;
+  
+  const cached = cacheGet(recKey);
+  if (cached) {
+    logInfo(`RentCast Property Records: cache HIT for ${recKey}`);
+    const usage = checkUsageAllowed();
+    auditLog({
+      action: 'rentcast_property_record',
+      provider: 'rentcast_cache',
+      result: 'cache_hit',
+      metadata: { key: recKey, address: address || `${lat},${lon}` }
+    });
+    return {
+      ...cached,
+      usage: { used: usage.used, remaining: usage.remaining, limit: usage.limit, month: usage.month },
+      _meta: { ...cached._meta, cached: true, timestamp: new Date().toISOString() }
+    };
+  }
+  
+  // Usage warning
+  const usageCheck = checkUsageAllowed();
+  let usageWarning = null;
+  if (usageCheck.used >= usageCheck.limit) {
+    usageWarning = `ATENÇÃO: Limite mensal EXCEDIDO (${usageCheck.used}/${usageCheck.limit}). Chamadas acima de 50 são PAGAS.`;
+    logWarn(`RentCast: ${usageWarning}`);
+  } else if (usageCheck.remaining <= 10) {
+    usageWarning = `Aviso: Restam apenas ${usageCheck.remaining} chamadas gratuitas este mês (${usageCheck.used}/${usageCheck.limit}).`;
+    logWarn(`RentCast: ${usageWarning}`);
+  }
+  
+  // Build query
+  const queryParams = {};
+  if (address) {
+    queryParams.address = address;
+  } else {
+    queryParams.latitude = lat;
+    queryParams.longitude = lon;
+  }
+  
+  // Call API
+  try {
+    logInfo(`RentCast Property Records: calling API for ${address || `${lat},${lon}`} (usage: ${usageCheck.used + 1}/${usageCheck.limit})`);
+    
+    // Call /v1/properties — returns array, we take first result
+    const rawArray = await callWithRetryGeneric(RENTCAST_PROPERTIES_URL, queryParams, apiKey);
+    const raw = Array.isArray(rawArray) ? rawArray[0] : rawArray;
+    
+    if (!raw) {
+      return {
+        error: true,
+        message: 'No property record found for this address',
+        source: 'RENTCAST',
+        endpoint: 'properties',
+        _meta: { provider: 'rentcast_api', timestamp: new Date().toISOString() }
+      };
+    }
+    
+    // INCREMENT USAGE
+    incrementUsage(`REC:${address || `${lat},${lon}`}`);
+    
+    // Build structured result — keep ALL raw data + organize key fields
+    const result = {
+      // === Basic Info ===
+      id: raw.id || null,
+      formattedAddress: raw.formattedAddress || null,
+      addressLine1: raw.addressLine1 || null,
+      addressLine2: raw.addressLine2 || null,
+      city: raw.city || null,
+      state: raw.state || null,
+      stateFips: raw.stateFips || null,
+      zipCode: raw.zipCode || null,
+      county: raw.county || null,
+      countyFips: raw.countyFips || null,
+      latitude: raw.latitude || null,
+      longitude: raw.longitude || null,
+      propertyType: raw.propertyType || null,
+      bedrooms: raw.bedrooms || 0,
+      bathrooms: raw.bathrooms || 0,
+      squareFootage: raw.squareFootage || 0,
+      lotSize: raw.lotSize || 0,
+      lotSizeAcres: raw.lotSize ? parseFloat((raw.lotSize / 43560).toFixed(3)) : 0,
+      yearBuilt: raw.yearBuilt || null,
+      assessorID: raw.assessorID || null,
+      legalDescription: raw.legalDescription || null,
+      subdivision: raw.subdivision || null,
+      zoning: raw.zoning || null,
+      
+      // === Last Sale ===
+      lastSaleDate: raw.lastSaleDate || null,
+      lastSalePrice: raw.lastSalePrice || null,
+      
+      // === HOA ===
+      hoa: raw.hoa || null,
+      
+      // === Features ===
+      features: raw.features || {},
+      
+      // === Tax Assessments (all years) ===
+      taxAssessments: raw.taxAssessments || {},
+      
+      // === Property Taxes (all years) ===
+      propertyTaxes: raw.propertyTaxes || {},
+      
+      // === Owner ===
+      owner: raw.owner || null,
+      ownerOccupied: raw.ownerOccupied || false,
+      
+      // === Sale History ===
+      history: raw.history || {},
+      
+      // === RAW — full unmodified API response for future use ===
+      _raw: raw,
+      
+      // === Meta ===
+      source: 'RENTCAST',
+      endpoint: 'properties',
+      mode: 'LIVE',
+      query: { address: address || null, lat: lat || null, lon: lon || null },
+      usage: {
+        used: usageCheck.used + 1,
+        remaining: Math.max(0, usageCheck.remaining - 1),
+        limit: usageCheck.limit,
+        month: usageCheck.month
+      },
+      _meta: {
+        provider: 'rentcast_api',
+        cached: false,
+        timestamp: new Date().toISOString()
+      }
+    };
+    
+    // Cache
+    cacheSet(recKey, result);
+    
+    // Audit
+    auditLog({
+      action: 'rentcast_property_record',
+      provider: 'rentcast_api',
+      result: 'success',
+      metadata: {
+        address: address || `${lat},${lon}`,
+        propertyType: result.propertyType,
+        zoning: result.zoning,
+        yearBuilt: result.yearBuilt,
+        lastSalePrice: result.lastSalePrice,
+        usage_count: usageCheck.used + 1
+      }
+    });
+    
+    logInfo(`RentCast Property Records: success — ${result.formattedAddress}, type=${result.propertyType}, zoning=${result.zoning} (usage: ${usageCheck.used + 1}/${usageCheck.limit})`);
+    if (usageWarning) result.warning = usageWarning;
+    return result;
+    
+  } catch (err) {
+    const status = err.response?.status;
+    const errMsg = err.response?.data?.message || err.message;
+    
+    logError(`RentCast Property Records: API error (${status || 'network'}) — ${errMsg}`);
+    
+    auditLog({
+      action: 'rentcast_property_record',
+      provider: 'rentcast_api',
+      result: 'error',
+      metadata: { address: address || `${lat},${lon}`, status, error: errMsg }
+    });
+    
+    if (status && status !== 401 && status !== 403) {
+      incrementUsage(`ERROR:REC:${address || `${lat},${lon}`}`);
+    }
+    
+    const usageAfter = checkUsageAllowed();
+    const errorResult = {
+      error: true,
+      message: `RentCast Property Records error: ${errMsg}`,
+      status: status || 500,
+      source: 'RENTCAST',
+      endpoint: 'properties',
+      usage: { used: usageAfter.used, remaining: usageAfter.remaining, limit: usageAfter.limit, month: usageAfter.month },
+      _meta: { provider: 'rentcast_api', cached: false, timestamp: new Date().toISOString() }
+    };
+    if (usageWarning) errorResult.warning = usageWarning;
+    return errorResult;
+  }
+}
+
+/**
+ * Generic retry wrapper for any RentCast endpoint
+ */
+async function callWithRetryGeneric(url, queryParams, apiKey) {
+  let lastError;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      if (attempt > 0) {
+        logInfo(`RentCast: retry attempt ${attempt}/${MAX_RETRIES}`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+      return await callRentCastAPI(url, queryParams, apiKey);
+    } catch (err) {
+      lastError = err;
+      const status = err.response?.status;
+      if (status && status >= 400 && status < 500 && status !== 429) {
+        throw err;
+      }
+      logWarn(`RentCast: attempt ${attempt + 1} failed (${err.message})`);
+    }
+  }
+  throw lastError;
+}
+
 export default {
   getValueEstimate,
+  getPropertyRecord,
   getCacheStats,
   getUsageStats,
   clearCache

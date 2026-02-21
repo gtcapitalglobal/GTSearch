@@ -8,7 +8,7 @@ import fs from 'fs';
 import { validateMockOutputMiddleware } from './utils/validator.js';
 import { auditLogMiddleware } from './utils/audit.js';
 import { getPropertyDetails } from './api-integrations.js';
-import { getValueEstimate, getCacheStats, getUsageStats, clearCache } from './providers/rentcastProvider.js';
+import { getValueEstimate, getPropertyRecord, getCacheStats, getUsageStats, clearCache } from './providers/rentcastProvider.js';
 import rateLimit from 'express-rate-limit';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -717,6 +717,45 @@ app.get('/api/comps/cache-stats', (req, res) => {
  */
 app.get('/api/comps/usage', (req, res) => {
   res.json(getUsageStats());
+});
+
+/**
+ * GET /api/property/record
+ * Returns complete property record from RentCast (70+ fields)
+ * Query params: address OR (lat + lon)
+ * Cost: 1 RentCast credit per new lookup (cached for 7 days)
+ */
+app.get('/api/property/record', compsRateLimiter, async (req, res) => {
+  try {
+    const { address, lat, lon } = req.query;
+    
+    if (!address && (!lat || !lon)) {
+      return res.status(400).json({
+        error: true,
+        message: 'Missing required parameter: address OR (lat + lon)',
+        usage: {
+          by_address: '/api/property/record?address=123 Main St, Orlando, FL 32801',
+          by_coords: '/api/property/record?lat=28.5383&lon=-81.3792'
+        }
+      });
+    }
+    
+    const params = {};
+    if (address) params.address = address;
+    if (lat) params.lat = parseFloat(lat);
+    if (lon) params.lon = parseFloat(lon);
+    
+    const result = await getPropertyRecord(params);
+    res.json(result);
+    
+  } catch (error) {
+    console.error('Error in /api/property/record:', error.message);
+    res.status(500).json({
+      error: true,
+      message: 'Internal server error fetching property record',
+      details: error.message
+    });
+  }
 });
 
 /**

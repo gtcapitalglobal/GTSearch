@@ -874,6 +874,20 @@
                             <div id="comps-results-${index}" style="display: none;"></div>
                         </div>
                         
+                        <!-- Property Record Panel -->
+                        <div class="mb-3" id="proprec-panel-${index}">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">📋 Property Record</h4>
+                                <span class="text-xs text-gray-400" id="proprec-usage-${index}"></span>
+                            </div>
+                            <button onclick="fetchPropertyRecord(${index})" 
+                                    class="w-full px-3 py-2 bg-amber-600 text-white text-sm rounded-lg hover:bg-amber-700 transition-colors font-semibold flex items-center justify-center gap-2" 
+                                    id="proprec-btn-${index}">
+                                📋 Coletar Property Record (1 crédito)
+                            </button>
+                            <div id="proprec-results-${index}" style="display: none;"></div>
+                        </div>
+                        
                         <div class="section-divider"></div>
                         
                         <!-- Notes -->
@@ -2096,6 +2110,209 @@
                     if (data.remaining <= 10) el.style.color = '#dc2626';
                 });
             } catch(e) { /* silent */ }
+        }
+        
+        // ========================================
+        // RENTCAST PROPERTY RECORD — FETCH & DISPLAY
+        // ========================================
+        async function fetchPropertyRecord(index) {
+            const btn = document.getElementById(`proprec-btn-${index}`);
+            const resultsDiv = document.getElementById(`proprec-results-${index}`);
+            const usageSpan = document.getElementById(`proprec-usage-${index}`);
+            const prop = approvedProperties[index];
+            
+            // Build address
+            const address = prop['Property Address'] || prop.Address || prop['Site Address'] || '';
+            const city = prop['Property City'] || prop.City || '';
+            const fullAddress = address && address !== '-' ? `${address}, ${city !== '-' ? city + ', ' : ''}FL` : '';
+            const lat = prop.Latitude || prop.lat;
+            const lon = prop.Longitude || prop.lon || prop.lng;
+            
+            if (!fullAddress && (!lat || !lon)) {
+                resultsDiv.style.display = 'block';
+                resultsDiv.innerHTML = '<div class="mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-600 text-xs">Sem endere\u00e7o ou coordenadas para buscar</div>';
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-spin inline-block">\u23F3</span> Coletando...';
+            btn.classList.add('opacity-50');
+            
+            try {
+                const params = fullAddress ? `address=${encodeURIComponent(fullAddress)}` : `lat=${lat}&lon=${lon}`;
+                const response = await fetch(`/api/property/record?${params}`);
+                const data = await response.json();
+                
+                // Update usage
+                if (data.usage) {
+                    usageSpan.textContent = `${data.usage.used}/${data.usage.limit} usado`;
+                }
+                
+                if (data.error) {
+                    resultsDiv.style.display = 'block';
+                    resultsDiv.innerHTML = `<div class="mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-600 text-xs">${data.message}</div>`;
+                    return;
+                }
+                
+                // Store raw data in property object for future use
+                prop._propertyRecord = data;
+                
+                // Save to localStorage
+                const savedKey = `card_${prop['Parcel ID'] || prop.ParcelID || index}`;
+                const savedData = JSON.parse(localStorage.getItem(savedKey) || '{}');
+                savedData.propertyRecord = data;
+                localStorage.setItem(savedKey, JSON.stringify(savedData));
+                
+                // Render results
+                renderPropertyRecord(index, data);
+                
+            } catch (err) {
+                resultsDiv.style.display = 'block';
+                resultsDiv.innerHTML = `<div class="mt-2 p-2 bg-red-50 border border-red-200 rounded text-red-600 text-xs">Erro: ${err.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '\ud83d\udccb Coletar Property Record (1 cr\u00e9dito)';
+                btn.classList.remove('opacity-50');
+            }
+        }
+        
+        function renderPropertyRecord(index, data) {
+            const resultsDiv = document.getElementById(`proprec-results-${index}`);
+            const isOffline = data.mode === 'MOCK';
+            
+            // Format helpers
+            const fmt = (v) => v !== null && v !== undefined && v !== '' ? v : '—';
+            const fmtMoney = (v) => v ? '$' + Number(v).toLocaleString() : '—';
+            const fmtBool = (v) => v === true ? '\u2705 Sim' : v === false ? '\u274c N\u00e3o' : '—';
+            
+            // Tax assessments — get latest year
+            let taxInfo = '—';
+            if (data.taxAssessments && Object.keys(data.taxAssessments).length > 0) {
+                const latestYear = Object.keys(data.taxAssessments).sort().pop();
+                const ta = data.taxAssessments[latestYear];
+                taxInfo = `${latestYear}: Total ${fmtMoney(ta.value)} (Land: ${fmtMoney(ta.land)} | Improvements: ${fmtMoney(ta.improvements)})`;
+            }
+            
+            // Property taxes — get latest year
+            let propTax = '—';
+            if (data.propertyTaxes && Object.keys(data.propertyTaxes).length > 0) {
+                const latestYear = Object.keys(data.propertyTaxes).sort().pop();
+                propTax = `${latestYear}: ${fmtMoney(data.propertyTaxes[latestYear].total)}/ano`;
+            }
+            
+            // Sale history
+            let historyHtml = '—';
+            if (data.history && Object.keys(data.history).length > 0) {
+                const entries = Object.values(data.history).sort((a, b) => new Date(b.date) - new Date(a.date));
+                historyHtml = entries.map(h => `${h.date}: ${fmtMoney(h.price)}`).join('<br>');
+            }
+            
+            // Features summary
+            let featuresHtml = '—';
+            if (data.features && Object.keys(data.features).length > 0) {
+                const f = data.features;
+                const items = [];
+                if (f.pool) items.push('\ud83c\udfca Pool');
+                if (f.garage) items.push(`\ud83d\ude97 Garage (${f.garageSpaces || '?'} vagas)`);
+                if (f.fireplace) items.push('\ud83d\udd25 Fireplace');
+                if (f.cooling) items.push(`\u2744\ufe0f ${f.coolingType || 'Cooling'}`);
+                if (f.heating) items.push(`\ud83c\udf21\ufe0f ${f.heatingType || 'Heating'}`);
+                if (f.roofType) items.push(`\ud83c\udfe0 Roof: ${f.roofType}`);
+                if (f.foundationType) items.push(`\ud83e\uddf1 Foundation: ${f.foundationType}`);
+                if (f.exteriorType) items.push(`\ud83c\udfd7\ufe0f Exterior: ${f.exteriorType}`);
+                if (f.floorCount) items.push(`\ud83c\udfe2 ${f.floorCount} andares`);
+                if (f.viewType) items.push(`\ud83c\udf04 View: ${f.viewType}`);
+                if (f.architectureType) items.push(`\ud83c\udfd8\ufe0f ${f.architectureType}`);
+                featuresHtml = items.length > 0 ? items.join(' | ') : 'Nenhuma feature registrada';
+            }
+            
+            // Owner info
+            let ownerHtml = '—';
+            if (data.owner) {
+                const names = data.owner.names ? data.owner.names.join(', ') : '—';
+                const mail = data.owner.mailingAddress ? data.owner.mailingAddress.formattedAddress : '—';
+                ownerHtml = `${names}<br><span class="text-gray-400">Mailing: ${mail}</span>`;
+            }
+            
+            // HOA
+            const hoaHtml = data.hoa && data.hoa.fee ? `${fmtMoney(data.hoa.fee)}/m\u00eas` : 'Sem HOA';
+            
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = `
+                ${isOffline ? '<div class="mt-2 mb-2 p-2 bg-blue-50 border border-blue-200 rounded text-blue-600 text-xs">\u2139\ufe0f Modo OFFLINE — dados simulados (mock)</div>' : ''}
+                ${data.warning ? `<div class="mt-2 mb-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-yellow-700 text-xs">\u26a0\ufe0f ${data.warning}</div>` : ''}
+                
+                <div class="mt-2 bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <table class="w-full text-xs">
+                        <tr class="border-b border-gray-200">
+                            <td class="py-1 font-semibold text-gray-500 w-1/3">Zoning</td>
+                            <td class="py-1 font-bold text-indigo-600">${fmt(data.zoning)}</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-1 font-semibold text-gray-500">Year Built</td>
+                            <td class="py-1">${fmt(data.yearBuilt)}</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-1 font-semibold text-gray-500">HOA</td>
+                            <td class="py-1 ${data.hoa && data.hoa.fee ? 'text-red-600 font-bold' : 'text-green-600'}">${hoaHtml}</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-1 font-semibold text-gray-500">Tax Assessment</td>
+                            <td class="py-1">${taxInfo}</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-1 font-semibold text-gray-500">Property Tax</td>
+                            <td class="py-1">${propTax}</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-1 font-semibold text-gray-500">Last Sale</td>
+                            <td class="py-1">${data.lastSaleDate ? `${data.lastSaleDate}: ${fmtMoney(data.lastSalePrice)}` : '—'}</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-1 font-semibold text-gray-500">Sale History</td>
+                            <td class="py-1">${historyHtml}</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-1 font-semibold text-gray-500">Owner</td>
+                            <td class="py-1">${ownerHtml}</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-1 font-semibold text-gray-500">Owner Occupied</td>
+                            <td class="py-1">${fmtBool(data.ownerOccupied)}</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-1 font-semibold text-gray-500">Features</td>
+                            <td class="py-1">${featuresHtml}</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-1 font-semibold text-gray-500">Legal Desc.</td>
+                            <td class="py-1 text-gray-600" style="font-size: 10px;">${fmt(data.legalDescription)}</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="py-1 font-semibold text-gray-500">Subdivision</td>
+                            <td class="py-1">${fmt(data.subdivision)}</td>
+                        </tr>
+                        <tr>
+                            <td class="py-1 font-semibold text-gray-500">APN</td>
+                            <td class="py-1">${fmt(data.assessorID)}</td>
+                        </tr>
+                    </table>
+                    
+                    <div class="mt-2 text-right">
+                        <button onclick="viewRawRecord(${index})" class="text-xs text-gray-400 hover:text-gray-600 underline">Ver dados brutos (JSON)</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function viewRawRecord(index) {
+            const prop = approvedProperties[index];
+            const data = prop._propertyRecord;
+            if (!data) return alert('Nenhum record coletado ainda.');
+            
+            const rawJson = JSON.stringify(data._raw || data, null, 2);
+            const win = window.open('', '_blank');
+            win.document.write(`<html><head><title>Property Record Raw JSON</title></head><body><pre style="font-size:12px;">${rawJson}</pre></body></html>`);
         }
         
         // ========================================
