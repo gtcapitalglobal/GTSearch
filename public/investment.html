@@ -827,8 +827,8 @@
                                     <div>
                                         <label class="text-xs text-gray-500 font-semibold block mb-1">Tipo</label>
                                         <select class="comps-filter input-field" data-filter="propertyType" data-index="${index}" style="padding: 4px 6px; font-size: 12px;">
-                                            <option value="Land" ${landUse.toLowerCase().includes('vacant') || landUse.toLowerCase().includes('land') ? 'selected' : ''}>Land</option>
-                                            <option value="Single Family" ${landUse.toLowerCase().includes('single') || improvements !== '-' && parseFloat(String(improvements).replace(/[^0-9.]/g,'')) > 0 ? 'selected' : ''}>Single Family</option>
+                                            <option value="Land" ${(landUse.toLowerCase().includes('vacant') || landUse.toLowerCase().includes('land')) && !(landUse.toLowerCase().includes('single')) ? 'selected' : ''}>Land</option>
+                                            <option value="Single Family" ${landUse.toLowerCase().includes('single') ? 'selected' : (!landUse.toLowerCase().includes('vacant') && !landUse.toLowerCase().includes('land') && improvements !== '-' && parseFloat(String(improvements).replace(/[^0-9.]/g,'')) > 0 ? 'selected' : '')}>Single Family</option>
                                             <option value="Condo">Condo</option>
                                             <option value="Townhouse">Townhouse</option>
                                             <option value="Manufactured">Manufactured</option>
@@ -2009,7 +2009,7 @@
                             <div class="text-2xl font-black text-emerald-800">$${fmv.toLocaleString('en-US')}</div>
                             <div class="text-xs text-emerald-600">Range: $${low.toLocaleString('en-US')} — $${high.toLocaleString('en-US')}</div>
                         </div>
-                        <button onclick="acceptFMV(${index}, ${fmv})" 
+                        <button onclick="acceptFMV(event, ${index}, ${fmv})" 
                                 class="px-4 py-2 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition-colors font-bold shadow-sm">
                             ✓ Aceitar
                         </button>
@@ -2061,7 +2061,7 @@
             resultsDiv.innerHTML = html;
         }
         
-        function acceptFMV(index, fmv) {
+        function acceptFMV(evt, index, fmv) {
             const card = document.getElementById(`card-${index}`);
             if (!card) return;
             const mvInput = card.querySelector('.market-value');
@@ -2072,7 +2072,7 @@
                 saveCardData(index);
                 
                 // Visual feedback
-                const btn = event.target;
+                const btn = evt.target;
                 btn.textContent = '✓ Aplicado!';
                 btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
                 btn.classList.add('bg-gray-400');

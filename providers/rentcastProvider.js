@@ -6,7 +6,7 @@
  *   - 7-day cache (keyed by address or lat/lon)
  *   - 1 retry + 15s timeout
  *   - OFFLINE_MODE guard (returns mock)
- *   - Monthly usage counter with HARD LIMIT of 50 API calls
+ *   - Monthly usage counter with SOFT LIMIT of 50 API calls (warn-only, NEVER blocks)
  *     (cache hits do NOT count — only real outbound API calls count)
  * 
  * API: GET https://api.rentcast.io/v1/avm/value
@@ -190,13 +190,25 @@ function saveCache() {
 }
 
 function cacheKey(params) {
+  let base = null;
   if (params.address) {
-    return `addr:${params.address.toLowerCase().trim()}`;
+    base = `addr:${params.address.toLowerCase().trim()}`;
+  } else if (params.lat && params.lon) {
+    base = `geo:${parseFloat(params.lat).toFixed(6)},${parseFloat(params.lon).toFixed(6)}`;
   }
-  if (params.lat && params.lon) {
-    return `geo:${parseFloat(params.lat).toFixed(6)},${parseFloat(params.lon).toFixed(6)}`;
-  }
-  return null;
+  if (!base) return null;
+  
+  // Include filter params in cache key so different filters = different cache entries
+  const filterParts = [];
+  if (params.propertyType) filterParts.push(`pt:${params.propertyType}`);
+  if (params.maxRadius) filterParts.push(`r:${params.maxRadius}`);
+  if (params.daysOld) filterParts.push(`d:${params.daysOld}`);
+  if (params.bedrooms !== undefined && params.bedrooms !== null && params.bedrooms !== '') filterParts.push(`bd:${params.bedrooms}`);
+  if (params.bathrooms !== undefined && params.bathrooms !== null && params.bathrooms !== '') filterParts.push(`ba:${params.bathrooms}`);
+  if (params.squareFootage) filterParts.push(`sf:${params.squareFootage}`);
+  if (params.compCount) filterParts.push(`cc:${params.compCount}`);
+  
+  return filterParts.length > 0 ? `${base}|${filterParts.join('|')}` : base;
 }
 
 function cacheGet(key) {
