@@ -232,6 +232,7 @@
             color: #64748b;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body class="bg-gray-50">
     <!-- Header -->
@@ -272,6 +273,20 @@
                     <button onclick="novoLeilao()" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm">
                         🆕 Novo Leilão
                     </button>
+                    <div class="relative inline-block">
+                        <button onclick="toggleRankingMenu()" class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm" id="rankingBtn">
+                            🏆 Ranking
+                        </button>
+                        <div id="rankingMenu" class="hidden absolute right-0 mt-1 w-52 bg-white rounded-lg shadow-xl border border-gray-200 z-50 py-1">
+                            <button onclick="sortCardsByROI('best')" class="w-full text-left px-4 py-2 text-sm hover:bg-amber-50 text-gray-700">🟢 Melhor ROI primeiro</button>
+                            <button onclick="sortCardsByROI('worst')" class="w-full text-left px-4 py-2 text-sm hover:bg-amber-50 text-gray-700">🔴 Pior ROI primeiro</button>
+                            <button onclick="sortCardsByField('maxBid')" class="w-full text-left px-4 py-2 text-sm hover:bg-amber-50 text-gray-700">💰 Maior Max Bid</button>
+                            <button onclick="sortCardsByField('profit')" class="w-full text-left px-4 py-2 text-sm hover:bg-amber-50 text-gray-700">💵 Maior Profit</button>
+                            <button onclick="sortCardsByField('acres')" class="w-full text-left px-4 py-2 text-sm hover:bg-amber-50 text-gray-700">🌳 Maior Acres</button>
+                            <button onclick="sortCardsByField('amountDue')" class="w-full text-left px-4 py-2 text-sm hover:bg-amber-50 text-gray-700">💲 Menor Amount Due</button>
+                            <button onclick="sortCardsByField('caseNumber')" class="w-full text-left px-4 py-2 text-sm hover:bg-amber-50 text-gray-700">📝 Case # (original)</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -336,6 +351,32 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Comparative Chart Section -->
+    <div class="container mx-auto px-4 mb-6 no-print">
+        <div id="chartSection" style="display:none; background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                <h3 style="font-size:16px; font-weight:700; color:#1e293b;">📊 Comparativo de Propriedades</h3>
+                <div style="display:flex; gap:8px;">
+                    <select id="chartType" onchange="updateChart()" style="padding:4px 10px; border:1px solid #d1d5db; border-radius:6px; font-size:13px;">
+                        <option value="maxBid">Max Bid (ROI 1)</option>
+                        <option value="profit">Profit (ROI 1)</option>
+                        <option value="marketValue">Market Value</option>
+                        <option value="amountDue">Amount Due</option>
+                        <option value="pricePerAcre">$/Acre (Market)</option>
+                        <option value="acres">Acres</option>
+                    </select>
+                    <button onclick="toggleChart()" style="padding:4px 12px; background:#ef4444; color:white; border:none; border-radius:6px; font-size:13px; cursor:pointer;">✕ Fechar</button>
+                </div>
+            </div>
+            <canvas id="compChart" height="300"></canvas>
+        </div>
+        <div id="chartToggle" style="text-align:center; margin-top:8px;">
+            <button onclick="toggleChart()" style="padding:6px 16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; font-size:13px; color:#64748b; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='#f8fafc'">
+                📊 Mostrar Gráfico Comparativo
+            </button>
         </div>
     </div>
 
@@ -1126,6 +1167,285 @@
         function recalculateAll() {
             approvedProperties.forEach((_, index) => {
                 recalculateCard(index);
+            });
+        }
+        
+        // ========================================
+        // RANKING / SORTING
+        // ========================================
+        
+        function toggleRankingMenu() {
+            const menu = document.getElementById('rankingMenu');
+            menu.classList.toggle('hidden');
+            // Close on outside click
+            if (!menu.classList.contains('hidden')) {
+                setTimeout(() => {
+                    document.addEventListener('click', closeRankingMenu, { once: true });
+                }, 10);
+            }
+        }
+        
+        function closeRankingMenu(e) {
+            const menu = document.getElementById('rankingMenu');
+            if (menu && !menu.contains(e.target) && e.target.id !== 'rankingBtn') {
+                menu.classList.add('hidden');
+            }
+        }
+        
+        /**
+         * Extract card calculation data for sorting.
+         * Reads directly from the DOM (already calculated values).
+         */
+        function getCardSortData(index) {
+            const card = document.getElementById(`card-${index}`);
+            if (!card) return null;
+            
+            const prop = approvedProperties[index];
+            const acres = parseFloat(prop['Acres'] || prop.Acres || 0);
+            const amountDueEl = card.querySelector('.amount-due-val');
+            const amountDue = amountDueEl ? parseFloat(amountDueEl.dataset.raw) || 0 : 0;
+            const marketValue = getRawInputValue(card.querySelector('.market-value'));
+            
+            // Read Max Bid from scenario 1 (most conservative)
+            const maxBid1El = document.getElementById(`maxBid1-${index}`);
+            const maxBid1Text = maxBid1El ? maxBid1El.textContent.replace(/[^0-9.-]/g, '') : '0';
+            const maxBid = parseFloat(maxBid1Text) || 0;
+            
+            // Read Profit from scenario 1
+            const profit1El = document.getElementById(`profit1-${index}`);
+            const profit1Text = profit1El ? profit1El.textContent.replace(/[^0-9.-]/g, '') : '0';
+            const profit = parseFloat(profit1Text) || 0;
+            
+            // ROI = profit / maxBid (if maxBid > 0)
+            const roi = maxBid > 0 ? (profit / maxBid) * 100 : -999;
+            
+            // Case number
+            const caseNum = prop['CS'] || prop['Case'] || prop['Case #'] || prop['case_number'] || '0';
+            const caseNumber = parseInt(String(caseNum).replace(/[^0-9]/g, '')) || 0;
+            
+            return { index, acres, amountDue, marketValue, maxBid, profit, roi, caseNumber };
+        }
+        
+        function sortCardsByROI(direction) {
+            document.getElementById('rankingMenu').classList.add('hidden');
+            
+            const sortData = approvedProperties.map((_, i) => getCardSortData(i)).filter(Boolean);
+            
+            if (direction === 'best') {
+                sortData.sort((a, b) => b.roi - a.roi);
+            } else {
+                sortData.sort((a, b) => a.roi - b.roi);
+            }
+            
+            reorderCards(sortData);
+        }
+        
+        function sortCardsByField(field) {
+            document.getElementById('rankingMenu').classList.add('hidden');
+            
+            const sortData = approvedProperties.map((_, i) => getCardSortData(i)).filter(Boolean);
+            
+            switch (field) {
+                case 'maxBid':
+                    sortData.sort((a, b) => b.maxBid - a.maxBid);
+                    break;
+                case 'profit':
+                    sortData.sort((a, b) => b.profit - a.profit);
+                    break;
+                case 'acres':
+                    sortData.sort((a, b) => b.acres - a.acres);
+                    break;
+                case 'amountDue':
+                    sortData.sort((a, b) => a.amountDue - b.amountDue);
+                    break;
+                case 'caseNumber':
+                    sortData.sort((a, b) => a.caseNumber - b.caseNumber);
+                    break;
+            }
+            
+            reorderCards(sortData);
+        }
+        
+        function reorderCards(sortData) {
+            const container = document.getElementById('cardsContainer');
+            if (!container) return;
+            
+            // Add ranking badges and reorder DOM
+            sortData.forEach((data, rank) => {
+                const card = document.getElementById(`card-${data.index}`);
+                if (!card) return;
+                
+                // Add/update ranking badge
+                let badge = card.querySelector('.ranking-badge');
+                if (!badge) {
+                    badge = document.createElement('div');
+                    badge.className = 'ranking-badge';
+                    badge.style.cssText = 'position:absolute;top:8px;right:8px;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;z-index:10;';
+                    card.style.position = 'relative';
+                    card.prepend(badge);
+                }
+                
+                const rankNum = rank + 1;
+                badge.textContent = '#' + rankNum;
+                if (rankNum <= 3) {
+                    badge.style.background = rankNum === 1 ? '#fbbf24' : rankNum === 2 ? '#d1d5db' : '#f59e0b';
+                    badge.style.color = rankNum === 1 ? '#78350f' : rankNum === 2 ? '#374151' : '#78350f';
+                    badge.style.boxShadow = '0 2px 4px rgba(0,0,0,0.15)';
+                } else {
+                    badge.style.background = '#f3f4f6';
+                    badge.style.color = '#6b7280';
+                    badge.style.boxShadow = 'none';
+                }
+                
+                // Move card to correct position in DOM
+                container.appendChild(card);
+            });
+        }
+        
+        // ========================================
+        // COMPARATIVE CHART
+        // ========================================
+        
+        let compChartInstance = null;
+        
+        function toggleChart() {
+            const section = document.getElementById('chartSection');
+            const toggle = document.getElementById('chartToggle');
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+                toggle.style.display = 'none';
+                updateChart();
+            } else {
+                section.style.display = 'none';
+                toggle.style.display = 'block';
+            }
+        }
+        
+        function updateChart() {
+            const chartType = document.getElementById('chartType').value;
+            const canvas = document.getElementById('compChart');
+            if (!canvas) return;
+            
+            // Collect data from all cards
+            const labels = [];
+            const values = [];
+            const bgColors = [];
+            const borderColors = [];
+            
+            approvedProperties.forEach((prop, index) => {
+                const data = getCardSortData(index);
+                if (!data) return;
+                
+                // Label: Case # + short address
+                const caseNum = prop['CS'] || prop['Case'] || '';
+                const addr = (prop['Property Address'] || prop['Address'] || prop['Parcel Number'] || '').substring(0, 20);
+                const label = caseNum ? `#${caseNum} ${addr}` : addr;
+                labels.push(label);
+                
+                let val = 0;
+                switch (chartType) {
+                    case 'maxBid': val = data.maxBid; break;
+                    case 'profit': val = data.profit; break;
+                    case 'marketValue': val = data.marketValue; break;
+                    case 'amountDue': val = data.amountDue; break;
+                    case 'pricePerAcre': val = data.marketValue > 0 && data.acres > 0 ? Math.round(data.marketValue / data.acres) : 0; break;
+                    case 'acres': val = data.acres; break;
+                }
+                values.push(val);
+                
+                // Color based on value (green for positive, red for negative)
+                if (chartType === 'profit') {
+                    bgColors.push(val >= 0 ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)');
+                    borderColors.push(val >= 0 ? '#16a34a' : '#dc2626');
+                } else {
+                    // Gradient from green (best) to red (worst)
+                    const maxVal = Math.max(...values.filter(v => v > 0), 1);
+                    const ratio = Math.min(val / maxVal, 1);
+                    bgColors.push(`rgba(59,130,246,${0.3 + ratio * 0.5})`);
+                    borderColors.push('#3b82f6');
+                }
+            });
+            
+            // Recalculate colors for non-profit charts after all values collected
+            if (chartType !== 'profit') {
+                const maxVal = Math.max(...values.filter(v => v > 0), 1);
+                const isLowerBetter = chartType === 'amountDue';
+                values.forEach((val, i) => {
+                    const ratio = maxVal > 0 ? val / maxVal : 0;
+                    if (isLowerBetter) {
+                        // Lower is better: green for low, red for high
+                        bgColors[i] = ratio < 0.33 ? 'rgba(34,197,94,0.7)' : ratio < 0.66 ? 'rgba(250,204,21,0.7)' : 'rgba(239,68,68,0.7)';
+                        borderColors[i] = ratio < 0.33 ? '#16a34a' : ratio < 0.66 ? '#eab308' : '#dc2626';
+                    } else {
+                        // Higher is better: green for high, red for low
+                        bgColors[i] = ratio > 0.66 ? 'rgba(34,197,94,0.7)' : ratio > 0.33 ? 'rgba(250,204,21,0.7)' : 'rgba(239,68,68,0.7)';
+                        borderColors[i] = ratio > 0.66 ? '#16a34a' : ratio > 0.33 ? '#eab308' : '#dc2626';
+                    }
+                });
+            }
+            
+            // Destroy existing chart
+            if (compChartInstance) {
+                compChartInstance.destroy();
+            }
+            
+            const typeLabels = {
+                maxBid: 'Max Bid ($)',
+                profit: 'Profit ($)',
+                marketValue: 'Market Value ($)',
+                amountDue: 'Amount Due ($)',
+                pricePerAcre: '$/Acre',
+                acres: 'Acres'
+            };
+            
+            compChartInstance = new Chart(canvas, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: typeLabels[chartType] || chartType,
+                        data: values,
+                        backgroundColor: bgColors,
+                        borderColor: borderColors,
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    const val = ctx.parsed.y;
+                                    if (chartType === 'acres') return val.toFixed(2) + ' acres';
+                                    return '$' + val.toLocaleString('en-US');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(val) {
+                                    if (chartType === 'acres') return val;
+                                    if (val >= 1000) return '$' + (val / 1000).toFixed(0) + 'k';
+                                    return '$' + val;
+                                }
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 0,
+                                font: { size: 10 }
+                            }
+                        }
+                    }
+                }
             });
         }
         

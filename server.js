@@ -8,7 +8,7 @@ import fs from 'fs';
 import { validateMockOutputMiddleware } from './utils/validator.js';
 import { auditLogMiddleware } from './utils/audit.js';
 import { getPropertyDetails } from './api-integrations.js';
-import { getValueEstimate, getPropertyRecord, getCacheStats, getUsageStats, clearCache } from './providers/rentcastProvider.js';
+import { getValueEstimate, getPropertyRecord, getCacheStats, getUsageStats, clearCache, startupCacheCleanup } from './providers/rentcastProvider.js';
 import rateLimit from 'express-rate-limit';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -776,4 +776,12 @@ app.listen(PORT, () => {
   console.log(`📊 Mode: ${OFFLINE_MODE ? 'OFFLINE' : 'ONLINE'}`);
   console.log(`🔗 Access: http://localhost:${PORT}`);
   console.log('========================================');
+  
+  // Run cache cleanup on startup
+  try {
+    const cleanup = startupCacheCleanup();
+    console.log(`🧹 Cache cleanup: ${cleanup.purged} expired, ${cleanup.evicted} evicted, ${cleanup.remaining} remaining`);
+  } catch (err) {
+    console.warn('⚠️ Cache cleanup failed:', err.message);
+  }
 });

@@ -82,8 +82,8 @@
 - [x] Histórico de Leilões — salva cada batch como um leilão com data, condado e lista de propriedades — JÁ EXISTIA (saveCurrentBatch + showHistoryModal + loadBatch)
 - [x] Export automático no batch save (gera CSV ou envia pro Google Sheets automaticamente) — IMPLEMENTADO v4.2 (auto-export CSV + Google Sheets no Salvar Batch)
 - [ ] Comps como referência para Market Value
-- [ ] Gráfico comparativo de propriedades
-- [ ] Ranking automático por ROI
+- [x] Gráfico comparativo de propriedades — IMPLEMENTADO v4.8
+- [x] Ranking automático por ROI — IMPLEMENTADO v4.8
 
 ---
 
@@ -253,13 +253,19 @@
 - [x] Badge colorido em cada linha da tabela + filtro por classificação — IMPLEMENTADO v4.7
 - [ ] TESTAR a ferramenta e a sugestão antes de usar em produção
 
-### Cache cleanup automático
-- [ ] Cleanup no startup do servidor — deletar entradas >7 dias
-- [ ] Limite máximo de 500 entradas — deletar mais antigos quando exceder
-- [ ] LEMBRETE: rodar limpeza de cache frequentemente até implementar automático
+### Cache cleanup automático — IMPLEMENTADO v4.8
+- [x] Cleanup no startup do servidor — deletar entradas >7 dias — IMPLEMENTADO v4.8
+- [x] Limite máximo de 500 entradas — deletar mais antigos quando exceder — IMPLEMENTADO v4.8
+- [x] LEMBRETE: rodar limpeza de cache frequentemente até implementar automático — RESOLVIDO (agora é automático)
 
 ## SKILLS A CRIAR (NÃO IMPLEMENTAR SEM PERMISSÃO)
 
 - [ ] Skill `tax-deed-property-analysis` — fluxo completo de análise: FEMA + Wetlands + Zoning + Land Use + Elevação + OSM + RentCast, ordem de chamada, fallbacks, interpretação, red flags
 - [ ] Skill `deal-killer-scoring` — lógica A/B/C + Deal Killers: pesos, faixas, semáforos, critérios de eliminação (criar quando implementar o scoring)
 - [ ] Skill `google-sheets-export` — padrão de export CSV + Google Sheets: autenticação, formatação, mapeamento de campos, auto-export no batch save
+
+## v4.8 — Cache Cleanup + ROI Ranking + Gráfico Comparativo
+
+- [x] Cache cleanup automático no startup do servidor (deletar entradas >7 dias, limite 500) — IMPLEMENTADO v4.8
+- [x] Ranking automático por ROI na Tela 3 (ordenar cards por melhor ROI) — IMPLEMENTADO v4.8 (7 critérios: ROI, Max Bid, Profit, Acres, Amount Due, Case #)
+- [x] Gráfico comparativo de propriedades na Tela 3 (Chart.js bar chart, 6 métricas) — IMPLEMENTADO v4.8

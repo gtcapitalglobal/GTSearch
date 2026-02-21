@@ -35,6 +35,7 @@ const REQUEST_TIMEOUT_MS = 15000;  // 15 seconds
 const MAX_RETRIES = 1;
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 const MONTHLY_LIMIT = 50; // Hard limit — RentCast free tier = 50 calls/month
+const MAX_CACHE_ENTRIES = 500; // Max cache entries before eviction
 
 const CACHE_DIR = path.join(__dirname, '..', 'cache');
 const CACHE_FILE = path.join(CACHE_DIR, 'rentcast_cache.json');
@@ -225,7 +226,57 @@ function cacheGet(key) {
 function cacheSet(key, data) {
   if (!key) return;
   cacheStore[key] = { timestamp: Date.now(), data };
+  // Enforce max entries — evict oldest when limit exceeded
+  enforceCacheLimit();
   saveCache();
+}
+
+/**
+ * Enforce max cache entries limit.
+ * Evicts oldest entries when cache exceeds MAX_CACHE_ENTRIES.
+ */
+function enforceCacheLimit() {
+  const keys = Object.keys(cacheStore);
+  if (keys.length <= MAX_CACHE_ENTRIES) return;
+  
+  // Sort by timestamp ascending (oldest first)
+  const sorted = keys.sort((a, b) => (cacheStore[a]?.timestamp || 0) - (cacheStore[b]?.timestamp || 0));
+  const toRemove = sorted.slice(0, keys.length - MAX_CACHE_ENTRIES);
+  toRemove.forEach(k => delete cacheStore[k]);
+  logInfo(`RentCast cache: evicted ${toRemove.length} oldest entries (limit: ${MAX_CACHE_ENTRIES})`);
+}
+
+/**
+ * Run startup cache cleanup:
+ * 1. Purge expired entries (>7 days)
+ * 2. Enforce max entries limit (500)
+ * Called once on server startup.
+ */
+export function startupCacheCleanup() {
+  const now = Date.now();
+  let purged = 0;
+  
+  for (const key of Object.keys(cacheStore)) {
+    if (now - (cacheStore[key]?.timestamp || 0) > CACHE_TTL_MS) {
+      delete cacheStore[key];
+      purged++;
+    }
+  }
+  
+  // Also enforce max entries
+  const beforeLimit = Object.keys(cacheStore).length;
+  enforceCacheLimit();
+  const afterLimit = Object.keys(cacheStore).length;
+  const evicted = beforeLimit - afterLimit;
+  
+  if (purged > 0 || evicted > 0) {
+    saveCache();
+    logInfo(`RentCast startup cleanup: purged ${purged} expired, evicted ${evicted} over-limit. Remaining: ${afterLimit}`);
+  } else {
+    logInfo(`RentCast startup cleanup: cache healthy (${afterLimit} entries)`);
+  }
+  
+  return { purged, evicted, remaining: afterLimit };
 }
 
 loadCache();
@@ -968,5 +1019,6 @@ export default {
   getPropertyRecord,
   getCacheStats,
   getUsageStats,
-  clearCache
+  clearCache,
+  startupCacheCleanup
 };
