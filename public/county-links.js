@@ -86,7 +86,7 @@ const CountyLinks = (() => {
       if (!cols[COL.COUNTY_WEBSITE] || !cols[COL.COUNTY_WEBSITE].startsWith('http')) continue;
 
       // Title case: "PASCO" → "Pasco", "MIAMI-DADE" → "Miami-Dade", "PALM BEACH" → "Palm Beach"
-      const displayName = countyName.replace(/[\w]+/g, w => 
+      const displayName = countyName.replace(/[A-Za-z]+/g, w => 
         w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
       );
 
@@ -165,15 +165,24 @@ const CountyLinks = (() => {
 
   // --- Public API ---
 
+  // In-memory cache to avoid redundant getAll() calls within same session
+  let _memoryCache = null;
+
   /**
    * Get all county links data (from cache or fresh fetch)
    * @returns {Promise<Object>} Map of county name (uppercase) → link object
    */
   async function getAll() {
-    // Try cache first
+    // Return in-memory cache if available
+    if (_memoryCache && Object.keys(_memoryCache).length > 0) {
+      return _memoryCache;
+    }
+
+    // Try localStorage cache
     const cached = getCache();
     if (cached && Object.keys(cached).length > 0) {
       console.log('[CountyLinks] Loaded from cache (' + Object.keys(cached).length + ' counties)');
+      _memoryCache = cached;
       return cached;
     }
 
@@ -184,6 +193,7 @@ const CountyLinks = (() => {
 
     if (count > 0) {
       setCache(data);
+      _memoryCache = data;
       console.log('[CountyLinks] Fetched and cached ' + count + ' counties');
     } else {
       console.warn('[CountyLinks] No county data found in Sheet');
@@ -212,6 +222,7 @@ const CountyLinks = (() => {
    */
   async function refresh() {
     localStorage.removeItem(CACHE_KEY);
+    _memoryCache = null;
     return await getAll();
   }
 

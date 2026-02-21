@@ -121,7 +121,23 @@ export function readAuditLog(options = {}) {
       return [];
     }
     
-    const data = fs.readFileSync(AUDIT_LOG_FILE, 'utf8');
+    // Read only the last portion of the file to avoid loading 5MB+ into memory
+    const stats = fs.statSync(AUDIT_LOG_FILE);
+    const MAX_READ_BYTES = 512 * 1024; // 512KB max read
+    const readStart = Math.max(0, stats.size - MAX_READ_BYTES);
+    
+    const fd = fs.openSync(AUDIT_LOG_FILE, 'r');
+    const buffer = Buffer.alloc(Math.min(stats.size, MAX_READ_BYTES));
+    fs.readSync(fd, buffer, 0, buffer.length, readStart);
+    fs.closeSync(fd);
+    
+    let data = buffer.toString('utf8');
+    // If we started mid-file, skip the first (potentially partial) line
+    if (readStart > 0) {
+      const firstNewline = data.indexOf('\n');
+      if (firstNewline >= 0) data = data.substring(firstNewline + 1);
+    }
+    
     const lines = data.trim().split('\n').filter(line => line);
     
     let entries = lines.map(line => {

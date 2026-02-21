@@ -48,20 +48,33 @@ const ResearchLinks = (() => {
     }
 
     if (parts.length === 1) {
-      return { firstName: parts[0], lastName: parts[0], fullName: ownerName };
+      // Single name — use as last name, leave first empty
+      return { firstName: '', lastName: parts[0], fullName: ownerName };
     }
 
-    // Convention: first word = last name, second word = first name
-    const lastName = parts[0];
-    const firstName = parts[1];
+    // Title case helper — handles particles like DE, LA, VAN, DER
+    const PARTICLES = new Set(['DE', 'LA', 'DEL', 'VAN', 'DER', 'VON', 'DI', 'DA', 'DOS', 'DAS', 'LE', 'LOS', 'LAS']);
+    const tc = (s) => {
+      if (PARTICLES.has(s.toUpperCase())) return s.toLowerCase();
+      return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+    };
 
-    // Title case
-    const tc = (s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+    // Convention: first word = last name, second word = first name
+    // Handle multi-word last names with particles (e.g., "DE LA CRUZ MARIA")
+    let lastNameParts = [parts[0]];
+    let firstNameIdx = 1;
+    while (firstNameIdx < parts.length - 1 && PARTICLES.has(parts[firstNameIdx].toUpperCase())) {
+      lastNameParts.push(parts[firstNameIdx]);
+      firstNameIdx++;
+    }
+    
+    const lastName = lastNameParts.map(tc).join(' ');
+    const firstName = firstNameIdx < parts.length ? tc(parts[firstNameIdx]) : '';
 
     return {
-      firstName: tc(firstName),
-      lastName: tc(lastName),
-      fullName: tc(firstName) + ' ' + tc(lastName)
+      firstName,
+      lastName,
+      fullName: firstName ? firstName + ' ' + lastName : lastName
     };
   }
 
@@ -118,7 +131,7 @@ const ResearchLinks = (() => {
 
   function fastPeopleSearch(ownerName) {
     const parsed = parseOwnerName(ownerName);
-    const slug = `${parsed.firstName}-${parsed.lastName}`.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    const slug = `${parsed.firstName}-${parsed.lastName}`.toLowerCase().replace(/'/g, '').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '');
     return `https://www.fastpeoplesearch.com/name/${slug}`;
   }
 
@@ -133,7 +146,7 @@ const ResearchLinks = (() => {
 
   function cyberBackgroundChecks(ownerName, ownerState, ownerCity) {
     const parsed = parseOwnerName(ownerName);
-    const slug = `${parsed.firstName}-${parsed.lastName}`.replace(/[^a-zA-Z0-9-]/g, '');
+    const slug = `${parsed.firstName}-${parsed.lastName}`.replace(/'/g, '').replace(/[^a-zA-Z0-9-]/g, '').replace(/-+/g, '-').replace(/^-|-$/g, '');
     let url = `https://www.cyberbackgroundchecks.com/people/${slug}`;
     if (ownerState) {
       url += `/${encodeURIComponent(ownerState)}`;

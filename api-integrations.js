@@ -63,7 +63,9 @@ setInterval(() => {
     if (cleaned > 0) console.log(`[Cache] Cleaned ${cleaned} expired entries. Remaining: ${cache.size}`);
 }, 10 * 60 * 1000);
 
-// Pre-create HTTPS agent for self-signed cert servers (reuse across requests)
+// SECURITY NOTE: rejectUnauthorized:false is ONLY used for known county GIS servers
+// that have self-signed or expired SSL certificates. This is intentional and scoped
+// to the SELF_SIGNED_HOSTS allowlist below. All other HTTPS requests use default validation.
 const SELF_SIGNED_HOSTS = [
     'gis.highlandsfl.gov', 'mgrcmaps.org', 'gis.marionfl.org',
     'gis.sumtercountyfl.gov', 'pascogis.pascocountyfl.net',
@@ -839,6 +841,24 @@ export async function getPropertyDetails({ lat, lng, county, parcelId = null, pa
             overallStatus = '⚠️ AVALIAR (Wetland alto risco próximo)';
         } else if (wetlands.found) {
             overallStatus = '⚠️ AVALIAR';
+        }
+        
+        // Check zoning for conservation/preservation (high risk for investment)
+        if (zoning?.found) {
+            const zCode = (zoning.code || '').toUpperCase();
+            if (zCode.match(/^(CON|CONS|PRES|P|ENV|EC|RPC)/) && overallStatus === '✅ APROVADO') {
+                overallStatus = '⚠️ AVALIAR (Zoning Conservação)';
+            }
+        }
+        
+        // Check landUse for government-owned land
+        if (landUse?.found) {
+            const luCode = parseInt(landUse.code) || 0;
+            if ((luCode >= 50 && luCode <= 59) || (luCode >= 80 && luCode <= 89)) {
+                if (overallStatus === '✅ APROVADO') {
+                    overallStatus = '⚠️ AVALIAR (Land Use Governamental)';
+                }
+            }
         }
         
         return {

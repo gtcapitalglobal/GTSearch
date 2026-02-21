@@ -23,21 +23,30 @@ const NWI_API_URL = 'https://fwspublicservices.wim.usgs.gov/wetlandsmapservice/r
  * Risk classification based on NWI wetland codes
  */
 function classifyRisk(code, wetlandType) {
-    const prefix = (code || '').substring(0, 3).toUpperCase();
+    const nwi = (code || '').toUpperCase();
     
     // Palustrine (freshwater) wetlands - most common on land
-    if (prefix.startsWith('PFO')) return { risk: 'high', level: 'ALTO RISCO', color: '🔴', buildability: 'Muito restrita - requer permit USACE + mitigação ($20k-$100k+)' };
-    if (prefix.startsWith('PSS')) return { risk: 'medium-high', level: 'RISCO MÉDIO-ALTO', color: '🟠', buildability: 'Restrita - provável necessidade de permit USACE + mitigação' };
-    if (prefix.startsWith('PEM')) return { risk: 'medium', level: 'RISCO MÉDIO', color: '🟡', buildability: 'Moderada - pode requerer permit dependendo da extensão' };
-    if (prefix.startsWith('PAB') || prefix.startsWith('PUB')) return { risk: 'medium', level: 'RISCO MÉDIO', color: '🟡', buildability: 'Moderada - área aquática, requer avaliação' };
+    // Use full code for more accurate classification
+    if (nwi.startsWith('PFO')) {
+        // Forested wetland - check water regime for severity
+        // Codes ending in C (Seasonally Flooded) or H (Permanently Flooded) are higher risk
+        const regime = nwi.length >= 5 ? nwi.charAt(4) : '';
+        if ('HFG'.includes(regime)) return { risk: 'high', level: 'ALTO RISCO', color: '🔴', buildability: 'Muito restrita - permanentemente inundada, requer permit USACE + mitigação ($50k-$100k+)' };
+        return { risk: 'high', level: 'ALTO RISCO', color: '🔴', buildability: 'Muito restrita - requer permit USACE + mitigação ($20k-$100k+)' };
+    }
+    if (nwi.startsWith('PSS')) return { risk: 'medium-high', level: 'RISCO MÉDIO-ALTO', color: '🟠', buildability: 'Restrita - provável necessidade de permit USACE + mitigação' };
+    if (nwi.startsWith('PEM')) return { risk: 'medium', level: 'RISCO MÉDIO', color: '🟡', buildability: 'Moderada - pode requerer permit dependendo da extensão' };
+    if (nwi.startsWith('PAB') || nwi.startsWith('PUB')) return { risk: 'medium', level: 'RISCO MÉDIO', color: '🟡', buildability: 'Moderada - área aquática, requer avaliação' };
+    // Other Palustrine (PUS, etc.)
+    if (nwi.startsWith('P')) return { risk: 'medium', level: 'RISCO MÉDIO', color: '🟡', buildability: 'Requer avaliação - wetland palustrine' };
     
     // Lacustrine (lake) and Riverine (river) - typically not buildable
-    if (code.startsWith('L')) return { risk: 'high', level: 'ALTO RISCO', color: '🔴', buildability: 'Corpo d\'água - não construível' };
-    if (code.startsWith('R')) return { risk: 'high', level: 'ALTO RISCO', color: '🔴', buildability: 'Curso d\'água - não construível' };
+    if (nwi.startsWith('L')) return { risk: 'high', level: 'ALTO RISCO', color: '🔴', buildability: 'Corpo d\'\u00e1gua - n\u00e3o constru\u00edvel' };
+    if (nwi.startsWith('R')) return { risk: 'high', level: 'ALTO RISCO', color: '🔴', buildability: 'Curso d\'\u00e1gua - n\u00e3o constru\u00edvel' };
     
     // Estuarine and Marine
-    if (code.startsWith('E')) return { risk: 'high', level: 'ALTO RISCO', color: '🔴', buildability: 'Estuário - altamente restrita' };
-    if (code.startsWith('M')) return { risk: 'high', level: 'ALTO RISCO', color: '🔴', buildability: 'Marinho - não construível' };
+    if (nwi.startsWith('E')) return { risk: 'high', level: 'ALTO RISCO', color: '🔴', buildability: 'Estuário - altamente restrita' };
+    if (nwi.startsWith('M')) return { risk: 'high', level: 'ALTO RISCO', color: '🔴', buildability: 'Marinho - não construível' };
     
     // Default
     return { risk: 'medium', level: 'RISCO MÉDIO', color: '🟡', buildability: 'Requer avaliação específica' };
@@ -101,13 +110,31 @@ async function getWetlandsFromAPI(lat, lng, bufferMeters = 20) {
         const url = `${NWI_API_URL}?${params.toString()}`;
         console.log(`Querying NWI Official MapServer with buffer ${bufferMeters}m...`);
         
-        const response = await fetch(url, {
-            headers: { 'User-Agent': 'GTSearch/2.0' },
-            signal: AbortSignal.timeout(30000) // 30s timeout
-        });
+        // Retry logic: 1 retry with 2s delay
+        let response;
+        for (let attempt = 0; attempt <= 1; attempt++) {
+            try {
+                response = await fetch(url, {
+                    headers: { 'User-Agent': 'GTSearch/2.0' },
+                    signal: AbortSignal.timeout(30000) // 30s timeout
+                });
+                if (response.ok) break;
+                if (attempt === 0) {
+                    console.warn(`NWI API attempt 1 failed (HTTP ${response.status}), retrying in 2s...`);
+                    await new Promise(r => setTimeout(r, 2000));
+                }
+            } catch (fetchErr) {
+                if (attempt === 0) {
+                    console.warn(`NWI API attempt 1 failed (${fetchErr.message}), retrying in 2s...`);
+                    await new Promise(r => setTimeout(r, 2000));
+                } else {
+                    throw fetchErr;
+                }
+            }
+        }
         
-        if (!response.ok) {
-            throw new Error(`NWI API HTTP error: ${response.status}`);
+        if (!response || !response.ok) {
+            throw new Error(`NWI API HTTP error: ${response?.status || 'no response'}`);
         }
         
         const data = await response.json();
@@ -147,7 +174,7 @@ async function getWetlandsFromAPI(lat, lng, bufferMeters = 20) {
             return {
                 code,
                 type: wetlandType,
-                acres: parseFloat(parseFloat(acres).toFixed(2)),
+                acres: Number(Number(acres).toFixed(2)),
                 decoded,
                 risk: riskInfo.risk,
                 riskLevel: riskInfo.level,

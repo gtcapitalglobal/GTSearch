@@ -119,10 +119,10 @@ app.use(express.static('public'));
 /**
  * Load mock data from /mock folder
  */
-function loadMockData(filename) {
+async function loadMockData(filename) {
   try {
     const filePath = path.join(__dirname, 'mock', filename);
-    const data = fs.readFileSync(filePath, 'utf8');
+    const data = await fs.promises.readFile(filePath, 'utf8');
     return JSON.parse(data);
   } catch (error) {
     console.error(`❌ Error loading mock data: ${filename}`, error.message);
@@ -162,7 +162,6 @@ app.get('/api/health', (req, res) => {
 app.get('/api/status', (req, res) => {
   res.json({
     OFFLINE_MODE: OFFLINE_MODE,
-    offline_mode: OFFLINE_MODE,
     apis_enabled: !OFFLINE_MODE,
     mock_data_available: true,
     version: VERSION,
@@ -242,8 +241,8 @@ app.get('/api/google-maps-loader', (req, res) => {
 // ========================================
 
 // Get mock property data
-app.get('/api/mock/property', (req, res) => {
-  const data = loadMockData('property.sample.json');
+app.get('/api/mock/property', async (req, res) => {
+  const data = await loadMockData('property.sample.json');
   if (!data) {
     return res.status(500).json({ error: 'Failed to load mock data' });
   }
@@ -251,8 +250,8 @@ app.get('/api/mock/property', (req, res) => {
 });
 
 // Get mock flood data
-app.get('/api/mock/flood', (req, res) => {
-  const data = loadMockData('flood.sample.json');
+app.get('/api/mock/flood', async (req, res) => {
+  const data = await loadMockData('flood.sample.json');
   if (!data) {
     return res.status(500).json({ error: 'Failed to load mock data' });
   }
@@ -260,8 +259,8 @@ app.get('/api/mock/flood', (req, res) => {
 });
 
 // Get mock zoning data
-app.get('/api/mock/zoning', (req, res) => {
-  const data = loadMockData('zoning.sample.json');
+app.get('/api/mock/zoning', async (req, res) => {
+  const data = await loadMockData('zoning.sample.json');
   if (!data) {
     return res.status(500).json({ error: 'Failed to load mock data' });
   }
@@ -269,8 +268,8 @@ app.get('/api/mock/zoning', (req, res) => {
 });
 
 // Get mock road access data
-app.get('/api/mock/road-access', (req, res) => {
-  const data = loadMockData('road_access.sample.json');
+app.get('/api/mock/road-access', async (req, res) => {
+  const data = await loadMockData('road_access.sample.json');
   if (!data) {
     return res.status(500).json({ error: 'Failed to load mock data' });
   }
@@ -278,8 +277,8 @@ app.get('/api/mock/road-access', (req, res) => {
 });
 
 // Alias with underscore for consistency
-app.get('/api/mock/road_access', (req, res) => {
-  const data = loadMockData('road_access.sample.json');
+app.get('/api/mock/road_access', async (req, res) => {
+  const data = await loadMockData('road_access.sample.json');
   if (!data) {
     return res.status(500).json({ error: 'Failed to load mock data' });
   }
@@ -287,8 +286,8 @@ app.get('/api/mock/road_access', (req, res) => {
 });
 
 // Get mock red flags data
-app.get('/api/mock/redflags', (req, res) => {
-  const data = loadMockData('redflags.sample.json');
+app.get('/api/mock/redflags', async (req, res) => {
+  const data = await loadMockData('redflags.sample.json');
   if (!data) {
     return res.status(500).json({ error: 'Failed to load mock data' });
   }
@@ -296,8 +295,8 @@ app.get('/api/mock/redflags', (req, res) => {
 });
 
 // Get property schema
-app.get('/api/schema/property', (req, res) => {
-  const schema = loadMockData('property.schema.json');
+app.get('/api/schema/property', async (req, res) => {
+  const schema = await loadMockData('property.schema.json');
   if (!schema) {
     return res.status(500).json({ error: 'Failed to load schema' });
   }

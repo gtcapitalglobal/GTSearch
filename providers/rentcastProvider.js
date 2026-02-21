@@ -17,6 +17,7 @@
 
 import axios from 'axios';
 import fs from 'fs';
+import { writeFile, rename, unlink, readFile } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { logInfo, logWarn, logError } from '../utils/logger.js';
@@ -86,14 +87,14 @@ function loadUsage() {
 /**
  * Save usage data to disk
  */
-function saveUsage() {
+async function saveUsage() {
   try {
     const data = JSON.stringify(usageData, null, 2);
-    fs.writeFileSync(USAGE_FILE + '.tmp', data, 'utf8');
-    fs.renameSync(USAGE_FILE + '.tmp', USAGE_FILE);
+    await writeFile(USAGE_FILE + '.tmp', data, 'utf8');
+    await rename(USAGE_FILE + '.tmp', USAGE_FILE);
   } catch (err) {
     logError('RentCast usage: failed to save', err);
-    try { fs.unlinkSync(USAGE_FILE + '.tmp'); } catch (_) {}
+    try { await unlink(USAGE_FILE + '.tmp'); } catch (_) {}
   }
 }
 
@@ -186,15 +187,15 @@ function loadCache() {
   }
 }
 
-function saveCache() {
+async function saveCache() {
   try {
     const data = JSON.stringify(cacheStore, null, 2);
-    fs.writeFileSync(CACHE_FILE + '.tmp', data, 'utf8');
-    fs.renameSync(CACHE_FILE + '.tmp', CACHE_FILE);
+    await writeFile(CACHE_FILE + '.tmp', data, 'utf8');
+    await rename(CACHE_FILE + '.tmp', CACHE_FILE);
   } catch (err) {
     logError('RentCast cache: failed to save to disk', err);
     // Clean up temp file if rename failed
-    try { fs.unlinkSync(CACHE_FILE + '.tmp'); } catch (_) {}
+    try { await unlink(CACHE_FILE + '.tmp'); } catch (_) {}
   }
 }
 
@@ -244,13 +245,22 @@ function cacheSet(key, data) {
  */
 function enforceCacheLimit() {
   const keys = Object.keys(cacheStore);
-  if (keys.length <= MAX_CACHE_ENTRIES) return;
+  const excess = keys.length - MAX_CACHE_ENTRIES;
+  if (excess <= 0) return;
   
-  // Sort by timestamp ascending (oldest first)
-  const sorted = keys.sort((a, b) => (cacheStore[a]?.timestamp || 0) - (cacheStore[b]?.timestamp || 0));
-  const toRemove = sorted.slice(0, keys.length - MAX_CACHE_ENTRIES);
-  toRemove.forEach(k => delete cacheStore[k]);
-  logInfo(`RentCast cache: evicted ${toRemove.length} oldest entries (limit: ${MAX_CACHE_ENTRIES})`);
+  // Use partial sort: find N oldest entries without sorting entire array
+  // For small excess counts this is more efficient than full sort
+  const entries = keys.map(k => ({ key: k, ts: cacheStore[k]?.timestamp || 0 }));
+  // Partial selection: pick the N smallest timestamps
+  for (let i = 0; i < excess; i++) {
+    let minIdx = i;
+    for (let j = i + 1; j < entries.length; j++) {
+      if (entries[j].ts < entries[minIdx].ts) minIdx = j;
+    }
+    if (minIdx !== i) [entries[i], entries[minIdx]] = [entries[minIdx], entries[i]];
+    delete cacheStore[entries[i].key];
+  }
+  logInfo(`RentCast cache: evicted ${excess} oldest entries (limit: ${MAX_CACHE_ENTRIES})`);
 }
 
 /**
@@ -477,9 +487,9 @@ export async function getValueEstimate(params = {}) {
     };
   }
   
-  // Check OFFLINE_MODE
-  const offlineMode = process.env.OFFLINE_MODE;
-  if (offlineMode === undefined || offlineMode === null || offlineMode === '' || offlineMode === 'true') {
+  // Check OFFLINE_MODE (true if not explicitly set to 'false')
+  const offlineMode = process.env.OFFLINE_MODE !== 'false';
+  if (offlineMode) {
     logInfo('RentCast: OFFLINE_MODE active, returning mock data');
     auditLog({
       action: 'rentcast_value_estimate',
@@ -773,9 +783,9 @@ export async function getPropertyRecord(params = {}) {
     };
   }
   
-  // Check OFFLINE_MODE
-  const offlineMode = process.env.OFFLINE_MODE;
-  if (offlineMode === undefined || offlineMode === null || offlineMode === '' || offlineMode === 'true') {
+  // Check OFFLINE_MODE (true if not explicitly set to 'false')
+  const offlineMode = process.env.OFFLINE_MODE !== 'false';
+  if (offlineMode) {
     logInfo('RentCast Property Records: OFFLINE_MODE active, returning mock data');
     auditLog({
       action: 'rentcast_property_record',

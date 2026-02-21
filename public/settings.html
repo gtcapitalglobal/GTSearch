@@ -1599,7 +1599,7 @@
             }
             
             localStorage.setItem('googleSheetsWebAppUrl', webAppUrl);
-            localStorage.setItem('googleSheetsPassword', password);
+            sessionStorage.setItem('googleSheetsPassword', password);
             
             const indicator = document.getElementById('savedIndicatorSheets');
             indicator.style.display = 'block';
@@ -1615,7 +1615,7 @@
          */
         async function loadApiKeysFromSheets() {
             const webAppUrl = localStorage.getItem('googleSheetsWebAppUrl');
-            const password = localStorage.getItem('googleSheetsPassword');
+            const password = sessionStorage.getItem('googleSheetsPassword');
             
             if (!webAppUrl || !password) {
                 alert('❌ Configure a URL e senha do Google Sheets primeiro!');
@@ -1724,7 +1724,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             // Carregar configuração salva
             const webAppUrl = localStorage.getItem('googleSheetsWebAppUrl');
-            const password = localStorage.getItem('googleSheetsPassword');
+            const password = sessionStorage.getItem('googleSheetsPassword');
             const autoLoad = localStorage.getItem('googleSheetsAutoLoad') === 'true';
             
             if (webAppUrl) document.getElementById('googleSheetsWebAppUrl').value = webAppUrl;

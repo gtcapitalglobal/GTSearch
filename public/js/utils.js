@@ -53,8 +53,8 @@ function sanitizeURL(url) {
  * @returns {string} Formatted dollar string like "$45,000"
  */
 function formatDollar(amount, showCents = false) {
-    const num = parseFloat(amount);
-    if (isNaN(num)) return '$0';
+    const num = Number(amount);
+    if (!Number.isFinite(num)) return '$0';
     return '$' + num.toLocaleString('en-US', {
         minimumFractionDigits: showCents ? 2 : 0,
         maximumFractionDigits: showCents ? 2 : 0
@@ -89,8 +89,18 @@ function debounce(fn, delay = 300) {
     };
 }
 
-// Make available globally
+// Make available globally via namespace and legacy window globals
 if (typeof window !== 'undefined') {
+    // Namespace for organized access
+    window.GTSearch = window.GTSearch || {};
+    window.GTSearch.utils = {
+        escapeHTML,
+        sanitizeURL,
+        formatDollar,
+        parseDollarString,
+        debounce
+    };
+    // Legacy globals for backward compatibility
     window.escapeHTML = escapeHTML;
     window.sanitizeURL = sanitizeURL;
     window.formatDollar = formatDollar;

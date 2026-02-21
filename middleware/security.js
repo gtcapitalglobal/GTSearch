@@ -57,6 +57,7 @@ export const strictRateLimiter = rateLimit({
 export function requestSizeLimit(req, res, next) {
   const maxSize = 1024 * 1024; // 1MB
   
+  // Check content-length header if present
   if (req.headers['content-length'] && parseInt(req.headers['content-length']) > maxSize) {
     return res.status(413).json({
       error: 'Request body too large',
@@ -64,6 +65,21 @@ export function requestSizeLimit(req, res, next) {
       received: `${(parseInt(req.headers['content-length']) / 1024 / 1024).toFixed(2)}MB`
     });
   }
+  
+  // Also track actual bytes received (handles chunked encoding)
+  let receivedBytes = 0;
+  req.on('data', (chunk) => {
+    receivedBytes += chunk.length;
+    if (receivedBytes > maxSize) {
+      req.destroy();
+      if (!res.headersSent) {
+        res.status(413).json({
+          error: 'Request body too large',
+          maxSize: '1MB'
+        });
+      }
+    }
+  });
   
   next();
 }
@@ -179,8 +195,14 @@ export function requireAdminToken(OFFLINE_MODE) {
     }
     
     // Timing-safe comparison to prevent timing attacks
+    // Pad both to same length to avoid leaking token length info
+    const maxLen = Math.max(adminToken.length, providedToken.length);
+    const adminBuf = Buffer.alloc(maxLen, 0);
+    const providedBuf = Buffer.alloc(maxLen, 0);
+    Buffer.from(adminToken).copy(adminBuf);
+    Buffer.from(providedToken).copy(providedBuf);
     const tokenMatch = adminToken.length === providedToken.length &&
-      crypto.timingSafeEqual(Buffer.from(adminToken), Buffer.from(providedToken));
+      crypto.timingSafeEqual(adminBuf, providedBuf);
     if (!tokenMatch) {
       return res.status(403).json({
         error: 'Authentication failed',
@@ -210,7 +232,7 @@ export function secureEndpoint(options = {}) {
     allowedParams = [],
     strictRateLimit = false,
     rejectUrls = true,
-    OFFLINE_MODE = true
+    OFFLINE_MODE = false
   } = options;
   
   const middleware = [];

@@ -2004,7 +2004,7 @@
         // ========================================
         function sendToGoogleSheets() {
             const webAppUrl = localStorage.getItem('googleSheetsWebAppUrl');
-            const password = localStorage.getItem('googleSheetsPassword');
+            const password = sessionStorage.getItem('googleSheetsPassword');
             
             if (!webAppUrl) {
                 alert('Configure a URL do Google Sheets Web App nas Configurações primeiro!');

@@ -2,9 +2,17 @@
 // Fetches county data from Google Sheets via backend API
 
 let FLORIDA_COUNTIES_CACHE = null;
+let _loadingPromise = null; // Prevent concurrent requests
 
 // Function to load counties from API
 async function loadFloridaCounties() {
+  // Deduplicate concurrent calls
+  if (_loadingPromise) return _loadingPromise;
+  _loadingPromise = _loadFloridaCountiesImpl();
+  try { return await _loadingPromise; } finally { _loadingPromise = null; }
+}
+
+async function _loadFloridaCountiesImpl() {
   try {
     const response = await fetch('/api/florida-counties');
     const data = await response.json();
@@ -60,19 +68,17 @@ async function getCountyAppraisalLink(countyName) {
     return FLORIDA_COUNTIES_CACHE[normalized];
   }
   
-  // Try with "SAINT" instead of "ST"
-  if (normalized.startsWith("ST ")) {
-    const saintVersion = normalized.replace("ST ", "SAINT ");
-    if (FLORIDA_COUNTIES_CACHE[saintVersion]) {
-      return FLORIDA_COUNTIES_CACHE[saintVersion];
-    }
-  }
-  
-  // Try with "ST" instead of "SAINT"
-  if (normalized.startsWith("SAINT ")) {
-    const stVersion = normalized.replace("SAINT ", "ST ");
-    if (FLORIDA_COUNTIES_CACHE[stVersion]) {
-      return FLORIDA_COUNTIES_CACHE[stVersion];
+  // Try ST/SAINT/ST. variants (handles "ST LUCIE", "SAINT LUCIE", "ST. LUCIE")
+  const stVariants = [
+    { from: /^ST\.?\s+/, to: 'SAINT ' },
+    { from: /^SAINT\s+/, to: 'ST ' }
+  ];
+  for (const { from, to } of stVariants) {
+    if (from.test(normalized)) {
+      const variant = normalized.replace(from, to);
+      if (FLORIDA_COUNTIES_CACHE[variant]) {
+        return FLORIDA_COUNTIES_CACHE[variant];
+      }
     }
   }
   

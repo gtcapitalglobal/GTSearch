@@ -390,62 +390,62 @@
 ## v6-basic — Auditoria Completa (15 arquivos, 21 Feb 2026)
 
 ### CRITICAL (3 issues — corrigir antes de produção)
-- [ ] CRIT-1: `property-analysis-widget.js` L639 — `calculateRiskAssessment` crash se `data.wetlands` ou `data.fema` forem null — adicionar null checks
-- [ ] CRIT-2: `security.js` L213 — `secureEndpoint` default OFFLINE_MODE=true desabilita auth silenciosamente — trocar default para false
-- [ ] CRIT-3: `investment.html` L2006 — Senha do Google Sheets salva em localStorage (XSS risk) — mover para sessionStorage ou pedir a cada sessão
+- [x] CRIT-1: FALSE POSITIVE — já tem null guards `if (data.fema)` e `if (data.wetlands)`
+- [x] CRIT-2: Default trocado para false (dead code mas best practice) — CORRIGIDO v6.1
+- [x] CRIT-3: Senha movida para sessionStorage (settings.html + investment.html) — CORRIGIDO v6.1
 
 ### HIGH (12 issues — priorizar)
-- [ ] HIGH-1: `property-analysis-widget.js` L431 — `renderWetlandsFound` acessa `wetlands.wetlands.length` mas estrutura correta é `wetlands.features.length`
-- [ ] HIGH-2: `property-analysis-widget.js` L586 — `renderZoning` usa `.map()` em objeto (deveria ser `Object.keys().map()`)
-- [ ] HIGH-3: `property-analysis-widget.js` L741 — `getLandUseRisk` lógica invertida: CONSERVATION=baixo risco, RESIDENTIAL=alto risco (deveria ser o contrário)
-- [ ] HIGH-4: `security.js` L89 — `requestTimeout` chama `next()` antes de configurar timeout — pode crashar ao setar headers em resposta já enviada
-- [ ] HIGH-5: `security.js` L183 — `timingSafeEqual` só compara se lengths são iguais — vaza informação do tamanho do token
-- [ ] HIGH-6: `server.js` L797 — `/api/comps/cache-clear` protegido apenas por header `x-admin-key` — inseguro
-- [ ] HIGH-7: `server.js` L225 — `/api/google-maps-loader` expõe GOOGLE_MAPS_API_KEY ao client — considerar proxy
-- [ ] HIGH-8: `api-integrations.js` L841 — `overallStatus` substitui status de risco alto por genérico "AVALIAR" — refatorar lógica de prioridade
-- [ ] HIGH-9: `county-links.js` L89 — Title-case falha em nomes hifenizados (MIAMI-DADE → Miami-dade em vez de Miami-Dade)
-- [ ] HIGH-10: `index.html` — Múltiplos usos de innerHTML sem sanitização (XSS via CSV/KML malicioso)
-- [ ] HIGH-11: `analysis.html` — Lógica inteira em inline script (>3000 linhas) — separar em arquivos .js
-- [ ] HIGH-12: `rentcastProvider.js` L92,192 — writeFileSync/renameSync bloqueiam event loop — usar fs.promises
+- [x] HIGH-1: FALSE POSITIVE — backend retorna `{wetlands: [...]}`, acesso `wetlands.wetlands` é correto
+- [x] HIGH-2: FALSE POSITIVE — renderZoning não usa .map() em objeto
+- [x] HIGH-3: FALSE POSITIVE — lógica correta para investimento (Conservation=alto risco, Residential=green)
+- [x] HIGH-4: FALSE POSITIVE — security.js não é importado no server.js (dead code). Padrão é correto para Express
+- [x] HIGH-5: Buffers padded para mesmo tamanho antes de comparação — CORRIGIDO v6.1
+- [x] HIGH-6: ACCEPTABLE — endpoint protegido por OFFLINE_MODE check + ADMIN_KEY. Risco baixo em uso local
+- [x] HIGH-7: BY DESIGN — Maps JS SDK requer client-side key. Código já tem nota explicando. Restringir por HTTP referrer no Google Cloud Console
+- [x] HIGH-8: Adicionado checks de zoning (Conservation) e landUse (Government) no overallStatus — CORRIGIDO v6.1
+- [x] HIGH-9: Regex trocado de `[\w]+` para `[A-Za-z]+` — agora MIAMI-DADE → Miami-Dade — CORRIGIDO v6.1
+- [x] HIGH-10: DEFERRED — innerHTML usado com dados locais (CSV/KML do próprio usuário). escapeHTML() disponível em utils.js. Refatorar em versão futura
+- [x] HIGH-11: DEFERRED — refatoração grande, agendar para v7. Funciona corretamente como está
+- [x] HIGH-12: Convertido para fs/promises (writeFile, rename, unlink) — CORRIGIDO v6.1
 
 ### MEDIUM (20 issues — melhorias incrementais)
-- [ ] MED-A1: `api-integrations.js` L72 — `rejectUnauthorized: false` desabilita validação SSL
-- [ ] MED-A2: `api-integrations.js` L668 — `getGenericRegistryZoning` usa "primeiro ganha" — pode perder dados de overlay
-- [ ] MED-A3: `server.js` L125 — `loadMockData` usa readFileSync — trocar por async
-- [ ] MED-A4: `server.js` L164 — `/api/status` retorna OFFLINE_MODE duplicado (upper e lower case)
-- [ ] MED-A5: `security.js` L60 — `requestSizeLimit` só checa content-length header — bypass via chunked encoding
-- [ ] MED-A6: `security.js` L136 — `rejectUserSuppliedUrls` usa blacklist — trocar por allowlist
-- [ ] MED-A7: `validator.js` L59 — `ajv.compile(schema)` recompila a cada chamada — cachear validator
-- [ ] MED-A8: `validator.js` L97 — monkey-patch em `res.json` — refatorar
-- [ ] MED-A9: `audit.js` L84 — monkey-patch em `res.json` — refatorar
-- [ ] MED-A10: `research-links.js` L31 — `parseOwnerName` não lida com partículas (de la, van der)
-- [ ] MED-A11: `research-links.js` L51 — Nome de parte única seta first=last (incorreto)
-- [ ] MED-A12: `research-links.js` L121,136,183 — Slug agressivo remove apóstrofos — pode gerar URLs inválidas
-- [ ] MED-A13: `county-links.js` L172,200,222 — `getByCounty`/`getCountyList` chamam `getAll` toda vez — redundante
-- [ ] MED-A14: `county-links.js` L23 — Sheet ID e Tab hardcoded — externalizar config
-- [ ] MED-A15: `index.html` — Uso de alert()/confirm() — trocar por modais
-- [ ] MED-A16: `index.html` L1086 — Race condition no carregamento de múltiplos KML
-- [ ] MED-A17: `analysis.html` — Variáveis globais extensivas (window.properties, window.currentIndex)
-- [ ] MED-A18: `investment.html` L2106 — fetch Google Sheets com `mode: 'no-cors'` — impede error handling
-- [ ] MED-A19: `rentcastProvider.js` L778 — Lógica de OFFLINE_MODE não convencional (undefined=true)
-- [ ] MED-A20: `wetlands-local.js` L150 — parseFloat duplo redundante
+- [x] MED-A1: Adicionado comentário SECURITY NOTE explicando que é scoped ao SELF_SIGNED_HOSTS allowlist — DOCUMENTADO v6.1
+- [x] MED-A2: ACCEPTABLE — "primeiro ganha" é intencional (zoning principal tem prioridade sobre overlay)
+- [x] MED-A3: Convertido para fs.promises.readFile + handlers async — CORRIGIDO v6.1
+- [x] MED-A4: Removido `offline_mode` duplicado de /api/status — CORRIGIDO v6.1
+- [x] MED-A5: Adicionado tracking de bytes recebidos via req.on('data') — CORRIGIDO v6.1
+- [x] MED-A6: ACCEPTABLE — blacklist de parâmetros URL é adequada para este caso (não é filtragem de IPs)
+- [x] MED-A7: Validator compilado cacheado em _cachedValidator — CORRIGIDO v6.1
+- [x] MED-A8: ACCEPTABLE — padrão comum em Express middleware para interceptar responses
+- [x] MED-A9: ACCEPTABLE — padrão comum em Express middleware para interceptar responses
+- [x] MED-A10: Adicionado suporte a partículas (DE, LA, VAN, DER, VON, etc.) — CORRIGIDO v6.1
+- [x] MED-A11: Nome único agora seta firstName='' e lastName=nome — CORRIGIDO v6.1
+- [x] MED-A12: Slug agora remove apóstrofos explicitamente + limpa hífens duplicados — CORRIGIDO v6.1
+- [x] MED-A13: Adicionado _memoryCache para evitar chamadas redundantes — CORRIGIDO v6.1
+- [x] MED-A14: DEFERRED — funciona corretamente, externalizar quando houver múltiplas sheets
+- [x] MED-A15: DEFERRED — funcional, trocar por modais em v7 (UI overhaul)
+- [x] MED-A16: DEFERRED — edge case raro, agendar para v7
+- [x] MED-A17: DEFERRED — refatoração grande, agendar para v7 junto com HIGH-11
+- [x] MED-A18: ACCEPTABLE — no-cors é necessário para Google Apps Script Web App (CORS não configurável)
+- [x] MED-A19: Simplificado para `process.env.OFFLINE_MODE !== 'false'` — CORRIGIDO v6.1
+- [x] MED-A20: Trocado para `Number(Number(acres).toFixed(2))` — CORRIGIDO v6.1
 
 ### LOW (18 issues — otimização futura)
-- [ ] LOW-A1: `utils.js` — Funções no window global — usar namespace GTSearch.utils
-- [ ] LOW-A2: `utils.js` L56 — formatDollar usa parseFloat permissivo
-- [ ] LOW-A3: `research-links.js` L94 — Estado 'FL' hardcoded
-- [ ] LOW-A4: `research-links.js` L156 — Buffer EPA hardcoded (0.01)
-- [ ] LOW-A5: `research-links.js` L102,107,149,168 — Funções não utilizadas (dead code)
-- [ ] LOW-A6: `florida-counties-api.js` L64-77 — Lógica ST/SAINT frágil
-- [ ] LOW-A7: `florida-counties-api.js` L51 — Múltiplos requests concorrentes possíveis
-- [ ] LOW-A8: `index.html` — Variáveis globais extensivas — encapsular em objeto
-- [ ] LOW-A9: `index.html` L523 — Busca global sem debounce
-- [ ] LOW-A10: `analysis.html` — console.log em produção — remover
-- [ ] LOW-A11: `analysis.html` L1139 — Uso de alert()
-- [ ] LOW-A12: `investment.html` L236 — Script inline >2400 linhas — separar em arquivo .js
-- [ ] LOW-A13: `audit.js` L124 — readAuditLog lê arquivo inteiro em memória (até 5MB)
-- [ ] LOW-A14: `rentcastProvider.js` L250 — enforceCacheLimit sort inteiro a cada write
-- [ ] LOW-A15: `rentcastProvider.js` L96,197 — Silent catch em cleanup de .tmp
-- [ ] LOW-A16: `wetlands-local.js` L26 — classifyRisk só usa 3 chars do NWI code
-- [ ] LOW-A17: `wetlands-local.js` L248 — Sem retry em falha de API
-- [ ] LOW-A18: `wetlands-local.js` L29-43 — Regras de risco hardcoded — externalizar config
+- [x] LOW-A1: Adicionado namespace GTSearch.utils + mantido globals para backward compat — CORRIGIDO v6.1
+- [x] LOW-A2: Trocado para Number() + Number.isFinite() — CORRIGIDO v6.1
+- [x] LOW-A3: ACCEPTABLE — sistema é Florida-only por design
+- [x] LOW-A4: ACCEPTABLE — buffer padrão EPA, não precisa ser configurável
+- [x] LOW-A5: FALSE POSITIVE — todas as funções são exportadas e usadas via `urls` object
+- [x] LOW-A6: Refatorado com regex para ST/SAINT/ST. variants — CORRIGIDO v6.1
+- [x] LOW-A7: Adicionado _loadingPromise para deduplicar chamadas concorrentes — CORRIGIDO v6.1
+- [x] LOW-A8: DEFERRED — refatoração grande, agendar para v7
+- [x] LOW-A9: DEFERRED — debounce() já disponível em utils.js, aplicar em v7
+- [x] LOW-A10: DEFERRED — útil para debugging em fase atual
+- [x] LOW-A11: DEFERRED — trocar por modais em v7
+- [x] LOW-A12: DEFERRED — refatoração grande, agendar para v7
+- [x] LOW-A13: Agora lê apenas últimos 512KB do arquivo — CORRIGIDO v6.1
+- [x] LOW-A14: Trocado para partial selection sort (só encontra N menores) — CORRIGIDO v6.1
+- [x] LOW-A15: ACCEPTABLE — silent catch em cleanup de temp files é padrão (best-effort cleanup)
+- [x] LOW-A16: Agora usa código completo + water regime para classificação mais precisa — CORRIGIDO v6.1
+- [x] LOW-A17: Adicionado 1 retry com 2s delay na chamada NWI API — CORRIGIDO v6.1
+- [x] LOW-A18: DEFERRED — regras são estáveis (baseadas em NWI spec), externalizar quando necessário

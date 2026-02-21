@@ -49,14 +49,20 @@ function loadPropertySchema() {
 const ajv = new Ajv({ allErrors: true, verbose: true });
 addFormats(ajv);
 
+// Cache compiled validator to avoid recompiling on every call
+let _cachedValidator = null;
+
 /**
  * Validate data against property schema
  * @param {Object} data - Data to validate
  * @returns {Object} Validation result { valid: boolean, errors: array }
  */
 export function validatePropertyData(data) {
-  const schema = loadPropertySchema();
-  const validate = ajv.compile(schema);
+  if (!_cachedValidator) {
+    const schema = loadPropertySchema();
+    _cachedValidator = ajv.compile(schema);
+  }
+  const validate = _cachedValidator;
   const valid = validate(data);
   
   return {
