@@ -8,6 +8,8 @@ import fs from 'fs';
 import { validateMockOutputMiddleware } from './utils/validator.js';
 import { auditLogMiddleware } from './utils/audit.js';
 import { getPropertyDetails } from './api-integrations.js';
+import { getValueEstimate, getCacheStats, getUsageStats, clearCache } from './providers/rentcastProvider.js';
+import rateLimit from 'express-rate-limit';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -187,7 +189,8 @@ app.get('/api/config/status', (req, res) => {
     openai: !!process.env.OPENAI_API_KEY,
     gemini: !!process.env.GEMINI_API_KEY,
     perplexity: !!process.env.PERPLEXITY_API_KEY,
-    rapidapi: !!process.env.RAPIDAPI_KEY
+    rapidapi: !!process.env.RAPIDAPI_KEY,
+    rentcast: !!process.env.RENTCAST_API_KEY
   });
 });
 
@@ -621,6 +624,98 @@ app.post('/api/property-details/batch', async (req, res) => {
     console.error('Error in /api/property-details/batch:', error);
     res.status(500).json({ error: 'Internal server error', message: error.message });
   }
+});
+
+// ========================================
+// RENTCAST COMPS / VALUE ESTIMATE
+// ========================================
+
+// Rate limiter: 10 requests per minute per IP for comps endpoint
+const compsRateLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: 'Too many requests',
+    message: 'Rate limit: max 10 requests per minute for comps endpoint',
+    retry_after_seconds: 60
+  }
+});
+
+/**
+ * GET /api/comps/value-estimate
+ * Query params: address OR (lat + lon)
+ * Returns: SSOT value estimate with comps
+ * Rate limited: 10 req/min per IP
+ */
+app.get('/api/comps/value-estimate', compsRateLimiter, async (req, res) => {
+  try {
+    const { address, lat, lon } = req.query;
+    
+    // Validate input
+    if (!address && (!lat || !lon)) {
+      return res.status(400).json({
+        error: 'Missing required parameters',
+        message: 'Provide either address or lat+lon',
+        usage: {
+          by_address: '/api/comps/value-estimate?address=123 Main St, Orlando, FL 32801',
+          by_coords: '/api/comps/value-estimate?lat=28.5383&lon=-81.3792'
+        }
+      });
+    }
+    
+    const params = {};
+    if (address) {
+      params.address = address;
+    } else {
+      params.lat = parseFloat(lat);
+      params.lon = parseFloat(lon);
+      
+      if (isNaN(params.lat) || isNaN(params.lon)) {
+        return res.status(400).json({
+          error: 'Invalid coordinates',
+          message: 'lat and lon must be valid numbers'
+        });
+      }
+    }
+    
+    const result = await getValueEstimate(params);
+    res.json(result);
+    
+  } catch (error) {
+    console.error('Error in /api/comps/value-estimate:', error.message);
+    res.status(500).json({
+      error: 'Internal server error',
+      message: error.message,
+      source: 'RENTCAST'
+    });
+  }
+});
+
+/**
+ * GET /api/comps/cache-stats
+ * Returns cache statistics (no auth required, read-only)
+ */
+app.get('/api/comps/cache-stats', (req, res) => {
+  res.json(getCacheStats());
+});
+
+/**
+ * GET /api/comps/usage
+ * Returns monthly usage stats (calls used, remaining, limit, last calls)
+ */
+app.get('/api/comps/usage', (req, res) => {
+  res.json(getUsageStats());
+});
+
+/**
+ * POST /api/comps/cache-clear
+ * Clears the RentCast cache (admin only in production)
+ */
+app.post('/api/comps/cache-clear', (req, res) => {
+  clearCache();
+  res.json({ success: true, message: 'RentCast cache cleared' });
 });
 
 // ========================================

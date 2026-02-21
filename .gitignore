@@ -46,3 +46,6 @@ temp/
 
 # Large data files (geodatabases)
 data/
+
+# Cache files
+cache/*.json

@@ -149,3 +149,22 @@
 | Seminole | ✅ | ✅ | Funcional |
 | St. Johns | ✅ | ✅ | Funcional |
 | Volusia | ⚠️ | ⚠️ | No registry, sem validação |
+
+---
+
+## RENTCAST COMPS MVP (v4.3)
+
+- [x] RENTCAST_API_KEY configurada no .env
+- [x] Provider: providers/rentcastProvider.js (getValueEstimate by address + lat/lon)
+- [x] Cache 7 dias (keyed by address/latlon)
+- [x] Retry 1x + timeout 15s
+- [x] OFFLINE_MODE guard (mock response)
+- [x] Endpoint: GET /api/comps/value-estimate?address=...
+- [x] Endpoint: GET /api/comps/value-estimate?lat=..&lon=..
+- [x] SSOT mapping: estimated_fmv, comps[], confidence, source=RENTCAST
+- [x] Audit log entry per request
+- [x] Rate-limit: 10 req/min per IP
+- [x] Security: never log/return API key
+- [x] Teste com endereço FL real — 3456 SW 34th St, Ocala FL: FMV=$111k, 10 comps, HIGH confidence
+- [x] Contador mensal de uso RentCast (soft-limit 50 calls/mês, avisa mas NÃO bloqueia)
+- [x] Endpoint GET /api/comps/usage para consultar uso atual
