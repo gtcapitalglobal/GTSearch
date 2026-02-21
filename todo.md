@@ -209,3 +209,23 @@
 - [ ] Market Statistics por ZIP code (tendências de preço)
 - [ ] Sale Listings ativos na região
 - [ ] Rent Estimate para potencial de renda
+
+## TELA 2 — Melhorias de Triagem (ANOTADO, NÃO IMPLEMENTAR SEM PERMISSÃO)
+
+### Auto-análise ao abrir propriedade (APIs gratuitas)
+- [ ] FEMA Flood Zone — carregar automaticamente ao abrir propriedade (sem clique)
+- [ ] Wetlands — carregar automaticamente ao abrir propriedade (sem clique)
+- [ ] Zoning — carregar automaticamente ao abrir propriedade (sem clique)
+- [ ] Land Use — carregar automaticamente ao abrir propriedade (sem clique)
+- [ ] Remover necessidade de clicar "Analisar" para dados gratuitos
+
+### Property Intelligence (RentCast) — seção nova na Tela 2
+- [ ] Seção entre Detalhes Adicionais e Análise Automática
+- [ ] Botão manual "Coletar" (1 crédito RentCast)
+- [ ] Contador de uso visível (X/50)
+- [ ] 6 cards de triagem rápida: HOA, Year Built, Zoning (fallback), Owner Occupied, Last Sale, Features
+- [ ] Semáforos visuais (verde=ok, amarelo=atenção, vermelho=deal killer)
+- [ ] Barra "DEAL KILLERS" — resume red flags automaticamente
+- [ ] Tax Assessment breakdown (land vs improvements)
+- [ ] Property Tax anual
+- [ ] Botão "Ver dados brutos (JSON)"
