@@ -248,3 +248,9 @@
 - [ ] Cleanup no startup do servidor — deletar entradas >7 dias
 - [ ] Limite máximo de 500 entradas — deletar mais antigos quando exceder
 - [ ] LEMBRETE: rodar limpeza de cache frequentemente até implementar automático
+
+## SKILLS A CRIAR (NÃO IMPLEMENTAR SEM PERMISSÃO)
+
+- [ ] Skill `tax-deed-property-analysis` — fluxo completo de análise: FEMA + Wetlands + Zoning + Land Use + Elevação + OSM + RentCast, ordem de chamada, fallbacks, interpretação, red flags
+- [ ] Skill `deal-killer-scoring` — lógica A/B/C + Deal Killers: pesos, faixas, semáforos, critérios de eliminação (criar quando implementar o scoring)
+- [ ] Skill `google-sheets-export` — padrão de export CSV + Google Sheets: autenticação, formatação, mapeamento de campos, auto-export no batch save
