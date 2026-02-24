@@ -449,3 +449,7 @@
 - [x] LOW-A16: Agora usa código completo + water regime para classificação mais precisa — CORRIGIDO v6.1
 - [x] LOW-A17: Adicionado 1 retry com 2s delay na chamada NWI API — CORRIGIDO v6.1
 - [x] LOW-A18: DEFERRED — regras são estáveis (baseadas em NWI spec), externalizar quando necessário
+
+## v6.1.1 — Quick fixes (21 Feb 2026)
+- [x] Reverter CRIT-3: sessionStorage → localStorage (uso local, risco baixo)
+- [x] Investigar botão "Visualizar Selecionadas" na Tela 1 — REMOVIDO (redundante, fluxo mais limpo sem ele)
