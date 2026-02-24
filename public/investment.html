@@ -642,8 +642,8 @@
                 else if (riskLevel === 'CRITICAL' || riskLevel === 'critical') { riskColor = '#7f1d1d'; riskBg = '#fecaca'; }
                 
                 // Default values from saved or settings
-                const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
-                const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
+                const closingPct = parseFloat(document.getElementById('globalClosingPct').value) ?? DEFAULTS.closingCostPercent;
+                const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) ?? DEFAULTS.cleanTitleCost;
                 const roi1 = parseFloat(document.getElementById('globalROI1').value) || DEFAULTS.defaultROI1;
                 const roi2 = parseFloat(document.getElementById('globalROI2').value) || DEFAULTS.defaultROI2;
                 const roi3 = parseFloat(document.getElementById('globalROI3').value) || DEFAULTS.defaultROI3;
@@ -1144,8 +1144,8 @@
             const liens = getRawInputValue(card.querySelector('.liens-cost'));
             const otherCosts = getRawInputValue(card.querySelector('.other-costs'));
             
-            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
-            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
+            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) ?? DEFAULTS.closingCostPercent;
+            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) ?? DEFAULTS.cleanTitleCost;
             
             // Read ROI from per-card inputs
             const roi1 = parseFloat(card.querySelector('.roi1-input')?.value) || parseFloat(document.getElementById('globalROI1').value) || DEFAULTS.defaultROI1;
@@ -1300,8 +1300,8 @@
         // GLOBAL SETTINGS UPDATE
         // ========================================
         function updateGlobalSettings() {
-            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
-            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
+            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) ?? DEFAULTS.closingCostPercent;
+            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) ?? DEFAULTS.cleanTitleCost;
             const globalROI1 = parseFloat(document.getElementById('globalROI1').value) || DEFAULTS.defaultROI1;
             const globalROI2 = parseFloat(document.getElementById('globalROI2').value) || DEFAULTS.defaultROI2;
             const globalROI3 = parseFloat(document.getElementById('globalROI3').value) || DEFAULTS.defaultROI3;
@@ -1629,8 +1629,8 @@
                 return;
             }
             
-            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
-            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
+            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) ?? DEFAULTS.closingCostPercent;
+            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) ?? DEFAULTS.cleanTitleCost;
             const globalRoi1 = parseFloat(document.getElementById('globalROI1').value) || DEFAULTS.defaultROI1;
             const globalRoi2 = parseFloat(document.getElementById('globalROI2').value) || DEFAULTS.defaultROI2;
             const globalRoi3 = parseFloat(document.getElementById('globalROI3').value) || DEFAULTS.defaultROI3;
@@ -1756,8 +1756,8 @@
                 return;
             }
             
-            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
-            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
+            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) ?? DEFAULTS.closingCostPercent;
+            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) ?? DEFAULTS.cleanTitleCost;
             
             // Sort properties by Case # (CS field) for auction order
             const sortedProps = [...approvedProperties].sort((a, b) => {
@@ -2017,8 +2017,8 @@
                 return;
             }
             
-            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) || DEFAULTS.closingCostPercent;
-            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) || DEFAULTS.cleanTitleCost;
+            const closingPct = parseFloat(document.getElementById('globalClosingPct').value) ?? DEFAULTS.closingCostPercent;
+            const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) ?? DEFAULTS.cleanTitleCost;
             
             const data = approvedProperties.map((prop, index) => {
                 const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
