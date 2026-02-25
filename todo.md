@@ -454,6 +454,19 @@
 - [x] Reverter CRIT-3: sessionStorage → localStorage (uso local, risco baixo)
 - [x] Investigar botão "Visualizar Selecionadas" na Tela 1 — REMOVIDO (redundante, fluxo mais limpo sem ele)
 
+## v6.2 — All Bug Fixes & Features Complete (21 Feb 2026)
+**Commits:** v6.1.2 → v6.2 | Tag: `v6.2`
+
+**Correções implementadas:**
+- ✅ PDF ordem correta (Case # com hífen agora funciona)
+- ✅ PDF com campo Owner
+- ✅ PDF só gera para propriedades "Pronto para lance"
+- ✅ Botão "📦 Dados Mock" na Tela 2
+- ✅ Botão "🔄 Atualizar Links" na Tela 2
+- ✅ Closing Cost % e Clean Title aceitam 0 (|| → ??)
+- ✅ Senha Google Sheets voltou para localStorage (UX melhor)
+- ✅ Botão "Visualizar Selecionadas" removido (dead code)
+
 ## v6.1.2 — Bug fixes (21 Feb 2026)
 - [ ] BUG: "Erro ao coletar dados" na Tela 2 (analysis.html) ao clicar em "Coletar Dados" — modo OFFLINE bloqueia APIs
 - [x] FEATURE: Adicionar botão "📦 Dados Mock" na Tela 2 ao lado de "Coletar Dados" (carrega dados de exemplo sem gastar créditos)
