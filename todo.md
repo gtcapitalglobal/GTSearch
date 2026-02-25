@@ -479,3 +479,44 @@
 - [x] FEATURE: Botão "📄 PDF Leilão" só gera PDF para propriedades com checkbox "Pronto para lance" marcado (filtro + alerta se nenhuma marcada)
 - [x] BUG: PDF Leilão sai fora de ordem — parseInt ignorava número após hífen, agora remove todos os não-dígitos antes de comparar
 - [x] FEATURE: Adicionar campo "Owner" no PDF Leilão — adicionado na linha $/Acre (coluna direita)
+
+## v6.3 — User Requests (21 Feb 2026)
+- [x] FEATURE: Adicionar botão "🗑️ Limpar Tudo" na Tela 3 (dupla confirmação, limpa localStorage e recarrega)
+- [ ] CONFIG: Verificar configuração do RentCast API para testes
+
+## v6.4 — Grande Atualização (25 Feb 2026)
+
+### PDF Improvements
+- [ ] Market Value — destacar mais (negrito/cor/tamanho maior)
+- [ ] Imagem — triplicar espaço (3 imagens em vez de 1)
+- [ ] Risk Level RED (50) — adicionar explicação do que significa o número
+- [ ] Case # — manter visual bom, mas Parcel + Endereço embaixo precisa de cor diferente para destacar
+- [ ] Max Bid — mais evidência, é o número mais importante
+- [ ] Wetlands — alerta mais forte (vermelho/destaque visual)
+- [ ] FEMA Zone — alerta mais forte (vermelho/destaque visual)
+- [ ] Case # ordem — sempre ordenar numericamente (remover aspas que atrapalham)
+- [ ] BUG: Case # 25000195 no PDF mas tem wetlands on-parcel + profit negativo — não deveria estar no PDF
+
+### Tela 3 (Investment)
+- [ ] Botão "🏞️ Terrenos sem custos" — dentro de cada card, zera Closing Cost % e Clean Title $ **só daquele card**
+- [ ] ESCLARECIMENTO: "Final Due Diligence" refere-se ao PDF (Parcel + Endereço precisam de mais evidência visual)
+- [ ] PDF: Parcel + Endereço embaixo do Case # — usar cor diferente, maior, negrito para destacar
+- [x] DOCUMENTADO: "Novo Leilão" — salva leilão atual no localStorage (histórico) e limpa tela para novo leilão
+- [x] DOCUMENTADO: "Salvar Batch" — salva leilão atual no localStorage com nome personalizado, sem limpar tela
+- [x] DOCUMENTADO: "Histórico" — abre modal com todos os leilões salvos, permite carregar um antigo
+- [x] DOCUMENTADO: "Recalcular Todos" — recalcula Max Bid/ROI de todas as propriedades (NÃO limpa valores)
+
+### Links (Research + Due Diligence)
+- [ ] Clerks Office — buscar na coluna W do Google Sheets por condado (linha correspondente)
+- [ ] Code Enforcement — buscar na coluna AD do Google Sheets por condado (linha correspondente)
+- [ ] Redfin/Realtor — já colocar endereço da propriedade na URL (pré-preencher busca)
+- [ ] Research Comparables — são os mesmos links de Zillow/Redfin/Realtor, mas com endereço pré-preenchido
+
+### Tela 2 (Analysis)
+- [ ] BUG: RentCast Property Intelligence não puxou na Tela 2, mas funcionou na Tela 3 — investigar
+- [ ] BUG: Comps da API RentCast não está funcionando — investigar
+- [ ] FEATURE: Adicionar botão "Pesquisar Comps IA" (Claude API) — implementar placeholder, API key vem depois
+
+### Resultado do Leilão
+- [ ] FEATURE: "Resultado do Leilão" — botão em cada card para registrar: valor do lance final + nome/empresa do comprador (salvar localStorage)
+- [ ] FEATURE: Botão "Resetar Valores" na Tela 3 — limpa Market Value, Reforma, Liens, etc. de todos os cards

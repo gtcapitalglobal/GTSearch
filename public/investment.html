@@ -276,6 +276,9 @@
                     <button onclick="novoLeilao()" class="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm">
                         🆕 Novo Leilão
                     </button>
+                    <button onclick="limparTudo()" class="px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 transition-colors text-sm">
+                        🗑️ Limpar Tudo
+                    </button>
                     <div class="relative inline-block">
                         <button onclick="toggleRankingMenu()" class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm" id="rankingBtn">
                             🏆 Ranking
@@ -1033,6 +1036,10 @@
                                             Pronto para lance
                                         </label>
                                     </div>
+                                    <button onclick="zeroLandCosts(${index})" 
+                                            class="mt-3 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-md transition-colors">
+                                        🏞️ Terrenos sem custos
+                                    </button>
                                 </div>
                             </div><!-- close dd content -->
                         </div>
@@ -1322,6 +1329,27 @@
             approvedProperties.forEach((_, index) => {
                 recalculateCard(index);
             });
+        }
+        
+        // ZERO LAND COSTS (Terrenos sem custos)
+        // ========================================
+        function zeroLandCosts(index) {
+            // Set Closing Cost % and Clean Title to 0 for this card
+            document.getElementById('globalClosingPct').value = 0;
+            document.getElementById('globalCleanTitle').value = 0;
+            
+            // Recalculate this card
+            recalculateCard(index);
+            
+            // Save the card data
+            saveCardData(index);
+            
+            // Show confirmation
+            const card = document.getElementById(`card-${index}`);
+            if (card) {
+                const parcelId = card.querySelector('.text-2xl')?.textContent || 'propriedade';
+                console.log(`[Terrenos sem custos] ${parcelId}: Closing=0%, Clean Title=$0`);
+            }
         }
         
         // ========================================
@@ -1756,11 +1784,44 @@
                 return;
             }
             
-            // Filter only properties marked as "Pronto para lance"
+            // Filter only properties marked as "Pronto para lance" AND safe to bid
             const readyProps = approvedProperties.filter((prop, index) => {
                 const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
                 const data = savedInvestmentData[parcelId] || {};
-                return data.ddReady === true;
+                
+                // Must be marked as ready
+                if (data.ddReady !== true) return false;
+                
+                // Exclude if wetlands on-parcel (high risk)
+                const wetlandsData = prop.wetlands || {};
+                if (wetlandsData.wetlands && wetlandsData.wetlands.length > 0) {
+                    const hasOnParcel = wetlandsData.wetlands.some(w => w.location === 'on-parcel' || w.location === 'On parcel');
+                    if (hasOnParcel) {
+                        console.warn(`[PDF] Excluding ${parcelId}: wetlands on-parcel`);
+                        return false;
+                    }
+                }
+                
+                // Exclude if all ROI scenarios have negative profit
+                const marketValue = parseFloat(getRawInputValue(`marketValue-${index}`)) || 0;
+                if (marketValue > 0) {
+                    const reforma = parseFloat(getRawInputValue(`reforma-${index}`)) || 0;
+                    const liens = parseFloat(getRawInputValue(`liens-${index}`)) || 0;
+                    const otherCosts = parseFloat(getRawInputValue(`otherCosts-${index}`)) || 0;
+                    const closingPct = parseFloat(document.getElementById('globalClosingPct').value) ?? DEFAULTS.closingCostPercent;
+                    const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) ?? DEFAULTS.cleanTitleCost;
+                    
+                    const closingCost = marketValue * (closingPct / 100);
+                    const totalCosts = reforma + liens + otherCosts + cleanTitle + closingCost;
+                    const profit30 = marketValue - totalCosts - (marketValue / (1 + 0.30));
+                    
+                    if (profit30 < 0) {
+                        console.warn(`[PDF] Excluding ${parcelId}: negative profit (ROI 30%)`);
+                        return false;
+                    }
+                }
+                
+                return true;
             });
             
             if (readyProps.length === 0) {
@@ -1902,8 +1963,8 @@
                     ${caseNumber !== '-' ? `<div class="case-banner">🎯 CASE #${caseNumber}</div>` : ''}
                     
                     <div class="prop-title" ${caseNumber !== '-' ? 'style="border-radius: 0 0 6px 6px;"' : ''}>
-                        <h2>${parcelId}</h2>
-                        <span>${address !== '-' ? address + ', ' + city + ', FL' : county + ', FL'}</span>
+                        <h2 style="color:#1e40af;font-size:18px;font-weight:900;">${parcelId}</h2>
+                        <span style="color:#059669;font-size:14px;font-weight:700;">${address !== '-' ? address + ', ' + city + ', FL' : county + ', FL'}</span>
                     </div>
                     
                     <!-- Image Placeholder (Square) -->
@@ -1921,16 +1982,16 @@
                             <th>Land Use</th><td>${landUsePdf}</td>
                         </tr>
                         <tr>
-                            <th>FEMA Zone</th><td style="font-size:10px;">${femaPdf}</td>
+                            <th>FEMA Zone</th><td style="font-size:10px;font-weight:${femaPdf.includes('X -') || femaPdf.includes('NO TERRENO') ? '700' : '400'};color:${femaPdf.includes('X -') || femaPdf.includes('NO TERRENO') ? '#dc2626' : '#374151'};">${femaPdf}</td>
                             <th>Risk Level</th><td style="font-weight:700;color:${(prop.riskLevel === 'green' ? '#059669' : prop.riskLevel === 'yellow' ? '#d97706' : prop.riskLevel === 'red' || prop.riskLevel === 'critical' ? '#dc2626' : '#6b7280')};">${prop.riskLevel ? prop.riskLevel.toUpperCase() + (prop.riskScore !== undefined && prop.riskScore !== '-' ? ' (' + prop.riskScore + ')' : '') : '-'}</td>
                         </tr>
                         <tr>
-                            <th>Wetlands</th><td style="font-size:10px;">${wetlandsPdf}</td>
+                            <th>Wetlands</th><td style="font-size:10px;font-weight:${wetlandsPdf.includes('NO TERRENO') ? '700' : '400'};color:${wetlandsPdf.includes('NO TERRENO') ? '#dc2626' : '#374151'};">${wetlandsPdf}</td>
                             <th>Assessed Value</th><td>${totalValue}</td>
                         </tr>
                         <tr>
                             <th>Amount Due</th><td style="font-weight:700;color:#dc2626;">${amountDueStr}</td>
-                            <th>Market Value</th><td style="font-weight:700;">${mv > 0 ? formatCurrency(mv) : '-'}</td>
+                            <th>Market Value</th><td style="font-weight:900;color:#1e40af;font-size:13px;">${mv > 0 ? formatCurrency(mv) : '-'}</td>
                         </tr>
                         <tr>
                             <th>$/Acre</th><td>${pricePerAcre}</td>
@@ -1949,21 +2010,21 @@
                         <tr>
                             <td>ROI 1 (${r1}%)</td>
                             <td>${r1}%</td>
-                            <td style="font-size:14px;">${calc1 ? formatCurrency(calc1.maxBid) : '-'}</td>
+                            <td style="font-size:15px;font-weight:900;color:#1e40af;">${calc1 ? formatCurrency(calc1.maxBid) : '-'}</td>
                             <td style="color:${calc1 && calc1.profit >= 0 ? '#059669' : '#dc2626'};">${calc1 ? formatCurrency(calc1.profit) : '-'}</td>
                             <td class="bid-field"></td>
                         </tr>
                         <tr>
                             <td>ROI 2 (${r2}%)</td>
                             <td>${r2}%</td>
-                            <td style="font-size:14px;">${calc2 ? formatCurrency(calc2.maxBid) : '-'}</td>
+                            <td style="font-size:15px;font-weight:900;color:#1e40af;">${calc2 ? formatCurrency(calc2.maxBid) : '-'}</td>
                             <td style="color:${calc2 && calc2.profit >= 0 ? '#059669' : '#dc2626'};">${calc2 ? formatCurrency(calc2.profit) : '-'}</td>
                             <td class="bid-field"></td>
                         </tr>
                         <tr>
                             <td>ROI 3 (${r3}%)</td>
                             <td>${r3}%</td>
-                            <td style="font-size:14px;">${calc3 ? formatCurrency(calc3.maxBid) : '-'}</td>
+                            <td style="font-size:15px;font-weight:900;color:#1e40af;">${calc3 ? formatCurrency(calc3.maxBid) : '-'}</td>
                             <td style="color:${calc3 && calc3.profit >= 0 ? '#059669' : '#dc2626'};">${calc3 ? formatCurrency(calc3.profit) : '-'}</td>
                             <td class="bid-field"></td>
                         </tr>
@@ -2274,6 +2335,36 @@
             history.splice(index, 1);
             localStorage.setItem('investmentHistory', JSON.stringify(history));
             showHistoryModal(); // Refresh modal
+        }
+        
+        // ========================================
+        // LIMPAR TUDO - Delete all properties without saving
+        // ========================================
+        function limparTudo() {
+            if (approvedProperties.length === 0) {
+                alert('⚠️ Nenhuma propriedade na lista para limpar.');
+                return;
+            }
+            
+            const action = confirm(
+                `🗑️ LIMPAR TUDO\n\n` +
+                `Isso vai DELETAR PERMANENTEMENTE todas as ${approvedProperties.length} propriedades aprovadas e seus dados de investimento.\n\n` +
+                `⚠️ ATENÇÃO: Esta ação NÃO PODE SER DESFEITA e NÃO salva no histórico!\n\n` +
+                `Deseja continuar?`
+            );
+            
+            if (!action) return;
+            
+            // Double confirmation
+            const confirm2 = confirm('⚠️ TEM CERTEZA? Todos os dados serão perdidos!');
+            if (!confirm2) return;
+            
+            // Clear everything
+            localStorage.removeItem('approvedProperties');
+            localStorage.removeItem('investmentData');
+            
+            alert('✅ Todas as propriedades foram deletadas. Recarregando...');
+            location.reload();
         }
         
         // ========================================
