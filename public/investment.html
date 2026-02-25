@@ -1756,15 +1756,28 @@
                 return;
             }
             
+            // Filter only properties marked as "Pronto para lance"
+            const readyProps = approvedProperties.filter((prop, index) => {
+                const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
+                const data = savedInvestmentData[parcelId] || {};
+                return data.ddReady === true;
+            });
+            
+            if (readyProps.length === 0) {
+                alert('⚠️ Nenhuma propriedade marcada como "Pronto para lance"!\n\nMarque o checkbox "Pronto para lance" na seção Due Diligence das propriedades que deseja incluir no PDF.');
+                return;
+            }
+            
             const closingPct = parseFloat(document.getElementById('globalClosingPct').value) ?? DEFAULTS.closingCostPercent;
             const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) ?? DEFAULTS.cleanTitleCost;
             
             // Sort properties by Case # (CS field) for auction order
-            const sortedProps = [...approvedProperties].sort((a, b) => {
+            const sortedProps = [...readyProps].sort((a, b) => {
                 const csA = getFieldValue(a, 'CS', 'Case', 'Case #', 'Case Number', 'case_number');
                 const csB = getFieldValue(b, 'CS', 'Case', 'Case #', 'Case Number', 'case_number');
-                const numA = parseInt(csA) || 999999;
-                const numB = parseInt(csB) || 999999;
+                // Remove hyphens and parse as full number: "2020-0007256" -> 20200007256
+                const numA = parseInt(String(csA).replace(/[^0-9]/g, '')) || 999999;
+                const numB = parseInt(String(csB).replace(/[^0-9]/g, '')) || 999999;
                 return numA - numB;
             });
             
@@ -1921,7 +1934,7 @@
                         </tr>
                         <tr>
                             <th>$/Acre</th><td>${pricePerAcre}</td>
-                            <th></th><td></td>
+                            <th>Owner</th><td>${getFieldValue(prop, 'Owner Name', 'Name', 'owner_name', 'name')}</td>
                         </tr>
                     </table>
                     

@@ -456,9 +456,13 @@
 
 ## v6.1.2 — Bug fixes (21 Feb 2026)
 - [ ] BUG: "Erro ao coletar dados" na Tela 2 (analysis.html) ao clicar em "Coletar Dados" — modo OFFLINE bloqueia APIs
-- [ ] FEATURE: Adicionar botão "Carregar Dados Mock" na Tela 2 para testar sem gastar créditos
+- [x] FEATURE: Adicionar botão "📦 Dados Mock" na Tela 2 ao lado de "Coletar Dados" (carrega dados de exemplo sem gastar créditos)
 - [ ] BUG: Endereço da propriedade não aparece nos cards da Tela 3 (investment.html)
 - [ ] BUG: Erro ao conectar no Google Sheets (ID: 1Z5IWpfRtu_D5zwdNbB3u68BMjirKOsdF2t_SoZJLJ04) — verificar permissões e Apps Script
 - [ ] BUG: Botão "Recalcular Todos" não está funcionando na Tela 3
-- [ ] UX: Max Bid não calcula automaticamente ao preencher Market Value — adicionar oninput trigger
+- [x] UX: Max Bid não calcula automaticamente ao preencher Market Value — já implementado (oninput na linha 741), bug era o || vs ?? (já corrigido v6.1.2)
 - [x] BUG: Closing Cost % e Clean Title não aceitam 0 como valor (|| trata 0 como falsy) — trocado || por ?? em 6 lugares
+- [x] BUG: Link "Clerks Office" para Putnam abre URL errada — cache de 24h, adicionado botão "🔄 Atualizar Links" na Tela 2
+- [x] FEATURE: Botão "📄 PDF Leilão" só gera PDF para propriedades com checkbox "Pronto para lance" marcado (filtro + alerta se nenhuma marcada)
+- [x] BUG: PDF Leilão sai fora de ordem — parseInt ignorava número após hífen, agora remove todos os não-dígitos antes de comparar
+- [x] FEATURE: Adicionar campo "Owner" no PDF Leilão — adicionado na linha $/Acre (coluna direita)

@@ -131,6 +131,9 @@
                     <button onclick="window.location.href='investment.html'" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
                         👁️ Ver Aprovadas (<span id="approvedCount">0</span>)
                     </button>
+                    <button onclick="refreshCountyLinks()" class="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+                        🔄 Atualizar Links
+                    </button>
                     <button onclick="anteriorPropriedade()" class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
                         ⬅️ Anterior
                     </button>
@@ -497,6 +500,9 @@
                     <span id="pi-usage-counter" class="text-xs text-gray-500"></span>
                     <button id="pi-collect-btn" onclick="collectPropertyIntelligence()" class="px-5 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
                         📋 Coletar Dados
+                    </button>
+                    <button onclick="loadMockPropertyIntelligence()" class="px-5 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-semibold text-sm shadow-md hover:shadow-lg">
+                        📦 Dados Mock
                     </button>
                 </div>
             </div>
@@ -3142,6 +3148,18 @@
         
         // ===== FUNÇÕES DE CATEGORIZAÇÃO =====
         
+        async function refreshCountyLinks() {
+            try {
+                mostrarNotificacao('🔄 Atualizando links dos condados...', 'info');
+                await CountyLinks.refresh();
+                mostrarNotificacao('✅ Links atualizados! Recarregando página...', 'success');
+                setTimeout(() => location.reload(), 1000);
+            } catch (error) {
+                console.error('Erro ao atualizar links:', error);
+                mostrarNotificacao('❌ Erro ao atualizar links', 'error');
+            }
+        }
+        
         function deletarPropriedade() {
             if (confirm('⚠️ Tem certeza que deseja DELETAR esta propriedade?\n\nEla será removida permanentemente da lista.')) {
                 properties.splice(currentIndex, 1);
@@ -4225,6 +4243,37 @@
                 document.getElementById('pi-collect-btn').disabled = false;
                 document.getElementById('pi-collect-btn').textContent = '\ud83d\udccb Coletar Dados';
             }
+        }
+        
+        function loadMockPropertyIntelligence() {
+            const mockData = {
+                success: true,
+                usage: { used: 0, limit: 50 },
+                propertyRecord: {
+                    rawData: {
+                        hoa: { fee: 0 },
+                        yearBuilt: 0,
+                        bedrooms: null,
+                        bathrooms: null,
+                        squareFootage: null,
+                        lotSize: null,
+                        features: { pool: false, garage: false },
+                        taxAssessment: { totalValue: 15000, landValue: 15000, improvementValue: 0, taxYear: 2024 },
+                        owner: { name: 'MOCK OWNER LLC', mailingAddress: '123 Main St, Anytown, FL 12345' },
+                        saleHistory: []
+                    }
+                }
+            };
+            
+            // Store in property object + localStorage
+            properties[currentIndex]._propertyRecord = mockData;
+            localStorage.setItem('selectedProperties', JSON.stringify(properties));
+            piRawData = mockData;
+            
+            renderPIResults(mockData);
+            
+            // Show notification
+            alert('✅ Dados Mock carregados! Nenhum crédito foi gasto.');
         }
         
         function renderPIResults(data) {
