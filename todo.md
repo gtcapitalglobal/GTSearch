@@ -520,3 +520,25 @@
 ### Resultado do Leilão
 - [ ] FEATURE: "Resultado do Leilão" — botão em cada card para registrar: valor do lance final + nome/empresa do comprador (salvar localStorage)
 - [ ] FEATURE: Botão "Resetar Valores" na Tela 3 — limpa Market Value, Reforma, Liens, etc. de todos os cards
+
+## v6.4-priority — PDF Filters + Visual Highlights + Terrenos Button (21 Feb 2026)
+
+**Implementado (7 itens):**
+- [x] BUG CRÍTICO: Case # 25000195 no PDF — filtro adicionado: exclui wetlands on-parcel + profit negativo (ROI 30%)
+- [x] PDF: Market Value — azul, negrito 900, font-size 13px
+- [x] PDF: Max Bid — azul, negrito 900, font-size 15px (3 cenários)
+- [x] PDF: Parcel (azul, 18px, bold 900) + Endereço (verde, 14px, bold 700)
+- [x] PDF: Wetlands — vermelho bold se 'NO TERRENO'
+- [x] PDF: FEMA Zone — vermelho bold se 'X -' ou 'NO TERRENO'
+- [x] Botão "🏞️ Terrenos sem custos" — implementado na seção Due Diligence, zera Closing + Clean Title globais e recalcula
+
+**Pendente (restante do v6.4, aguardando créditos):**
+- [ ] PDF: Imagem — triplicar espaço (3 imagens em vez de 1)
+- [ ] PDF: Risk Level — adicionar explicação do que significa
+- [ ] Tela 2: RentCast bugs (Property Intelligence não puxou, Comps API não funciona)
+- [ ] Tela 3: Redfin/Realtor pre-fill endereço na URL
+- [ ] Tela 3: Clerks Office + Cod Enforcement links do Google Sheets (colunas W e AD)
+- [ ] Tela 3: Botão "Resetar Valores" (limpa Market Value, Reforma, Liens de todos os cards)
+- [ ] Tela 3: "Resultado do Leilão" (registrar valor lance + comprador, salvar localStorage)
+- [ ] Tela 3: Botão "Pesquisar Comps IA" (Claude API placeholder)
+- [ ] Research Comparables: diferença vs Zillow/Redfin (são os mesmos links, mas pre-fill endereço)
