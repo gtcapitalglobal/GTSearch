@@ -258,6 +258,9 @@
                     <button onclick="recalculateAll()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm">
                         🔄 Recalcular Todos
                     </button>
+                    <button onclick="resetarValores()" class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm">
+                        🧹 Resetar Valores
+                    </button>
                     <button onclick="exportInvestmentCSV()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
                         📥 CSV
                     </button>
@@ -508,15 +511,34 @@
             };
         }
         
+        // =====================================        // RISK LEVEL EXPLANATION
         // ========================================
-        // VIABILITY CHECK (Semáforo)
-        // Compares Max Bid vs Amount Due
-        // GREEN: Max Bid >= Amount Due (deal viável)
+        function getRiskExplanation(riskLevel, riskScore) {
+            if (!riskLevel || riskLevel === '-') return 'Não avaliado';
+            
+            const level = riskLevel.toLowerCase();
+            const score = riskScore !== undefined && riskScore !== '-' ? parseInt(riskScore) : null;
+            
+            if (level === 'green') {
+                return 'Baixo risco — Propriedade passável sem red flags críticas';
+            } else if (level === 'yellow') {
+                return 'Risco moderado — Requer análise adicional de due diligence';
+            } else if (level === 'red') {
+                return 'Alto risco — Múltiplos red flags ou problemas significativos';
+            } else if (level === 'critical') {
+                return 'Risco crítico — Não recomendado para investimento';
+            }
+            
+            return 'Classificação desconhecida';
+        }
+        
+        // VIABILITY SEMAPHORE (Semáforo de Viabilidade)
+        // ========================================
+        // GREEN: Max Bid >= Amount Due (viável)
         // YELLOW: Max Bid entre 70%-99% do Amount Due (marginal)
         // RED: Max Bid < 70% do Amount Due ou negativo (inviável)
         // ========================================
-        function getViability(maxBid, amountDue) {
-            if (maxBid <= 0) return { status: 'inviable', icon: '🔴', css: 'inviable', textCss: 'negative', label: 'INVIÁVEL' };
+        function getViability(maxBid, amountDue) {Bid <= 0) return { status: 'inviable', icon: '🔴', css: 'inviable', textCss: 'negative', label: 'INVIÁVEL' };
             if (amountDue <= 0) return { status: 'viable', icon: '🟢', css: 'viable', textCss: '', label: 'SEM DÍVIDA' };
             
             const ratio = maxBid / amountDue;
@@ -1331,6 +1353,58 @@
             });
         }
         
+        // RESETAR VALORES - Clear Market Value, Reforma, Liens, Other Costs from all cards
+        // ========================================
+        function resetarValores() {
+            if (approvedProperties.length === 0) {
+                alert('⚠️ Nenhuma propriedade na lista.');
+                return;
+            }
+            
+            const action = confirm(
+                `🧹 RESETAR VALORES\n\n` +
+                `Isso vai LIMPAR os seguintes campos de TODAS as ${approvedProperties.length} propriedades:\n\n` +
+                `• Market Value\n` +
+                `• Reforma\n` +
+                `• Liens\n` +
+                `• Other Costs\n\n` +
+                `Os cálculos de Max Bid e ROI serão zerados.\n\n` +
+                `Deseja continuar?`
+            );
+            
+            if (!action) return;
+            
+            // Clear values from all cards
+            approvedProperties.forEach((prop, index) => {
+                const savedData = JSON.parse(localStorage.getItem(`investmentData_${index}`)) || {};
+                
+                // Clear investment fields
+                delete savedData.marketValue;
+                delete savedData.reforma;
+                delete savedData.liens;
+                delete savedData.otherCosts;
+                
+                // Save back
+                localStorage.setItem(`investmentData_${index}`, JSON.stringify(savedData));
+                
+                // Clear UI inputs
+                const marketValueInput = document.querySelector(`input[data-field="marketValue"][data-index="${index}"]`);
+                const reformaInput = document.querySelector(`input[data-field="reforma"][data-index="${index}"]`);
+                const liensInput = document.querySelector(`input[data-field="liens"][data-index="${index}"]`);
+                const otherCostsInput = document.querySelector(`input[data-field="otherCosts"][data-index="${index}"]`);
+                
+                if (marketValueInput) marketValueInput.value = '';
+                if (reformaInput) reformaInput.value = '';
+                if (liensInput) liensInput.value = '';
+                if (otherCostsInput) otherCostsInput.value = '';
+                
+                // Recalculate to clear Max Bid/ROI
+                recalculateCard(index);
+            });
+            
+            alert(`✅ Valores resetados com sucesso!`);
+        }
+        
         // ZERO LAND COSTS (Terrenos sem custos)
         // ========================================
         function zeroLandCosts(index) {
@@ -1983,7 +2057,7 @@
                         </tr>
                         <tr>
                             <th>FEMA Zone</th><td style="font-size:10px;font-weight:${femaPdf.includes('X -') || femaPdf.includes('NO TERRENO') ? '700' : '400'};color:${femaPdf.includes('X -') || femaPdf.includes('NO TERRENO') ? '#dc2626' : '#374151'};">${femaPdf}</td>
-                            <th>Risk Level</th><td style="font-weight:700;color:${(prop.riskLevel === 'green' ? '#059669' : prop.riskLevel === 'yellow' ? '#d97706' : prop.riskLevel === 'red' || prop.riskLevel === 'critical' ? '#dc2626' : '#6b7280')};">${prop.riskLevel ? prop.riskLevel.toUpperCase() + (prop.riskScore !== undefined && prop.riskScore !== '-' ? ' (' + prop.riskScore + ')' : '') : '-'}</td>
+                            <th>Risk Level</th><td style="font-weight:700;color:${(prop.riskLevel === 'green' ? '#059669' : prop.riskLevel === 'yellow' ? '#d97706' : prop.riskLevel === 'red' || prop.riskLevel === 'critical' ? '#dc2626' : '#6b7280')};">${prop.riskLevel ? prop.riskLevel.toUpperCase() + (prop.riskScore !== undefined && prop.riskScore !== '-' ? ' (' + prop.riskScore + ')' : '') : '-'}<br><span style="font-size:8px;font-weight:400;color:#6b7280;">${getRiskExplanation(prop.riskLevel, prop.riskScore)}</span></td>
                         </tr>
                         <tr>
                             <th>Wetlands</th><td style="font-size:10px;font-weight:${wetlandsPdf.includes('NO TERRENO') ? '700' : '400'};color:${wetlandsPdf.includes('NO TERRENO') ? '#dc2626' : '#374151'};">${wetlandsPdf}</td>
