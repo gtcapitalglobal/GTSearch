@@ -109,6 +109,21 @@ app.get('/analysis.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'analysis.html'));
 });
 
+// Desabilitar cache para investment.html e investment2.html
+app.get('/investment.html', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.sendFile(path.join(__dirname, 'public', 'investment.html'));
+});
+
+app.get('/investment2.html', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.sendFile(path.join(__dirname, 'public', 'investment2.html'));
+});
+
 // Serve static files from public directory
 app.use(express.static('public'));
 
