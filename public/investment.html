@@ -403,7 +403,7 @@
         // ========================================
         // LOAD DATA & SETTINGS
         // ========================================
-        const approvedProperties = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
+        let approvedProperties = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
         
         // Load investment settings from Settings page
         const investmentSettings = JSON.parse(localStorage.getItem('investmentSettings') || '{}');
@@ -417,13 +417,6 @@
         
         // Load previously saved investment data (if user already filled in values)
         let savedInvestmentData = JSON.parse(localStorage.getItem('investmentData') || '{}');
-        
-        // Set global inputs
-        document.getElementById('globalClosingPct').value = DEFAULTS.closingCostPercent;
-        document.getElementById('globalCleanTitle').value = DEFAULTS.cleanTitleCost;
-        document.getElementById('globalROI1').value = DEFAULTS.defaultROI1;
-        document.getElementById('globalROI2').value = DEFAULTS.defaultROI2;
-        document.getElementById('globalROI3').value = DEFAULTS.defaultROI3;
         
         // ========================================
         // FORMAT HELPERS
@@ -538,7 +531,8 @@
         // YELLOW: Max Bid entre 70%-99% do Amount Due (marginal)
         // RED: Max Bid < 70% do Amount Due ou negativo (inviável)
         // ========================================
-        function getViability(maxBid, amountDue) {Bid <= 0) return { status: 'inviable', icon: '🔴', css: 'inviable', textCss: 'negative', label: 'INVIÁVEL' };
+        function getViability(maxBid, amountDue) {
+            if (maxBid <= 0) return { status: 'inviable', icon: '🔴', css: 'inviable', textCss: 'negative', label: 'INVIÁVEL' };
             if (amountDue <= 0) return { status: 'viable', icon: '🟢', css: 'viable', textCss: '', label: 'SEM DÍVIDA' };
             
             const ratio = maxBid / amountDue;
@@ -3022,20 +3016,42 @@
         // ========================================
         // INITIALIZE
         // ========================================
-        renderCards();
-        loadCompsUsage();
+        function initializeInvestmentPage() {
+            console.log('🚀 Initializing investment page...');
+            
+            // Set global inputs
+            document.getElementById('globalClosingPct').value = DEFAULTS.closingCostPercent;
+            document.getElementById('globalCleanTitle').value = DEFAULTS.cleanTitleCost;
+            document.getElementById('globalROI1').value = DEFAULTS.defaultROI1;
+            document.getElementById('globalROI2').value = DEFAULTS.defaultROI2;
+            document.getElementById('globalROI3').value = DEFAULTS.defaultROI3;
+            
+            // Reload from localStorage in case it was updated by another page
+            approvedProperties = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
+            console.log(`📊 Investment page loaded: ${approvedProperties.length} approved properties`);
+            
+            renderCards();
+            loadCompsUsage();
+            
+            // Setup currency formatting on all monetary inputs
+            document.querySelectorAll('.currency-input').forEach(input => {
+                input.addEventListener('blur', function() {
+                    formatInputAsCurrency(this);
+                });
+                input.addEventListener('focus', function() {
+                    const raw = this.dataset.rawValue || this.value.replace(/[^0-9.]/g, '');
+                    if (raw && raw !== '0') this.value = raw;
+                    else this.value = '';
+                });
+            });
+        }
         
-        // Setup currency formatting on all monetary inputs
-        document.querySelectorAll('.currency-input').forEach(input => {
-            input.addEventListener('blur', function() {
-                formatInputAsCurrency(this);
-            });
-            input.addEventListener('focus', function() {
-                const raw = this.dataset.rawValue || this.value.replace(/[^0-9.]/g, '');
-                if (raw && raw !== '0') this.value = raw;
-                else this.value = '';
-            });
-        });
+        // Execute immediately if DOM is ready, otherwise wait
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeInvestmentPage);
+        } else {
+            initializeInvestmentPage();
+        }
     </script>
 </body>
 </html>

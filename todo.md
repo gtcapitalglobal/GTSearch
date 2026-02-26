@@ -556,3 +556,14 @@
 - [ ] Tela 2: RentCast bugs (Property Intelligence não puxou, Comps API não funciona)
 - [ ] Tela 3: "Resultado do Leilão" (registrar valor lance + comprador, salvar localStorage)
 - [ ] Tela 3: Botão "Pesquisar Comps IA" (Claude API placeholder)
+
+## v6.4-batch3 — Property Intelligence Fix + PDF Triple Images (21 Feb 2026)
+
+**Implementado (2 itens):**
+- [x] BUG FIX: Property Intelligence não funcionava — normalização de resposta do provider (frontend agora aceita estrutura direta)
+- [x] PDF: Triplicar espaço de imagens — grid 3x1 (proporção 4:3 landscape, labels "Imagem 1/2/3")
+
+**Pendente (v6.4 restante):**
+- [ ] Tela 3: "Resultado do Leilão" (registrar valor lance + comprador, salvar localStorage)
+- [ ] Tela 3: Botão "Pesquisar Comps IA" (Claude API placeholder)
+- [ ] Tela 2: RentCast Comps API (confirmar se deve existir ou é confusão com Tela 3)
