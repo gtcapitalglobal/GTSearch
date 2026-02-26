@@ -1871,11 +1871,15 @@
                 }
                 
                 // Exclude if all ROI scenarios have negative profit
-                const marketValue = parseFloat(getRawInputValue(`marketValue-${index}`)) || 0;
+                const marketValueInput = document.getElementById(`marketValue-${index}`);
+                const marketValue = marketValueInput ? parseFloat(getRawInputValue(marketValueInput)) || 0 : 0;
                 if (marketValue > 0) {
-                    const reforma = parseFloat(getRawInputValue(`reforma-${index}`)) || 0;
-                    const liens = parseFloat(getRawInputValue(`liens-${index}`)) || 0;
-                    const otherCosts = parseFloat(getRawInputValue(`otherCosts-${index}`)) || 0;
+                    const reformaInput = document.getElementById(`reforma-${index}`);
+                    const reforma = reformaInput ? parseFloat(getRawInputValue(reformaInput)) || 0 : 0;
+                    const liensInput = document.getElementById(`liens-${index}`);
+                    const liens = liensInput ? parseFloat(getRawInputValue(liensInput)) || 0 : 0;
+                    const otherCostsInput = document.getElementById(`otherCosts-${index}`);
+                    const otherCosts = otherCostsInput ? parseFloat(getRawInputValue(otherCostsInput)) || 0 : 0;
                     const closingPct = parseFloat(document.getElementById('globalClosingPct').value) ?? DEFAULTS.closingCostPercent;
                     const cleanTitle = parseFloat(document.getElementById('globalCleanTitle').value) ?? DEFAULTS.cleanTitleCost;
                     
