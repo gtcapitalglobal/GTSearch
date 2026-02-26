@@ -557,9 +557,10 @@
 - [ ] Tela 3: "Resultado do Leilão" (registrar valor lance + comprador, salvar localStorage)
 - [ ] Tela 3: Botão "Pesquisar Comps IA" (Claude API placeholder)
 
-## v6.4-batch3 — Property Intelligence Fix + PDF Triple Images (21 Feb 2026)
+## v6.4-batch3 — Property Intelligence Fix + PDF Triple Images + CRITICAL Bug Fix (26 Feb 2026)
 
-**Implementado (2 itens):**
+**Implementado (3 itens):**
+- [x] BUG FIX CRÍTICO: Investment cards não renderizavam — erro de sintaxe em getViability() quebrava TODO o script inline (linha 534: faltava `if (max` antes de `Bid <= 0)`)
 - [x] BUG FIX: Property Intelligence não funcionava — normalização de resposta do provider (frontend agora aceita estrutura direta)
 - [x] PDF: Triplicar espaço de imagens — grid 3x1 (proporção 4:3 landscape, labels "Imagem 1/2/3")
 
