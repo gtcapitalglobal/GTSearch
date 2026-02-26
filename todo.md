@@ -542,3 +542,17 @@
 - [ ] Tela 3: "Resultado do Leilão" (registrar valor lance + comprador, salvar localStorage)
 - [ ] Tela 3: Botão "Pesquisar Comps IA" (Claude API placeholder)
 - [ ] Research Comparables: diferença vs Zillow/Redfin (são os mesmos links, mas pre-fill endereço)
+
+## v6.4-batch2 — Resetar Valores + Risk Level Explanation (21 Feb 2026)
+
+**Implementado (4 itens):**
+- [x] Redfin/Realtor pre-fill endereço — JÁ IMPLEMENTADO (buildAddress já monta URL com endereço completo)
+- [x] Clerks Office + Cod Enforcement links — JÁ IMPLEMENTADO (county-links.js colunas 22 e 29 do Google Sheets)
+- [x] Botão "🧹 Resetar Valores" — limpa Market Value, Reforma, Liens, Other Costs de todos os cards
+- [x] PDF: Risk Level explicação — legenda abaixo do valor (GREEN=baixo risco, YELLOW=moderado, RED=alto, CRITICAL=crítico)
+
+**Pendente (restante do v6.4, aguardando créditos):**
+- [ ] PDF: Imagem — triplicar espaço (3 imagens em vez de 1)
+- [ ] Tela 2: RentCast bugs (Property Intelligence não puxou, Comps API não funciona)
+- [ ] Tela 3: "Resultado do Leilão" (registrar valor lance + comprador, salvar localStorage)
+- [ ] Tela 3: Botão "Pesquisar Comps IA" (Claude API placeholder)

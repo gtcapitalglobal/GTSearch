@@ -4217,21 +4217,30 @@
                 const resp = await fetch(`/api/property/record?address=${encodedAddr}`);
                 const data = await resp.json();
                 
-                if (!data.success) {
-                    throw new Error(data.error || 'Erro ao coletar dados');
+                // Check for error (provider returns { error: true } on failure)
+                if (data.error) {
+                    throw new Error(data.message || 'Erro ao coletar dados');
                 }
                 
+                // Normalize response structure (provider returns data directly, not wrapped in propertyRecord)
+                const normalizedData = {
+                    success: true,
+                    propertyRecord: data,
+                    usage: data.usage,
+                    _raw: data._raw
+                };
+                
                 // Update usage counter
-                if (data.usage) {
-                    document.getElementById('pi-usage-counter').textContent = `Uso: ${data.usage.used}/${data.usage.limit} este m\u00eas`;
+                if (normalizedData.usage) {
+                    document.getElementById('pi-usage-counter').textContent = `Uso: ${normalizedData.usage.used}/${normalizedData.usage.limit} este mês`;
                 }
                 
                 // Store in property object + localStorage
-                properties[currentIndex]._propertyRecord = data;
+                properties[currentIndex]._propertyRecord = normalizedData;
                 localStorage.setItem('selectedProperties', JSON.stringify(properties));
-                piRawData = data;
+                piRawData = normalizedData;
                 
-                renderPIResults(data);
+                renderPIResults(normalizedData);
                 
             } catch (error) {
                 console.error('\u274c Property Intelligence error:', error);
