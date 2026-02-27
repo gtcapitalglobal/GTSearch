@@ -571,6 +571,6 @@
 
 ## v6.4-batch4 — PDF Header Design + Case # Sanitization (26 Feb 2026)
 
-**Pendente (2 itens):**
-- [ ] Tela 1: Sanitizar campo "Case #" ao importar CSV — remover apóstrofo (') que pode causar problemas de ordenação
-- [ ] PDF: Melhorar header — Parcel # e Endereço em BRANCO (#FFFFFF, negrito) para maior destaque no fundo roxo/azul escuro
+**Implementado (2 itens):**
+- [x] Tela 1: Sanitizar campo "Case #" ao importar CSV — remover apóstrofo (') que pode causar problemas de ordenação
+- [x] PDF: Melhorar header — Parcel # e Endereço em BRANCO (#FFFFFF, negrito) para maior destaque no fundo roxo/azul escuro + remover apóstrofo de "CASE #'" → "CASE #"
