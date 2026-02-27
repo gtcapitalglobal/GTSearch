@@ -568,3 +568,9 @@
 - [ ] Tela 3: "Resultado do Leilão" (registrar valor lance + comprador, salvar localStorage)
 - [ ] Tela 3: Botão "Pesquisar Comps IA" (Claude API placeholder)
 - [ ] Tela 2: RentCast Comps API (confirmar se deve existir ou é confusão com Tela 3)
+
+## v6.4-batch4 — PDF Header Design + Case # Sanitization (26 Feb 2026)
+
+**Pendente (2 itens):**
+- [ ] Tela 1: Sanitizar campo "Case #" ao importar CSV — remover apóstrofo (') que pode causar problemas de ordenação
+- [ ] PDF: Melhorar header — Parcel # e Endereço em BRANCO (#FFFFFF, negrito) para maior destaque no fundo roxo/azul escuro

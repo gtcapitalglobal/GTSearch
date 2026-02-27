@@ -1256,6 +1256,11 @@
                     }
                     
                     data.forEach(row => {
+                        // Sanitize Case # field (remove apostrophe that can cause ordering issues)
+                        if (row.CS) {
+                            row.CS = row.CS.replace(/'/g, '');
+                        }
+                        
                         // Remove quotes and split coordinates
                         const coordsStr = row.Coordinates.replace(/"/g, '').trim();
                         const coords = coordsStr.split(',');
