@@ -574,3 +574,9 @@
 **Implementado (2 itens):**
 - [x] Tela 1: Sanitizar campo "Case #" ao importar CSV — remover apóstrofo (') que pode causar problemas de ordenação
 - [x] PDF: Melhorar header — Parcel # e Endereço em BRANCO (#FFFFFF, negrito) para maior destaque no fundo roxo/azul escuro + remover apóstrofo de "CASE #'" → "CASE #"
+
+## v6.4-batch5 — RentCast Activation + Comps Toggle (26 Feb 2026)
+
+**Pendente (2 itens):**
+- [ ] Ativar RentCast API — mudar OFFLINE_MODE=false no .env para começar a usar RentCast de verdade
+- [ ] Tela 3: Toggle global de Comps no header — botão liga/desliga para controlar exibição dos botões "Buscar Comps" (economia de créditos)

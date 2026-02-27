@@ -282,6 +282,9 @@
                     <button onclick="limparTudo()" class="px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-800 transition-colors text-sm">
                         🗑️ Limpar Tudo
                     </button>
+                    <button id="compsToggleBtn" onclick="toggleCompsGlobal()" class="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition-colors text-sm" title="Liga/desliga botões de Buscar Comps em todos os cards (economia de créditos RentCast)">
+                        🔴 Comps: OFF
+                    </button>
                     <div class="relative inline-block">
                         <button onclick="toggleRankingMenu()" class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm" id="rankingBtn">
                             🏆 Ranking
@@ -417,6 +420,43 @@
         
         // Load previously saved investment data (if user already filled in values)
         let savedInvestmentData = JSON.parse(localStorage.getItem('investmentData') || '{}');
+        
+        // ========================================
+        // COMPS TOGGLE STATE
+        // ========================================
+        let compsEnabled = JSON.parse(localStorage.getItem('compsEnabled') || 'false');
+        
+        function toggleCompsGlobal() {
+            compsEnabled = !compsEnabled;
+            localStorage.setItem('compsEnabled', JSON.stringify(compsEnabled));
+            updateCompsToggleUI();
+            updateAllCompsButtons();
+        }
+        
+        function updateCompsToggleUI() {
+            const btn = document.getElementById('compsToggleBtn');
+            if (!btn) return;
+            if (compsEnabled) {
+                btn.textContent = '🟢 Comps: ON';
+                btn.className = btn.className.replace('bg-gray-400', 'bg-green-600').replace('hover:bg-gray-500', 'hover:bg-green-700');
+            } else {
+                btn.textContent = '🔴 Comps: OFF';
+                btn.className = btn.className.replace('bg-green-600', 'bg-gray-400').replace('hover:bg-green-700', 'hover:bg-gray-500');
+            }
+        }
+        
+        function updateAllCompsButtons() {
+            approvedProperties.forEach((_, index) => {
+                const btn = document.getElementById(`comps-btn-${index}`);
+                if (!btn) return;
+                if (compsEnabled) {
+                    btn.style.display = '';
+                    btn.disabled = false;
+                } else {
+                    btn.style.display = 'none';
+                }
+            });
+        }
         
         // ========================================
         // FORMAT HELPERS
@@ -3036,6 +3076,10 @@
             
             renderCards();
             loadCompsUsage();
+            
+            // Initialize comps toggle state from localStorage
+            updateCompsToggleUI();
+            updateAllCompsButtons();
             
             // Setup currency formatting on all monetary inputs
             document.querySelectorAll('.currency-input').forEach(input => {
