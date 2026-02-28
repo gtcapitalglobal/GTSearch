@@ -580,3 +580,13 @@
 **Implementado (2 itens):**
 - [x] Ativar RentCast API — OFFLINE_MODE=false, API Key configurada, validada com chamada real (200 OK)
 - [x] Tela 3: Toggle global de Comps no header — botão "🔴 Comps: OFF / 🟢 Comps: ON", persiste no localStorage, esconde/mostra botões em todos os cards
+
+## v6.4-batch6 — Bugs + Feature + PDF Melhorias (27 Feb 2026)
+
+- [ ] BUG B1: Endereço não aparece nos cards da Tela 3
+- [ ] BUG B2: Botão "Recalcular Todos" não funciona na Tela 3
+- [ ] BUG B4: PDF inclui propriedades com wetlands on-parcel + profit negativo — filtrar
+- [ ] FEATURE F1: "Resultado do Leilão" — botão por card para registrar lance + comprador
+- [ ] PDF P1: Market Value — mais destaque (negrito/cor/tamanho maior)
+- [ ] PDF P2: Max Bid — mais evidência visual (número mais importante)
+- [ ] PDF P3: Wetlands + FEMA Zone — alerta visual mais forte (vermelho/destaque)
