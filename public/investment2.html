@@ -842,6 +842,15 @@
                                 </div>
                             </div>
                             
+                            <!-- Terrenos sem custos button -->
+                            <div class="mt-2 mb-1">
+                                <button onclick="terrenoSemCustos(${index})" 
+                                        class="w-full px-3 py-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-xs font-semibold rounded border border-emerald-300 transition-colors"
+                                        title="Zera Reforma, Liens e Outros Custos (mantém Market Value)">
+                                    🌿 Terreno sem custos
+                                </button>
+                            </div>
+                            
                             <!-- $/Acre and $/SqFt Reference -->
                             <div class="price-ref" id="priceRef-${index}">
                                 <div class="price-ref-item">
@@ -1456,6 +1465,26 @@
             });
         }
         
+        // TERRENO SEM CUSTOS - Zero out Reforma, Liens, Other Costs for a single card
+        // ========================================
+        function terrenoSemCustos(index) {
+            const card = document.getElementById(`card-${index}`);
+            if (!card) return;
+            
+            // Zero out Reforma, Liens, Other Costs inputs
+            const reformaInput = card.querySelector('.reforma-cost');
+            const liensInput = card.querySelector('.liens-cost');
+            const otherCostsInput = card.querySelector('.other-costs');
+            
+            if (reformaInput) { reformaInput.value = '0'; reformaInput.dataset.rawValue = '0'; }
+            if (liensInput) { liensInput.value = '0'; liensInput.dataset.rawValue = '0'; }
+            if (otherCostsInput) { otherCostsInput.value = '0'; otherCostsInput.dataset.rawValue = '0'; }
+            
+            // Save and recalculate
+            saveCardData(index);
+            recalculateCard(index);
+        }
+
         // RESETAR VALORES - Clear Market Value, Reforma, Liens, Other Costs from all cards
         // ========================================
         function resetarValores() {

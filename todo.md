@@ -581,12 +581,22 @@
 - [x] Ativar RentCast API — OFFLINE_MODE=false, API Key configurada, validada com chamada real (200 OK)
 - [x] Tela 3: Toggle global de Comps no header — botão "🔴 Comps: OFF / 🟢 Comps: ON", persiste no localStorage, esconde/mostra botões em todos os cards
 
-## v6.4-batch6 — Bugs + Feature + PDF Melhorias (27 Feb 2026)
+## v6.4-batch6 — Bugs + Feature + PDF Melhorias (26 Feb 2026)
 
-- [ ] BUG B1: Endereço não aparece nos cards da Tela 3
-- [ ] BUG B2: Botão "Recalcular Todos" não funciona na Tela 3
-- [ ] BUG B4: PDF inclui propriedades com wetlands on-parcel + profit negativo — filtrar
-- [ ] FEATURE F1: "Resultado do Leilão" — botão por card para registrar lance + comprador
-- [ ] PDF P1: Market Value — mais destaque (negrito/cor/tamanho maior)
-- [ ] PDF P2: Max Bid — mais evidência visual (número mais importante)
-- [ ] PDF P3: Wetlands + FEMA Zone — alerta visual mais forte (vermelho/destaque)
+**Implementado (4 itens):**
+- [x] FEATURE F1: "Resultado do Leilão" — seção colapsável por card (Status, Lance Final, Comprador, Data), salva localStorage, header muda de cor
+- [x] PDF P1/P2: Market Value + Max Bid com fundo azul (#1e40af), texto branco, maior destaque
+- [x] PDF P3: FEMA Zone lógica corrigida (vermelho para zonas de risco A/V/D/E, verde para Zone X) + Wetlands vermelho para on-parcel
+- [x] Bug Fix: /api/florida-counties endpoint criado (corrige erro 404 nos links de condado na Tela 2)
+
+**Não implementado (B1, B2 não são bugs reais):**
+- [x] B1: Endereço — comportamento correto (mostra condado quando endereço está vazio no CSV)
+- [x] B2: Recalcular Todos — função existe e está correta, problema era approvedProperties vazio
+
+## v6.4-batch7 — Terrenos sem Custos + Google Sheets Export (26 Feb 2026)
+
+**Implementado (1 item):**
+- [x] Tela 3: Botão "Terrenos sem custos" por card — zera Reforma, Liens, Other Costs (mantém Market Value), recalcula automaticamente
+
+**Em andamento (1 item):**
+- [ ] Google Sheets Export — criar Apps Script Web App para exportar dados de análise da Tela 3 para o Sheet "Gestao GT Group"
