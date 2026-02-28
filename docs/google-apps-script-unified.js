@@ -1,9 +1,9 @@
 /****************************************************
- * CONFIGURAÇÃO GERAL – AJUSTAR APENAS O NECESSÁRIO
+ * CONFIGURACAO GERAL - AJUSTAR APENAS O NECESSARIO
  ****************************************************/
 
 // Aba do Forms (origem das respostas)
-const FORM_SHEET_NAME = 'Respostas ao formulário';
+const FORM_SHEET_NAME = 'Respostas ao formulario';
 
 // Aba operacional de contratos (PSA + CFD)
 const PSA_SHEET_NAME = 'PSA CFD Personal';
@@ -77,7 +77,7 @@ const CFD_CONFIG = {
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('GT Lands')
-    .addItem('Importar dados do formulário', 'importarDadosDoFormulario')
+    .addItem('Importar dados do formulario', 'importarDadosDoFormulario')
     .addSeparator()
     .addItem('Gerar PSA', 'gerarPSA')
     .addItem('Gerar Contract for Deed', 'gerarContractForDeed')
@@ -86,7 +86,7 @@ function onOpen() {
 
 
 /****************************************************
- * 1) IMPORTAR DADOS DO FORMULÁRIO -> PSA CFD Personal
+ * 1) IMPORTAR DADOS DO FORMULARIO -> PSA CFD Personal
  ****************************************************/
 
 function importarDadosDoFormulario() {
@@ -97,11 +97,11 @@ function importarDadosDoFormulario() {
   const targetSheet = ss.getSheetByName(PSA_CONFIG.SHEET_NAME);
 
   if (!formSheet) {
-    ui.alert('Aba "' + FORM_SHEET_NAME + '" não encontrada.');
+    ui.alert('Aba "' + FORM_SHEET_NAME + '" nao encontrada.');
     return;
   }
   if (!targetSheet) {
-    ui.alert('Aba "' + PSA_CONFIG.SHEET_NAME + '" não encontrada.');
+    ui.alert('Aba "' + PSA_CONFIG.SHEET_NAME + '" nao encontrada.');
     return;
   }
 
@@ -113,11 +113,11 @@ function importarDadosDoFormulario() {
 
   const row = activeSheet.getActiveCell().getRow();
   if (row <= 1) {
-    ui.alert('Selecione uma linha de dados (abaixo do cabeçalho).');
+    ui.alert('Selecione uma linha de dados (abaixo do cabecalho).');
     return;
   }
 
-  // Lê a linha inteira do Forms
+  // Le a linha inteira do Forms
   const lastCol = formSheet.getLastColumn();
   const values = formSheet.getRange(row, 1, 1, lastCol).getValues()[0];
 
@@ -140,11 +140,11 @@ function importarDadosDoFormulario() {
   const preferredPayment    = values[15]; // P
 
   if (!fullName) {
-    ui.alert('O registro selecionado não possui "Full Name".');
+    ui.alert('O registro selecionado nao possui "Full Name".');
     return;
   }
 
-  // Monta endereço completo do comprador
+  // Monta endereco completo do comprador
   const buyer1Address = [
     streetAddress,
     city,
@@ -152,7 +152,7 @@ function importarDadosDoFormulario() {
     zipCode
   ].filter(Boolean).join(', ');
 
-  // Co-buyer só se marcado como Yes e tiver nome
+  // Co-buyer so se marcado como Yes e tiver nome
   let buyer2Name  = '';
   let buyer2Email = '';
 
@@ -180,7 +180,7 @@ function importarDadosDoFormulario() {
 
 
 /****************************************************
- * 2) GERAR PSA – ABRE POPUP PARA DADOS DA PROPRIEDADE
+ * 2) GERAR PSA - ABRE POPUP PARA DADOS DA PROPRIEDADE
  ****************************************************/
 
 function gerarPSA() {
@@ -189,7 +189,7 @@ function gerarPSA() {
   const sheet = ss.getSheetByName(PSA_CONFIG.SHEET_NAME);
 
   if (!sheet) {
-    ui.alert('Aba "' + PSA_CONFIG.SHEET_NAME + '" não encontrada.');
+    ui.alert('Aba "' + PSA_CONFIG.SHEET_NAME + '" nao encontrada.');
     return;
   }
 
@@ -205,7 +205,7 @@ function gerarPSA() {
   const buyer1Email   = rowValues[PSA_CONFIG.COL_BUYER1_EMAIL - 1];
   const buyer1Address = rowValues[PSA_CONFIG.COL_BUYER1_ADDRESS - 1];
 
-  // Valores já salvos (para pré-preencher o formulário, se quiser)
+  // Valores ja salvos (para pre-preencher o formulario, se quiser)
   const propertyAdr     = rowValues[PSA_CONFIG.COL_PROPERTY_ADDRESS - 1] || '';
   const parcelId        = rowValues[PSA_CONFIG.COL_PARCEL_ID - 1] || '';
   const legalDesc       = rowValues[PSA_CONFIG.COL_LEGAL_DESCRIPTION - 1] || '';
@@ -218,7 +218,7 @@ function gerarPSA() {
     return;
   }
 
-  // HTML do formulário
+  // HTML do formulario
   const html = HtmlService.createHtmlOutput(`
     <html>
       <head>
@@ -237,10 +237,10 @@ function gerarPSA() {
         </style>
       </head>
       <body>
-        <h1>GT Lands – Dados para PSA</h1>
+        <h1>GT Lands - Dados para PSA</h1>
         <h2>Dados da Propriedade</h2>
         <form id="psaForm" onsubmit="handleSubmit(event)">
-          <label>Endereço da Propriedade:</label>
+          <label>Endereco da Propriedade:</label>
           <input type="text" id="propertyAddress" value="${propertyAdr}" required>
           <label>Parcel Number:</label>
           <input type="text" id="parcelId" value="${parcelId}" required>
@@ -285,11 +285,11 @@ function gerarPSA() {
     </html>
   `).setWidth(600).setHeight(500);
 
-  ui.showModalDialog(html, 'GT Lands – Dados para PSA');
+  ui.showModalDialog(html, 'GT Lands - Dados para PSA');
 }
 
 /**
- * Função chamada pelo formulário HTML para:
+ * Funcao chamada pelo formulario HTML para:
  * - salvar os dados na linha
  * - gerar o PSA (DOC + PDF)
  * - abrir popup final com link e mensagem
@@ -306,7 +306,7 @@ function processPSAForm(formData) {
   const buyer1Email   = rowValues[PSA_CONFIG.COL_BUYER1_EMAIL - 1];
   const buyer1Address = rowValues[PSA_CONFIG.COL_BUYER1_ADDRESS - 1];
 
-  // Dados vindos do formulário
+  // Dados vindos do formulario
   const propertyAdr     = (formData.propertyAddress || '').trim();
   const parcelId        = (formData.parcelId || '').trim();
   const legalDesc       = (formData.legalDescription || '').trim();
@@ -316,7 +316,7 @@ function processPSAForm(formData) {
   const dueDay          = (formData.dueDay || '').trim();
 
   if (!propertyAdr || !parcelId) {
-    SpreadsheetApp.getUi().alert('Endereço da propriedade e Parcel Number são obrigatórios.');
+    SpreadsheetApp.getUi().alert('Endereco da propriedade e Parcel Number sao obrigatorios.');
     return;
   }
 
@@ -349,7 +349,7 @@ function processPSAForm(formData) {
 
   const buyerFullName = buyer2Name ? (buyer1Name + ' and ' + buyer2Name) : buyer1Name;
 
-  // Cria cópia do template de PSA
+  // Cria copia do template de PSA
   const templateFile = DriveApp.getFileById(PSA_CONFIG.PSA_TEMPLATE_ID);
   const folder = DriveApp.getFolderById(PSA_CONFIG.PSA_FOLDER_ID);
 
@@ -409,7 +409,7 @@ function gerarContractForDeed() {
   const sheet = ss.getSheetByName(CFD_CONFIG.SHEET_NAME);
 
   if (!sheet) {
-    ui.alert('Aba "' + CFD_CONFIG.SHEET_NAME + '" não encontrada.');
+    ui.alert('Aba "' + CFD_CONFIG.SHEET_NAME + '" nao encontrada.');
     return;
   }
 
@@ -439,7 +439,7 @@ function gerarContractForDeed() {
 
   if (!buyer1Name || !propertyAdr || !parcelId || !legalDesc ||
       !purchasePrice || !downPayment || !balance || !monthlyPayment || !numInstallments) {
-    ui.alert('Preencha todos os dados financeiros e do imóvel (incluindo Legal Description) antes de gerar o Contract for Deed.');
+    ui.alert('Preencha todos os dados financeiros e do imovel (incluindo Legal Description) antes de gerar o Contract for Deed.');
     return;
   }
 
@@ -458,12 +458,12 @@ function gerarContractForDeed() {
       ui.ButtonSet.OK_CANCEL
     );
     if (resp.getSelectedButton() !== ui.Button.OK) {
-      ui.alert('Operação cancelada.');
+      ui.alert('Operacao cancelada.');
       return;
     }
     firstPayDate = resp.getResponseText().trim();
     if (!firstPayDate) {
-      ui.alert('Data inválida.');
+      ui.alert('Data invalida.');
       return;
     }
     sheet.getRange(row, CFD_CONFIG.COL_FIRST_PAYMENT_DATE).setValue(firstPayDate);
@@ -471,7 +471,7 @@ function gerarContractForDeed() {
 
   const buyerFullName = buyer2Name ? (buyer1Name + ' and ' + buyer2Name) : buyer1Name;
 
-  // Cria cópia do template de CFD
+  // Cria copia do template de CFD
   const templateFile = DriveApp.getFileById(CFD_CONFIG.CFD_TEMPLATE_ID);
   const folder = DriveApp.getFolderById(CFD_CONFIG.CFD_FOLDER_ID);
 
@@ -535,11 +535,11 @@ function replaceAllInBody_(body, replacements) {
 function mostrarPSAPopup_(data) {
   var html = `
     <div style="font-family: Arial, sans-serif; padding:16px;">
-      <h2>GT Lands – Dados para PSA</h2>
+      <h2>GT Lands - Dados para PSA</h2>
       <p><b>Nome(s):</b> ${data.buyerNames || ''}</p>
       <p><b>Email:</b> ${data.email || ''}</p>
       <p><b>Link do PSA (PDF):</b> <a href="${data.psaLink}" target="_blank">Abrir PSA</a></p>
-      <p><b>Mensagem padrão:</b></p>
+      <p><b>Mensagem padrao:</b></p>
       <textarea id="msg" style="width:100%;height:200px;">
 Hi ${data.buyerNames || ''},
 
@@ -560,18 +560,18 @@ GT Lands
   var output = HtmlService.createHtmlOutput(html)
     .setWidth(600)
     .setHeight(450);
-  SpreadsheetApp.getUi().showModalDialog(output, 'GT Lands – Dados para PSA');
+  SpreadsheetApp.getUi().showModalDialog(output, 'GT Lands - Dados para PSA');
 }
 
 // Popup com dados do CFD
 function mostrarCFDPopup_(data) {
   var html = `
     <div style="font-family: Arial, sans-serif; padding:16px;">
-      <h2>GT Lands – Dados para Contract for Deed</h2>
+      <h2>GT Lands - Dados para Contract for Deed</h2>
       <p><b>Nome(s):</b> ${data.buyerNames || ''}</p>
       <p><b>Email:</b> ${data.email || ''}</p>
       <p><b>Link do Contract for Deed (PDF):</b> <a href="${data.cfdLink}" target="_blank">Abrir Contract for Deed</a></p>
-      <p><b>Mensagem padrão:</b></p>
+      <p><b>Mensagem padrao:</b></p>
       <textarea id="msg" style="width:100%;height:200px;">
 Hi ${data.buyerNames || ''},
 
@@ -592,17 +592,17 @@ GT Lands
   var output = HtmlService.createHtmlOutput(html)
     .setWidth(600)
     .setHeight(450);
-  SpreadsheetApp.getUi().showModalDialog(output, 'GT Lands – Dados para Contract for Deed');
+  SpreadsheetApp.getUi().showModalDialog(output, 'GT Lands - Dados para Contract for Deed');
 }
 
 
 /****************************************************
- * GTSEARCH EXPORT — Web App API
+ * GTSEARCH EXPORT - Web App API
  * Recebe dados da Tela 3 do GTSearch via POST
  * e grava na aba "GTSearch Export" desta planilha.
  *
  * COMO IMPLANTAR:
- * 1. Clique em "Implantar" → "Nova implantação"
+ * 1. Clique em "Implantar" -> "Nova implantacao"
  * 2. Tipo: "App da Web"
  * 3. Executar como: "Eu (seu email)"
  * 4. Quem tem acesso: "Qualquer pessoa"
@@ -615,7 +615,7 @@ const GTSEARCH_HEADERS = [
   'Data Export',
   'Case #',
   'Parcel #',
-  'Endereço',
+  'Endereco',
   'Condado',
   'Acres',
   'Amount Due ($)',
@@ -638,10 +638,10 @@ const GTSEARCH_HEADERS = [
   'Land Use',
   'Risk Level',
   'Risk Score',
-  'Status Leilão',
+  'Status Leilao',
   'Lance Final ($)',
   'Comprador',
-  'Data Leilão',
+  'Data Leilao',
   'Notas'
 ];
 
@@ -650,7 +650,7 @@ function doPost(e) {
     const data = JSON.parse(e.postData.contents);
     const ss = SpreadsheetApp.getActiveSpreadsheet();
 
-    // Cria a aba se não existir
+    // Cria a aba se nao existir
     let sheet = ss.getSheetByName(GTSEARCH_SHEET_NAME);
     if (!sheet) {
       sheet = ss.insertSheet(GTSEARCH_SHEET_NAME);
