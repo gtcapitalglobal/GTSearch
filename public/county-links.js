@@ -1,95 +1,114 @@
 /**
- * county-links.js — Fetch county links from Google Sheets (Site FL tab)
- * 
- * Source: Google Sheets public API (CSV output)
- * Sheet ID: 1Z5IWpfRtu_D5zwdNbB3u68BMjirKOsdF2t_SoZJLJ04
- * Tab: Site FL
- * Cache: 24h in localStorage
- * 
- * Column mapping (from Sheet):
- *   Col 0:  County Name (uppercase)
- *   Col 1:  County Website URL
- *   Col 8:  Appraisal (Property Search) URL
- *   Col 15: GIS Map URL
- *   Col 22: Clerks Office URL
- *   Col 29: Code Enforcement URL
- *   Col 36: Planning & Zoning URL
+ * county-links.js — County links with localStorage-first priority
+ *
+ * Priority order:
+ *   1. Admin localStorage (countyLinksAdmin_v2) — edited via /county-links-admin.html
+ *   2. Google Sheets cache (countyLinksCache) — 24h TTL
+ *   3. Google Sheets live fetch — fallback
+ *
+ * Field mapping (internal → legacy API compatibility):
+ *   appraisal       → appraisal
+ *   gis             → gis
+ *   clerks          → clerks
+ *   code_enforcement→ codeEnforcement
+ *   zoning          → planningZoning
  */
 
 const CountyLinks = (() => {
   'use strict';
 
   // --- Config ---
-  const SHEET_ID = '1Z5IWpfRtu_D5zwdNbB3u68BMjirKOsdF2t_SoZJLJ04';
-  const SHEET_TAB = 'Site FL';
-  const CACHE_KEY = 'countyLinksCache';
+  const SHEET_ID    = '1Z5IWpfRtu_D5zwdNbB3u68BMjirKOsdF2t_SoZJLJ04';
+  const SHEET_TAB   = 'Site FL';
+  const CACHE_KEY   = 'countyLinksCache';
+  const ADMIN_KEY   = 'countyLinksAdmin_v2';
   const CACHE_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
-  // Column indices in the CSV
+  // Column indices in the CSV (original sheet format)
   const COL = {
     COUNTY: 0,
     COUNTY_WEBSITE: 1,
-    APPRAISAL: 8,
-    GIS: 15,
-    CLERKS: 22,
-    CODE_ENFORCEMENT: 29,
-    PLANNING_ZONING: 36
+    APPRAISAL: 2,
+    GIS: 3,
+    CLERKS: 4,
+    CODE_ENFORCEMENT: 5,
+    PLANNING_ZONING: 6
   };
 
-  // --- CSV Parser (handles quoted fields with commas) ---
+  // In-memory cache
+  let _memoryCache = null;
+
+  // ─────────────────────────────────────────────
+  // ADMIN LOCALSTORAGE (primary source)
+  // ─────────────────────────────────────────────
+  function getAdminData() {
+    try {
+      const raw = localStorage.getItem(ADMIN_KEY);
+      if (!raw) return null;
+      const arr = JSON.parse(raw);
+      if (!Array.isArray(arr) || arr.length === 0) return null;
+
+      const counties = {};
+      arr.forEach(item => {
+        const key = (item.county || '').toUpperCase().trim();
+        if (!key) return;
+        const l = item.links || {};
+        const displayName = key.replace(/[A-Za-z]+/g, w =>
+          w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+        );
+        counties[key] = {
+          name: displayName,
+          countyWebsite: l.homepage || '',
+          appraisal: l.appraisal || '',
+          gis: l.gis || '',
+          clerks: l.clerks || '',
+          codeEnforcement: l.code_enforcement || '',
+          planningZoning: l.zoning || ''
+        };
+      });
+      return Object.keys(counties).length > 0 ? counties : null;
+    } catch (e) {
+      console.warn('[CountyLinks] Admin data read failed:', e.message);
+      return null;
+    }
+  }
+
+  // ─────────────────────────────────────────────
+  // CSV PARSER
+  // ─────────────────────────────────────────────
   function parseCSVRow(line) {
     const result = [];
     let current = '';
     let inQuotes = false;
-
     for (let i = 0; i < line.length; i++) {
       const ch = line[i];
       if (inQuotes) {
         if (ch === '"') {
-          if (i + 1 < line.length && line[i + 1] === '"') {
-            current += '"';
-            i++; // skip escaped quote
-          } else {
-            inQuotes = false;
-          }
-        } else {
-          current += ch;
-        }
+          if (i + 1 < line.length && line[i + 1] === '"') { current += '"'; i++; }
+          else inQuotes = false;
+        } else { current += ch; }
       } else {
-        if (ch === '"') {
-          inQuotes = true;
-        } else if (ch === ',') {
-          result.push(current.trim());
-          current = '';
-        } else {
-          current += ch;
-        }
+        if (ch === '"') inQuotes = true;
+        else if (ch === ',') { result.push(current.trim()); current = ''; }
+        else current += ch;
       }
     }
     result.push(current.trim());
     return result;
   }
 
-  // --- Parse CSV text into county objects ---
   function parseCountyData(csvText) {
     const lines = csvText.split('\n');
     const counties = {};
-
     for (const line of lines) {
       if (!line.trim()) continue;
-
       const cols = parseCSVRow(line);
       const countyName = (cols[COL.COUNTY] || '').trim();
-
-      // Skip non-county rows (instructions, headers, empty)
       if (!countyName || countyName.length < 3) continue;
       if (!cols[COL.COUNTY_WEBSITE] || !cols[COL.COUNTY_WEBSITE].startsWith('http')) continue;
-
-      // Title case: "PASCO" → "Pasco", "MIAMI-DADE" → "Miami-Dade", "PALM BEACH" → "Palm Beach"
-      const displayName = countyName.replace(/[A-Za-z]+/g, w => 
+      const displayName = countyName.replace(/[A-Za-z]+/g, w =>
         w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
       );
-
       counties[countyName.toUpperCase()] = {
         name: displayName,
         countyWebsite: cols[COL.COUNTY_WEBSITE] || '',
@@ -100,51 +119,39 @@ const CountyLinks = (() => {
         planningZoning: cols[COL.PLANNING_ZONING] || ''
       };
     }
-
     return counties;
   }
 
-  // --- Fetch from Google Sheets API ---
+  // ─────────────────────────────────────────────
+  // GOOGLE SHEETS FETCH
+  // ─────────────────────────────────────────────
   async function fetchFromSheets() {
     const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_TAB)}`;
-
-    // Timeout after 10 seconds to prevent hanging
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
-
     try {
       const response = await fetch(url, { signal: controller.signal });
       clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error(`Google Sheets fetch failed: ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`Google Sheets fetch failed: ${response.status}`);
       const csvText = await response.text();
       return parseCountyData(csvText);
     } catch (e) {
       clearTimeout(timeoutId);
-      if (e.name === 'AbortError') {
-        throw new Error('Google Sheets fetch timed out (10s)');
-      }
+      if (e.name === 'AbortError') throw new Error('Google Sheets fetch timed out (10s)');
       throw e;
     }
   }
 
-  // --- Cache management ---
+  // ─────────────────────────────────────────────
+  // SHEETS CACHE
+  // ─────────────────────────────────────────────
   function getCache() {
     try {
       const cached = localStorage.getItem(CACHE_KEY);
       if (!cached) return null;
-
       const parsed = JSON.parse(cached);
       const age = Date.now() - (parsed.timestamp || 0);
-
-      if (age > CACHE_TTL_MS) {
-        localStorage.removeItem(CACHE_KEY);
-        return null;
-      }
-
+      if (age > CACHE_TTL_MS) { localStorage.removeItem(CACHE_KEY); return null; }
       return parsed.data;
     } catch (e) {
       localStorage.removeItem(CACHE_KEY);
@@ -154,71 +161,72 @@ const CountyLinks = (() => {
 
   function setCache(data) {
     try {
-      localStorage.setItem(CACHE_KEY, JSON.stringify({
-        timestamp: Date.now(),
-        data: data
-      }));
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ timestamp: Date.now(), data }));
     } catch (e) {
       console.warn('[CountyLinks] Cache write failed:', e.message);
     }
   }
 
-  // --- Public API ---
-
-  // In-memory cache to avoid redundant getAll() calls within same session
-  let _memoryCache = null;
+  // ─────────────────────────────────────────────
+  // PUBLIC API
+  // ─────────────────────────────────────────────
 
   /**
-   * Get all county links data (from cache or fresh fetch)
-   * @returns {Promise<Object>} Map of county name (uppercase) → link object
+   * Get all county links.
+   * Priority: Admin localStorage → Sheets cache → Sheets live fetch
    */
   async function getAll() {
-    // Return in-memory cache if available
-    if (_memoryCache && Object.keys(_memoryCache).length > 0) {
-      return _memoryCache;
+    // 1. In-memory
+    if (_memoryCache && Object.keys(_memoryCache).length > 0) return _memoryCache;
+
+    // 2. Admin localStorage (primary — edited by user)
+    const adminData = getAdminData();
+    if (adminData) {
+      console.log('[CountyLinks] Loaded from admin localStorage (' + Object.keys(adminData).length + ' counties)');
+      _memoryCache = adminData;
+      return adminData;
     }
 
-    // Try localStorage cache
+    // 3. Sheets cache (24h)
     const cached = getCache();
     if (cached && Object.keys(cached).length > 0) {
-      console.log('[CountyLinks] Loaded from cache (' + Object.keys(cached).length + ' counties)');
+      console.log('[CountyLinks] Loaded from Sheets cache (' + Object.keys(cached).length + ' counties)');
       _memoryCache = cached;
       return cached;
     }
 
-    // Fetch fresh
+    // 4. Live fetch from Google Sheets
     console.log('[CountyLinks] Fetching from Google Sheets...');
-    const data = await fetchFromSheets();
-    const count = Object.keys(data).length;
-
-    if (count > 0) {
-      setCache(data);
-      _memoryCache = data;
-      console.log('[CountyLinks] Fetched and cached ' + count + ' counties');
-    } else {
-      console.warn('[CountyLinks] No county data found in Sheet');
+    try {
+      const data = await fetchFromSheets();
+      const count = Object.keys(data).length;
+      if (count > 0) {
+        setCache(data);
+        _memoryCache = data;
+        console.log('[CountyLinks] Fetched and cached ' + count + ' counties from Sheets');
+      } else {
+        console.warn('[CountyLinks] No county data found in Sheet');
+      }
+      return data;
+    } catch (e) {
+      console.warn('[CountyLinks] Sheets fetch failed:', e.message);
+      return {};
     }
-
-    return data;
   }
 
   /**
    * Get links for a specific county
-   * @param {string} countyName - County name (case-insensitive)
-   * @returns {Promise<Object|null>} Link object or null if not found
    */
   async function getByCounty(countyName) {
     if (!countyName) return null;
-
     const all = await getAll();
     const key = countyName.toUpperCase().trim();
-
     return all[key] || null;
   }
 
   /**
-   * Force refresh from Google Sheets (bypass cache)
-   * @returns {Promise<Object>} Fresh county data
+   * Force refresh — clears all caches and re-fetches
+   * If admin data exists, it stays as primary source
    */
   async function refresh() {
     localStorage.removeItem(CACHE_KEY);
@@ -227,18 +235,19 @@ const CountyLinks = (() => {
   }
 
   /**
-   * Get the list of available county names
-   * @returns {Promise<string[]>} Array of county names
+   * Get sorted list of county names
    */
   async function getCountyList() {
     const all = await getAll();
     return Object.keys(all).sort();
   }
 
-  return {
-    getAll,
-    getByCounty,
-    refresh,
-    getCountyList
-  };
+  /**
+   * Check if using admin data (vs Sheets)
+   */
+  function isUsingAdminData() {
+    return !!getAdminData();
+  }
+
+  return { getAll, getByCounty, refresh, getCountyList, isUsingAdminData };
 })();

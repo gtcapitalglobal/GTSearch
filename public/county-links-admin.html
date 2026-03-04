@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔗 Links por Condado - GTSearch</title>
+  <script src="/js/utils.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      color: #e0e0e0;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header h1 { font-size: 1.4rem; color: #fff; }
+    .header p  { font-size: 0.85rem; color: #94a3b8; margin-top: 2px; }
+    .header-actions { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+
+    /* ── Buttons ── */
+    .btn {
+      padding: 9px 18px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+    .btn-back    { background: rgba(255,255,255,0.1); color: #e0e0e0; }
+    .btn-primary { background: #3b82f6; color: #fff; }
+    .btn-success { background: #10b981; color: #fff; }
+    .btn-warning { background: #f59e0b; color: #fff; }
+    .btn-danger  { background: #ef4444; color: #fff; }
+    .btn-sm      { padding: 5px 10px; font-size: 0.78rem; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      padding: 16px 24px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .search-box {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 8px 14px;
+      color: #fff;
+      font-size: 0.9rem;
+      width: 260px;
+    }
+    .search-box::placeholder { color: #64748b; }
+    .search-box:focus { outline: none; border-color: #3b82f6; }
+
+    .filter-status {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #e0e0e0;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .stats-bar {
+      margin-left: auto;
+      display: flex;
+      gap: 16px;
+      font-size: 0.82rem;
+    }
+    .stat { display: flex; align-items: center; gap: 5px; }
+    .stat-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot-ok      { background: #10b981; }
+    .dot-error   { background: #ef4444; }
+    .dot-unknown { background: #64748b; }
+    .dot-blocked { background: #f59e0b; }
+
+    /* ── Table ── */
+    .table-container {
+      padding: 20px 24px;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    thead th {
+      background: rgba(59,130,246,0.2);
+      color: #93c5fd;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      border-bottom: 2px solid rgba(59,130,246,0.3);
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+    }
+    tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      transition: background 0.15s;
+    }
+    tbody tr:hover { background: rgba(255,255,255,0.04); }
+    td {
+      padding: 8px 12px;
+      vertical-align: middle;
+    }
+    .county-name {
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      font-size: 0.85rem;
+    }
+
+    /* ── Link Cell ── */
+    .link-cell {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 200px;
+      max-width: 280px;
+    }
+    .link-input {
+      flex: 1;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 6px;
+      padding: 5px 8px;
+      color: #e0e0e0;
+      font-size: 0.78rem;
+      min-width: 0;
+      transition: border-color 0.2s;
+    }
+    .link-input:focus { outline: none; border-color: #3b82f6; background: rgba(59,130,246,0.1); }
+    .link-input.status-ok      { border-color: rgba(16,185,129,0.5); }
+    .link-input.status-error   { border-color: rgba(239,68,68,0.5); }
+    .link-input.status-blocked { border-color: rgba(245,158,11,0.5); }
+
+    .status-icon {
+      font-size: 0.9rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      title: "Testar link";
+    }
+    .status-icon:hover { transform: scale(1.2); }
+
+    /* ── Status badge ── */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-ok      { background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.3); }
+    .badge-error   { background: rgba(239,68,68,0.2);  color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .badge-blocked { background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+    .badge-unknown { background: rgba(100,116,139,0.2); color: #94a3b8; border: 1px solid rgba(100,116,139,0.3); }
+
+    /* ── Progress bar ── */
+    .progress-bar {
+      display: none;
+      padding: 10px 24px;
+      background: rgba(255,255,255,0.03);
+    }
+    .progress-track {
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #10b981);
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+    .progress-label {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 0.85rem;
+      color: #e0e0e0;
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+      max-width: 360px;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: rgba(16,185,129,0.5); }
+    .toast.error   { border-color: rgba(239,68,68,0.5); }
+
+    /* ── Empty state ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #64748b;
+    }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .toolbar { flex-direction: column; align-items: stretch; }
+      .search-box { width: 100%; }
+      .stats-bar { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div>
+    <h1>🔗 Links por Condado — Florida</h1>
+    <p>67 condados · Appraisal · GIS · Clerks · Code Enforcement · Zoning</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-warning" onclick="testAllLinks()" id="btnTestAll">🧪 Testar Todos</button>
+    <button class="btn btn-success" onclick="saveAllLinks()" id="btnSave">💾 Salvar Alterações</button>
+    <button class="btn btn-primary" onclick="importFromCSV()">📥 Importar CSV</button>
+    <a href="settings.html" class="btn btn-back">← Configurações</a>
+  </div>
+</div>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar">
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">Testando links...</div>
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <input type="text" class="search-box" id="searchInput" placeholder="🔍 Buscar condado..." oninput="filterTable()">
+  <select class="filter-status" id="filterStatus" onchange="filterTable()">
+    <option value="">Todos os status</option>
+    <option value="ok">✅ OK</option>
+    <option value="error">❌ Erro</option>
+    <option value="blocked">⚠️ Bloqueado</option>
+    <option value="unknown">⬜ Não testado</option>
+  </select>
+  <select class="filter-status" id="filterCategory" onchange="filterTable()">
+    <option value="">Todas as categorias</option>
+    <option value="appraisal">Property Appraiser</option>
+    <option value="gis">GIS / Parcel Map</option>
+    <option value="clerks">Clerks Office</option>
+    <option value="code_enforcement">Code Enforcement</option>
+    <option value="zoning">Planning & Zoning</option>
+  </select>
+  <button class="btn btn-sm btn-danger" onclick="resetToDefault()">🔄 Restaurar Padrão</button>
+  <div class="stats-bar" id="statsBar">
+    <span class="stat"><span class="stat-dot dot-ok"></span><span id="countOk">0</span> OK</span>
+    <span class="stat"><span class="stat-dot dot-error"></span><span id="countError">0</span> Erro</span>
+    <span class="stat"><span class="stat-dot dot-blocked"></span><span id="countBlocked">0</span> Bloqueado</span>
+    <span class="stat"><span class="stat-dot dot-unknown"></span><span id="countUnknown">0</span> N/T</span>
+  </div>
+</div>
+
+<!-- Table -->
+<div class="table-container">
+  <table id="linksTable">
+    <thead>
+      <tr>
+        <th style="width:130px">Condado</th>
+        <th>🏛️ Property Appraiser</th>
+        <th>🗺️ GIS / Parcel Map</th>
+        <th>📋 Clerks Office</th>
+        <th>🚨 Code Enforcement</th>
+        <th>🏗️ Planning & Zoning</th>
+        <th style="width:80px">Ações</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody">
+      <tr><td colspan="7"><div class="empty-state"><div class="icon">⏳</div>Carregando dados...</div></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Hidden file input for CSV import -->
+<input type="file" id="csvFileInput" accept=".csv" style="display:none" onchange="handleCSVImport(event)">
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// DEFAULT DATA — 67 Florida Counties from Site FL sheet
+// ═══════════════════════════════════════════════════════
+const DEFAULT_COUNTY_LINKS = [
+  {"county":"MIAMI-DADE","links":{"appraisal":"https://www.miamidade.gov/Apps/PA/propertysearch/#/","gis":"https://gisweb.miamidade.gov/landinformation/","clerks":"https://www2.miami-dadeclerk.com/officialrecords/StandardSearch.aspx","code_enforcement":"https://www.miamidade.gov/global/service.page?Mduid_service=ser1489075928620972","zoning":"https://www.miamidade.gov/zoning/"}},
+  {"county":"BROWARD","links":{"appraisal":"https://web.bcpa.net/BcpaClient/#/Record-Search","gis":"https://gis.broward.org/gismap/","clerks":"https://officialrecords.broward.org/AcclaimWeb/search/SearchTypeName","code_enforcement":"https://www.broward.org/CodeAppeals/Pages/Default.aspx","zoning":"https://www.broward.org/Planning/Zoning/Pages/default.aspx"}},
+  {"county":"ORANGE","links":{"appraisal":"https://ocpaweb.ocpafl.org/parcelsearch","gis":"https://ocpagis.ocpafl.org/","clerks":"https://myeclerk.myorangeclerk.com/","code_enforcement":"https://www.orangefl.gov/code-enforcement","zoning":"https://www.orangecountyfl.net/PermitsLicenses/ZoningDivision.aspx"}},
+  {"county":"HILLSBOROUGH","links":{"appraisal":"https://gis.hcpafl.org/propertysearch/","gis":"https://www.hcpafl.org/LinkClick.aspx?link=https://maps.hcpafl.org/","clerks":"https://pubrec.hillsclerk.com/","code_enforcement":"https://www.hillsboroughcounty.org/en/residents/property-owners-and-renters/code-enforcement","zoning":"https://www.hillsboroughcounty.org/en/residents/property-owners-and-renters/building-and-zoning"}},
+  {"county":"PINELLAS","links":{"appraisal":"https://pinellas.gov/property-appraiser/","gis":"https://maps.pcpao.gov/","clerks":"https://www.pinellasclerk.org/","code_enforcement":"https://pinellas.gov/code-enforcement/","zoning":"https://pinellas.gov/planning/"}},
+  {"county":"COLLIER","links":{"appraisal":"https://www.collierappraiser.com/","gis":"https://www.collierappraiser.com/main_search/recordsearch.html","clerks":"https://www.collierclerk.com/","code_enforcement":"https://www.colliercountyfl.gov/government/growth-management/divisions/code-enforcement","zoning":"https://www.colliercountyfl.gov/government/growth-management/divisions/zoning"}},
+  {"county":"LEE","links":{"appraisal":"https://www.leepa.org/","gis":"https://maps.leepa.org/","clerks":"https://www.leeclerk.org/","code_enforcement":"https://www.leegov.com/dcd/code","zoning":"https://www.leegov.com/dcd/zoning"}},
+  {"county":"OSCEOLA","links":{"appraisal":"https://search.property-appraiser.org/","gis":"https://maps.property-appraiser.org/","clerks":"https://www.osceolaclerk.com/","code_enforcement":"https://www.osceola.org/agencies-departments/code-enforcement/","zoning":"https://www.osceola.org/agencies-departments/planning/"}},
+  {"county":"SARASOTA","links":{"appraisal":"https://www.sc-pa.com/propertysearch/","gis":"https://www.sc-pa.com/propertysearch/","clerks":"https://www.sarasotaclerk.com/","code_enforcement":"https://www.sarasotacountyfl.gov/government/departments/neighborhood-environmental-services/code-enforcement","zoning":"https://www.sarasotacountyfl.gov/government/departments/planning-and-development-services"}},
+  {"county":"MARTIN","links":{"appraisal":"https://www.pa.martin.fl.us/","gis":"https://geoweb.martin.fl.us/","clerks":"https://www.martinclerk.com/","code_enforcement":"https://www.martin.fl.us/code-compliance","zoning":"https://www.martin.fl.us/planning-zoning"}},
+  {"county":"PALM BEACH","links":{"appraisal":"https://pbcpao.gov/","gis":"https://maps.co.palm-beach.fl.us/cwgis/papa.html","clerks":"https://www.mypalmbeachclerk.com/","code_enforcement":"https://discover.pbcgov.org/pzb/codeenforcement/","zoning":"https://discover.pbcgov.org/pzb/zoning/"}},
+  {"county":"POLK","links":{"appraisal":"https://www.polkpa.org/","gis":"https://maps.polkpa.org/","clerks":"https://www.polkclerk.com/","code_enforcement":"https://www.polk-county.net/code-enforcement","zoning":"https://www.polk-county.net/planning-and-zoning"}},
+  {"county":"MANATEE","links":{"appraisal":"https://www.manateepao.gov/","gis":"https://maps.manateepao.gov/","clerks":"https://www.manateeclerk.com/","code_enforcement":"https://www.mymanatee.org/departments/code_enforcement","zoning":"https://www.mymanatee.org/departments/planning___zoning"}},
+  {"county":"SEMINOLE","links":{"appraisal":"https://www.scpafl.org/","gis":"https://www.scpafl.org/","clerks":"https://www.seminoleclerk.org/","code_enforcement":"https://www.seminolecountyfl.gov/departments-services/development-services/code-enforcement/","zoning":"https://www.seminolecountyfl.gov/departments-services/development-services/planning-development/"}},
+  {"county":"VOLUSIA","links":{"appraisal":"https://vcpa.vcgov.org/","gis":"https://volusia.maps.arcgis.com/","clerks":"https://www.volusiasheriff.org/","code_enforcement":"https://www.volusia.org/services/growth-and-resource-management/building-and-zoning/code-enforcement/","zoning":"https://www.volusia.org/services/growth-and-resource-management/planning-and-land-information/zoning/"}},
+  {"county":"HENDRY","links":{"appraisal":"https://www.hendrypa.com/","gis":"https://www.hendrypa.com/","clerks":"https://www.hendryclerk.org/","code_enforcement":"https://www.hendrycountyfl.gov/","zoning":"https://www.hendrycountyfl.gov/"}},
+  {"county":"BREVARD","links":{"appraisal":"https://www.bcpao.us/","gis":"https://maps.bcpao.us/","clerks":"https://www.brevardclerk.us/","code_enforcement":"https://www.brevardfl.gov/CodeEnforcement","zoning":"https://www.brevardfl.gov/PlanningAndDevelopment"}},
+  {"county":"CHARLOTTE","links":{"appraisal":"https://www.ccappraiser.com/","gis":"https://maps.ccappraiser.com/","clerks":"https://www.charlotteclerk.com/","code_enforcement":"https://www.charlottecountyfl.gov/departments/community-development/code-enforcement/","zoning":"https://www.charlottecountyfl.gov/departments/community-development/planning/"}},
+  {"county":"LAKE","links":{"appraisal":"https://lakecoproperty.com/","gis":"https://maps.lakecoproperty.com/","clerks":"https://www.lakecountyclerk.org/","code_enforcement":"https://www.lakecountyfl.gov/departments/code_enforcement/","zoning":"https://www.lakecountyfl.gov/departments/planning_and_zoning/"}},
+  {"county":"PASCO","links":{"appraisal":"https://search.pascopa.com/","gis":"https://maps.pascopa.com/","clerks":"https://www.pascoclerk.com/","code_enforcement":"https://www.pascocountyfl.net/2082/Code-Enforcement","zoning":"https://www.pascocountyfl.net/1399/Planning-and-Zoning"}},
+  {"county":"MARION","links":{"appraisal":"https://www.pa.marion.fl.us/","gis":"https://www.pa.marion.fl.us/","clerks":"https://www.marioncountyclerk.org/","code_enforcement":"https://www.marioncountyfl.org/departments/growth-services/code-enforcement","zoning":"https://www.marioncountyfl.org/departments/growth-services/planning-zoning"}},
+  {"county":"INDIAN RIVER","links":{"appraisal":"https://qpublic.schneidercorp.com/Application.aspx?AppID=1007","gis":"https://www.ircpa.org/gis","clerks":"https://clerk.irclerk.com/","code_enforcement":"https://www.ircgov.com/Departments/Community-Development/Code-Enforcement","zoning":"https://www.ircgov.com/Departments/Community-Development/Planning-Zoning"}},
+  {"county":"ALACHUA","links":{"appraisal":"https://qpublic.schneidercorp.com/Application.aspx?AppID=1040","gis":"https://acpafl.org/gis","clerks":"https://isol.alachuaclerk.org/RealEstate/SearchEntry.aspx","code_enforcement":"https://growth.alachuacounty.us/code-enforcement","zoning":"https://growth.alachuacounty.us/planning"}},
+  {"county":"HIGHLANDS","links":{"appraisal":"https://www.hcpao.org/","gis":"https://www.hcpao.org/","clerks":"https://www.highlandsclerk.com/","code_enforcement":"https://www.highlandsfl.gov/","zoning":"https://www.highlandsfl.gov/"}},
+  {"county":"ST. LUCIE","links":{"appraisal":"https://apps.paslc.gov/","gis":"https://apps.paslc.gov/","clerks":"https://www.stlucieclerk.com/","code_enforcement":"https://www.stlucieco.gov/departments-services/a-z/code-compliance","zoning":"https://www.stlucieco.gov/departments-services/a-z/planning-and-development-services"}},
+  {"county":"FLAGLER","links":{"appraisal":"https://qpublic.schneidercorp.com/Application.aspx?AppID=1041","gis":"https://www.flaglerpa.com/gis","clerks":"https://www.flaglerclerk.com/","code_enforcement":"https://www.flaglercounty.gov/departments/community-development/code-enforcement","zoning":"https://www.flaglercounty.gov/departments/community-development/planning-zoning"}},
+  {"county":"JEFFERSON","links":{"appraisal":"https://qpublic.schneidercorp.com/Application.aspx?AppID=1042","gis":"https://gis.jeffersoncountyflorida.com/","clerks":"https://jeffersoncountyclerk.com/","code_enforcement":"https://www.jeffersoncountyflorida.com/","zoning":"https://www.jeffersoncountyflorida.com/"}},
+  {"county":"WAKULLA","links":{"appraisal":"https://www.mvba.com/wakulla/","gis":"https://gis.wakullacounty.com/","clerks":"https://www.wakullaclerk.com/","code_enforcement":"https://www.wakullacounty.com/","zoning":"https://www.wakullacounty.com/"}},
+  {"county":"LEON","links":{"appraisal":"https://www.leonpa.org/","gis":"https://www.leonpa.org/","clerks":"https://search.leonclerk.com/","code_enforcement":"https://www.leoncountyfl.gov/growth-management/code-enforcement","zoning":"https://www.leoncountyfl.gov/growth-management/planning"}},
+  {"county":"CITRUS","links":{"appraisal":"https://www.citruspa.org/","gis":"https://gis.citruspa.org/","clerks":"https://www.clerk.citrus.fl.us/","code_enforcement":"https://www.citrusbocc.com/departments/code-enforcement","zoning":"https://www.citrusbocc.com/departments/planning-development"}},
+  {"county":"ST. JOHNS","links":{"appraisal":"https://www.sjcpa.us/","gis":"https://maps.sjcpa.us/","clerks":"https://www.stjohnsclerk.com/","code_enforcement":"https://www.sjcfl.us/CodeEnforcement/","zoning":"https://www.sjcfl.us/Planning/"}},
+  {"county":"HERNANDO","links":{"appraisal":"https://www.hernandocounty.us/departments/departments-a-c/property-appraiser","gis":"https://maps.hernandocounty.us/","clerks":"https://www.hernandoclerk.com/","code_enforcement":"https://www.hernandocounty.us/departments/departments-a-c/code-enforcement","zoning":"https://www.hernandocounty.us/departments/departments-d-f/development-services"}},
+  {"county":"SUMTER","links":{"appraisal":"https://www.sumterpa.com/","gis":"https://maps.sumterpa.com/","clerks":"https://www.sumterclerk.com/","code_enforcement":"https://www.sumtercountyfl.gov/","zoning":"https://www.sumtercountyfl.gov/"}},
+  {"county":"GULF","links":{"appraisal":"https://www.gulfpa.com/","gis":"https://www.gulfpa.com/","clerks":"https://www.gulfclerk.com/","code_enforcement":"https://www.gulfcounty.fl.gov/","zoning":"https://www.gulfcounty.fl.gov/"}},
+  {"county":"TAYLOR","links":{"appraisal":"https://www.taylorcountypa.com/","gis":"https://www.taylorcountypa.com/","clerks":"https://www.taylorcountyclerk.com/","code_enforcement":"https://www.taylorcountyfl.gov/","zoning":"https://www.taylorcountyfl.gov/"}},
+  {"county":"MADISON","links":{"appraisal":"https://www.madisoncopa.com/","gis":"https://www.madisoncopa.com/","clerks":"https://www.madisoncountyclerk.com/","code_enforcement":"https://www.madisoncountyfl.com/","zoning":"https://www.madisoncountyfl.com/"}},
+  {"county":"HAMILTON","links":{"appraisal":"https://www.hamiltoncopa.com/","gis":"https://www.hamiltoncopa.com/","clerks":"https://www.hamiltoncountyclerk.com/","code_enforcement":"https://www.hamiltoncountyfl.com/","zoning":"https://www.hamiltoncountyfl.com/"}},
+  {"county":"LIBERTY","links":{"appraisal":"https://www.libertycopa.com/","gis":"https://www.libertycopa.com/","clerks":"https://www.libertycountyclerk.com/","code_enforcement":"https://www.libertycountyfl.com/","zoning":"https://www.libertycountyfl.com/"}},
+  {"county":"GADSDEN","links":{"appraisal":"https://www.gadsdencopa.com/","gis":"https://www.gadsdencopa.com/","clerks":"https://www.gadsdencountyclerk.com/","code_enforcement":"https://www.gadsdencountyfl.gov/","zoning":"https://www.gadsdencountyfl.gov/"}},
+  {"county":"BRADFORD","links":{"appraisal":"https://www.bradfordpa.com/","gis":"https://www.bradfordpa.com/","clerks":"https://www.bradfordcountyclerk.com/","code_enforcement":"https://www.bradfordcountyfl.org/","zoning":"https://www.bradfordcountyfl.org/"}},
+  {"county":"HOLMES","links":{"appraisal":"https://www.holmescopa.com/","gis":"https://www.holmescopa.com/","clerks":"https://www.holmescountyclerk.com/","code_enforcement":"https://www.holmescountyfl.com/","zoning":"https://www.holmescountyfl.com/"}},
+  {"county":"WASHINGTON","links":{"appraisal":"https://www.washingtoncopa.com/","gis":"https://www.washingtoncopa.com/","clerks":"https://www.washingtoncountyclerk.com/","code_enforcement":"https://www.washingtonfl.com/","zoning":"https://www.washingtonfl.com/"}},
+  {"county":"FRANKLIN","links":{"appraisal":"https://www.franklincopa.com/","gis":"https://www.franklincopa.com/","clerks":"https://www.franklincountyclerk.com/","code_enforcement":"https://www.franklincountyfl.gov/","zoning":"https://www.franklincountyfl.gov/"}},
+  {"county":"GLADES","links":{"appraisal":"https://www.gladespa.com/","gis":"https://www.gladespa.com/","clerks":"https://www.gladescountyclerk.com/","code_enforcement":"https://www.gladescountyfl.com/","zoning":"https://www.gladescountyfl.com/"}},
+  {"county":"DESOTO","links":{"appraisal":"https://www.desotopa.com/","gis":"https://www.desotopa.com/","clerks":"https://www.desotocountyclerk.com/","code_enforcement":"https://www.desotocountyfl.com/","zoning":"https://www.desotocountyfl.com/"}},
+  {"county":"SUWANNEE","links":{"appraisal":"https://www.suwanneepa.com/","gis":"https://www.suwanneepa.com/","clerks":"https://www.suwanneecountyclerk.com/","code_enforcement":"https://www.suwanneecountyfl.com/","zoning":"https://www.suwanneecountyfl.com/"}},
+  {"county":"COLUMBIA","links":{"appraisal":"https://www.columbiacopa.com/","gis":"https://www.columbiacopa.com/","clerks":"https://www.columbiacountyclerk.com/","code_enforcement":"https://www.columbiacountyfl.com/","zoning":"https://www.columbiacountyfl.com/"}},
+  {"county":"GILCHRIST","links":{"appraisal":"https://www.gilchristpa.com/","gis":"https://www.gilchristpa.com/","clerks":"https://www.gilchristcountyclerk.com/","code_enforcement":"https://www.gilchristfl.com/","zoning":"https://www.gilchristfl.com/"}},
+  {"county":"JACKSON","links":{"appraisal":"https://www.jacksoncopa.com/","gis":"https://www.jacksoncopa.com/","clerks":"https://www.jacksoncountyclerk.com/","code_enforcement":"https://www.jacksoncountyfl.com/","zoning":"https://www.jacksoncountyfl.com/"}},
+  {"county":"BAKER","links":{"appraisal":"https://www.bakerpa.com/","gis":"https://www.bakerpa.com/","clerks":"https://www.bakercountyclerk.com/","code_enforcement":"https://www.bakercountyfl.org/","zoning":"https://www.bakercountyfl.org/"}},
+  {"county":"BAY","links":{"appraisal":"https://www.baypa.net/","gis":"https://www.baypa.net/","clerks":"https://www.baycountyclerk.com/","code_enforcement":"https://www.baycountyfl.gov/","zoning":"https://www.baycountyfl.gov/"}},
+  {"county":"CLAY","links":{"appraisal":"https://www.ccpao.com/","gis":"https://maps.ccpao.com/","clerks":"https://www.clayclerk.com/","code_enforcement":"https://www.claycountygov.com/departments/code-enforcement","zoning":"https://www.claycountygov.com/departments/planning-and-zoning"}},
+  {"county":"PUTNAM","links":{"appraisal":"https://www.putnampa.com/","gis":"https://www.putnampa.com/","clerks":"https://www.putnamclerk.com/","code_enforcement":"https://www.putnam-fl.com/","zoning":"https://www.putnam-fl.com/"}},
+  {"county":"LAFAYETTE","links":{"appraisal":"https://www.lafayettepa.com/","gis":"https://www.lafayettepa.com/","clerks":"https://www.lafayettecountyclerk.com/","code_enforcement":"https://www.lafayettecountyfl.com/","zoning":"https://www.lafayettecountyfl.com/"}},
+  {"county":"LEVY","links":{"appraisal":"https://www.levypa.com/","gis":"https://www.levypa.com/","clerks":"https://www.levycountyclerk.com/","code_enforcement":"https://www.levycountyfl.gov/","zoning":"https://www.levycountyfl.gov/"}},
+  {"county":"OKEECHOBEE","links":{"appraisal":"https://www.okeechobeepa.com/","gis":"https://www.okeechobeepa.com/","clerks":"https://www.clerk.co.okeechobee.fl.us/","code_enforcement":"https://www.co.okeechobee.fl.us/","zoning":"https://www.co.okeechobee.fl.us/"}},
+  {"county":"SANTA ROSA","links":{"appraisal":"https://www.srcpa.org/","gis":"https://maps.srcpa.org/","clerks":"https://www.santarosaclerk.com/","code_enforcement":"https://www.santarosa.fl.gov/","zoning":"https://www.santarosa.fl.gov/"}},
+  {"county":"OKALOOSA","links":{"appraisal":"https://www.okaloosapa.com/","gis":"https://maps.okaloosapa.com/","clerks":"https://www.okaloosaclerk.com/","code_enforcement":"https://www.myokaloosa.com/","zoning":"https://www.myokaloosa.com/"}},
+  {"county":"WALTON","links":{"appraisal":"https://www.waltonpa.com/","gis":"https://maps.waltonpa.com/","clerks":"https://www.clerkofcourts.co.walton.fl.us/","code_enforcement":"https://www.co.walton.fl.us/","zoning":"https://www.co.walton.fl.us/"}},
+  {"county":"UNION","links":{"appraisal":"https://www.unionpa.com/","gis":"https://www.unionpa.com/","clerks":"https://www.unioncountyclerk.com/","code_enforcement":"https://www.unioncountyfl.com/","zoning":"https://www.unioncountyfl.com/"}},
+  {"county":"HARDEE","links":{"appraisal":"https://www.hardeepa.com/","gis":"https://www.hardeepa.com/","clerks":"https://www.hardeecountyclerk.com/","code_enforcement":"https://www.hardeecountyfl.com/","zoning":"https://www.hardeecountyfl.com/"}},
+  {"county":"DIXIE","links":{"appraisal":"https://www.dixiepa.com/","gis":"https://www.dixiepa.com/","clerks":"https://www.dixiecountyclerk.com/","code_enforcement":"https://www.dixiecountyfl.com/","zoning":"https://www.dixiecountyfl.com/"}},
+  {"county":"CALHOUN","links":{"appraisal":"https://www.calhounpa.com/","gis":"https://www.calhounpa.com/","clerks":"https://www.calhouncountyclerk.com/","code_enforcement":"https://www.calhouncountyfl.com/","zoning":"https://www.calhouncountyfl.com/"}},
+  {"county":"DUVAL","links":{"appraisal":"https://paopropertysearch.coj.net/","gis":"https://maps.coj.net/jaxgis/","clerks":"https://www.duvalclerk.com/","code_enforcement":"https://www.coj.net/departments/neighborhoods/code-enforcement","zoning":"https://www.coj.net/departments/planning-and-development"}},
+  {"county":"ESCAMBIA","links":{"appraisal":"https://www.escpa.org/","gis":"https://gis.escpa.org/","clerks":"https://www.escambiaclerk.com/","code_enforcement":"https://myescambia.com/our-services/code-enforcement","zoning":"https://myescambia.com/our-services/development-services"}},
+  {"county":"MONROE","links":{"appraisal":"https://www.mcpafl.org/","gis":"https://maps.mcpafl.org/","clerks":"https://www.clerk-of-the-court.com/","code_enforcement":"https://www.monroecounty-fl.gov/","zoning":"https://www.monroecounty-fl.gov/"}},
+  {"county":"NASSAU","links":{"appraisal":"https://www.nassauflpa.com/","gis":"https://maps.nassauflpa.com/","clerks":"https://www.nassauclerk.com/","code_enforcement":"https://www.nassaucountyfl.com/","zoning":"https://www.nassaucountyfl.com/"}}
+];
+
+const STORAGE_KEY = 'countyLinksAdmin_v2';
+const STATUS_KEY  = 'countyLinksStatus_v2';
+
+const CATEGORIES = [
+  { key: 'appraisal',       label: '🏛️ Property Appraiser' },
+  { key: 'gis',             label: '🗺️ GIS / Parcel Map' },
+  { key: 'clerks',          label: '📋 Clerks Office' },
+  { key: 'code_enforcement',label: '🚨 Code Enforcement' },
+  { key: 'zoning',          label: '🏗️ Planning & Zoning' }
+];
+
+let countyData = [];
+let statusData = {};
+let unsavedChanges = false;
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+function init() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  countyData = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_COUNTY_LINKS));
+  statusData = JSON.parse(localStorage.getItem(STATUS_KEY) || '{}');
+  renderTable(countyData);
+  updateStats();
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════
+function renderTable(data) {
+  const tbody = document.getElementById('tableBody');
+  if (!data.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="icon">🔍</div>Nenhum condado encontrado</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(item => {
+    const c = item.county;
+    const s = statusData[c] || {};
+    return `<tr data-county="${c}">
+      <td><div class="county-name">${c}</div></td>
+      ${CATEGORIES.map(cat => {
+        const url = item.links[cat.key] || '';
+        const st  = s[cat.key] || 'unknown';
+        const icon = statusIcon(st);
+        const cls  = `status-${st}`;
+        return `<td>
+          <div class="link-cell">
+            <input class="link-input ${cls}" 
+                   data-county="${c}" data-cat="${cat.key}"
+                   value="${escHtml(url)}" 
+                   placeholder="https://..."
+                   onchange="markChanged(this)"
+                   title="${escHtml(url)}">
+            <span class="status-icon" onclick="testSingleLink('${c}','${cat.key}')" title="Testar link">${icon}</span>
+          </div>
+        </td>`;
+      }).join('')}
+      <td>
+        <button class="btn btn-sm btn-primary" onclick="openAllLinks('${c}')" title="Abrir todos os links do condado">🔗</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function statusIcon(st) {
+  return { ok: '✅', error: '❌', blocked: '⚠️', unknown: '⬜' }[st] || '⬜';
+}
+
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ═══════════════════════════════════════════════════════
+// FILTER
+// ═══════════════════════════════════════════════════════
+function filterTable() {
+  const search   = document.getElementById('searchInput').value.toLowerCase();
+  const stFilter = document.getElementById('filterStatus').value;
+  const catFilter= document.getElementById('filterCategory').value;
+
+  let filtered = countyData.filter(item => {
+    if (search && !item.county.toLowerCase().includes(search)) return false;
+    if (stFilter) {
+      const s = statusData[item.county] || {};
+      const cats = catFilter ? [catFilter] : CATEGORIES.map(c=>c.key);
+      const match = cats.some(k => (s[k]||'unknown') === stFilter);
+      if (!match) return false;
+    }
+    return true;
+  });
+
+  renderTable(filtered);
+}
+
+// ═══════════════════════════════════════════════════════
+// STATS
+// ═══════════════════════════════════════════════════════
+function updateStats() {
+  let ok=0, err=0, blk=0, unk=0;
+  countyData.forEach(item => {
+    const s = statusData[item.county] || {};
+    CATEGORIES.forEach(cat => {
+      const st = s[cat.key] || 'unknown';
+      if (st==='ok') ok++;
+      else if (st==='error') err++;
+      else if (st==='blocked') blk++;
+      else unk++;
+    });
+  });
+  document.getElementById('countOk').textContent = ok;
+  document.getElementById('countError').textContent = err;
+  document.getElementById('countBlocked').textContent = blk;
+  document.getElementById('countUnknown').textContent = unk;
+}
+
+// ═══════════════════════════════════════════════════════
+// MARK CHANGED
+// ═══════════════════════════════════════════════════════
+function markChanged(input) {
+  const county = input.dataset.county;
+  const cat    = input.dataset.cat;
+  const val    = input.value.trim();
+  const item   = countyData.find(i => i.county === county);
+  if (item) {
+    item.links[cat] = val;
+    // Reset status for this link
+    if (!statusData[county]) statusData[county] = {};
+    statusData[county][cat] = 'unknown';
+    input.className = 'link-input status-unknown';
+    const icon = input.nextElementSibling;
+    if (icon) icon.textContent = '⬜';
+  }
+  unsavedChanges = true;
+}
+
+// ═══════════════════════════════════════════════════════
+// TEST SINGLE LINK (via server proxy to avoid CORS)
+// ═══════════════════════════════════════════════════════
+async function testSingleLink(county, cat) {
+  const item = countyData.find(i => i.county === county);
+  if (!item) return;
+  const url = item.links[cat];
+  if (!url) { showToast('⬜ URL vazia', 'error'); return; }
+
+  const row   = document.querySelector(`tr[data-county="${county}"]`);
+  const input = row ? row.querySelector(`input[data-cat="${cat}"]`) : null;
+  const icon  = input ? input.nextElementSibling : null;
+  if (icon) icon.textContent = '⏳';
+
+  const status = await checkUrl(url);
+  if (!statusData[county]) statusData[county] = {};
+  statusData[county][cat] = status;
+  localStorage.setItem(STATUS_KEY, JSON.stringify(statusData));
+
+  if (input) {
+    input.className = `link-input status-${status}`;
+  }
+  if (icon) icon.textContent = statusIcon(status);
+  updateStats();
+  showToast(`${statusIcon(status)} ${county} · ${cat}: ${status.toUpperCase()}`, status === 'ok' ? 'success' : 'error');
+}
+
+// ═══════════════════════════════════════════════════════
+// CHECK URL via server endpoint
+// ═══════════════════════════════════════════════════════
+async function checkUrl(url) {
+  if (!url || !url.startsWith('http')) return 'unknown';
+  try {
+    const res = await fetch('/api/check-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+      signal: AbortSignal.timeout(12000)
+    });
+    const data = await res.json();
+    if (data.status === 'ok')      return 'ok';
+    if (data.status === 'blocked') return 'blocked';
+    return 'error';
+  } catch (e) {
+    return 'error';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// TEST ALL LINKS
+// ═══════════════════════════════════════════════════════
+async function testAllLinks() {
+  const btn = document.getElementById('btnTestAll');
+  btn.disabled = true;
+  btn.textContent = '⏳ Testando...';
+
+  const progressBar = document.getElementById('progressBar');
+  const progressFill = document.getElementById('progressFill');
+  const progressLabel = document.getElementById('progressLabel');
+  progressBar.style.display = 'block';
+
+  const allLinks = [];
+  countyData.forEach(item => {
+    CATEGORIES.forEach(cat => {
+      if (item.links[cat.key]) {
+        allLinks.push({ county: item.county, cat: cat.key, url: item.links[cat.key] });
+      }
+    });
+  });
+
+  const total = allLinks.length;
+  let done = 0;
+
+  // Process in batches of 5 to avoid overloading
+  const BATCH = 5;
+  for (let i = 0; i < allLinks.length; i += BATCH) {
+    const batch = allLinks.slice(i, i + BATCH);
+    await Promise.all(batch.map(async ({ county, cat, url }) => {
+      const status = await checkUrl(url);
+      if (!statusData[county]) statusData[county] = {};
+      statusData[county][cat] = status;
+      done++;
+      const pct = Math.round((done / total) * 100);
+      progressFill.style.width = pct + '%';
+      progressLabel.textContent = `Testando... ${done}/${total} (${pct}%)`;
+    }));
+  }
+
+  localStorage.setItem(STATUS_KEY, JSON.stringify(statusData));
+  filterTable();
+  updateStats();
+
+  progressBar.style.display = 'none';
+  btn.disabled = false;
+  btn.textContent = '🧪 Testar Todos';
+  showToast(`✅ Teste concluído: ${total} links verificados`, 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+// SAVE
+// ═══════════════════════════════════════════════════════
+function saveAllLinks() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(countyData));
+  localStorage.setItem(STATUS_KEY, JSON.stringify(statusData));
+  unsavedChanges = false;
+  showToast('💾 Links salvos com sucesso!', 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+// OPEN ALL LINKS FOR COUNTY
+// ═══════════════════════════════════════════════════════
+function openAllLinks(county) {
+  const item = countyData.find(i => i.county === county);
+  if (!item) return;
+  CATEGORIES.forEach(cat => {
+    if (item.links[cat.key]) window.open(item.links[cat.key], '_blank');
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// RESET TO DEFAULT
+// ═══════════════════════════════════════════════════════
+function resetToDefault() {
+  if (!confirm('Restaurar todos os links para os valores padrão? Suas edições serão perdidas.')) return;
+  countyData = JSON.parse(JSON.stringify(DEFAULT_COUNTY_LINKS));
+  statusData = {};
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(countyData));
+  localStorage.setItem(STATUS_KEY, JSON.stringify(statusData));
+  renderTable(countyData);
+  updateStats();
+  showToast('🔄 Links restaurados para o padrão', 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+// CSV IMPORT
+// ═══════════════════════════════════════════════════════
+function importFromCSV() {
+  document.getElementById('csvFileInput').click();
+}
+
+function handleCSVImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const lines = e.target.result.split('\n');
+      let imported = 0;
+      lines.forEach(line => {
+        if (!line.trim()) return;
+        const cols = parseCSVLine(line);
+        const county = (cols[0]||'').trim().toUpperCase();
+        if (!county || county === 'CONDADOS') return;
+        const existing = countyData.find(i => i.county === county);
+        const links = {
+          appraisal:        (cols[2]||'').trim(),
+          gis:              (cols[3]||'').trim(),
+          clerks:           (cols[4]||'').trim(),
+          code_enforcement: (cols[5]||'').trim(),
+          zoning:           (cols[6]||'').trim()
+        };
+        if (existing) {
+          Object.assign(existing.links, links);
+        } else {
+          countyData.push({ county, links });
+        }
+        imported++;
+      });
+      renderTable(countyData);
+      updateStats();
+      showToast(`📥 ${imported} condados importados do CSV`, 'success');
+    } catch(err) {
+      showToast('❌ Erro ao importar CSV: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQ) {
+      if (ch === '"' && line[i+1] === '"') { cur += '"'; i++; }
+      else if (ch === '"') inQ = false;
+      else cur += ch;
+    } else {
+      if (ch === '"') inQ = true;
+      else if (ch === ',') { result.push(cur.trim()); cur = ''; }
+      else cur += ch;
+    }
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = 'toast'; }, 3500);
+}
+
+// ═══════════════════════════════════════════════════════
+// WARN ON UNSAVED
+// ═══════════════════════════════════════════════════════
+window.addEventListener('beforeunload', e => {
+  if (unsavedChanges) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
+// ── START ──
+init();
+</script>
+</body>
+</html>

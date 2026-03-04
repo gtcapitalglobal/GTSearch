@@ -904,6 +904,41 @@ app.get('/api/florida-counties', (req, res) => {
 });
 
 // ========================================
+// CHECK URL ENDPOINT (county-links-admin)
+// ========================================
+app.post('/api/check-url', async (req, res) => {
+  const { url } = req.body;
+  if (!url || !url.startsWith('http')) {
+    return res.json({ status: 'error', code: 0, message: 'Invalid URL' });
+  }
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const response = await fetch(url, {
+      method: 'HEAD',
+      signal: controller.signal,
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GTSearch/1.0; +https://gtsearch.app)' },
+      redirect: 'follow'
+    });
+    clearTimeout(timeoutId);
+    const code = response.status;
+    if (code >= 200 && code < 400) {
+      return res.json({ status: 'ok', code });
+    } else if (code === 401 || code === 403 || code === 429) {
+      return res.json({ status: 'blocked', code });
+    } else {
+      return res.json({ status: 'error', code });
+    }
+  } catch (err) {
+    const msg = (err.message || '').toLowerCase();
+    if (msg.includes('abort') || msg.includes('timeout')) {
+      return res.json({ status: 'blocked', code: 0, message: 'Timeout - site may be blocking bots' });
+    }
+    return res.json({ status: 'error', code: 0, message: err.message });
+  }
+});
+
+// ========================================
 // START SERVER
 // ========================================
 
