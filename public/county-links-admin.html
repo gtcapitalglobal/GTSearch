@@ -255,6 +255,7 @@
     <button class="btn btn-warning" onclick="testAllLinks()" id="btnTestAll">🧪 Testar Todos</button>
     <button class="btn btn-success" onclick="saveAllLinks()" id="btnSave">💾 Salvar Alterações</button>
     <button class="btn btn-primary" onclick="importFromCSV()">📥 Importar CSV</button>
+    <button class="btn" style="background:#6366f1;color:#fff;" onclick="exportHealthReport()" id="btnReport" title="Exportar relatório CSV com status de todos os links">📊 Relatório</button>
     <a href="settings.html" class="btn btn-back">← Configurações</a>
   </div>
 </div>
@@ -679,6 +680,81 @@ function clearErrorLinks() {
   filterTable();
   updateStats();
   showToast(`🗑️ ${cleared} link(s) com erro removidos e salvos.`, 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+// EXPORT HEALTH REPORT
+// ═══════════════════════════════════════════════════════
+function exportHealthReport() {
+  const now = new Date();
+  const dateStr = now.toISOString().slice(0,10);
+  const timeStr = now.toTimeString().slice(0,8).replace(/:/g,'-');
+
+  // Summary counters
+  let totalLinks = 0, totalOk = 0, totalError = 0, totalBlocked = 0, totalEmpty = 0, totalUntested = 0;
+
+  // CSV header
+  const rows = [
+    ['Condado','Categoria','URL','Status','Codigo HTTP','Data Relatorio'],
+  ];
+
+  const statusLabel = { ok: 'OK', error: 'ERRO', blocked: 'BLOQUEADO', '': 'NAO TESTADO' };
+
+  countyData.forEach(item => {
+    CATEGORIES.forEach(cat => {
+      const url = item.links[cat.key] || '';
+      const st = (statusData[item.county] && statusData[item.county][cat.key]) || '';
+
+      if (!url) { totalEmpty++; return; } // skip empty
+      totalLinks++;
+
+      const label = statusLabel[st] || 'NAO TESTADO';
+      if (st === 'ok') totalOk++;
+      else if (st === 'error') totalError++;
+      else if (st === 'blocked') totalBlocked++;
+      else totalUntested++;
+
+      rows.push([
+        item.county,
+        cat.label,
+        url,
+        label,
+        '',
+        dateStr
+      ]);
+    });
+  });
+
+  // Summary rows at top (after header)
+  rows.splice(1, 0,
+    ['--- RESUMO ---','','','','',''],
+    ['Total Links','','',totalLinks,'',''],
+    ['OK','','',totalOk,'',''],
+    ['ERRO','','',totalError,'',''],
+    ['BLOQUEADO','','',totalBlocked,'',''],
+    ['NAO TESTADO','','',totalUntested,'',''],
+    ['','','','','','']
+  );
+
+  // Build CSV string
+  const csv = rows.map(r =>
+    r.map(cell => {
+      const s = String(cell);
+      return s.includes(',') || s.includes('"') || s.includes('\n')
+        ? '"' + s.replace(/"/g, '""') + '"'
+        : s;
+    }).join(',')
+  ).join('\n');
+
+  // Download
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = `GTSearch_Links_Saude_${dateStr}_${timeStr}.csv`;
+  link.click();
+  URL.revokeObjectURL(link.href);
+
+  showToast(`📊 Relatório exportado: ${totalLinks} links (${totalOk} OK · ${totalError} Erro · ${totalBlocked} Bloqueado)`, 'success');
 }
 
 // ═══════════════════════════════════════════════════════
