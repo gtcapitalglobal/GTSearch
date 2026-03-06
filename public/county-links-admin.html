@@ -286,6 +286,7 @@
     <option value="zoning">Planning & Zoning</option>
   </select>
   <button class="btn btn-sm btn-danger" onclick="resetToDefault()">🔄 Restaurar Padrão</button>
+  <button class="btn btn-sm" style="background:#ef4444;color:#fff;" onclick="clearErrorLinks()" id="btnClearErrors" title="Apaga todos os links com status Erro (❌)">🗑️ Limpar Erros</button>
   <div class="stats-bar" id="statsBar">
     <span class="stat"><span class="stat-dot dot-ok"></span><span id="countOk">0</span> OK</span>
     <span class="stat"><span class="stat-dot dot-error"></span><span id="countError">0</span> Erro</span>
@@ -635,6 +636,49 @@ function saveAllLinks() {
   localStorage.setItem(STATUS_KEY, JSON.stringify(statusData));
   unsavedChanges = false;
   showToast('💾 Links salvos com sucesso!', 'success');
+}
+
+// ═══════════════════════════════════════════════════════
+// CLEAR ERROR LINKS
+// ═══════════════════════════════════════════════════════
+function clearErrorLinks() {
+  // Count how many error links exist
+  let count = 0;
+  countyData.forEach(item => {
+    CATEGORIES.forEach(cat => {
+      const st = statusData[item.county] && statusData[item.county][cat.key];
+      if (st === 'error' && item.links[cat.key]) count++;
+    });
+  });
+
+  if (count === 0) {
+    showToast('ℹ️ Nenhum link com erro encontrado. Execute "Testar Todos" primeiro.', 'info');
+    return;
+  }
+
+  if (!confirm(`Apagar ${count} link(s) com status ❌ Erro? Esta ação não pode ser desfeita.`)) return;
+
+  let cleared = 0;
+  countyData.forEach(item => {
+    CATEGORIES.forEach(cat => {
+      const st = statusData[item.county] && statusData[item.county][cat.key];
+      if (st === 'error' && item.links[cat.key]) {
+        item.links[cat.key] = '';
+        // Remove status entry
+        if (statusData[item.county]) delete statusData[item.county][cat.key];
+        cleared++;
+      }
+    });
+  });
+
+  // Save immediately
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(countyData));
+  localStorage.setItem(STATUS_KEY, JSON.stringify(statusData));
+  unsavedChanges = false;
+
+  filterTable();
+  updateStats();
+  showToast(`🗑️ ${cleared} link(s) com erro removidos e salvos.`, 'success');
 }
 
 // ═══════════════════════════════════════════════════════
