@@ -402,6 +402,12 @@
                 <button onclick="filterByRisk('CRITICAL')" id="riskFilter-CRITICAL" class="risk-filter-btn" style="padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600; border:2px solid #7f1d1d; background:white; color:#7f1d1d; cursor:pointer; transition:all 0.15s;">⛔ Discard</button>
                 <button onclick="filterByRisk('none')" id="riskFilter-none" class="risk-filter-btn" style="padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600; border:2px solid #9ca3af; background:white; color:#6b7280; cursor:pointer; transition:all 0.15s;">⬜ N/A</button>
             </div>
+            <!-- Search box -->
+            <div style="display:flex; align-items:center; gap:6px;">
+                <input id="cardSearchInput" type="text" placeholder="🔍 Buscar Parcel # ou Endereço..." oninput="searchCards(this.value)" style="padding:5px 12px; border:1.5px solid #d1d5db; border-radius:20px; font-size:12px; width:220px; outline:none; transition:border 0.15s;" onfocus="this.style.borderColor='#6366f1'" onblur="this.style.borderColor='#d1d5db'">
+                <button onclick="clearSearch()" title="Limpar busca" style="padding:4px 8px; border-radius:50%; border:1px solid #d1d5db; background:white; color:#9ca3af; cursor:pointer; font-size:11px; line-height:1;">✕</button>
+            </div>
+
             <!-- Card counters -->
             <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
                 <span style="font-size:12px; color:#64748b;">Mostrando <strong id="filterCountVisible">0</strong> de <strong id="filterCountTotal">0</strong></span>
@@ -708,6 +714,12 @@
                                     ${riskLevel !== '-' ? riskLevel + ' (' + riskScore + ')' : 'N/A'}
                                 </span>
                                 <span class="viability-badge text-xs font-bold px-2 py-1 rounded-full" id="viability-badge-${index}" style="display:none;"></span>
+                                <button onclick="toggleRevisado(${index})" id="revisado-btn-${index}"
+                                        class="ml-1 px-2 py-1 rounded-full text-xs font-bold transition-all"
+                                        style="background: ${savedInvestmentData[parcelId]?.revisado ? '#10b981' : 'rgba(255,255,255,0.15)'}; color: white; border: 1.5px solid ${savedInvestmentData[parcelId]?.revisado ? '#10b981' : 'rgba(255,255,255,0.4)'}; cursor:pointer;"
+                                        title="Marcar como revisado">
+                                    ${savedInvestmentData[parcelId]?.revisado ? '✅ Revisado' : '⬜ Revisar'}
+                                </button>
                                 <button onclick="removeApprovedProperty(${index})" 
                                         class="ml-1 w-7 h-7 flex items-center justify-center bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors text-sm font-bold" 
                                         title="Remover propriedade">
@@ -717,6 +729,9 @@
                         </div>
                     </div>
                     
+                    <!-- Bid Alert Banner -->
+                    <div id="bid-alert-${index}" style="display:none; align-items:center; gap:8px; background:#fef2f2; border-left:4px solid #dc2626; color:#991b1b; font-size:12px; padding:8px 14px; line-height:1.4;"></div>
+
                     <div class="p-4">
                         <!-- Image Placeholder -->
                         <div class="mb-3">
@@ -1308,6 +1323,19 @@
                 headerBadge.style.color = v.status === 'viable' ? '#16a34a' : v.status === 'marginal' ? '#d97706' : '#dc2626';
             }
             
+            // Bid Alert Banner — Max Bid < Amount Due
+            const bidAlertEl = document.getElementById(`bid-alert-${index}`);
+            if (bidAlertEl) {
+                const v1 = getViability(firstMaxBid, amountDue);
+                if (firstMaxBid > 0 && amountDue > 0 && firstMaxBid < amountDue) {
+                    const diff = formatCurrency(Math.round(amountDue - firstMaxBid));
+                    bidAlertEl.style.display = 'flex';
+                    bidAlertEl.innerHTML = `⚠️ <strong>Max Bid abaixo do Amount Due</strong> &mdash; diferença de ${diff}. Lance neste valor pode resultar em prejuízo.`;
+                } else {
+                    bidAlertEl.style.display = 'none';
+                }
+            }
+
             // Save data
             saveCardData(index);
             updateFilledCount();
@@ -1617,28 +1645,7 @@
                 }
             });
 
-            // Show/hide cards
-            let visible = 0;
-            const total = approvedProperties.length;
-            approvedProperties.forEach((prop, index) => {
-                const card = document.getElementById(`card-${index}`);
-                if (!card) return;
-                const analysisData = prop.analysisData || {};
-                const riskLevel = (prop.riskLevel || analysisData.riskLevel || '').toUpperCase();
-                let show = false;
-                if (level === 'all') {
-                    show = true;
-                } else if (level === 'none') {
-                    show = !riskLevel || riskLevel === '-' || riskLevel === '';
-                } else {
-                    show = riskLevel === level;
-                }
-                card.style.display = show ? '' : 'none';
-                if (show) visible++;
-            });
-
-            document.getElementById('filterCountVisible').textContent = visible;
-            document.getElementById('filterCountTotal').textContent = total;
+            applyFilters();
         }
 
         function updateRiskCounters() {
@@ -1659,6 +1666,77 @@
             document.getElementById('counterNone').textContent = '⬜ ' + counts.none;
             document.getElementById('filterCountTotal').textContent = approvedProperties.length;
             document.getElementById('filterCountVisible').textContent = approvedProperties.length;
+        }
+
+        // ========================================
+        // SEARCH CARDS
+        // ========================================
+        let currentSearchTerm = '';
+
+        function searchCards(term) {
+            currentSearchTerm = term.trim().toLowerCase();
+            applyFilters();
+        }
+
+        function clearSearch() {
+            document.getElementById('cardSearchInput').value = '';
+            currentSearchTerm = '';
+            applyFilters();
+        }
+
+        function toggleRevisado(index) {
+            const prop = approvedProperties[index];
+            if (!prop) return;
+            const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
+            if (!savedInvestmentData[parcelId]) savedInvestmentData[parcelId] = {};
+            const current = savedInvestmentData[parcelId].revisado || false;
+            savedInvestmentData[parcelId].revisado = !current;
+            localStorage.setItem('investmentData', JSON.stringify(savedInvestmentData));
+
+            const btn = document.getElementById(`revisado-btn-${index}`);
+            if (btn) {
+                if (savedInvestmentData[parcelId].revisado) {
+                    btn.textContent = '✅ Revisado';
+                    btn.style.background = '#10b981';
+                    btn.style.borderColor = '#10b981';
+                } else {
+                    btn.textContent = '⬜ Revisar';
+                    btn.style.background = 'rgba(255,255,255,0.15)';
+                    btn.style.borderColor = 'rgba(255,255,255,0.4)';
+                }
+            }
+        }
+
+        function applyFilters() {
+            let visible = 0;
+            const total = approvedProperties.length;
+            approvedProperties.forEach((prop, index) => {
+                const card = document.getElementById(`card-${index}`);
+                if (!card) return;
+
+                // Risk filter
+                const analysisData = prop.analysisData || {};
+                const riskLevel = (prop.riskLevel || analysisData.riskLevel || '').toUpperCase();
+                let passRisk = false;
+                if (currentRiskFilter === 'all') passRisk = true;
+                else if (currentRiskFilter === 'none') passRisk = !riskLevel || riskLevel === '-' || riskLevel === '';
+                else passRisk = riskLevel === currentRiskFilter;
+
+                // Search filter
+                let passSearch = true;
+                if (currentSearchTerm) {
+                    const parcel = (getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id') || '').toLowerCase();
+                    const address = (getFieldValue(prop, 'Address', 'address') || '').toLowerCase();
+                    const caseNum = (getFieldValue(prop, 'CS', 'Case', 'Case #', 'Case Number', 'case_number') || '').toLowerCase();
+                    passSearch = parcel.includes(currentSearchTerm) || address.includes(currentSearchTerm) || caseNum.includes(currentSearchTerm);
+                }
+
+                const show = passRisk && passSearch;
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+            document.getElementById('filterCountVisible').textContent = visible;
+            document.getElementById('filterCountTotal').textContent = total;
         }
 
         // ========================================
