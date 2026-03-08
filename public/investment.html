@@ -389,6 +389,33 @@
         </div>
     </div>
 
+    <!-- Risk Filter Bar + Card Counter -->
+    <div class="container mx-auto px-4 mb-4 no-print">
+        <div style="background:white; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,0.08); padding:12px 16px; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+            <!-- Filter buttons -->
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.05em;">Filtrar:</span>
+                <button onclick="filterByRisk('all')" id="riskFilter-all" class="risk-filter-btn active" style="padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600; border:2px solid #6366f1; background:#6366f1; color:white; cursor:pointer; transition:all 0.15s;">Todos</button>
+                <button onclick="filterByRisk('GREEN')" id="riskFilter-GREEN" class="risk-filter-btn" style="padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600; border:2px solid #059669; background:white; color:#059669; cursor:pointer; transition:all 0.15s;">🟢 Classe A</button>
+                <button onclick="filterByRisk('YELLOW')" id="riskFilter-YELLOW" class="risk-filter-btn" style="padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600; border:2px solid #d97706; background:white; color:#d97706; cursor:pointer; transition:all 0.15s;">🟡 Classe B</button>
+                <button onclick="filterByRisk('RED')" id="riskFilter-RED" class="risk-filter-btn" style="padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600; border:2px solid #dc2626; background:white; color:#dc2626; cursor:pointer; transition:all 0.15s;">🔴 Classe C</button>
+                <button onclick="filterByRisk('CRITICAL')" id="riskFilter-CRITICAL" class="risk-filter-btn" style="padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600; border:2px solid #7f1d1d; background:white; color:#7f1d1d; cursor:pointer; transition:all 0.15s;">⛔ Discard</button>
+                <button onclick="filterByRisk('none')" id="riskFilter-none" class="risk-filter-btn" style="padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600; border:2px solid #9ca3af; background:white; color:#6b7280; cursor:pointer; transition:all 0.15s;">⬜ N/A</button>
+            </div>
+            <!-- Card counters -->
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                <span style="font-size:12px; color:#64748b;">Mostrando <strong id="filterCountVisible">0</strong> de <strong id="filterCountTotal">0</strong></span>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <span id="counterGREEN" style="padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; background:#d1fae5; color:#059669;">🟢 0</span>
+                    <span id="counterYELLOW" style="padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; background:#fef3c7; color:#d97706;">🟡 0</span>
+                    <span id="counterRED" style="padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; background:#fee2e2; color:#dc2626;">🔴 0</span>
+                    <span id="counterCRITICAL" style="padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; background:#fecaca; color:#7f1d1d;">⛔ 0</span>
+                    <span id="counterNone" style="padding:3px 10px; border-radius:12px; font-size:11px; font-weight:700; background:#f3f4f6; color:#6b7280;">⬜ 0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Cards Container -->
     <div class="container mx-auto px-4 pb-8">
         <div id="cardsContainer" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -1096,6 +1123,7 @@
             });
             
             updateFilledCount();
+            updateRiskCounters();
             
             // Load Due Diligence links for all cards (v5.2)
             loadAllDueDiligenceLinks();
@@ -1556,6 +1584,83 @@
             });
         }
         
+        // ========================================
+        // RISK LEVEL FILTER + COUNTERS
+        // ========================================
+        let currentRiskFilter = 'all';
+
+        function filterByRisk(level) {
+            currentRiskFilter = level;
+
+            // Update button styles
+            document.querySelectorAll('.risk-filter-btn').forEach(btn => {
+                btn.style.opacity = '1';
+                const id = btn.id.replace('riskFilter-', '');
+                if (id === level) {
+                    // Active state: filled background
+                    if (id === 'all') { btn.style.background = '#6366f1'; btn.style.color = 'white'; }
+                    else if (id === 'GREEN') { btn.style.background = '#059669'; btn.style.color = 'white'; }
+                    else if (id === 'YELLOW') { btn.style.background = '#d97706'; btn.style.color = 'white'; }
+                    else if (id === 'RED') { btn.style.background = '#dc2626'; btn.style.color = 'white'; }
+                    else if (id === 'CRITICAL') { btn.style.background = '#7f1d1d'; btn.style.color = 'white'; }
+                    else { btn.style.background = '#9ca3af'; btn.style.color = 'white'; }
+                } else {
+                    // Inactive: white background
+                    btn.style.background = 'white';
+                    if (id === 'all') btn.style.color = '#6366f1';
+                    else if (id === 'GREEN') btn.style.color = '#059669';
+                    else if (id === 'YELLOW') btn.style.color = '#d97706';
+                    else if (id === 'RED') btn.style.color = '#dc2626';
+                    else if (id === 'CRITICAL') btn.style.color = '#7f1d1d';
+                    else btn.style.color = '#6b7280';
+                    btn.style.opacity = '0.7';
+                }
+            });
+
+            // Show/hide cards
+            let visible = 0;
+            const total = approvedProperties.length;
+            approvedProperties.forEach((prop, index) => {
+                const card = document.getElementById(`card-${index}`);
+                if (!card) return;
+                const analysisData = prop.analysisData || {};
+                const riskLevel = (prop.riskLevel || analysisData.riskLevel || '').toUpperCase();
+                let show = false;
+                if (level === 'all') {
+                    show = true;
+                } else if (level === 'none') {
+                    show = !riskLevel || riskLevel === '-' || riskLevel === '';
+                } else {
+                    show = riskLevel === level;
+                }
+                card.style.display = show ? '' : 'none';
+                if (show) visible++;
+            });
+
+            document.getElementById('filterCountVisible').textContent = visible;
+            document.getElementById('filterCountTotal').textContent = total;
+        }
+
+        function updateRiskCounters() {
+            const counts = { GREEN: 0, YELLOW: 0, RED: 0, CRITICAL: 0, none: 0 };
+            approvedProperties.forEach(prop => {
+                const analysisData = prop.analysisData || {};
+                const riskLevel = (prop.riskLevel || analysisData.riskLevel || '').toUpperCase();
+                if (riskLevel === 'GREEN') counts.GREEN++;
+                else if (riskLevel === 'YELLOW') counts.YELLOW++;
+                else if (riskLevel === 'RED') counts.RED++;
+                else if (riskLevel === 'CRITICAL') counts.CRITICAL++;
+                else counts.none++;
+            });
+            document.getElementById('counterGREEN').textContent = '🟢 ' + counts.GREEN;
+            document.getElementById('counterYELLOW').textContent = '🟡 ' + counts.YELLOW;
+            document.getElementById('counterRED').textContent = '🔴 ' + counts.RED;
+            document.getElementById('counterCRITICAL').textContent = '⛔ ' + counts.CRITICAL;
+            document.getElementById('counterNone').textContent = '⬜ ' + counts.none;
+            document.getElementById('filterCountTotal').textContent = approvedProperties.length;
+            document.getElementById('filterCountVisible').textContent = approvedProperties.length;
+        }
+
         // ========================================
         // COMPARATIVE CHART
         // ========================================
@@ -2153,11 +2258,11 @@
         // SEND TO GOOGLE SHEETS
         // ========================================
         function sendToGoogleSheets() {
-            const webAppUrl = localStorage.getItem('googleSheetsWebAppUrl');
+            const webAppUrl = localStorage.getItem('gtSearchExportUrl') || localStorage.getItem('googleSheetsWebAppUrl');
             const password = localStorage.getItem('googleSheetsPassword');
             
             if (!webAppUrl) {
-                alert('Configure a URL do Google Sheets Web App nas Configurações primeiro!');
+                alert('Configure a URL do GTSearch Export Web App nas Configurações (Google Sheets Integration)!');
                 window.location.href = 'settings.html';
                 return;
             }
