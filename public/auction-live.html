@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>🎯 Leilão ao Vivo — GTSearch</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* HEADER */
+        .header {
+            background: #1e293b;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid #334155;
+        }
+        .header-title { font-size: 16px; font-weight: 700; color: #f59e0b; }
+        .header-count { font-size: 12px; color: #94a3b8; }
+        .btn-back {
+            background: #334155;
+            color: #94a3b8;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* SEARCH BAR */
+        .search-bar {
+            background: #1e293b;
+            padding: 10px 16px;
+            border-bottom: 1px solid #334155;
+        }
+        .search-bar input {
+            width: 100%;
+            background: #0f172a;
+            border: 1.5px solid #334155;
+            border-radius: 10px;
+            padding: 8px 14px;
+            color: #f1f5f9;
+            font-size: 14px;
+            outline: none;
+        }
+        .search-bar input:focus { border-color: #f59e0b; }
+        .search-bar input::placeholder { color: #475569; }
+
+        /* FILTER TABS */
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+            padding: 10px 16px;
+            overflow-x: auto;
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            -webkit-overflow-scrolling: touch;
+        }
+        .filter-tab {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 2px solid;
+            cursor: pointer;
+            white-space: nowrap;
+            background: transparent;
+            transition: all 0.15s;
+        }
+        .filter-tab.all { border-color: #f59e0b; color: #f59e0b; }
+        .filter-tab.all.active { background: #f59e0b; color: #0f172a; }
+        .filter-tab.green { border-color: #10b981; color: #10b981; }
+        .filter-tab.green.active { background: #10b981; color: white; }
+        .filter-tab.yellow { border-color: #f59e0b; color: #f59e0b; }
+        .filter-tab.yellow.active { background: #f59e0b; color: #0f172a; }
+        .filter-tab.red { border-color: #ef4444; color: #ef4444; }
+        .filter-tab.red.active { background: #ef4444; color: white; }
+        .filter-tab.revisado { border-color: #6366f1; color: #6366f1; }
+        .filter-tab.revisado.active { background: #6366f1; color: white; }
+
+        /* CARDS */
+        .cards-container { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+
+        .auction-card {
+            background: #1e293b;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 2px solid #334155;
+            transition: border-color 0.2s;
+        }
+        .auction-card.revisado { border-color: #6366f1; opacity: 0.7; }
+        .auction-card.inviable { border-color: #ef4444; }
+
+        /* CARD HEADER */
+        .card-header {
+            padding: 12px 14px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .card-header-left { flex: 1; min-width: 0; }
+        .card-case { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+        .card-parcel { font-size: 15px; font-weight: 700; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-address { font-size: 11px; color: #94a3b8; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+
+        .risk-badge {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .risk-GREEN { background: #064e3b; color: #34d399; }
+        .risk-YELLOW { background: #451a03; color: #fbbf24; }
+        .risk-RED { background: #450a0a; color: #f87171; }
+        .risk-CRITICAL { background: #1c0505; color: #ef4444; }
+        .risk-NA { background: #1e293b; color: #64748b; border: 1px solid #334155; }
+
+        /* KEY NUMBERS */
+        .card-numbers {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1px;
+            background: #334155;
+            border-top: 1px solid #334155;
+        }
+        .num-cell {
+            background: #0f172a;
+            padding: 10px 12px;
+            text-align: center;
+        }
+        .num-label { font-size: 9px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+        .num-value { font-size: 16px; font-weight: 800; color: #f1f5f9; }
+        .num-value.green { color: #34d399; }
+        .num-value.red { color: #f87171; }
+        .num-value.amber { color: #fbbf24; }
+        .num-value.big { font-size: 20px; }
+
+        /* BID ALERT */
+        .bid-alert {
+            background: #450a0a;
+            border-top: 2px solid #ef4444;
+            padding: 8px 12px;
+            font-size: 11px;
+            color: #fca5a5;
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* SCENARIOS */
+        .scenarios {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1px;
+            background: #334155;
+            border-top: 1px solid #334155;
+        }
+        .scenario-cell {
+            background: #0f172a;
+            padding: 8px 6px;
+            text-align: center;
+        }
+        .scenario-label { font-size: 9px; color: #64748b; margin-bottom: 2px; }
+        .scenario-bid { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+        .scenario-profit { font-size: 10px; margin-top: 2px; }
+        .scenario-profit.pos { color: #34d399; }
+        .scenario-profit.neg { color: #f87171; }
+
+        /* CARD ACTIONS */
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            padding: 10px 12px;
+            border-top: 1px solid #334155;
+        }
+        .btn-action {
+            flex: 1;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-revisado { background: #1e293b; color: #94a3b8; border: 1.5px solid #334155; }
+        .btn-revisado.done { background: #1e3a5f; color: #60a5fa; border-color: #3b82f6; }
+        .btn-won { background: #064e3b; color: #34d399; border: 1.5px solid #10b981; }
+        .btn-lost { background: #450a0a; color: #f87171; border: 1.5px solid #ef4444; }
+        .btn-won.active { background: #10b981; color: white; }
+        .btn-lost.active { background: #ef4444; color: white; }
+
+        /* NOTES */
+        .card-notes {
+            padding: 0 12px 10px;
+        }
+        .card-notes textarea {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 6px 10px;
+            color: #94a3b8;
+            font-size: 11px;
+            resize: none;
+            outline: none;
+            height: 36px;
+            font-family: inherit;
+        }
+        .card-notes textarea:focus { border-color: #f59e0b; color: #f1f5f9; height: 60px; }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #475569;
+        }
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+        .empty-state p { font-size: 14px; }
+
+        /* BOTTOM BAR */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1e293b;
+            border-top: 2px solid #334155;
+            padding: 10px 16px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .bottom-stat {
+            flex: 1;
+            text-align: center;
+        }
+        .bottom-stat-val { font-size: 16px; font-weight: 800; }
+        .bottom-stat-label { font-size: 9px; color: #64748b; text-transform: uppercase; }
+        .bottom-stat-val.won { color: #34d399; }
+        .bottom-stat-val.lost { color: #f87171; }
+        .bottom-stat-val.pending { color: #f59e0b; }
+
+        /* NO PROPERTIES */
+        .no-data {
+            text-align: center;
+            padding: 80px 20px;
+        }
+        .no-data h2 { color: #f59e0b; margin-bottom: 12px; }
+        .no-data p { color: #64748b; font-size: 14px; margin-bottom: 20px; }
+        .no-data a { color: #6366f1; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <a href="investment.html" class="btn-back">← Voltar</a>
+    <div class="header-title">🎯 Leilão ao Vivo</div>
+    <div class="header-count" id="headerCount">0 props</div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-bar">
+    <input type="text" id="searchInput" placeholder="🔍 Buscar parcel, endereço ou case..." oninput="applyFilters()">
+</div>
+
+<!-- FILTER TABS -->
+<div class="filter-tabs">
+    <button class="filter-tab all active" onclick="setFilter('all', this)">Todos</button>
+    <button class="filter-tab green" onclick="setFilter('GREEN', this)">🟢 Classe A</button>
+    <button class="filter-tab yellow" onclick="setFilter('YELLOW', this)">🟡 Classe B</button>
+    <button class="filter-tab red" onclick="setFilter('RED', this)">🔴 Classe C</button>
+    <button class="filter-tab revisado" onclick="setFilter('revisado', this)">✅ Revisados</button>
+</div>
+
+<!-- CARDS -->
+<div class="cards-container" id="cardsContainer">
+    <div class="no-data" id="noDataMsg" style="display:none;">
+        <h2>🎯 Nenhuma propriedade</h2>
+        <p>Vá para a Tela 3 e aprove propriedades para vê-las aqui.</p>
+        <a href="investment.html">Ir para Tela 3 →</a>
+    </div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar">
+    <div class="bottom-stat">
+        <div class="bottom-stat-val won" id="statWon">0</div>
+        <div class="bottom-stat-label">Ganhou</div>
+    </div>
+    <div class="bottom-stat">
+        <div class="bottom-stat-val lost" id="statLost">0</div>
+        <div class="bottom-stat-label">Perdeu</div>
+    </div>
+    <div class="bottom-stat">
+        <div class="bottom-stat-val pending" id="statPending">0</div>
+        <div class="bottom-stat-label">Pendente</div>
+    </div>
+    <div class="bottom-stat">
+        <div class="bottom-stat-val" id="statTotal" style="color:#94a3b8;">0</div>
+        <div class="bottom-stat-label">Total</div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // DATA LOADING
+    // ==========================================
+    let properties = [];
+    let investmentData = {};
+    let currentFilter = 'all';
+
+    const DEFAULTS = { roi1: 30, roi2: 40, roi3: 50, closingPct: 8 };
+
+    function loadData() {
+        try {
+            const raw = localStorage.getItem('approvedProperties');
+            properties = raw ? JSON.parse(raw) : [];
+        } catch(e) { properties = []; }
+        try {
+            const raw = localStorage.getItem('investmentData');
+            investmentData = raw ? JSON.parse(raw) : {};
+        } catch(e) { investmentData = {}; }
+    }
+
+    function saveInvestmentData() {
+        localStorage.setItem('investmentData', JSON.stringify(investmentData));
+    }
+
+    // ==========================================
+    // HELPERS
+    // ==========================================
+    function getField(prop, ...keys) {
+        for (const k of keys) {
+            if (prop[k] !== undefined && prop[k] !== null && prop[k] !== '') return String(prop[k]);
+        }
+        return '-';
+    }
+
+    function parseCurrency(val) {
+        if (!val || val === '-') return 0;
+        return parseFloat(String(val).replace(/[^0-9.\-]/g, '')) || 0;
+    }
+
+    function fmt(val) {
+        if (!val && val !== 0) return '-';
+        return '$' + Math.round(val).toLocaleString('en-US');
+    }
+
+    function calculateMaxBid(marketValue, closingPct, roiPct, reforma, cleanTitle, otherCosts, liens, amountDue) {
+        if (!marketValue || marketValue <= 0) return null;
+        const closingCost = marketValue * (closingPct / 100);
+        const roiDecimal = roiPct / 100;
+        let maxBid = ((marketValue - closingCost) / (1 + roiDecimal)) - reforma - cleanTitle - otherCosts - liens;
+        maxBid = Math.round(maxBid);
+        const floorApplied = amountDue > 0 && maxBid < amountDue;
+        if (floorApplied) maxBid = Math.round(amountDue);
+        const profit = Math.round((marketValue - closingCost) - maxBid - reforma - cleanTitle - otherCosts - liens);
+        return { maxBid, profit, floorApplied };
+    }
+
+    // ==========================================
+    // RENDER
+    // ==========================================
+    function render() {
+        const container = document.getElementById('cardsContainer');
+        const noData = document.getElementById('noDataMsg');
+        const searchTerm = document.getElementById('searchInput').value.trim().toLowerCase();
+
+        container.querySelectorAll('.auction-card').forEach(el => el.remove());
+
+        if (properties.length === 0) {
+            noData.style.display = 'block';
+            updateBottomBar();
+            return;
+        }
+        noData.style.display = 'none';
+
+        let visible = 0;
+
+        properties.forEach((prop, index) => {
+            const parcelId = getField(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
+            const address = getField(prop, 'Address', 'address');
+            const city = getField(prop, 'City', 'city');
+            const county = getField(prop, 'County', 'county');
+            const caseNum = getField(prop, 'CS', 'Case', 'Case #', 'Case Number', 'case_number');
+            const acres = getField(prop, 'Acres', 'acres', 'Acreage');
+            const analysisData = prop.analysisData || {};
+            const riskLevel = (prop.riskLevel || analysisData.riskLevel || '').toUpperCase();
+
+            // Saved data
+            const saved = investmentData[parcelId] || {};
+            const marketValue = parseCurrency(saved.marketValue) || parseCurrency(getField(prop, 'Market Value', 'market_value', 'Just Value', 'Assessed Value'));
+            const amountDue = parseCurrency(saved.amountDue) || parseCurrency(getField(prop, 'Amount Due', 'amount_due'));
+            const reforma = parseCurrency(saved.reforma) || 0;
+            const cleanTitle = parseCurrency(saved.cleanTitle) || 0;
+            const otherCosts = parseCurrency(saved.otherCosts) || 0;
+            const liens = parseCurrency(saved.liens) || 0;
+            const closingPct = parseFloat(saved.closingPct) || DEFAULTS.closingPct;
+            const roi1 = parseFloat(saved.roi1) || DEFAULTS.roi1;
+            const roi2 = parseFloat(saved.roi2) || DEFAULTS.roi2;
+            const roi3 = parseFloat(saved.roi3) || DEFAULTS.roi3;
+            const revisado = saved.revisado || false;
+            const auctionStatus = saved.auctionStatus || '';
+            const notes = saved.notes || '';
+
+            // Filter
+            let passFilter = true;
+            if (currentFilter === 'revisado') passFilter = revisado;
+            else if (currentFilter !== 'all') passFilter = riskLevel === currentFilter;
+
+            let passSearch = true;
+            if (searchTerm) {
+                passSearch = parcelId.toLowerCase().includes(searchTerm) ||
+                             address.toLowerCase().includes(searchTerm) ||
+                             caseNum.toLowerCase().includes(searchTerm) ||
+                             county.toLowerCase().includes(searchTerm);
+            }
+
+            if (!passFilter || !passSearch) return;
+            visible++;
+
+            // Calculate scenarios
+            const s1 = calculateMaxBid(marketValue, closingPct, roi1, reforma, cleanTitle, otherCosts, liens, amountDue);
+            const s2 = calculateMaxBid(marketValue, closingPct, roi2, reforma, cleanTitle, otherCosts, liens, amountDue);
+            const s3 = calculateMaxBid(marketValue, closingPct, roi3, reforma, cleanTitle, otherCosts, liens, amountDue);
+
+            const maxBid1 = s1 ? s1.maxBid : 0;
+            const bidAlert = maxBid1 > 0 && amountDue > 0 && maxBid1 < amountDue;
+            const diff = bidAlert ? fmt(amountDue - maxBid1) : '';
+
+            const riskClass = riskLevel || 'NA';
+            const cardClass = revisado ? 'revisado' : (maxBid1 <= 0 && marketValue > 0 ? 'inviable' : '');
+
+            const card = document.createElement('div');
+            card.className = `auction-card ${cardClass}`;
+            card.id = `lcard-${index}`;
+
+            card.innerHTML = `
+                <!-- Header -->
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <div class="card-case">${caseNum !== '-' ? 'Case #' + caseNum : ''} ${acres !== '-' ? '· ' + acres + ' ac' : ''}</div>
+                        <div class="card-parcel">${parcelId}</div>
+                        <div class="card-address">${address !== '-' ? address + ', ' + city : county}</div>
+                    </div>
+                    <div class="card-header-right">
+                        <span class="risk-badge risk-${riskClass}">${riskClass !== 'NA' ? riskClass : 'N/A'}</span>
+                        ${revisado ? '<span style="font-size:10px; color:#6366f1; font-weight:700;">✅ Revisado</span>' : ''}
+                        ${auctionStatus === 'won' ? '<span style="font-size:10px; color:#34d399; font-weight:700;">🏆 Ganhou</span>' : ''}
+                        ${auctionStatus === 'lost' ? '<span style="font-size:10px; color:#f87171; font-weight:700;">❌ Perdeu</span>' : ''}
+                    </div>
+                </div>
+
+                <!-- Bid Alert -->
+                <div class="bid-alert" id="lalert-${index}" style="display:${bidAlert ? 'flex' : 'none'};">
+                    ⚠️ <strong>Max Bid < Amount Due</strong> — diferença de ${diff}
+                </div>
+
+                <!-- Key Numbers -->
+                <div class="card-numbers">
+                    <div class="num-cell">
+                        <div class="num-label">Amount Due</div>
+                        <div class="num-value amber">${amountDue > 0 ? fmt(amountDue) : '-'}</div>
+                    </div>
+                    <div class="num-cell">
+                        <div class="num-label">Market Value</div>
+                        <div class="num-value">${marketValue > 0 ? fmt(marketValue) : '-'}</div>
+                    </div>
+                </div>
+
+                <!-- MAX BID HIGHLIGHT -->
+                <div style="background:#0f172a; padding:12px; text-align:center; border-top:1px solid #334155;">
+                    <div style="font-size:10px; color:#64748b; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:4px;">MAX BID (ROI ${roi1}%)</div>
+                    <div style="font-size:28px; font-weight:900; color:${maxBid1 > 0 ? '#f59e0b' : '#ef4444'};">${s1 ? fmt(maxBid1) : '—'}</div>
+                    ${s1 && s1.floorApplied ? '<div style="font-size:10px; color:#f87171; margin-top:2px;">⚠️ Piso = Amount Due</div>' : ''}
+                </div>
+
+                <!-- 3 Scenarios -->
+                <div class="scenarios">
+                    <div class="scenario-cell">
+                        <div class="scenario-label">ROI ${roi1}%</div>
+                        <div class="scenario-bid">${s1 ? fmt(s1.maxBid) : '-'}</div>
+                        <div class="scenario-profit ${s1 && s1.profit >= 0 ? 'pos' : 'neg'}">${s1 ? fmt(s1.profit) : '-'}</div>
+                    </div>
+                    <div class="scenario-cell" style="border-left:1px solid #334155; border-right:1px solid #334155;">
+                        <div class="scenario-label">ROI ${roi2}%</div>
+                        <div class="scenario-bid">${s2 ? fmt(s2.maxBid) : '-'}</div>
+                        <div class="scenario-profit ${s2 && s2.profit >= 0 ? 'pos' : 'neg'}">${s2 ? fmt(s2.profit) : '-'}</div>
+                    </div>
+                    <div class="scenario-cell">
+                        <div class="scenario-label">ROI ${roi3}%</div>
+                        <div class="scenario-bid">${s3 ? fmt(s3.maxBid) : '-'}</div>
+                        <div class="scenario-profit ${s3 && s3.profit >= 0 ? 'pos' : 'neg'}">${s3 ? fmt(s3.profit) : '-'}</div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="card-actions">
+                    <button class="btn-action btn-revisado ${revisado ? 'done' : ''}" onclick="toggleRevisado(${index}, '${parcelId}')">
+                        ${revisado ? '✅ Revisado' : '⬜ Marcar Revisado'}
+                    </button>
+                    <button class="btn-action btn-won ${auctionStatus === 'won' ? 'active' : ''}" onclick="setAuctionStatus(${index}, '${parcelId}', 'won')">
+                        🏆 Ganhou
+                    </button>
+                    <button class="btn-action btn-lost ${auctionStatus === 'lost' ? 'active' : ''}" onclick="setAuctionStatus(${index}, '${parcelId}', 'lost')">
+                        ❌ Perdeu
+                    </button>
+                </div>
+
+                <!-- Notes -->
+                <div class="card-notes">
+                    <textarea placeholder="Notas do leilão..." onchange="saveNote(${index}, '${parcelId}', this.value)">${notes}</textarea>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+
+        document.getElementById('headerCount').textContent = `${visible} props`;
+        updateBottomBar();
+    }
+
+    // ==========================================
+    // ACTIONS
+    // ==========================================
+    function toggleRevisado(index, parcelId) {
+        if (!investmentData[parcelId]) investmentData[parcelId] = {};
+        investmentData[parcelId].revisado = !investmentData[parcelId].revisado;
+        saveInvestmentData();
+        render();
+    }
+
+    function setAuctionStatus(index, parcelId, status) {
+        if (!investmentData[parcelId]) investmentData[parcelId] = {};
+        const current = investmentData[parcelId].auctionStatus;
+        investmentData[parcelId].auctionStatus = current === status ? '' : status;
+        saveInvestmentData();
+        render();
+    }
+
+    function saveNote(index, parcelId, value) {
+        if (!investmentData[parcelId]) investmentData[parcelId] = {};
+        investmentData[parcelId].notes = value;
+        saveInvestmentData();
+    }
+
+    // ==========================================
+    // FILTERS
+    // ==========================================
+    function setFilter(filter, btn) {
+        currentFilter = filter;
+        document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render();
+    }
+
+    function applyFilters() { render(); }
+
+    // ==========================================
+    // BOTTOM BAR
+    // ==========================================
+    function updateBottomBar() {
+        let won = 0, lost = 0, pending = 0;
+        properties.forEach(prop => {
+            const parcelId = getField(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
+            const saved = investmentData[parcelId] || {};
+            if (saved.auctionStatus === 'won') won++;
+            else if (saved.auctionStatus === 'lost') lost++;
+            else pending++;
+        });
+        document.getElementById('statWon').textContent = won;
+        document.getElementById('statLost').textContent = lost;
+        document.getElementById('statPending').textContent = pending;
+        document.getElementById('statTotal').textContent = properties.length;
+    }
+
+    // ==========================================
+    // INIT
+    // ==========================================
+    loadData();
+    render();
+</script>
+</body>
+</html>
