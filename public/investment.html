@@ -510,6 +510,44 @@
         }
         
         // ========================================
+        // LEGAL DESCRIPTION HIGHLIGHT
+        // ========================================
+        function highlightLegalDesc(text) {
+            if (!text || text === '-') return '-';
+            const redFlags = [
+                'UNDIVIDED', 'UNDIVIDED INTEREST', 'FRACTIONAL INTEREST',
+                'TENANTS IN COMMON', 'TIC', '% INTEREST'
+            ];
+            const orangeFlags = [
+                'LESS AND EXCEPT', 'LESS & EXCEPT', 'EXCEPTING', 'RESERVING',
+                'RESERVED', 'RESERVATION', 'MINERAL RIGHTS', 'OIL, GAS AND MINERAL',
+                'SUBJECT TO', 'EASEMENT', 'RIGHT OF WAY', 'ROW',
+                'INGRESS', 'EGRESS', 'INGRESS/EGRESS'
+            ];
+            let result = text;
+            // Sort by length descending to match longer phrases first
+            const allFlags = [
+                ...redFlags.map(f => ({ term: f, color: '#dc2626', bg: '#fee2e2', icon: '🔴' })),
+                ...orangeFlags.map(f => ({ term: f, color: '#b45309', bg: '#fef3c7', icon: '🟠' }))
+            ].sort((a, b) => b.term.length - a.term.length);
+            allFlags.forEach(({ term, color, bg, icon }) => {
+                const regex = new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                result = result.replace(regex, match =>
+                    `<span title="${icon} Red Flag: ${term}" style="background:${bg}; color:${color}; font-weight:700; padding:1px 3px; border-radius:3px; border:1px solid ${color}40;">${match}</span>`
+                );
+            });
+            return result;
+        }
+
+        // ========================================
+        // ESCAPE HTML
+        // ========================================
+        function escapeHTML(str) {
+            if (!str || str === '-') return str || '-';
+            return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        // ========================================
         // MAX BID CALCULATION
         // Formula: Max Bid = (Market Value - Closing Cost) / (1 + ROI%) - Reforma - Clean Title - Other Costs - Liens
         // Where: Closing Cost = Market Value × Closing Cost %
@@ -786,6 +824,12 @@
                                 </div>
                             </div>
                         </div>
+
+                        ${legalDesc && legalDesc !== '-' ? `
+                        <div class="mt-3 p-3 rounded-lg" style="background:#f8fafc; border:1px solid #e2e8f0;">
+                            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">📋 Legal Description</div>
+                            <div class="text-xs text-gray-600 leading-relaxed" style="font-family: monospace; word-break: break-word;">${highlightLegalDesc(legalDesc)}</div>
+                        </div>` : ''}
                         
                         <div class="section-divider"></div>
                         
@@ -2729,6 +2773,15 @@
             const prop = approvedProperties[index];
             const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
             if (!confirm(`Remover propriedade ${parcelId} da lista de aprovadas?`)) return;
+            
+            // Immediately hide card from DOM for instant visual feedback
+            const cardEl = document.getElementById(`card-${index}`);
+            if (cardEl) {
+                cardEl.style.transition = 'opacity 0.15s, transform 0.15s';
+                cardEl.style.opacity = '0';
+                cardEl.style.transform = 'scale(0.95) translateY(-8px)';
+                setTimeout(() => { if (cardEl.parentNode) cardEl.parentNode.removeChild(cardEl); }, 150);
+            }
             
             // Remove from array
             approvedProperties.splice(index, 1);
