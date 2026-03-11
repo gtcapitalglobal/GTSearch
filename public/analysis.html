@@ -638,6 +638,12 @@
                     <button id="batch-analyze-btn" onclick="batchAnalyzeAll()" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-semibold text-xs shadow-md hover:shadow-lg">
                         📦 Analisar Todas
                     </button>
+                    <button onclick="deleteAllWetlands()" class="px-4 py-2 bg-teal-700 text-white rounded-lg hover:bg-teal-800 transition-colors font-semibold text-xs shadow-md hover:shadow-lg" title="Remove todas as propriedades com Wetlands on-parcel">
+                        🌿 Deletar Wetlands
+                    </button>
+                    <button onclick="deleteAllFloodZone()" class="px-4 py-2 bg-blue-800 text-white rounded-lg hover:bg-blue-900 transition-colors font-semibold text-xs shadow-md hover:shadow-lg" title="Remove todas as propriedades em Flood Zone grave (A/V/D/E)">
+                        🌊 Deletar Flood Zone
+                    </button>
                 </div>
             </div>
                 <p class="text-sm text-gray-600 mb-4">
@@ -4756,6 +4762,77 @@
         window.batchAnalyzeAll = batchAnalyzeAll;
         window.exportBatchCSV = exportBatchCSV;
         window.cancelBatch = cancelBatch;
+
+        // ===== BULK DELETE: WETLANDS & FLOOD ZONE =====
+        function deleteAllWetlands() {
+            const stored = localStorage.getItem('selectedProperties');
+            if (!stored) return;
+            let props = JSON.parse(stored);
+
+            // Find properties with wetlands ON_PARCEL based on analysisData
+            const toDelete = props.filter(p => {
+                const wet = p.analysisData?.wetlands;
+                if (!wet) return false;
+                // Kill if found on-parcel or high risk
+                return wet.found && (
+                    wet.proximity === 'ON_PARCEL' ||
+                    wet.highestRisk === 'HIGH' ||
+                    wet.highestRisk === 'CRITICAL'
+                );
+            });
+
+            if (toDelete.length === 0) {
+                alert('Nenhuma propriedade com Wetlands on-parcel encontrada.\n\nDica: Execute "Analisar Todas" primeiro para detectar wetlands.');
+                return;
+            }
+
+            const parcels = toDelete.map(p => p['Parcel #'] || p['Parcel Number'] || 'N/A').join('\n');
+            if (!confirm(`Deletar ${toDelete.length} propriedade(s) com Wetlands on-parcel?\n\n${parcels}`)) return;
+
+            const remaining = props.filter(p => !toDelete.includes(p));
+            localStorage.setItem('selectedProperties', JSON.stringify(remaining));
+
+            // Reload page to reflect changes
+            alert(`✅ ${toDelete.length} propriedade(s) removida(s). Recarregando...`);
+            window.location.reload();
+        }
+
+        function deleteAllFloodZone() {
+            const stored = localStorage.getItem('selectedProperties');
+            if (!stored) return;
+            let props = JSON.parse(stored);
+
+            // High-risk FEMA zones: A, AE, AH, AO, AR, A99, V, VE, D, E
+            const HIGH_RISK_ZONES = ['A', 'AE', 'AH', 'AO', 'AR', 'A99', 'V', 'VE', 'D', 'E'];
+
+            const toDelete = props.filter(p => {
+                const fema = p.analysisData?.fema;
+                if (!fema) return false;
+                const zone = (fema.zone || '').toUpperCase().trim();
+                return HIGH_RISK_ZONES.some(z => zone === z || zone.startsWith(z + ' ') || zone.startsWith(z + '-'));
+            });
+
+            if (toDelete.length === 0) {
+                alert('Nenhuma propriedade em Flood Zone grave (A/V/D/E) encontrada.\n\nDica: Execute "Analisar Todas" primeiro para detectar zonas de inundação.');
+                return;
+            }
+
+            const parcels = toDelete.map(p => {
+                const zone = p.analysisData?.fema?.zone || '?';
+                return `${p['Parcel #'] || p['Parcel Number'] || 'N/A'} (${zone})`;
+            }).join('\n');
+
+            if (!confirm(`Deletar ${toDelete.length} propriedade(s) em Flood Zone grave?\n\n${parcels}`)) return;
+
+            const remaining = props.filter(p => !toDelete.includes(p));
+            localStorage.setItem('selectedProperties', JSON.stringify(remaining));
+
+            alert(`✅ ${toDelete.length} propriedade(s) removida(s). Recarregando...`);
+            window.location.reload();
+        }
+
+        window.deleteAllWetlands = deleteAllWetlands;
+        window.deleteAllFloodZone = deleteAllFloodZone;
         
         // ===== ANALYSIS HISTORY =====
         const HISTORY_KEY = 'gt_analysis_history';
