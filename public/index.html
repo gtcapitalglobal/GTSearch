@@ -337,6 +337,10 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-4">
+                    <a href="investment.html" id="goToTela3Btn" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 no-underline" title="Ver propriedades aprovadas">
+                        <span>🏆</span>
+                        <span>Aprovadas (<span id="approvedCountHeader">0</span>)</span>
+                    </a>
                     <a href="settings.html" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 no-underline">
                         <span>⚙️</span>
                         <span>Configurações</span>
@@ -493,11 +497,21 @@
                 </div>
                 <div class="flex gap-3 flex-wrap">
                     <button id="filterTerrenoBtn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                        🏞️ Terreno 0.20
+                        🏙️ Terreno 0.20
                     </button>
                     <button id="filterFavoritesBtn" class="bg-yellow-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-yellow-700 transition-colors">
                         ⭐ Favoritos (<span id="favoritesCount">0</span>)
                     </button>
+                    <button id="sortByCaseBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition-colors" title="Ordenar por Case Number (ordem do leilão)">
+                        📊 Ordenar por Case #
+                    </button>
+                    <button id="exportSummaryBtn" class="bg-teal-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-teal-700 transition-colors" title="Gerar lista resumida por ordem de leilão">
+                        📋 Lista Resumida
+                    </button>
+                    <button id="importRedeemedBtn" class="bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-orange-700 transition-colors" title="Importar arquivo Redeemed e remover propriedades">
+                        🛡️ Redeemed
+                    </button>
+                    <input type="file" id="redeemedFileInput" accept=".csv,.txt" class="hidden">
 
                     <button id="analyzeSelectedBtn" class="hidden bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors">
                         📊 Analisar Selecionadas
@@ -2730,6 +2744,16 @@
         
         // ===== FIM SISTEMA DE NOTIFICAÇÕES =====
         
+        // Update approved count in header
+        function updateApprovedCount() {
+            try {
+                const approved = JSON.parse(localStorage.getItem('approvedProperties') || '[]');
+                const el = document.getElementById('approvedCountHeader');
+                if (el) el.textContent = approved.length;
+            } catch(e) {}
+        }
+        updateApprovedCount();
+
         // Event Listener para o botão Analisar Selecionadas
         document.addEventListener('DOMContentLoaded', function() {
             const analyzeBtn = document.getElementById('analyzeSelectedBtn');
@@ -2967,6 +2991,104 @@
             document.getElementById('scoringSettingsBtn').click(); // Reopen with defaults
             showNotification('🔄 Pesos resetados para valores padrão.', 'info');
         }
+
+        // ============================================
+        // SORT BY CASE NUMBER (ordem do leilão)
+        // ============================================
+        document.getElementById('sortByCaseBtn').addEventListener('click', function() {
+            const props = window.currentFilteredProperties || window.allProperties || [];
+            if (!props.length) { alert('Carregue propriedades primeiro.'); return; }
+            props.sort((a, b) => {
+                const ca = (a['Case #'] || a['Case Number'] || a['Case'] || '').toString().trim();
+                const cb = (b['Case #'] || b['Case Number'] || b['Case'] || '').toString().trim();
+                return ca.localeCompare(cb, undefined, { numeric: true, sensitivity: 'base' });
+            });
+            window.currentFilteredProperties = props;
+            populateTable(props);
+            showNotification('📊 Propriedades ordenadas por Case # (A→Z)', 'success');
+        });
+
+        // ============================================
+        // EXPORT SUMMARY LIST (lista resumida)
+        // ============================================
+        document.getElementById('exportSummaryBtn').addEventListener('click', function() {
+            const props = window.currentFilteredProperties || window.allProperties || [];
+            if (!props.length) { alert('Carregue propriedades primeiro.'); return; }
+            const sorted = [...props].sort((a, b) => {
+                const ca = (a['Case #'] || a['Case Number'] || a['Case'] || '').toString().trim();
+                const cb = (b['Case #'] || b['Case Number'] || b['Case'] || '').toString().trim();
+                return ca.localeCompare(cb, undefined, { numeric: true, sensitivity: 'base' });
+            });
+            const rows = [['#', 'Case #', 'Parcel #', 'Name', 'Address', 'City', 'County', 'Acres', 'Amount Due', 'Grade', 'Legal Description']];
+            sorted.forEach((p, i) => {
+                rows.push([
+                    i + 1,
+                    p['Case #'] || p['Case Number'] || p['Case'] || '',
+                    p['Parcel Number'] || p['Parcel #'] || '',
+                    p['Name'] || '',
+                    p['Address'] || '',
+                    p['City'] || '',
+                    p['County'] || '',
+                    p['Acres'] || '',
+                    p['Amount Due'] || p['Amount'] || '',
+                    p._grade || '',
+                    p['Legal Description'] || ''
+                ]);
+            });
+            const csv = rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'GTSearch_Lista_Resumida_' + new Date().toISOString().slice(0,10) + '.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+            showNotification('📋 Lista resumida exportada (' + sorted.length + ' propriedades)', 'success');
+        });
+
+        // ============================================
+        // IMPORT REDEEMED (remover propriedades)
+        // ============================================
+        document.getElementById('importRedeemedBtn').addEventListener('click', function() {
+            document.getElementById('redeemedFileInput').click();
+        });
+
+        document.getElementById('redeemedFileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const text = ev.target.result;
+                // Parse CSV or plain text - extract parcel numbers and case numbers
+                const lines = text.split(/\r?\n/).filter(l => l.trim());
+                const redeemedIds = new Set();
+                lines.forEach(line => {
+                    // Try CSV parse
+                    const parts = line.split(',').map(p => p.replace(/"/g, '').trim());
+                    parts.forEach(p => { if (p) redeemedIds.add(p.toUpperCase()); });
+                });
+                const props = window.allProperties || [];
+                const before = props.length;
+                const remaining = props.filter(p => {
+                    const parcel = (p['Parcel Number'] || p['Parcel #'] || '').toUpperCase().trim();
+                    const caseNum = (p['Case #'] || p['Case Number'] || p['Case'] || '').toUpperCase().trim();
+                    return !redeemedIds.has(parcel) && !redeemedIds.has(caseNum);
+                });
+                const removed = before - remaining.length;
+                if (removed === 0) {
+                    alert('ℹ️ Nenhuma propriedade encontrada no arquivo Redeemed para remover.');
+                    return;
+                }
+                if (!confirm('🛡️ Remover ' + removed + ' propriedade(s) redeemed da lista?\n\nEssa ação não pode ser desfeita.')) return;
+                window.allProperties = remaining;
+                window.currentFilteredProperties = remaining;
+                populateTable(remaining);
+                showNotification('🛡️ ' + removed + ' propriedade(s) redeemed removida(s).', 'success');
+                e.target.value = '';
+            };
+            reader.readAsText(file);
+        });
+
     });
     </script>
     
