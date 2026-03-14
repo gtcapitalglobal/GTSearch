@@ -608,3 +608,8 @@
 - [x] T3-04: Coordenadas (lat/lon) nos cards — exibe como link clicável para Google Maps; botão Maps usa coordenadas exatas quando disponíveis
 - [x] T3-05: ROI % Final no price-ref — calcula (MV / Lance Final - 1) × 100, visível apenas quando Lance Final preenchido, verde ≥30%, amarelo ≥0%, vermelho <0%
 - [x] T3-06: Seção "Resultado do Leilão" colapsada por padrão (▶), expande ao clicar
+
+## v6.4-batch9 — Kill Fast Sequencial pós-Análise (14 Mar 2026)
+
+**Implementado (1 item):**
+- [x] T2-08: Após batch analysis, banner mostra contagem de Wetlands + Flood kills. Botão "Kill Fast →" dispara fluxo sequencial: (1) Modal Wetlands — Sim deleta todas, Não mantém; (2) Modal Flood Zone — Sim deleta todas, Não mantém. Recarrega página ao final. Auto-avança após 12s se não houver interação.
