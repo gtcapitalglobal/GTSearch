@@ -600,3 +600,11 @@
 
 **Em andamento (1 item):**
 - [ ] Google Sheets Export — criar Apps Script Web App para exportar dados de análise da Tela 3 para o Sheet "Gestao GT Group"
+
+## v6.4-batch8 — T3 Features: Resultado do Leilão + Coordenadas + ROI Final (14 Mar 2026)
+
+**Implementado (4 itens):**
+- [x] T3-01: Seção "Resultado do Leilão" colapsável por card (Status: Ganhou/Perdeu/Limpar, Lance Final, Comprador, Data) — salva localStorage, header muda de cor (verde=ganhou, vermelho=perdeu)
+- [x] T3-04: Coordenadas (lat/lon) nos cards — exibe como link clicável para Google Maps; botão Maps usa coordenadas exatas quando disponíveis
+- [x] T3-05: ROI % Final no price-ref — calcula (MV / Lance Final - 1) × 100, visível apenas quando Lance Final preenchido, verde ≥30%, amarelo ≥0%, vermelho <0%
+- [x] T3-06: Seção "Resultado do Leilão" colapsada por padrão (▶), expande ao clicar

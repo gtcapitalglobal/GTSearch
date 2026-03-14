@@ -681,6 +681,23 @@
                 const improvements = getFieldValue(prop, 'Improvements');
                 const legalDesc = getFieldValue(prop, 'Legal Description');
                 
+                // T3-04: Extract coordinates
+                const propLat = prop['Latitude'] || prop['lat'] || prop['Lat'] || '';
+                const propLon = prop['Longitude'] || prop['lon'] || prop['lng'] || prop['Lon'] || '';
+                const coordsDisplay = (propLat && propLon) ? `${parseFloat(propLat).toFixed(6)}, ${parseFloat(propLon).toFixed(6)}` : '-';
+                const coordsUrl = (propLat && propLon) ? `https://www.google.com/maps?q=${propLat},${propLon}` : `https://www.google.com/maps/search/${encodeURIComponent(address !== '-' ? address + ', ' + (city !== '-' ? city : '') + ', FL' : parcelId)}`;
+                
+                // T3-01: Auction result saved data
+                const auctionStatus = savedData.auctionStatus || '';
+                const auctionFinalBid = savedData.auctionFinalBid || '';
+                const auctionBuyer = savedData.auctionBuyer || '';
+                const auctionDate = savedData.auctionDate || '';
+                
+                // T3-05: ROI Final = Lance Final / Market Value * 100
+                const auctionFinalBidNum = parseFloat(auctionFinalBid) || 0;
+                const savedMV = parseFloat(savedData.marketValue) || 0;
+                const roiFinal = (auctionFinalBidNum > 0 && savedMV > 0) ? ((savedMV / auctionFinalBidNum - 1) * 100).toFixed(1) : '-';
+                
                 // Get analysis data if available
                 const analysisData = prop.analysisData || {};
                 // FEMA: show zone + subtype + risk
@@ -822,6 +839,12 @@
                                     <div class="label">Amount Due</div>
                                     <div class="value amount-due-val" data-raw="${parseCurrency(amountDue)}">${escapeHTML(amountDue)}</div>
                                 </div>
+                                <div class="field-item">
+                                    <div class="label">Coordenadas</div>
+                                    <div class="value" style="font-size:11px;">
+                                        ${coordsDisplay !== '-' ? `<a href="${coordsUrl}" target="_blank" rel="noopener noreferrer" style="color:#4f46e5; text-decoration:none; font-weight:600;" title="Abrir no Google Maps">${coordsDisplay} 📍</a>` : '-'}
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -884,6 +907,10 @@
                                 <div class="price-ref-item">
                                     <div class="ref-label">$/Acre (Bid 1)</div>
                                     <div class="ref-value" id="bidPerAcre-${index}">-</div>
+                                </div>
+                                <div class="price-ref-item" id="roiFinalRef-${index}" style="${auctionFinalBidNum > 0 ? '' : 'display:none;'}">
+                                    <div class="ref-label">ROI % Final</div>
+                                    <div class="ref-value" id="roiFinal-${index}" style="color:${roiFinal !== '-' && parseFloat(roiFinal) >= 0 ? '#059669' : '#dc2626'}">${roiFinal !== '-' ? roiFinal + '%' : '-'}</div>
                                 </div>
                             </div>
                             </div><!-- close custos content -->
@@ -1151,6 +1178,80 @@
                         
                         <div class="section-divider"></div>
                         
+                        <!-- T3-01: Resultado do Leilão (collapsed by default - T3-06) -->
+                        <div class="mb-3" id="auction-result-${index}">
+                            <h4 class="text-xs font-bold uppercase tracking-wider mb-2 cursor-pointer flex items-center justify-between"
+                                id="auction-result-header-${index}"
+                                onclick="toggleCardSection('auction-result-${index}'); updateAuctionResultHeader(${index})"
+                                style="color: ${auctionStatus === 'won' ? '#059669' : auctionStatus === 'lost' ? '#dc2626' : '#6b7280'};">
+                                <span id="auction-result-title-${index}">
+                                    ${auctionStatus === 'won' ? '🏆 Resultado: GANHOU' : auctionStatus === 'lost' ? '❌ Resultado: PERDEU' : '🎯 Resultado do Leilão'}
+                                </span>
+                                <span style="font-size:13px;" id="auction-result-${index}-icon">▶</span>
+                            </h4>
+                            <div id="auction-result-${index}-content" style="display:none;">
+                                <div class="rounded-lg p-3 border" style="background:${auctionStatus === 'won' ? '#f0fdf4' : auctionStatus === 'lost' ? '#fef2f2' : '#f8fafc'}; border-color:${auctionStatus === 'won' ? '#86efac' : auctionStatus === 'lost' ? '#fca5a5' : '#e2e8f0'};">
+                                    <!-- Status buttons -->
+                                    <div class="flex gap-2 mb-3">
+                                        <button onclick="setAuctionResult(${index}, 'won')" 
+                                                class="flex-1 px-3 py-2 text-xs font-bold rounded-lg transition-all"
+                                                id="auction-won-btn-${index}"
+                                                style="background:${auctionStatus === 'won' ? '#059669' : '#f0fdf4'}; color:${auctionStatus === 'won' ? 'white' : '#059669'}; border:2px solid #059669;">
+                                            🏆 Ganhou
+                                        </button>
+                                        <button onclick="setAuctionResult(${index}, 'lost')" 
+                                                class="flex-1 px-3 py-2 text-xs font-bold rounded-lg transition-all"
+                                                id="auction-lost-btn-${index}"
+                                                style="background:${auctionStatus === 'lost' ? '#dc2626' : '#fef2f2'}; color:${auctionStatus === 'lost' ? 'white' : '#dc2626'}; border:2px solid #dc2626;">
+                                            ❌ Perdeu
+                                        </button>
+                                        <button onclick="setAuctionResult(${index}, '')" 
+                                                class="px-3 py-2 text-xs font-bold rounded-lg transition-all"
+                                                style="background:#f3f4f6; color:#6b7280; border:2px solid #d1d5db;">
+                                            ↩ Limpar
+                                        </button>
+                                    </div>
+                                    <!-- Fields -->
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="text-xs text-gray-500 font-semibold block mb-1">Lance Final ($)</label>
+                                            <input type="text" inputmode="numeric" 
+                                                   class="input-field auction-final-bid" 
+                                                   data-index="${index}"
+                                                   value="${auctionFinalBid ? Number(auctionFinalBid).toLocaleString('en-US') : ''}" 
+                                                   placeholder="Ex: 12,500"
+                                                   oninput="this.dataset.rawValue=this.value.replace(/[^0-9.]/g,''); saveCardData(${index}); updateRoiFinal(${index})">
+                                        </div>
+                                        <div>
+                                            <label class="text-xs text-gray-500 font-semibold block mb-1">Data</label>
+                                            <input type="date" 
+                                                   class="input-field auction-date" 
+                                                   data-index="${index}"
+                                                   value="${auctionDate}" 
+                                                   onchange="saveCardData(${index})">
+                                        </div>
+                                        <div class="col-span-2">
+                                            <label class="text-xs text-gray-500 font-semibold block mb-1">Comprador / Empresa</label>
+                                            <input type="text" 
+                                                   class="input-field auction-buyer" 
+                                                   data-index="${index}"
+                                                   value="${escapeHTML(auctionBuyer)}" 
+                                                   placeholder="Nome ou empresa do comprador"
+                                                   oninput="saveCardData(${index})">
+                                        </div>
+                                    </div>
+                                    ${auctionFinalBidNum > 0 && savedMV > 0 ? `
+                                    <div class="mt-2 p-2 rounded text-center" style="background:rgba(0,0,0,0.05);">
+                                        <span class="text-xs text-gray-500">ROI Realizado: </span>
+                                        <span class="text-sm font-bold" style="color:${parseFloat(roiFinal) >= 30 ? '#059669' : parseFloat(roiFinal) >= 0 ? '#d97706' : '#dc2626'}">${roiFinal}%</span>
+                                        <span class="text-xs text-gray-400 ml-1">(MV ${formatCurrency(savedMV)} / Lance ${formatCurrency(auctionFinalBidNum)})</span>
+                                    </div>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="section-divider"></div>
+                        
                         <!-- Quick Links -->
                         <div class="flex gap-2 flex-wrap">
                             <a href="${buildZillowUrl(address, city, prop)}" 
@@ -1163,7 +1264,7 @@
                                class="px-3 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition-colors text-center no-underline font-semibold flex items-center justify-center gap-1">
                                 🏡 Redfin
                             </a>
-                            <a href="https://www.google.com/maps/search/${encodeURIComponent(address !== '-' ? address + ', ' + (city !== '-' ? city : '') + ', FL' : parcelId)}" 
+                            <a href="${coordsUrl}" 
                                target="_blank" 
                                class="px-3 py-2 bg-green-500 text-white text-sm rounded-lg hover:bg-green-600 transition-colors text-center no-underline font-semibold flex items-center justify-center gap-1">
                                 📍 Maps
@@ -1406,12 +1507,21 @@
                 roi1: parseFloat(card.querySelector('.roi1-input')?.value) || 0,
                 roi2: parseFloat(card.querySelector('.roi2-input')?.value) || 0,
                 roi3: parseFloat(card.querySelector('.roi3-input')?.value) || 0,
-                notes: card.querySelector('.notes-field').value || '',
+                notes: card.querySelector('.notes-field')?.value || '',
                 // Due Diligence checklist (v5.2)
                 ddLiens: card.querySelector('.dd-check[data-check="liens"]')?.checked || false,
                 ddViolations: card.querySelector('.dd-check[data-check="violations"]')?.checked || false,
-                ddReady: card.querySelector('.dd-check[data-check="ready"]')?.checked || false
+                ddReady: card.querySelector('.dd-check[data-check="ready"]')?.checked || false,
+                // T3-01: Auction Result fields
+                auctionStatus: savedInvestmentData[parcelId]?.auctionStatus || '',
+                auctionFinalBid: parseFloat((card.querySelector('.auction-final-bid')?.dataset?.rawValue || card.querySelector('.auction-final-bid')?.value || '').replace(/[^0-9.]/g,'')) || '',
+                auctionBuyer: card.querySelector('.auction-buyer')?.value || '',
+                auctionDate: card.querySelector('.auction-date')?.value || ''
             };
+            // Preserve auctionStatus from existing data if not changed by setAuctionResult
+            if (!data.auctionStatus && savedInvestmentData[parcelId]?.auctionStatus) {
+                data.auctionStatus = savedInvestmentData[parcelId].auctionStatus;
+            }
             
             savedInvestmentData[parcelId] = data;
             
@@ -1419,6 +1529,103 @@
                 localStorage.setItem('investmentData', JSON.stringify(savedInvestmentData));
             } catch (e) {
                 console.warn('localStorage full, clearing old data');
+            }
+        }
+        
+        // ========================================
+        // T3-01: AUCTION RESULT FUNCTIONS
+        // ========================================
+        function setAuctionResult(index, status) {
+            const card = document.getElementById(`card-${index}`);
+            if (!card) return;
+            const prop = approvedProperties[index];
+            const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
+            
+            if (!savedInvestmentData[parcelId]) savedInvestmentData[parcelId] = {};
+            savedInvestmentData[parcelId].auctionStatus = status;
+            
+            // Update button styles
+            const wonBtn = document.getElementById(`auction-won-btn-${index}`);
+            const lostBtn = document.getElementById(`auction-lost-btn-${index}`);
+            if (wonBtn) {
+                wonBtn.style.background = status === 'won' ? '#059669' : '#f0fdf4';
+                wonBtn.style.color = status === 'won' ? 'white' : '#059669';
+            }
+            if (lostBtn) {
+                lostBtn.style.background = status === 'lost' ? '#dc2626' : '#fef2f2';
+                lostBtn.style.color = status === 'lost' ? 'white' : '#dc2626';
+            }
+            
+            // Update header title and color
+            updateAuctionResultHeader(index);
+            
+            // Update card header gradient to reflect result
+            const cardHeader = card.querySelector('.bg-gradient-to-r');
+            if (cardHeader) {
+                if (status === 'won') {
+                    cardHeader.style.background = 'linear-gradient(to right, #059669, #047857)';
+                } else if (status === 'lost') {
+                    cardHeader.style.background = 'linear-gradient(to right, #dc2626, #b91c1c)';
+                } else {
+                    cardHeader.style.background = '';
+                    cardHeader.className = 'bg-gradient-to-r from-indigo-600 to-indigo-700 p-4 text-white';
+                }
+            }
+            
+            // Save to localStorage
+            saveCardData(index);
+        }
+        
+        function updateAuctionResultHeader(index) {
+            const prop = approvedProperties[index];
+            if (!prop) return;
+            const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
+            const status = savedInvestmentData[parcelId]?.auctionStatus || '';
+            
+            const titleEl = document.getElementById(`auction-result-title-${index}`);
+            const headerEl = document.getElementById(`auction-result-header-${index}`);
+            const contentEl = document.getElementById(`auction-result-${index}-content`);
+            
+            if (titleEl) {
+                titleEl.textContent = status === 'won' ? '🏆 Resultado: GANHOU' : status === 'lost' ? '❌ Resultado: PERDEU' : '🎯 Resultado do Leilão';
+            }
+            if (headerEl) {
+                headerEl.style.color = status === 'won' ? '#059669' : status === 'lost' ? '#dc2626' : '#6b7280';
+            }
+            if (contentEl) {
+                const bg = status === 'won' ? '#f0fdf4' : status === 'lost' ? '#fef2f2' : '#f8fafc';
+                const bc = status === 'won' ? '#86efac' : status === 'lost' ? '#fca5a5' : '#e2e8f0';
+                const innerDiv = contentEl.querySelector('.rounded-lg');
+                if (innerDiv) {
+                    innerDiv.style.background = bg;
+                    innerDiv.style.borderColor = bc;
+                }
+            }
+        }
+        
+        function updateRoiFinal(index) {
+            const card = document.getElementById(`card-${index}`);
+            if (!card) return;
+            const prop = approvedProperties[index];
+            const parcelId = getFieldValue(prop, 'Parcel Number', 'Parcel Id', 'Parcel #', 'parcel_number', 'parcel_id');
+            
+            const finalBidInput = card.querySelector('.auction-final-bid');
+            const finalBid = parseFloat((finalBidInput?.dataset?.rawValue || finalBidInput?.value || '').replace(/[^0-9.]/g,'')) || 0;
+            const mv = parseFloat(savedInvestmentData[parcelId]?.marketValue) || getRawInputValue(card.querySelector('.market-value'));
+            
+            const roiFinalEl = document.getElementById(`roiFinal-${index}`);
+            const roiFinalRefEl = document.getElementById(`roiFinalRef-${index}`);
+            
+            if (finalBid > 0 && mv > 0) {
+                const roi = ((mv / finalBid - 1) * 100).toFixed(1);
+                if (roiFinalEl) {
+                    roiFinalEl.textContent = roi + '%';
+                    roiFinalEl.style.color = parseFloat(roi) >= 30 ? '#059669' : parseFloat(roi) >= 0 ? '#d97706' : '#dc2626';
+                }
+                if (roiFinalRefEl) roiFinalRefEl.style.display = '';
+            } else {
+                if (roiFinalEl) roiFinalEl.textContent = '-';
+                if (roiFinalRefEl) roiFinalRefEl.style.display = 'none';
             }
         }
         
