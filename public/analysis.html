@@ -369,16 +369,19 @@
                         <button onclick="openGoogleMaps()" class="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs font-semibold">
                             📍 Google Maps
                         </button>
-                        <button onclick="openZillow()" class="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-xs font-semibold">
-                            🏠 Zillow
-                        </button>
-                        <button onclick="openRedfin()" class="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-xs font-semibold">
-                            🏡 Redfin
-                        </button>
+
                     </div>
                     <div>
                         <span class="text-gray-600 text-xs font-medium">🌊 FEMA Flood Risk:</span>
                         <span class="font-semibold ml-2" id="prop-fema-risk-1">⏳ Carregando...</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs font-medium">🌊 Flood Zone:</span>
+                        <span class="font-semibold ml-2" id="prop-flood-zone-1">-</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-600 text-xs font-medium">🌿 Wetlands:</span>
+                        <span class="font-semibold ml-2" id="prop-wetlands-1">-</span>
                     </div>
                 </div>
                 
@@ -392,10 +395,20 @@
                         </div>
                         <div class="font-semibold ml-2 text-xs mt-1 break-words whitespace-pre-wrap" id="prop-legal-1">-</div>
                     </div>
+                    <!-- Red Flags do Legal Description -->
+                    <div id="legal-red-flags-1" style="display:none;" class="col-span-2 mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-red-700 text-xs font-bold">🚨 RED FLAGS no Legal Description:</span>
+                        </div>
+                        <div id="legal-red-flags-list-1" class="flex flex-wrap gap-1"></div>
+                    </div>
                 </div>
                 
                 <!-- Ações Rápidas na Lateral -->
                 <div class="actions-sidebar">
+                    <div style="background:#1e3a5f;color:#fff;border-radius:8px;padding:5px 8px;font-size:11px;font-weight:700;text-align:center;margin-bottom:4px;">
+                        📋 <span id="counter-current">1</span> / <span id="counter-total">?</span>
+                    </div>
                     <h3>Ações Rápidas</h3>
                     <button onclick="deletarPropriedade()" class="bg-red-600 text-white hover:bg-red-700">
                         <span class="icon">✕</span>
@@ -412,6 +425,10 @@
                     <button onclick="proximaPropriedade()" class="bg-blue-600 text-white hover:bg-blue-700">
                         <span class="icon">➡</span>
                         <span class="label">Próxima</span>
+                    </button>
+                    <button onclick="analisarEstaPropriedade()" class="bg-purple-600 text-white hover:bg-purple-700" title="Analisar apenas esta propriedade">
+                        <span class="icon">🔍</span>
+                        <span class="label">Analisar</span>
                     </button>
                 </div>
             </div>
@@ -673,6 +690,23 @@
                     <div id="owner-name-section">-</div>
                     <div id="owner-address-section">-</div>
                     <div id="owner-city-state-zip-section">-</div>
+                </div>
+            </div>
+            <!-- T2-10/11: Owner and Legal Description for Due Diligence -->
+            <div class="mt-3 pt-3 border-t border-gray-100">
+                <div class="grid grid-cols-1 gap-2 text-sm">
+                    <div class="flex items-start gap-2">
+                        <span class="text-gray-500 font-semibold min-w-fit">Owner:</span>
+                        <span id="dd-owner-name" class="text-gray-800 font-medium">-</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <span class="text-gray-500 font-semibold min-w-fit">Legal Desc:</span>
+                        <span id="dd-legal-desc" class="text-gray-700 text-xs leading-relaxed">-</span>
+                    </div>
+                    <div id="dd-legal-flags" style="display:none;" class="mt-1">
+                        <span class="text-xs font-bold text-red-600 mr-1">⚠️ Red Flags:</span>
+                        <span id="dd-legal-flags-list" class="flex flex-wrap gap-1 inline-flex"></span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1452,6 +1486,84 @@
             // prop-zip-1 removido - Zip já está incluído no fullAddress
             document.getElementById('prop-legal-1').textContent = legalFull;
             window.currentLegalDescription = legalFull; // Store for copy function
+            
+            // T2-10/11: Populate Due Diligence Owner + Legal Description
+            const ddOwner = document.getElementById('dd-owner-name');
+            const ddLegal = document.getElementById('dd-legal-desc');
+            const ddFlags = document.getElementById('dd-legal-flags');
+            const ddFlagsList = document.getElementById('dd-legal-flags-list');
+            if (ddOwner) ddOwner.textContent = prop['Name'] || prop['Owner Name'] || '-';
+            if (ddLegal) ddLegal.textContent = legalFull;
+            if (ddFlags && ddFlagsList && legalFull && legalFull !== '-') {
+                const legalUpperDD = legalFull.toUpperCase();
+                const DD_FLAGS = ['UNDIVIDED','FRACTIONAL INTEREST','TENANTS IN COMMON','EASEMENT','RIGHT OF WAY','SUBJECT TO','MINERAL RIGHTS','LESS AND EXCEPT','INGRESS','EGRESS','RESERVING','SUN N LAKE'];
+                const foundDD = DD_FLAGS.filter(f => legalUpperDD.includes(f));
+                if (foundDD.length > 0) {
+                    ddFlagsList.innerHTML = foundDD.map(f => `<span style="background:#dc2626;color:#fff;padding:1px 6px;border-radius:10px;font-size:10px;font-weight:700;">${f}</span>`).join(' ');
+                    ddFlags.style.display = 'block';
+                } else {
+                    ddFlags.style.display = 'none';
+                }
+            }
+            
+            // T2-01: Update counter badge
+            const counterCurrent = document.getElementById('counter-current');
+            const counterTotal = document.getElementById('counter-total');
+            if (counterCurrent) counterCurrent.textContent = index + 1;
+            if (counterTotal) counterTotal.textContent = properties.length;
+            
+            // T2-03: Flood Zone and Wetlands fields
+            const analysisData = prop.analysisData || {};
+            const femaZone = analysisData.femaZone || prop['FEMA Zone'] || '-';
+            const wetlandsResult = analysisData.wetlandsResult || prop['Wetlands'] || '-';
+            const floodZoneEl = document.getElementById('prop-flood-zone-1');
+            const wetlandsEl = document.getElementById('prop-wetlands-1');
+            if (floodZoneEl) {
+                const isHighRisk = /^[AVDE]/i.test(femaZone) && femaZone !== 'X' && femaZone !== '-';
+                floodZoneEl.innerHTML = isHighRisk 
+                    ? `<span style="color:#dc2626;font-weight:700;">🚨 ${escapeHTML(femaZone)}</span>`
+                    : `<span style="color:#16a34a;">${escapeHTML(femaZone)}</span>`;
+            }
+            if (wetlandsEl) {
+                const isWetlandRisk = /on.parcel|high|critical|significat/i.test(wetlandsResult);
+                wetlandsEl.innerHTML = isWetlandRisk
+                    ? `<span style="color:#dc2626;font-weight:700;">🚨 ${escapeHTML(wetlandsResult)}</span>`
+                    : `<span style="color:#16a34a;">${escapeHTML(wetlandsResult)}</span>`;
+            }
+            
+            // T2-04: Red Flags in Legal Description
+            const RED_FLAG_KEYWORDS = [
+                {word: 'UNDIVIDED', label: 'Interesse Fracionado', color: '#dc2626'},
+                {word: 'FRACTIONAL INTEREST', label: 'Interesse Fracionado', color: '#dc2626'},
+                {word: 'TENANTS IN COMMON', label: 'Coproprietários', color: '#dc2626'},
+                {word: 'TIC', label: 'TIC', color: '#dc2626'},
+                {word: '% INTEREST', label: '% Interesse', color: '#dc2626'},
+                {word: 'EASEMENT', label: 'Servidão', color: '#d97706'},
+                {word: 'RIGHT OF WAY', label: 'Faixa de Passagem', color: '#d97706'},
+                {word: 'SUBJECT TO', label: 'Sujeito a', color: '#d97706'},
+                {word: 'MINERAL RIGHTS', label: 'Direitos Minerais', color: '#d97706'},
+                {word: 'LESS AND EXCEPT', label: 'Exclusão de Área', color: '#d97706'},
+                {word: 'INGRESS', label: 'Acesso', color: '#d97706'},
+                {word: 'EGRESS', label: 'Saída', color: '#d97706'},
+                {word: 'RESERVING', label: 'Reserva', color: '#d97706'},
+                {word: 'SUN N LAKE', label: 'Sun N Lake', color: '#7c3aed'}
+            ];
+            const flagsContainer = document.getElementById('legal-red-flags-1');
+            const flagsList = document.getElementById('legal-red-flags-list-1');
+            if (flagsContainer && flagsList && legalFull && legalFull !== '-') {
+                const legalUpper = legalFull.toUpperCase();
+                const found = RED_FLAG_KEYWORDS.filter(f => legalUpper.includes(f.word));
+                if (found.length > 0) {
+                    flagsList.innerHTML = found.map(f => 
+                        `<span style="background:${f.color};color:#fff;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;">${f.label}</span>`
+                    ).join('');
+                    flagsContainer.style.display = 'block';
+                } else {
+                    flagsContainer.style.display = 'none';
+                }
+            } else if (flagsContainer) {
+                flagsContainer.style.display = 'none';
+            }
             
             // SEÇÃO 2: Detalhes Adicionais
             document.getElementById('prop-parcel-2').textContent = prop['Parcel Number'];
@@ -4722,6 +4834,38 @@
             btn.textContent = '📦 Analisar Todas';
             
             renderHistoryPanel();
+            
+            // T2-07: Large completion banner
+            if (!wasCancelled) {
+                const banner = document.createElement('div');
+                banner.id = 'batch-completion-banner';
+                banner.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.75);z-index:9999;display:flex;align-items:center;justify-content:center;';
+                banner.innerHTML = `
+                    <div style="background:linear-gradient(135deg,#1e3a5f,#2d6a4f);border-radius:20px;padding:48px 60px;text-align:center;max-width:520px;box-shadow:0 25px 60px rgba(0,0,0,0.5);">
+                        <div style="font-size:72px;margin-bottom:16px;">✅</div>
+                        <h2 style="color:#fff;font-size:28px;font-weight:800;margin-bottom:8px;">Análise Concluída!</h2>
+                        <p style="color:#a7f3d0;font-size:16px;margin-bottom:24px;">${completed} de ${total} propriedades analisadas com sucesso.</p>
+                        <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:28px;">
+                            <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:12px 20px;">
+                                <div style="color:#fff;font-size:24px;font-weight:800;">${results.filter(r=>r.riskLevel==='green').length}</div>
+                                <div style="color:#a7f3d0;font-size:12px;">Baixo Risco</div>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:12px 20px;">
+                                <div style="color:#fbbf24;font-size:24px;font-weight:800;">${results.filter(r=>r.riskLevel==='yellow').length}</div>
+                                <div style="color:#fde68a;font-size:12px;">Médio Risco</div>
+                            </div>
+                            <div style="background:rgba(255,255,255,0.15);border-radius:12px;padding:12px 20px;">
+                                <div style="color:#f87171;font-size:24px;font-weight:800;">${results.filter(r=>r.riskLevel==='red'||r.riskLevel==='critical').length}</div>
+                                <div style="color:#fca5a5;font-size:12px;">Alto Risco</div>
+                            </div>
+                        </div>
+                        <button onclick="document.getElementById('batch-completion-banner').remove()" style="background:#10b981;color:#fff;border:none;border-radius:12px;padding:14px 40px;font-size:16px;font-weight:700;cursor:pointer;">Ver Resultados →</button>
+                    </div>
+                `;
+                document.body.appendChild(banner);
+                // Auto-close after 8 seconds
+                setTimeout(() => { if (document.getElementById('batch-completion-banner')) document.getElementById('batch-completion-banner').remove(); }, 8000);
+            }
         }
         
         function exportBatchCSV() {
