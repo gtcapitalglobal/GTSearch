@@ -1210,13 +1210,20 @@
             initializePropertyAnalysisWidget();
             
             // v5.1: Auto-trigger batch analysis on page load
-            // Small delay to ensure widget is fully initialized and first property is rendered
-            setTimeout(() => {
-                console.log('🚀 Auto-triggering batch analysis on page load...');
-                if (propertyAnalysisWidget && properties.length > 0) {
-                    batchAnalyzeAll(true); // true = auto-triggered (skip confirm)
-                }
-            }, 500);
+            // Guard: skip auto-trigger if page was reloaded by Kill Fast flow
+            const skipAutoTrigger = sessionStorage.getItem('gt_kill_fast_reload');
+            if (skipAutoTrigger) {
+                sessionStorage.removeItem('gt_kill_fast_reload');
+                console.log('⏭️ Skipping auto-batch: page reloaded by Kill Fast flow');
+            } else {
+                // Small delay to ensure widget is fully initialized and first property is rendered
+                setTimeout(() => {
+                    console.log('🚀 Auto-triggering batch analysis on page load...');
+                    if (propertyAnalysisWidget && properties.length > 0) {
+                        batchAnalyzeAll(true); // true = auto-triggered (skip confirm)
+                    }
+                }, 500);
+            }
         }
         
         // Call immediately if DOM is ready, otherwise wait
@@ -4892,7 +4899,13 @@
                 setTimeout(() => { 
                     if (document.getElementById('batch-completion-banner')) {
                         document.getElementById('batch-completion-banner').remove();
-                        runKillFastSequence();
+                        // Only auto-run Kill Fast if there are items to kill
+                        if (wetlandKills.length > 0 || floodKills.length > 0) {
+                            runKillFastSequence();
+                        } else {
+                            // Nothing to kill, just stay on page (no reload needed)
+                            console.log('✅ Kill Fast: nothing to eliminate, staying on page');
+                        }
                     }
                 }, 12000);
             }
@@ -4932,7 +4945,7 @@
                             runFloodKillFast(remaining);
                         },
                         onSkip: () => {
-                            // Skip wetlands, go to flood
+                            // Skip wetlands, go to flood (use original props)
                             runFloodKillFast(props);
                         }
                     });
@@ -4966,15 +4979,18 @@
                         onConfirm: () => {
                             const remaining = props.filter(p => !floodKills.includes(p));
                             localStorage.setItem('selectedProperties', JSON.stringify(remaining));
+                            sessionStorage.setItem('gt_kill_fast_reload', '1');
                             window.location.reload();
                         },
                         onSkip: () => {
                             // Nothing deleted, just reload
+                            sessionStorage.setItem('gt_kill_fast_reload', '1');
                             window.location.reload();
                         }
                     });
                 } else {
-                    // Nothing to kill
+                    // Nothing to kill — still set flag to prevent auto-batch
+                    sessionStorage.setItem('gt_kill_fast_reload', '1');
                     window.location.reload();
                 }
             }
